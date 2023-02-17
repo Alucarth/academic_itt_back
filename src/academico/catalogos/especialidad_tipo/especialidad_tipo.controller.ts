@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { EspecialidadTipo } from 'src/academico/entidades/especialidad_tipo.entity';
+import { EspecialidadTipo } from 'src/academico/entidades/especialidadTipo.entity';
 import { EspecialidadTipoService } from './especialidad_tipo.service';
 
 @Controller('especialidad-tipo')

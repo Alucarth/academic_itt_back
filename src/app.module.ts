@@ -9,6 +9,9 @@ import { EducacionTipoService } from './academico/catalogos/educacion_tipo/educa
 import { EducacionTipoModule } from './academico/catalogos/educacion_tipo/educacion_tipo.module';
 import { InstitucionEducativaAcreditacionEspecialidadModule } from './academico/modulos/institucion_educativa_acreditacion_especialidad/institucion_educativa_acreditacion_especialidad.module';
 import { EspecialidadTipoModule } from './academico/catalogos/especialidad_tipo/especialidad_tipo.module';
+import { AsignaturaTipoModule } from './academico/catalogos/asignatura_tipo/asignatura_tipo.module';
+import { EtapaEducativaModule } from './academico/modulos/etapa_educativa/etapa_educativa.module';
+import { EtapaEducativaAsignaturaModule } from './academico/modulos/etapa_educativa_asignatura/etapa_educativa_asignatura.module';
 
 @Module({
   imports: [
@@ -20,6 +23,9 @@ import { EspecialidadTipoModule } from './academico/catalogos/especialidad_tipo/
     EducacionTipoModule,
     InstitucionEducativaAcreditacionEspecialidadModule,
     EspecialidadTipoModule,
+    AsignaturaTipoModule,
+    EtapaEducativaModule,
+    EtapaEducativaAsignaturaModule,
   ],
   providers: [EducacionTipoService],
 })

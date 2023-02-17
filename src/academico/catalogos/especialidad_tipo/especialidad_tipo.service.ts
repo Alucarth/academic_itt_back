@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EspecialidadTipo } from 'src/academico/entidades/especialidad_tipo.entity';
+import { EspecialidadTipo } from 'src/academico/entidades/especialidadTipo.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()

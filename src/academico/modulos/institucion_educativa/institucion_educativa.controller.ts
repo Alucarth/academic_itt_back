@@ -1,6 +1,6 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { InstitucionEducativa } from 'src/academico/entidades/institucion-educativa.entity';
+import { InstitucionEducativa } from 'src/academico/entidades/institucionEducativa.entity';
 import { InstitucionEducativaService } from './institucion_educativa.service';
 
 @ApiTags('institucion-educativa')

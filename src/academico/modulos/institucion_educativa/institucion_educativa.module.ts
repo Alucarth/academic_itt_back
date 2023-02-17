@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseModule } from 'src/database/database.module';
-import { InstitucionEducativa } from 'src/academico/entidades/institucion-educativa.entity';
+import { InstitucionEducativa } from 'src/academico/entidades/institucionEducativa.entity';
 import { InstitucionEducativaController } from './institucion_educativa.controller';
 import { InstitucionEducativaService } from './institucion_educativa.service';
 

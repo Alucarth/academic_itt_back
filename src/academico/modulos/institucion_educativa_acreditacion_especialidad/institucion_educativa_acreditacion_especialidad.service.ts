@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { InstitucionEducativaAcreditacionEspecialidad } from 'src/academico/entidades/institucion_educativa_acreditacion_especialidad.entity';
+import { InstitucionEducativaAcreditacionEspecialidad } from 'src/academico/entidades/institucionEducativaAcreditacionEspecialidad.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
