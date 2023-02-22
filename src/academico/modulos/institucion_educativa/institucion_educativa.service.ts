@@ -30,6 +30,7 @@ export class InstitucionEducativaService {
         .createQueryBuilder("a")
         .innerJoinAndSelect("a.educacionTipo", "b")
         .innerJoinAndSelect("a.jurisdiccionGeografica", "c")
+        .innerJoinAndSelect("a.sucursales", "d")
         .where('b.id in (7,8,9)  ')
         .where('a.id = :id ', { id })
         .orderBy('a.id', 'ASC')

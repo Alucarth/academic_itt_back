@@ -9,7 +9,9 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { EducacionTipo } from './educacionTipo.entity';
+import { EstadoInstitucionEductivaTipo } from './estadoInstitucionEducativaTipo.entity';
 import { InstitucionEducativaAcreditacionEspecialidad } from './institucionEducativaAcreditacionEspecialidad.entity';
+import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
 import { JurisdiccionGeografica } from './jurisdiccionGeografica.entity';
 
 @Entity({ name: 'institucion_educativa', schema: 'public' })
@@ -55,11 +57,15 @@ export class InstitucionEducativa {
   @JoinColumn({ name: 'educacion_tipo_id', referencedColumnName: 'id'})
   educacionTipo: EducacionTipo;
 
+  @ManyToOne(() => EstadoInstitucionEductivaTipo, (estadoInstitucionEducativaTipo) => estadoInstitucionEducativaTipo.instituciones, { nullable: false, cascade: true })
+  @JoinColumn({ name: 'estado_institucion_educativa_tipo_id', referencedColumnName: 'id'})
+  estadoInstitucionEducativaTipo: EstadoInstitucionEductivaTipo;
+
   @ManyToOne(() => JurisdiccionGeografica, (jurisdiccionGeografica) => jurisdiccionGeografica.instituciones, { nullable: false, cascade: true })
   @JoinColumn({ name: 'jurisdiccion_geografica_id', referencedColumnName: 'id'})
   jurisdiccionGeografica: JurisdiccionGeografica;
-
   
-  @OneToMany(() => InstitucionEducativaAcreditacionEspecialidad, (InstitucionEducativaAcreditacionEspecialidad) => InstitucionEducativaAcreditacionEspecialidad.institucionEducativa)
-  acreditacionEspecialidades: InstitucionEducativaAcreditacionEspecialidad[];
+  @OneToMany(() => InstitucionEducativaSucursal, (institucionEducativaSucursal) => institucionEducativaSucursal.institucionEducativa)
+  sucursales: InstitucionEducativaSucursal[];
+  
 }

@@ -12,6 +12,7 @@ import { EspecialidadTipoModule } from './academico/catalogos/especialidad_tipo/
 import { AsignaturaTipoModule } from './academico/catalogos/asignatura_tipo/asignatura_tipo.module';
 import { EtapaEducativaModule } from './academico/modulos/etapa_educativa/etapa_educativa.module';
 import { EtapaEducativaAsignaturaModule } from './academico/modulos/etapa_educativa_asignatura/etapa_educativa_asignatura.module';
+import { InstitucionEducativaSucursalModule } from './academico/modulos/institucion_educativa_sucursal/institucion_educativa_sucursal.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { EtapaEducativaAsignaturaModule } from './academico/modulos/etapa_educat
     AsignaturaTipoModule,
     EtapaEducativaModule,
     EtapaEducativaAsignaturaModule,
+    InstitucionEducativaSucursalModule,
   ],
   providers: [EducacionTipoService],
 })

@@ -12,10 +12,12 @@ export class InstitucionEducativaAcreditacionEspecialidadService {
     async findEspecialidadesBySie( id:number ){
         const especialidades = await this.institucionEducativaAcreditacionEspecialidadRepository
         .createQueryBuilder("a")
-        .innerJoinAndSelect("a.institucionEducativa", "b")
-        .innerJoinAndSelect("a.especialidadTipo", "c")
+        .leftJoinAndSelect("a.institucionEducativaSucursal", "b")
+        .leftJoinAndSelect("a.especialidadTipo", "c")
+       // .select([ 'a.id', 'c.id', 'c.especialidad' ])
         .where('b.id = :id ', { id })
         .orderBy('a.id', 'ASC')
+       // .getRawMany();
         .getMany();
         return especialidades;
     }

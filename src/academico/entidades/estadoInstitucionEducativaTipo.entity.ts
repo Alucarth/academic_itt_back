@@ -2,35 +2,24 @@ import { Exclude } from 'class-transformer';
 import {
   Column,
   Entity,
-  JoinColumn,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { EducacionTipo } from './educacionTipo.entity';
 import { InstitucionEducativa } from './institucionEducativa.entity';
 import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
 
-@Entity({ name: 'jurisdiccion_geografica', schema: 'public' })
-export class JurisdiccionGeografica {
+@Entity({ name: 'estado_institucion_educativa_tipo', schema: 'public' })
+export class EstadoInstitucionEductivaTipo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  //jurisdiccion_geografica_id * a 1
-
-  @Column({ type: 'integer', name: 'codigo_edificio_educativo' })
-  codigoEdificioEducativo: number;
-
-  @Column({ type: 'varchar', name: 'nombre_edificio_educativo' })
-  nombreEdificioEducativo: string;
-
-  @Column({ type: 'varchar', name: 'direccion' })
-  direccion: string;
-
-  @Column({ type: 'varchar', name: 'zona' })
-  zona: string;
-
+  @Column({ type: 'varchar', name: 'estado_institucion_educativa' })
+  estadoInstitucionEducativa: string;
+    
+  @Column({ type: 'varchar', name: 'comentario' })
+  comentario: string;
+  
   @Exclude()
   @UpdateDateColumn({
     name: 'fecha_registro',
@@ -50,9 +39,9 @@ export class JurisdiccionGeografica {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-  @OneToMany(() => InstitucionEducativa, (institucionEducativa) => institucionEducativa.jurisdiccionGeografica)
+  @OneToMany(() => InstitucionEducativa, (institucionEducativa) => institucionEducativa.estadoInstitucionEducativaTipo)
   instituciones: InstitucionEducativa[];
   
-  @OneToMany(() => InstitucionEducativaSucursal, (institucionEducativaSucursal) => institucionEducativaSucursal.jurisdiccionGeografica)
+  @OneToMany(() => InstitucionEducativaSucursal, (institucionEducativaSucursal) => institucionEducativaSucursal.estadoInstitucionEducativaTipo)
   sucursales: InstitucionEducativaSucursal[];
 }

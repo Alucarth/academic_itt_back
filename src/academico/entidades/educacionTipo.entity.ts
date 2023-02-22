@@ -47,7 +47,7 @@ export class EducacionTipo {
   fechaModificacion: Date;
 
   @Column({ type: 'integer', name: 'usuario_id' })
-  uduarioId: number;
+  usuarioId: number;
 
   @ManyToOne(() => SistemaEducacionTipo, (sistemaEducacionTipo) => sistemaEducacionTipo.educacionTipos, { nullable: false, cascade: true })
   @JoinColumn({ name: 'sistema_educacion_tipo_id', referencedColumnName: 'id'})

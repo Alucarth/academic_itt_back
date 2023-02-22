@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { EspecialidadTipo } from './especialidadTipo.entity';
 import { InstitucionEducativa } from './institucionEducativa.entity';
+import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
 
 @Entity({ name: 'institucion_educativa_acreditacion_especialidad', schema: 'public' })
 export class InstitucionEducativaAcreditacionEspecialidad {
@@ -38,9 +39,9 @@ export class InstitucionEducativaAcreditacionEspecialidad {
   usuarioId: number;
 
 
-  @ManyToOne(() => InstitucionEducativa, (institucionEducativa) => institucionEducativa.acreditacionEspecialidades, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'institucion_educativa_id', referencedColumnName: 'id'})
-  institucionEducativa: InstitucionEducativa;
+  @ManyToOne(() => InstitucionEducativaSucursal, (institucionEducativaSucursal) => institucionEducativaSucursal.acreditacionEspecialidades, { nullable: false, cascade: true })
+  @JoinColumn({ name: 'institucion_educativa_sucursal_id', referencedColumnName: 'id'})
+  institucionEducativaSucursal: InstitucionEducativaSucursal;
 
   @ManyToOne(() => EspecialidadTipo, (especialidadTipo) => especialidadTipo.acreditacionEspecialidades, { nullable: false, cascade: true })
   @JoinColumn({ name: 'especialidad_tipo_id', referencedColumnName: 'id'})
