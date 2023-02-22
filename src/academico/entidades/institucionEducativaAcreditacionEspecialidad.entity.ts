@@ -4,11 +4,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { EspecialidadTipo } from './especialidadTipo.entity';
-import { InstitucionEducativa } from './institucionEducativa.entity';
+import { InstitucionEducativaAcreditacionEspecialidadNivelAcademico } from './institucionEducativaAcreditacionEspecialidadNivelAcademico.entity';
 import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
 
 @Entity({ name: 'institucion_educativa_acreditacion_especialidad', schema: 'public' })
@@ -38,7 +39,6 @@ export class InstitucionEducativaAcreditacionEspecialidad {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-
   @ManyToOne(() => InstitucionEducativaSucursal, (institucionEducativaSucursal) => institucionEducativaSucursal.acreditacionEspecialidades, { nullable: false, cascade: true })
   @JoinColumn({ name: 'institucion_educativa_sucursal_id', referencedColumnName: 'id'})
   institucionEducativaSucursal: InstitucionEducativaSucursal;
@@ -47,5 +47,7 @@ export class InstitucionEducativaAcreditacionEspecialidad {
   @JoinColumn({ name: 'especialidad_tipo_id', referencedColumnName: 'id'})
   especialidadTipo: EspecialidadTipo;
 
-  
+  @OneToMany(() => InstitucionEducativaAcreditacionEspecialidadNivelAcademico, (institucionEducativaAcreditacionEspecialidadNivelAcademico) => institucionEducativaAcreditacionEspecialidadNivelAcademico.institucionEducativaAcreditacionEspecialidad)
+  especialidadesNivelesAcademicos: InstitucionEducativaAcreditacionEspecialidadNivelAcademico[];
+ 
 }

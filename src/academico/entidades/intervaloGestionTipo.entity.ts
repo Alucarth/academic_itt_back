@@ -8,7 +8,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
+import { InstitucionEducativaAcreditacionEspecialidadNivelIntervalo } from './institucionEducativaAcreditacionEspecialidadNivelIntervalo.entity';
+
 import { PlanEstudio } from './planEstudio.entity';
 
 @Entity({ name: 'intervalo_gestion_tipo', schema: 'public' })
@@ -43,5 +44,8 @@ export class IntervaloGestionTipo {
 
   @OneToMany(() => PlanEstudio, (planEstudio) => planEstudio.intervaloGestionTipo)
   planesEstudios: PlanEstudio[];
+
+  @OneToMany(() => InstitucionEducativaAcreditacionEspecialidadNivelIntervalo, (institucionEducativaAcreditacionEspecialidadNivelIntervalo) => institucionEducativaAcreditacionEspecialidadNivelIntervalo.intervaloGestionTipo)
+  especialidadesNivelesIntervalos: InstitucionEducativaAcreditacionEspecialidadNivelIntervalo[];
   
 }
