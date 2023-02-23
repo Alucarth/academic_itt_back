@@ -39,9 +39,13 @@ export class InstitucionEducativaSucursalService {
     async findEspecialidadesBySie( id:number ){
         const especialidades = await this.institucionEducativaSucursalRepository
         .createQueryBuilder("a")
-        .leftJoinAndSelect("a.acreditacionEspecialidades", "b")
-        .leftJoinAndSelect("a.institucionEducativa", "c")
-        .leftJoinAndSelect("b.especialidadTipo", "d")
+        .innerJoinAndSelect("a.institucionEducativa", "c")
+        .innerJoinAndSelect("a.acreditacionEspecialidades", "b")
+        .innerJoinAndSelect("b.especialidadTipo", "d")
+        .innerJoinAndSelect("b.especialidadesNivelesAcademicos", "e")
+        .innerJoinAndSelect("e.especialidadesNivelesIntervalos", "f")
+        .innerJoinAndSelect("f.intervaloGestionTipo", "g")
+        .innerJoinAndSelect("e.nivelAcademicoTipo", "h")
         .where('c.id = :id ', { id })
         .orderBy('d.id', 'ASC')
         .getMany();

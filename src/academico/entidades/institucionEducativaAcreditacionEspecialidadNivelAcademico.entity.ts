@@ -49,7 +49,7 @@ export class InstitucionEducativaAcreditacionEspecialidadNivelAcademico {
   @JoinColumn({ name: 'institucion_educativa_acreditacion_especialidad_id', referencedColumnName: 'id'})
   institucionEducativaAcreditacionEspecialidad: InstitucionEducativaAcreditacionEspecialidad;
 
-  @OneToMany(() => InstitucionEducativaAcreditacionEspecialidadNivelIntervalo, (institucionEducativaAcreditacionEspecialidadNivelIntervalo) => institucionEducativaAcreditacionEspecialidadNivelIntervalo.intervaloGestionTipo)
+  @OneToMany(() => InstitucionEducativaAcreditacionEspecialidadNivelIntervalo, (institucionEducativaAcreditacionEspecialidadNivelIntervalo) => institucionEducativaAcreditacionEspecialidadNivelIntervalo.institucionEducativaAcreditacionEspecialidadNivel)
   especialidadesNivelesIntervalos: InstitucionEducativaAcreditacionEspecialidadNivelIntervalo[];
   
 

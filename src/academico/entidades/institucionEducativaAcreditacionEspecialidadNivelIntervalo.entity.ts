@@ -46,7 +46,7 @@ export class InstitucionEducativaAcreditacionEspecialidadNivelIntervalo {
   intervaloGestionTipo: IntervaloGestionTipo;
 
   @ManyToOne(() => InstitucionEducativaAcreditacionEspecialidadNivelAcademico, (institucionEducativaAcreditacionEspecialidadNivelAcademico) => institucionEducativaAcreditacionEspecialidadNivelAcademico.especialidadesNivelesIntervalos, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'institucion_educativa_acreditacion_especialidad_nivel_academico_id', referencedColumnName: 'id'})
-  institcionEducativaAcreditacionEpsecialidadNivelAcademico: InstitucionEducativaAcreditacionEspecialidadNivelAcademico;
+  @JoinColumn({ name: 'institucion_educativa_acreditacion_especialidad_nivel_id', referencedColumnName: 'id'})
+  institucionEducativaAcreditacionEspecialidadNivel: InstitucionEducativaAcreditacionEspecialidadNivelAcademico;
 
 }
