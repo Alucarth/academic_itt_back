@@ -13,6 +13,7 @@ import { EstadoInstitucionEductivaTipo } from './estadoInstitucionEducativaTipo.
 import { GestionTipo } from './gestionTipo.entity';
 import { InstitucionEducativa } from './institucionEducativa.entity';
 import { InstitucionEducativaAcreditacionEspecialidad } from './institucionEducativaAcreditacionEspecialidad.entity';
+import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
 import { JurisdiccionGeografica } from './jurisdiccionGeografica.entity';
 
 @Entity({ name: 'institucion_educativa_sucursal', schema: 'public' })
@@ -79,6 +80,9 @@ export class InstitucionEducativaSucursal {
   @JoinColumn({ name: 'estado_institucion_educativa_tipo_id', referencedColumnName: 'id'})
   estadoInstitucionEducativaTipo: EstadoInstitucionEductivaTipo;
 
-  @OneToMany(() => InstitucionEducativaAcreditacionEspecialidad, (InstitucionEducativaAcreditacionEspecialidad) => InstitucionEducativaAcreditacionEspecialidad.institucionEducativaSucursal)
+  @OneToMany(() => InstitucionEducativaAcreditacionEspecialidad, (institucionEducativaAcreditacionEspecialidad) => institucionEducativaAcreditacionEspecialidad.institucionEducativaSucursal)
   acreditacionEspecialidades: InstitucionEducativaAcreditacionEspecialidad[];
+  
+  @OneToMany(() => InstitucionEducativaCurso, (institucionEducativaCurso) => institucionEducativaCurso.institucionEducativaSucursal)
+  cursos: InstitucionEducativaCurso[];
 }

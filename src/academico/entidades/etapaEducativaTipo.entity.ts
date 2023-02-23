@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { EtapaEducativa } from './etapaEducativa.entity';
-import { SistemaEducacionTipo } from './sistemaEducacion-tipo.entity';
+import { SistemaEducacionTipo } from './sistemaEducacionTipo.entity';
 
 @Entity({ name: 'etapa_educativa_tipo', schema: 'public' })
 export class EtapaEducativaTipo {

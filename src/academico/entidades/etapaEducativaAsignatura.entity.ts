@@ -4,6 +4,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -12,6 +13,7 @@ import { CampoSaberTipo } from './campoSaberTipo.entity';
 import { EducacionTipo } from './educacionTipo.entity';
 import { EspecialidadTipo } from './especialidadTipo.entity';
 import { EtapaEducativa } from './etapaEducativa.entity';
+import { EtapaEducativaAsignaturaNivelAcademico } from './etapaEducativaAsignaturaNivelAcademico.entity';
 import { EtapaEducativaTipo } from './etapaEducativaTipo.entity';
 import { IntervaloTiempoTipo } from './intervaloTiempoTipo.entity';
 import { PlanEstudio } from './planEstudio.entity';
@@ -73,5 +75,9 @@ export class EtapaEducativaAsignatura {
   @ManyToOne(() => CampoSaberTipo, (campoSaberTipo) => campoSaberTipo.etapasEducativasAsignaturas, { nullable: false, cascade: true })
   @JoinColumn({ name: 'campo_saber_tipo_id', referencedColumnName: 'id'})
   campoSaberTipo: CampoSaberTipo;
+
+  @OneToMany(() => EtapaEducativaAsignaturaNivelAcademico, (etapaEducativaAsignaturaNivelAcademico) => etapaEducativaAsignaturaNivelAcademico.etapaEducativaAsignatura)
+  asignaturasNivelesAcademicos: EtapaEducativaAsignaturaNivelAcademico[];
+  
 
 }

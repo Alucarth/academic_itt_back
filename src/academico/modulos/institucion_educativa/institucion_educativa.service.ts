@@ -28,9 +28,27 @@ export class InstitucionEducativaService {
     async findBySie( id:number ){
         const itts = await this.institucioneducativaRepository
         .createQueryBuilder("a")
+        //.innerJoinAndSelect("a.educacionTipo", "b")
+        .innerJoinAndSelect("a.jurisdiccionGeografica", "c")
+        .innerJoinAndSelect("a.sucursales", "d")
+        .leftJoinAndSelect("a.acreditados", "e")
+        .leftJoinAndSelect("e.convenioTipo", "f")
+        .leftJoinAndSelect("e.dependenciaTipo", "g")
+        .leftJoinAndSelect("e.acreditacionTipo", "h")
+        .select(["a","c","d","e","f","g","h"])
+        .where('a.educacionTipo in (7,8,9)  ')
+        .where('a.id = :id ', { id })
+        .orderBy('a.id', 'ASC')
+        .getMany();
+        return itts;
+    }
+    async findAcreditacionBySie( id:number ){
+        const itts = await this.institucioneducativaRepository
+        .createQueryBuilder("a")
         .innerJoinAndSelect("a.educacionTipo", "b")
         .innerJoinAndSelect("a.jurisdiccionGeografica", "c")
         .innerJoinAndSelect("a.sucursales", "d")
+        .innerJoinAndSelect("a.acreditados", "e")
         .where('b.id in (7,8,9)  ')
         .where('a.id = :id ', { id })
         .orderBy('a.id', 'ASC')

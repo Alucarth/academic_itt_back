@@ -11,6 +11,8 @@ import {
 import { EducacionTipo } from './educacionTipo.entity';
 import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
 import { EtapaEducativaTipo } from './etapaEducativaTipo.entity';
+import { InstitucionEducativaAcreditacionEtapaEducativa } from './institucionEducativaAcreditacionEtapaEducativa.entity';
+import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
 
 @Entity({ name: 'etapa_educativa', schema: 'public' })
 export class EtapaEducativa {
@@ -77,5 +79,11 @@ export class EtapaEducativa {
 
   @OneToMany(() => EtapaEducativaAsignatura, (etapaEducativaAsignatura) => etapaEducativaAsignatura.etapaEducativa)
   etapasEducativasAsignaturas: EtapaEducativaAsignatura[];
+
+  @OneToMany(() => InstitucionEducativaAcreditacionEtapaEducativa, (institucionEducativaAcreditacionEtapaEducativa) => institucionEducativaAcreditacionEtapaEducativa.etapaEducativa)
+  acreditadosEtapasEducativas: InstitucionEducativaAcreditacionEtapaEducativa[];
+
+  @OneToMany(() => InstitucionEducativaCurso, (institucionEducativaCurso) => institucionEducativaCurso.etapaEducativa)
+  cursos: InstitucionEducativaCurso[];
 
 }

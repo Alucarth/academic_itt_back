@@ -51,5 +51,19 @@ export class InstitucionEducativaSucursalService {
         .getMany();
         return especialidades;
     }
+    async findEspecialidadesBySucursal( id:number ){
+        const especialidades = await this.institucionEducativaSucursalRepository
+        .createQueryBuilder("a")
+        .innerJoinAndSelect("a.acreditacionEspecialidades", "b")
+        .innerJoinAndSelect("b.especialidadTipo", "d")
+        .innerJoinAndSelect("b.especialidadesNivelesAcademicos", "e")
+        .innerJoinAndSelect("e.especialidadesNivelesIntervalos", "f")
+        .innerJoinAndSelect("f.intervaloGestionTipo", "g")
+        .innerJoinAndSelect("e.nivelAcademicoTipo", "h")
+        .where('a.id = :id ', { id })
+        .orderBy('d.id', 'ASC')
+        .getMany();
+        return especialidades;
+    }
     
 }

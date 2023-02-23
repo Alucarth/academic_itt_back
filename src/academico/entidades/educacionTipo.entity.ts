@@ -11,7 +11,7 @@ import {
 import { EtapaEducativa } from './etapaEducativa.entity';
 import { InstitucionEducativa } from './institucionEducativa.entity';
 import { PlanEstudio } from './planEstudio.entity';
-import { SistemaEducacionTipo } from './sistemaEducacion-tipo.entity';
+import { SistemaEducacionTipo } from './sistemaEducacionTipo.entity';
 
 @Entity({ name: 'educacion_tipo', schema: 'public' })
 export class EducacionTipo {

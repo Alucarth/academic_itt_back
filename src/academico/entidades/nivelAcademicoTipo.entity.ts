@@ -8,11 +8,13 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { EtapaEducativaAsignaturaNivelAcademico } from './etapaEducativaAsignaturaNivelAcademico.entity';
 import { InstitucionEducativaAcreditacionEspecialidadNivelAcademico } from './institucionEducativaAcreditacionEspecialidadNivelAcademico.entity';
 
 
 @Entity({ name: 'nivel_academico_tipo', schema: 'public' })
 export class NivelAcademicoTipo {
+    
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -46,5 +48,8 @@ export class NivelAcademicoTipo {
 
   @OneToMany(() => InstitucionEducativaAcreditacionEspecialidadNivelAcademico, (institucionEducativaAcreditacionEspecialidadNivelAcademico) => institucionEducativaAcreditacionEspecialidadNivelAcademico.nivelAcademicoTipo)
   especialidadesNivelesAcademicos: InstitucionEducativaAcreditacionEspecialidadNivelAcademico[];
+  
+  @OneToMany(() => EtapaEducativaAsignaturaNivelAcademico, (etapaEducativaAsignaturaNivelAcademico) => etapaEducativaAsignaturaNivelAcademico.nivelAcademicoTipo)
+  asignaturasNivelesAcademicos: EtapaEducativaAsignaturaNivelAcademico[];
 
 }

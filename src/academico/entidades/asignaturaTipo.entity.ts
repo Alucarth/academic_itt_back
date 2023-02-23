@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
+import { OfertaAcademica } from './ofertaAcademica.entity';
 
 @Entity({ name: 'asignatura_tipo', schema: 'public' })
 export class AsignaturaTipo {
@@ -49,5 +50,8 @@ export class AsignaturaTipo {
 
   @OneToMany(() => EtapaEducativaAsignatura, (etapaEducativaAsignatura) => etapaEducativaAsignatura.asignaturaTipo)
   etapasEducativasAsignaturas: EtapaEducativaAsignatura[];
+
+  @OneToMany(() => OfertaAcademica, (ofertaAcademica) => ofertaAcademica.asignaturaTipo)
+  ofertasAcademicas: OfertaAcademica[];
   
 }

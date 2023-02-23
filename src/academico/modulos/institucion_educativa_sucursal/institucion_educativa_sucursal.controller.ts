@@ -23,6 +23,10 @@ export class InstitucionEducativaSucursalController {
     async getEspecialidadesBySie(@Param('sie', ParseIntPipe) sie: number):Promise<InstitucionEducativaSucursal[]>{
         return await this.institucionEducativaSucursalService.findEspecialidadesBySie(sie);
     }
+    @Get('especialidades-sucursal/:id')
+    async getEspecialidadesById(@Param('id', ParseIntPipe) id: number):Promise<InstitucionEducativaSucursal[]>{
+        return await this.institucionEducativaSucursalService.findEspecialidadesBySucursal(id);
+    }
 }
 
 

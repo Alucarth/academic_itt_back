@@ -18,9 +18,9 @@ export class InstitucionEducativaController {
         return await this.institucionEducativaService.getAllItt();
     }
 
-    @Get(':id')
-    async getBySie(@Param('id', ParseIntPipe) id: number):Promise<InstitucionEducativa[]>{
-        return await this.institucionEducativaService.findBySie(id);
+    @Get(':sie')
+    async getBySie(@Param('sie', ParseIntPipe) sie: number):Promise<InstitucionEducativa[]>{
+        return await this.institucionEducativaService.findBySie(sie);
     }
        
 }

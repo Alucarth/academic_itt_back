@@ -2,28 +2,29 @@ import { Exclude } from 'class-transformer';
 import {
   Column,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { EtapaEducativaAsignaturaNivelAcademico } from './etapaEducativaAsignaturaNivelAcademico.entity';
+import { InstitucionEducativaAcreditacionEspecialidadNivelAcademico } from './institucionEducativaAcreditacionEspecialidadNivelAcademico.entity';
 import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
-import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
 
-@Entity({ name: 'gestion_tipo', schema: 'public' })
-export class GestionTipo {
+
+@Entity({ name: 'paralelo_tipo', schema: 'public' })
+export class ParaleloTipo {
+
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'gestion' })
-  gestion: string;
+  @Column({ type: 'varchar', name: 'paralelo' })
+  paralelo: string;
 
-  @Column({name:'vigente', type: 'bool', default: true })
-  vigente: boolean;
-    
   @Column({ type: 'varchar', name: 'comentario' })
   comentario: string;
 
-  
   @Exclude()
   @UpdateDateColumn({
     name: 'fecha_registro',
@@ -43,10 +44,7 @@ export class GestionTipo {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-  @OneToMany(() => InstitucionEducativaSucursal, (institucionEducativaSucursal) => institucionEducativaSucursal.gestionTipo)
-  sucursales: InstitucionEducativaSucursal[];
-
-  @OneToMany(() => InstitucionEducativaCurso, (institucionEducativaCurso) => institucionEducativaCurso.gestionTipo)
+  @OneToMany(() => InstitucionEducativaCurso, (institucionEducativaCurso) => institucionEducativaCurso.paraleloTipo)
   cursos: InstitucionEducativaCurso[];
-  
+
 }

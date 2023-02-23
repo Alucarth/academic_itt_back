@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { EducacionTipo } from './educacionTipo.entity';
 import { EstadoInstitucionEductivaTipo } from './estadoInstitucionEducativaTipo.entity';
+import { InstitucionEducativaAcreditacion } from './institucionEducativaAcreditacion.entity';
 import { InstitucionEducativaAcreditacionEspecialidad } from './institucionEducativaAcreditacionEspecialidad.entity';
 import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
 import { JurisdiccionGeografica } from './jurisdiccionGeografica.entity';
@@ -67,5 +68,8 @@ export class InstitucionEducativa {
   
   @OneToMany(() => InstitucionEducativaSucursal, (institucionEducativaSucursal) => institucionEducativaSucursal.institucionEducativa)
   sucursales: InstitucionEducativaSucursal[];
+
+  @OneToMany(() => InstitucionEducativaAcreditacion, (institucionEducativaAcreditacion) => institucionEducativaAcreditacion.institucionEducativa)
+  acreditados: InstitucionEducativaAcreditacion[];
   
 }
