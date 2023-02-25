@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { InstitucionEducativaAcreditacionEspecialidadNivelIntervalo } from './institucionEducativaAcreditacionEspecialidadNivelIntervalo.entity';
+import { PeriodoTipo } from './periodoTipo.entity';
 
 import { PlanEstudio } from './planEstudio.entity';
 
@@ -48,4 +49,7 @@ export class IntervaloGestionTipo {
   @OneToMany(() => InstitucionEducativaAcreditacionEspecialidadNivelIntervalo, (institucionEducativaAcreditacionEspecialidadNivelIntervalo) => institucionEducativaAcreditacionEspecialidadNivelIntervalo.intervaloGestionTipo)
   especialidadesNivelesIntervalos: InstitucionEducativaAcreditacionEspecialidadNivelIntervalo[];
   
+  @OneToMany(() => PeriodoTipo, (PeriodoTipo) => PeriodoTipo.intervaloGestionTipo)
+  periodos: PeriodoTipo[];
+
 }

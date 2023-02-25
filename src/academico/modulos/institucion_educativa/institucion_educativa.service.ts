@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { InstitucionEducativa } from 'src/academico/entidades/institucionEducativa.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
+
 
 @Injectable()
 export class InstitucionEducativaService {
     constructor(
-        @InjectRepository(InstitucionEducativa)
-        private institucioneducativaRepository: Repository<InstitucionEducativa>
+        @InjectRepository(InstitucionEducativa) private institucioneducativaRepository: Repository<InstitucionEducativa>,
+        @InjectEntityManager() private entityManager: EntityManager,
+        
     ){}
 
     async getAll(){
@@ -67,4 +69,18 @@ export class InstitucionEducativaService {
         .getMany();
         return itts;
     }
+    async findEtapasBySie( id:number ){
+        const carreras = await this.institucioneducativaRepository
+        .createQueryBuilder("a")
+        .innerJoinAndSelect("a.acreditados", "b")
+        .innerJoinAndSelect("b.acreditadosEtapasEducativas", "c")
+       // .innerJoinAndSelect("c.etapaEducativa", "d")
+        .where('a.id = :id ', { id })
+      //  .andWhere('d.etapaEducativaTipo = 28 ')
+        .orderBy('a.id', 'ASC')
+        .getMany();
+        return carreras;
+    }
+
+ 
 }

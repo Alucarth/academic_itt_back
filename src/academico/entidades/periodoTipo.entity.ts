@@ -8,16 +8,17 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { EducacionTipo } from './educacionTipo.entity';
 import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
-import { OfertaAcademica } from './ofertaAcademica.entity';
+import { IntervaloGestionTipo } from './intervaloGestionTipo.entity';
 
-@Entity({ name: 'asignatura_tipo', schema: 'public' })
-export class AsignaturaTipo {
+@Entity({ name: 'periodo_tipo', schema: 'public' })
+export class PeriodoTipo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'asignatura' })
-  asignatura: string;
+  @Column({ type: 'varchar', name: 'periodo' })
+  periodo: string;
 
   @Column({ type: 'varchar', name: 'abreviacion' })
   abreviacion: string;
@@ -45,20 +46,8 @@ export class AsignaturaTipo {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-  @Column({ type: 'integer', name: 'usuario_id' })
-  asignaturaId: number;
-
-  @OneToMany(() => EtapaEducativaAsignatura, (etapaEducativaAsignatura) => etapaEducativaAsignatura.asignaturaTipo)
-  etapasEducativasAsignaturas: EtapaEducativaAsignatura[];
-
-  @OneToMany(() => OfertaAcademica, (ofertaAcademica) => ofertaAcademica.asignaturaTipo)
-  ofertasAcademicas: OfertaAcademica[];
-/*
-  @ManyToOne(() => AsignaturaTipo, (asignaturaTipo) => asignaturaTipo.asignaturasList, { nullable: false, cascade: true })
+  @ManyToOne(() => IntervaloGestionTipo, (intervaloGestionTipo) => intervaloGestionTipo.periodos, { nullable: false, cascade: true })
   @JoinColumn({ name: 'educacion_tipo_id', referencedColumnName: 'id'})
-  asignaturaTipo: AsignaturaTipo;
+  intervaloGestionTipo: IntervaloGestionTipo;
 
-  @OneToMany(() => AsignaturaTipo, (asignaturaTipo) => asignaturaTipo.asignaturaTipo)
-  asignaturasList: AsignaturaTipo[];*/
-  
 }

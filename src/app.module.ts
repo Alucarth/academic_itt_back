@@ -13,6 +13,7 @@ import { AsignaturaTipoModule } from './academico/catalogos/asignatura_tipo/asig
 import { EtapaEducativaModule } from './academico/modulos/etapa_educativa/etapa_educativa.module';
 import { EtapaEducativaAsignaturaModule } from './academico/modulos/etapa_educativa_asignatura/etapa_educativa_asignatura.module';
 import { InstitucionEducativaSucursalModule } from './academico/modulos/institucion_educativa_sucursal/institucion_educativa_sucursal.module';
+import { InstitucionEducativaAcreditacionEtapaEducativaModule } from './academico/modulos/institucion_educativa_acreditacion_etapa_educativa/institucion_educativa_acreditacion_etapa_educativa.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { InstitucionEducativaSucursalModule } from './academico/modulos/instituc
     EtapaEducativaModule,
     EtapaEducativaAsignaturaModule,
     InstitucionEducativaSucursalModule,
+    InstitucionEducativaAcreditacionEtapaEducativaModule,
   ],
   providers: [EducacionTipoService],
 })
