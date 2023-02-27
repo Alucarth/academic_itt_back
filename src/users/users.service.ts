@@ -330,7 +330,7 @@ export class UsersService {
 
         //crear persona y usuario para SISTEMA ITT
 
-        await this.userRepository
+        persona = await  this.userRepository
         .createQueryBuilder()
         .insert()
         .into(Persona)
@@ -351,10 +351,13 @@ export class UsersService {
               tieneDiscapacidad : dto.tieneDiscapacidad
             }          
         ])
+        .returning("id")
         .execute();
 
-        const persona_id = 28492900;
-        const password = '28492900';
+        console.log('nueva persona id: ', persona.identifiers[0].id);
+
+        const persona_id = persona.identifiers[0].id;
+        const password = '123456';
 
         //creamos el usuario
          await this.userRepository
