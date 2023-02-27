@@ -46,7 +46,7 @@ export class InstitucionEducativaAcreditacionEtapaEducativa {
   usuarioId: number;
 
   @ManyToOne(() => InstitucionEducativaAcreditacion, (institucionEducativaAcreditacion) => institucionEducativaAcreditacion.acreditadosEtapasEducativas, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'institucion_educativa_id', referencedColumnName: 'id'})
+  @JoinColumn({ name: 'institucion_educativa_acreditacion_id', referencedColumnName: 'id'})
   institucionEducativaAcreditacion: InstitucionEducativaAcreditacion;
 
   @ManyToOne(() => EtapaEducativa, (etapaEducativa) => etapaEducativa.acreditadosEtapasEducativas, { nullable: false, cascade: true })
