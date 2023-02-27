@@ -11,13 +11,18 @@ async function bootstrap() {
     .setTitle('Sistema Academico ITT')
     .setDescription('API de sistema academico')
     .setVersion('1.0')
-    .addTag('Ecommerce')
+    .addTag('Academico ITT')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
 
   // SwaggerModule setup (see https://docs.nestjs.com/recipes/swagger)
-  SwaggerModule.setup('docs', app, document);
+  SwaggerModule.setup('docs', app, document, {
+    explorer: true,
+    swaggerOptions:{
+      filter:true,
+    },
+  });
 
   // Global Guards (see https://docs.nestjs.com/guards#global-guards)
   const reflector = app.get(Reflector);
@@ -31,7 +36,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   // app starts listening on port 3003
-  await app.listen(3003);
+  await app.listen(3005);
   logger.log(`***** Servidor esta corriendo en  ${await app.getUrl()}`);
 }
 bootstrap();

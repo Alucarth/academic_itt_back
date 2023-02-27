@@ -7,26 +7,23 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'usuario', schema: 'public' })
 export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column({ nullable: false })
   username: string;
 
-  @Column({ nullable: false, unique: true })
-  email: string;
-
   @Column({ nullable: false })
   password: string;
+  
+  @Column({ nullable: false })
+  activo: boolean;
+  
+  @CreateDateColumn({ name: 'fecha_registro' })
+  fechaRegistro: Date;
 
-  @Column({ type: 'enum', enum: Role, default: Role.USER })
-  role: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
+  @UpdateDateColumn({ name: 'fecha_modificacion' })
+  fechaModificacion: Date;
 }
