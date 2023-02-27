@@ -342,10 +342,35 @@ export class UsersService {
               materno: dto.materno, 
               nombre: dto.nombres, 
               fechaNacimiento: dto.fechaNacimiento, 
-              
+              generoTipoId: dto.generoTipoId,
+              sangreTipoId: dto.sangreTipoId,
+              maternoIdiomaTipoId: dto.maternoIdiomaTipoId,
+              expedidoUnidadTerritorialId : dto.expedidoUnidadTerritorialId,
+              nacimientoUnidadTerritorialId : dto.nacimientoUnidadTerritorialId,
+              dobleNacionalidad : dto.dobleNacionalidad,
+              tieneDiscapacidad : dto.tieneDiscapacidad
             }          
         ])
         .execute();
+
+        const persona_id = 28492900;
+        const password = '28492900';
+
+        //creamos el usuario
+         await this.userRepository
+        .createQueryBuilder()
+        .insert()
+        .into(User)
+        .values([
+            { 
+              personaId: persona_id, 
+              username: dto.carnet, 
+              password: password,
+              activo: true             
+            }          
+        ])
+        .execute();
+
 
       }else{
         //no paso la validacion segip

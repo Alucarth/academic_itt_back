@@ -26,4 +26,7 @@ export class User {
 
   @UpdateDateColumn({ name: 'fecha_modificacion' })
   fechaModificacion: Date;
+
+  @Column({ nullable: false, name: 'persona_id' })
+  personaId: number;
 }

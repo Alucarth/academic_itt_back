@@ -144,4 +144,19 @@ export class Persona {
   })
   fechaModificacion: Date;
 
+  @Column({ type: 'bigint', default: 0, name: 'genero_tipo_id' })
+  generoTipoId: number;
+  
+  @Column({ type: 'bigint', default: 0, name: 'sangre_tipo_id' })
+  sangreTipoId: number;
+
+  @Column({ type: 'bigint', default: 0, name: 'materno_idioma_tipo_id' })
+  maternoIdiomaTipoId: number;
+ 
+  @Column({ type: 'bigint', default: 0, name: 'expedido_unidad_territorial_id' })
+  expedidoUnidadTerritorialId: number;
+  
+  @Column({ type: 'bigint', default: 0, name: 'nacimiento_unidad_territorial_id' })
+  nacimientoUnidadTerritorialId: number;
+
 }

@@ -18,10 +18,11 @@ export class AuthController {
   @ApiOperation({
     summary: 'Login as a user',
   })
-  @UsePipes(ValidationPipe)
-  @UseGuards(LocalAuthGuard)
+  //@UsePipes(ValidationPipe)
+  //@UseGuards(LocalAuthGuard)
   @Post('/login')
   async login(@Req() req: Request) {
-    return await this.authService.login(req.user);
+    console.log('login:', req.body);
+    return await this.authService.login(req.body);
   }
 }
