@@ -2,12 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { NotFoundException , HttpException } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/users/entity/users.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    private jwtService: JwtService    
+    private jwtService: JwtService,
+    @InjectRepository(User)private userRepository: Repository<User>  
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -22,8 +26,33 @@ export class AuthService {
         token: this.jwtService.sign(payload),
       };*/
 
+
+      const result = await this.userRepository.query(`SELECT
+        usuario.username, 
+        usuario.persona_id, 
+        usuario.activo, 		
+        usuario.id as user_id,
+        persona.carnet_identidad, 
+        persona.complemento, 
+        persona.paterno, 
+        persona.materno, 
+        persona.nombre, 
+        persona.fecha_nacimiento, 
+        persona.telefono, 
+        persona.email
+      FROM
+        usuario
+        INNER JOIN
+        persona
+        ON 
+          usuario.persona_id = persona."id"
+      WHERE
+        username = '${user.username }' and password = '123456'`);
+      
+      console.log('result: ', result);
+      console.log('result size: ', result.length);
      
-      if(user.username != '5944242'){
+      if(result.length === 0){
          return ({
           "statusCode": 404,
           "message": [
@@ -38,10 +67,9 @@ export class AuthService {
 
       return{
         statusCode: 200,
-        user_id :82877,
-        email: 'vallejos@gmail.com',
-        username: 5944242,
-        persona: 'Cristina Vallejos',
+        user_id :result[0].user_id,        
+        username: result[0].username,
+        persona: result[0].paterno + ' ' +  result[0].materno + ' ' + result[0].nombre,
         roles: [
           {
             app_id: 1, 
