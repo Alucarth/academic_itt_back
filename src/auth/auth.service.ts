@@ -65,22 +65,29 @@ export class AuthService {
 
       const payload = { id:result[0].user_id , expiresIn: 60};
 
+      //los roles del usuario
+      const result_roles = await this.userRepository.query(`
+      SELECT	
+					usuario_rol.rol_tipo_id, rol_tipo.rol
+				FROM
+					usuario
+					INNER JOIN
+					usuario_rol
+					ON 
+						usuario.id = usuario_rol.usuario_id
+					INNER JOIN
+					rol_tipo
+					ON 
+						usuario_rol.rol_tipo_id = rol_tipo.id					
+					where usuario.id = ${ result[0].user_id }`);
+
       return{
         statusCode: 200,
         user_id :result[0].user_id,        
         username: result[0].username,
         persona: result[0].paterno + ' ' +  result[0].materno + ' ' + result[0].nombre,
-        roles: [
-          {
-            app_id: 1, 
-            rol_id: 2  //tec sie nal       
-          },
-          {
-            app_id: 2,
-            rol_id: 5  // maestro
-          },
-        ],
-         token: this.jwtService.sign(payload),
+        roles: result_roles,
+        token: this.jwtService.sign(payload),
       }
 
 
