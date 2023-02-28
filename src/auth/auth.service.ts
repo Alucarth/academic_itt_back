@@ -5,6 +5,7 @@ import { NotFoundException , HttpException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entity/users.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -31,6 +32,7 @@ export class AuthService {
         usuario.username, 
         usuario.persona_id, 
         usuario.activo, 		
+        usuario.password,
         usuario.id as user_id,
         persona.carnet_identidad, 
         persona.complemento, 
@@ -39,7 +41,7 @@ export class AuthService {
         persona.nombre, 
         persona.fecha_nacimiento, 
         persona.telefono, 
-        persona.email
+        persona.email        
       FROM
         usuario
         INNER JOIN
@@ -47,7 +49,7 @@ export class AuthService {
         ON 
           usuario.persona_id = persona."id"
       WHERE
-        username = '${user.username }' and password = '123456'`);
+        username = '${user.username }'`);
       
       console.log('result: ', result);
       console.log('result size: ', result.length);
@@ -56,11 +58,30 @@ export class AuthService {
          return ({
           "statusCode": 404,
           "message": [
-            "Credenciales no coinciden  !!"
+            "Credenciales No Coinciden !!"
           ],
           "data": 0,
-          "error": "Credenciales no coinciden  !!"
+          "error": "Credenciales No Coinciden !!"
         });
+      }
+
+      //se encontro el usuario, se comprueba el password
+      const password_db = result[0].password;
+      console.log('password_db: ',password_db);
+      const isMatch = await bcrypt.compare(user.password,password_db );
+      console.log('compara password: ',isMatch);
+
+      if(!isMatch){
+
+        return ({
+          "statusCode": 404,
+          "message": [
+            "Credenciales No Coinciden !!"
+          ],
+          "data": 0,
+          "error": "Credenciales No Coinciden !!"
+        });
+
       }
 
       const payload = { id:result[0].user_id , expiresIn: 60};

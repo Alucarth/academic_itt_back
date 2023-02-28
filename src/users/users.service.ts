@@ -357,7 +357,9 @@ export class UsersService {
         console.log('nueva persona id: ', persona.identifiers[0].id);
 
         const persona_id = persona.identifiers[0].id;
-        const password = '123456';
+        //const password = '123456';
+        const hashPassword = await bcrypt.hash('123456', 10);
+        
 
         //creamos el usuario
          await this.userRepository
@@ -368,7 +370,7 @@ export class UsersService {
             { 
               personaId: persona_id, 
               username: dto.carnet, 
-              password: password,
+              password: hashPassword,
               activo: true             
             }          
         ])
