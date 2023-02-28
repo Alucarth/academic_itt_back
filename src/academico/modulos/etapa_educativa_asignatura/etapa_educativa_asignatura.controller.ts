@@ -27,4 +27,9 @@ export class EtapaEducativaAsignaturaController {
     async getAsignaturasByEspecialidadEtapaPlan(@Param('id', ParseIntPipe) id: number, @Param('etapa', ParseIntPipe) etapa: number, @Param('plan', ParseIntPipe) plan: number):Promise<EtapaEducativaAsignatura[]>{
         return await this.etapaEducativaAsignaturaService.findAsignaturasByEspecialidadEtapaPlan(id, etapa,plan);
     }
+
+    @Get('etapa/:id')
+    async getAsignaturasByEtapaId(@Param('id', ParseIntPipe) id: number):Promise<EtapaEducativaAsignatura[]>{
+        return await this.etapaEducativaAsignaturaService.findAsignaturasByEtapaId(id);
+    }
 }

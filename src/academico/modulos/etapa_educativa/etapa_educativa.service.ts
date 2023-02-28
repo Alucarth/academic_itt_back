@@ -43,4 +43,40 @@ export class EtapaEducativaService {
       return data;
 
     }
+
+    async findAllRecursivePadres( id:number ){
+
+        const sql =
+        'WITH RECURSIVE buscandoPadre AS (\n' +
+        '    SELECT\n' +
+        '        id,\n' +
+        '        etapa_educativa_id,\n' +
+        '        etapa_educativa,\n' +
+        '        activo\n' +
+        '    FROM\n' +
+        '        etapa_educativa\n' +
+        '    WHERE\n' +
+        '        id = $1 and activo = true\n' +
+        '        UNION\n' +
+        '        SELECT\n' +
+        '            e.id,\n' +
+        '            e.etapa_educativa_id,\n' +
+        '            e.etapa_educativa,\n' +
+        '            e.activo\n' +
+        '        FROM\n' +
+        '            etapa_educativa e \n' +
+        '        INNER JOIN buscandoPadre s ON e.id = s.etapa_educativa_id\n' +
+        '        \n' +
+        ') SELECT\n' +
+        '    *\n' +
+        'FROM\n' +
+        '    buscandoPadre;';
+      const values = [id];
+      const data = await this.entityManager.query(sql, values);
+      console.log(data.rows);
+      return data.rows;
+
+    }
+
+   
 }

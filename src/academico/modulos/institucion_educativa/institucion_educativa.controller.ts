@@ -23,14 +23,14 @@ export class InstitucionEducativaController {
         return await this.institucionEducativaService.findBySie(sie);
     }
 
-    @Get('etapa/:sie')
+    @Get('carreras/:sie')
     async getEtapasBySie(@Param('sie', ParseIntPipe) sie: number):Promise<InstitucionEducativa[]>{
         return await this.institucionEducativaService.findEtapasBySie(sie);
     }
        
-    @Get('carreras/:sie')
+    @Get('lista-carreras/:sie')
     async getCarrerasBySie(@Param('sie', ParseIntPipe) sie: number):Promise<InstitucionEducativa[]>{
-        return await this.institucionEducativaService.findEtapasBySie(sie);
+        return await this.institucionEducativaService.findCarrerasBySie(sie);
     }
       
 }
