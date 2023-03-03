@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { EtapaEducativa } from './etapaEducativa.entity';
 import { InstitucionEducativa } from './institucionEducativa.entity';
+import { Operativo } from './operativo.entity';
 import { PlanEstudio } from './planEstudio.entity';
 import { SistemaEducacionTipo } from './sistemaEducacionTipo.entity';
 
@@ -62,4 +63,6 @@ export class EducacionTipo {
   @OneToMany(() => PlanEstudio, (planEstudio) => planEstudio.educacionTipo)
   planesEstudios: PlanEstudio[];
   
+  @OneToMany(() => Operativo, (operativo) => operativo.educacionTipo)
+  operativos: Operativo[];
 }

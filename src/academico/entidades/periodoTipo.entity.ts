@@ -10,7 +10,9 @@ import {
 } from 'typeorm';
 import { EducacionTipo } from './educacionTipo.entity';
 import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
+import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
 import { IntervaloGestionTipo } from './intervaloGestionTipo.entity';
+import { Operativo } from './operativo.entity';
 
 @Entity({ name: 'periodo_tipo', schema: 'public' })
 export class PeriodoTipo {
@@ -26,7 +28,6 @@ export class PeriodoTipo {
   @Column({ type: 'varchar', name: 'comentario' })
   comentario: string;
 
-  
   @Exclude()
   @UpdateDateColumn({
     name: 'fecha_registro',
@@ -50,4 +51,10 @@ export class PeriodoTipo {
   @JoinColumn({ name: 'educacion_tipo_id', referencedColumnName: 'id'})
   intervaloGestionTipo: IntervaloGestionTipo;
 
+  @OneToMany(() => Operativo, (operativo) => operativo.periodoTipo)
+  operativos: Operativo[];
+  
+  @OneToMany(() => InstitucionEducativaCurso, (InstitucionEducativaCurso) => InstitucionEducativaCurso.periodoTipo)
+  cursos: InstitucionEducativaCurso[];
+  
 }

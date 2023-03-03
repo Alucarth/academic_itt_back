@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
 import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
+import { Operativo } from './operativo.entity';
 
 @Entity({ name: 'gestion_tipo', schema: 'public' })
 export class GestionTipo {
@@ -48,5 +49,8 @@ export class GestionTipo {
 
   @OneToMany(() => InstitucionEducativaCurso, (institucionEducativaCurso) => institucionEducativaCurso.gestionTipo)
   cursos: InstitucionEducativaCurso[];
+
+  @OneToMany(() => Operativo, (operativo) => operativo.gestionTipo)
+  operativos: Operativo[];
   
 }

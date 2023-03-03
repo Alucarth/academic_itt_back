@@ -8,7 +8,7 @@ import { EntityManager, Repository } from 'typeorm';
 export class EtapaEducativaService {
     constructor(
         @InjectRepository(EtapaEducativa) private etapaEducativaRepository: Repository<EtapaEducativa>,
-        @InjectEntityManager() private entityManager: EntityManager,
+        
         
     ){}
     async findAllRecursiveHijos( id:number ){
@@ -16,67 +16,88 @@ export class EtapaEducativaService {
         const sql =
         'WITH RECURSIVE etapa AS (\n' +
         '    SELECT\n' +
-        '        id,\n' +
-        '        etapa_educativa_id,\n' +
-        '        etapa_educativa,\n' +
-        '        activo\n' +
+        '        e0.id,\n' +
+        '        e0.etapa_educativa_id,\n' +
+        '        e0.etapa_educativa,\n' +
+        '        e0.activo,\n' +
+        '        e0.etapa_educativa_tipo_id,\n' +
+        '        t0.etapa_educativa as etapa_educativa_tipo\n' +
         '    FROM\n' +
-        '        etapa_educativa\n' +
+        '        etapa_educativa e0, etapa_educativa_tipo t0\n' +
         '    WHERE\n' +
-        '        id = $1 and activo = true\n' +
+        '        e0.id = $1 and e0.activo = true and e0.etapa_educativa_tipo_id=t0.id\n' +
         '    UNION\n' +
         '        SELECT\n' +
         '            e.id,\n' +
         '            e.etapa_educativa_id,\n' +
         '            e.etapa_educativa,\n' +
-        '            e.activo\n' +
+        '            e.activo,\n' +
+        '            e.etapa_educativa_tipo_id,\n' +
+        '            t.etapa_educativa as estapa_educativa_tipo\n' +
         '        FROM\n' +
         '            etapa_educativa e\n' +
+        '        INNER JOIN etapa_educativa_tipo t ON t.id = e.etapa_educativa_tipo_id\n' +
         '        INNER JOIN etapa s ON s.id = e.etapa_educativa_id\n' +
         ') SELECT\n' +
         '    *\n' +
         'FROM\n' +
-        '    etapa;\n';
+        '    etapa where id<>$1;\n';
       const values = [id];
-      const data  = this.entityManager.query(sql, values);
+      const data  = this.etapaEducativaRepository.query(sql, values);
       console.log(data);
       return data;
 
     }
 
+
     async findAllRecursivePadres( id:number ){
 
-        const sql =
-        'WITH RECURSIVE buscandoPadre AS (\n' +
-        '    SELECT\n' +
-        '        id,\n' +
-        '        etapa_educativa_id,\n' +
-        '        etapa_educativa,\n' +
-        '        activo\n' +
-        '    FROM\n' +
-        '        etapa_educativa\n' +
-        '    WHERE\n' +
-        '        id = $1 and activo = true\n' +
-        '        UNION\n' +
-        '        SELECT\n' +
-        '            e.id,\n' +
-        '            e.etapa_educativa_id,\n' +
-        '            e.etapa_educativa,\n' +
-        '            e.activo\n' +
-        '        FROM\n' +
-        '            etapa_educativa e \n' +
-        '        INNER JOIN buscandoPadre s ON e.id = s.etapa_educativa_id\n' +
-        '        \n' +
-        ') SELECT\n' +
-        '    *\n' +
-        'FROM\n' +
-        '    buscandoPadre;';
-      const values = [id];
-      const data = await this.entityManager.query(sql, values);
-      console.log(data.rows);
-      return data.rows;
+      const sql =
+      'WITH RECURSIVE buscandoPadre AS (\n' +
+      '    SELECT\n' +
+      '        e0.id,\n' +
+      '        e0.etapa_educativa_id,\n' +
+      '        e0.etapa_educativa,\n' +
+      '        e0.activo,\n' +
+      '        e0.etapa_educativa_tipo_id,\n' +
+      '        t0.etapa_educativa as etapa_educativa_tipo\n' +
+      '    FROM\n' +
+      '        etapa_educativa e0,\n' +
+      '        etapa_educativa_tipo t0\n' +
+      '    WHERE\n' +
+      '        e0.id = $1 and e0.activo = true and t0.id = e0.etapa_educativa_tipo_id \n' +
+      '        UNION\n' +
+      '        SELECT\n' +
+      '            e.id,\n' +
+      '            e.etapa_educativa_id,\n' +
+      '            e.etapa_educativa,\n' +
+      '            e.activo,\n' +
+      '            e.etapa_educativa_tipo_id,\n' +
+      '            t.etapa_educativa as etapa_educativa_tipo\n' +
+      '        FROM\n' +
+      '            etapa_educativa e \n' +
+      '        INNER JOIN etapa_educativa_tipo t ON t.id = e.etapa_educativa_tipo_id\n' +
+      '        INNER JOIN buscandoPadre s ON e.id = s.etapa_educativa_id\n' +
+      '        \n' +
+      ') SELECT\n' +
+      '    *\n' +
+      'FROM\n' +
+      '    buscandoPadre where id>0 order by id ';
+    const values = [id];
+    const data = await this.etapaEducativaRepository.query(sql, values);
+    console.log(data);
+    return data;
 
-    }
+  }
+
+    async findCarrerasBySie( id:number ){
+      const values = ['etapa_educativa_tipo',25,28,id,'etapa_educativa','codigo','etapa_educativa','etapa_educativa_tipo_id'];
+      const sql = 'select * from sp_genera_acreditacion_oferta_json($1,$2,$3,$4,$5,$6,$7,$8)';
+      const data = await this.etapaEducativaRepository.query(sql, values);
+      console.log(data);
+      return data;
+  }
+    
 
    
 }

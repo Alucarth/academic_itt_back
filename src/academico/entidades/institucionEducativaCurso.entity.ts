@@ -13,6 +13,7 @@ import { GestionTipo } from './gestionTipo.entity';
 import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
 import { OfertaAcademica } from './ofertaAcademica.entity';
 import { ParaleloTipo } from './paraleloTipo.entity';
+import { PeriodoTipo } from './periodoTipo.entity';
 import { TurnoTipo } from './turnoTipo.entity';
 
 @Entity({ name: 'institucion_educativa_curso', schema: 'public' })
@@ -62,6 +63,10 @@ export class InstitucionEducativaCurso {
   @ManyToOne(() => EtapaEducativa, (etapaEducativa) => etapaEducativa.cursos, { nullable: false, cascade: true })
   @JoinColumn({ name: 'etapa_educativa_id', referencedColumnName: 'id'})
   etapaEducativa: EtapaEducativa;
+  
+  @ManyToOne(() => PeriodoTipo, (periodoTipo) => periodoTipo.cursos, { nullable: false, cascade: true })
+  @JoinColumn({ name: 'etapa_educativa_id', referencedColumnName: 'id'})
+  periodoTipo: PeriodoTipo;
 
   @OneToMany(() => OfertaAcademica, (ofertaAcademica) => ofertaAcademica.institucionEducativaCurso)
   ofertasAcademicas: OfertaAcademica[];

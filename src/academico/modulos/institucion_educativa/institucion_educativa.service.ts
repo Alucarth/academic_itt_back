@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import {  InjectRepository } from '@nestjs/typeorm';
 import { InstitucionEducativa } from 'src/academico/entidades/institucionEducativa.entity';
-import { EntityManager, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 
 @Injectable()
 export class InstitucionEducativaService {
     constructor(
         @InjectRepository(InstitucionEducativa) private institucioneducativaRepository: Repository<InstitucionEducativa>,
-        @InjectEntityManager() private entityManager: EntityManager,
-        
     ){}
 
     async getAll(){
@@ -61,7 +59,6 @@ export class InstitucionEducativaService {
         const itts = await this.institucioneducativaRepository
         .createQueryBuilder("a")
         .innerJoinAndSelect("a.educacionTipo", "b")
-        .innerJoinAndSelect("a.educacionTipo", "b")
         .innerJoinAndSelect("a.jurisdiccionGeografica", "c")
         .where('b.id in (7,8,9)  ')
         .where('a.id = :id ', { id })
@@ -83,30 +80,11 @@ export class InstitucionEducativaService {
     }
 
     async findCarrerasBySie( id:number ){
-
-        const tabla = 'tmp_prueba_'+id;
-        const sql1 =
-        'select sp_genera_tabla_plana (\n' +
-        '    "etapa_educativa_tipo", \n' +
-        '        "25",\n' +
-        '        "28",\n' +
-        '        "tmp_prueba_80730841",\n' +
-        '        "etapa_educativa",\n' +
-        '        "codigo",\n' +
-        '        "etapa_educativa",\n' +
-        '        "etapa_educativa_tipo_id"\n' +
-        '   );';
-      
-     // const funcion = await this.entityManager.query(sql1);
-     //console.log(funcion);
-      const sql =
-        'select * from tmp_prueba_80730841';
-      //'select * from abandono_tipo';
-        const data = await this.entityManager.query(sql);
-
-      console.log(data);
-      return data;
-
+        const values = ['etapa_educativa_tipo',25,28,id,'etapa_educativa','codigo','etapa_educativa','etapa_educativa_tipo_id'];
+        const sql = 'select * from sp_genera_acreditacion_oferta_json($1,$2,$3,$4,$5,$6,$7,$8)';
+        const data = await this.institucioneducativaRepository.query(sql, values);
+        console.log(data);
+        return data;
     }
  
 }

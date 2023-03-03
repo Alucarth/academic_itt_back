@@ -14,6 +14,16 @@ import { EtapaEducativaModule } from './academico/modulos/etapa_educativa/etapa_
 import { EtapaEducativaAsignaturaModule } from './academico/modulos/etapa_educativa_asignatura/etapa_educativa_asignatura.module';
 import { InstitucionEducativaSucursalModule } from './academico/modulos/institucion_educativa_sucursal/institucion_educativa_sucursal.module';
 import { InstitucionEducativaAcreditacionEtapaEducativaModule } from './academico/modulos/institucion_educativa_acreditacion_etapa_educativa/institucion_educativa_acreditacion_etapa_educativa.module';
+import { GeneroTipoModule } from './academico/catalogos/genero_tipo/genero_tipo.module';
+import { EstadoCivilTipoModule } from './academico/catalogos/estado_civil_tipo/estado_civil_tipo.module';
+import { SangreTipoModule } from './academico/catalogos/sangre_tipo/sangre_tipo.module';
+import { IdiomaTipoModule } from './academico/catalogos/idioma_tipo/idioma_tipo.module';
+import { SegipTipoModule } from './academico/catalogos/segip_tipo/segip_tipo.module';
+import { AreaGeograficaTipoModule } from './academico/catalogos/area_geografica_tipo/area_geografica_tipo.module';
+import { CensoTipoModule } from './academico/catalogos/censo_tipo/censo_tipo.module';
+import { UnidadTerritorialTipoModule } from './academico/catalogos/unidad_territorial_tipo/unidad_territorial_tipo.module';
+import { UnidadTerritorialModule } from './academico/catalogos/unidad_territorial/unidad_territorial.module';
+import { OperativoModule } from './academico/modulos/operativo/operativo.module';
 
 @Module({
   imports: [
@@ -30,6 +40,16 @@ import { InstitucionEducativaAcreditacionEtapaEducativaModule } from './academic
     EtapaEducativaAsignaturaModule,
     InstitucionEducativaSucursalModule,
     InstitucionEducativaAcreditacionEtapaEducativaModule,
+    GeneroTipoModule,
+    EstadoCivilTipoModule,
+    SangreTipoModule,
+    IdiomaTipoModule,
+    SegipTipoModule,
+    AreaGeograficaTipoModule,
+    CensoTipoModule,
+    UnidadTerritorialTipoModule,
+    UnidadTerritorialModule,
+    OperativoModule,
   ],
   providers: [EducacionTipoService],
 })
