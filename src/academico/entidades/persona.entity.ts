@@ -10,11 +10,10 @@ import {
 } from 'typeorm';
 import { CiExpedidoTipo } from './ciExpedidoTipo.entity';
 import { EstadoCivilTipo } from './estadoCivilTipo.entity';
+import { EstudianteInscripcion } from './estudianteInscripcion.entity';
 import { GeneroTipo } from './generoTipo.entity';
 import { IdiomaTipo } from './idiomaTipo.entity';
-import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
-import { IntervaloGestionTipo } from './intervaloGestionTipo.entity';
-import { Operativo } from './operativo.entity';
+import { MaestroInscripcion } from './maestroInscripcion.entity';
 import { PersonaDetalle } from './personaDetalle.entity';
 import { SangreTipo } from './sangreTipo.entity';
 import { SegipTipo } from './segipTipo.entity';
@@ -148,5 +147,10 @@ export class Persona {
   @OneToMany(() => PersonaDetalle, (personaDetalle) => personaDetalle.persona)
   personasDetalles: PersonaDetalle[];
 
+  @OneToMany(() => MaestroInscripcion, (maestroInscripcion) => maestroInscripcion.persona)
+  maestrosInscripciones: MaestroInscripcion[];
+
+  @OneToMany(() => EstudianteInscripcion, (estudianteInscripcion) => estudianteInscripcion.persona)
+  estudiantesInscripciones: EstudianteInscripcion[];    
   
 }

@@ -45,20 +45,17 @@ export class AsignaturaTipo {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-  @Column({ type: 'integer', name: 'usuario_id' })
-  asignaturaId: number;
-
   @OneToMany(() => EtapaEducativaAsignatura, (etapaEducativaAsignatura) => etapaEducativaAsignatura.asignaturaTipo)
   etapasEducativasAsignaturas: EtapaEducativaAsignatura[];
 
   @OneToMany(() => OfertaAcademica, (ofertaAcademica) => ofertaAcademica.asignaturaTipo)
   ofertasAcademicas: OfertaAcademica[];
-/*
-  @ManyToOne(() => AsignaturaTipo, (asignaturaTipo) => asignaturaTipo.asignaturasList, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'educacion_tipo_id', referencedColumnName: 'id'})
-  asignaturaTipo: AsignaturaTipo;
 
-  @OneToMany(() => AsignaturaTipo, (asignaturaTipo) => asignaturaTipo.asignaturaTipo)
-  asignaturasList: AsignaturaTipo[];*/
+  @OneToMany(() => AsignaturaTipo, (asignaturaTipo) => asignaturaTipo.asignaturaId)
+  asignaturaList: AsignaturaTipo[];
+
+  @ManyToOne(() => AsignaturaTipo, (asignaturaTipo) => asignaturaTipo.asignaturaList)
+  @JoinColumn({ name: 'asignatura_id', referencedColumnName: 'id'})
+  asignaturaId: AsignaturaTipo;
   
 }

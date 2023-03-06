@@ -15,6 +15,7 @@ import { InstitucionEducativa } from './institucionEducativa.entity';
 import { InstitucionEducativaAcreditacionEspecialidad } from './institucionEducativaAcreditacionEspecialidad.entity';
 import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
 import { JurisdiccionGeografica } from './jurisdiccionGeografica.entity';
+import { MaestroInscripcion } from './maestroInscripcion.entity';
 import { Operativo } from './operativo.entity';
 
 @Entity({ name: 'institucion_educativa_sucursal', schema: 'public' })
@@ -89,4 +90,8 @@ export class InstitucionEducativaSucursal {
 
   @OneToMany(() => Operativo, (operativo) => operativo.institucionEducativaSucursal)
   operativos: Operativo[];
+
+  @OneToMany(() => MaestroInscripcion, (maestroInscripcion) => maestroInscripcion.institucionEducativaSucursal)
+  maestrosInscripciones: MaestroInscripcion[];
+
 }

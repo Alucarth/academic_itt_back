@@ -2,12 +2,15 @@ import { Exclude } from 'class-transformer';
 import {
   Column,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
 import { InstitucionEducativaAcreditacionEspecialidad } from './institucionEducativaAcreditacionEspecialidad.entity';
+import { MaestroInscripcion } from './maestroInscripcion.entity';
 
 @Entity({ name: 'especialidad_tipo', schema: 'public' })
 export class EspecialidadTipo {
@@ -45,5 +48,13 @@ export class EspecialidadTipo {
   @OneToMany(() => EtapaEducativaAsignatura, (etapaEducativaAsignatura) => etapaEducativaAsignatura.intervaloTiempoTipo)
   etapasEducativasAsignaturas: EtapaEducativaAsignatura[];
   
+  @OneToMany(() => MaestroInscripcion, (maestroInscripcion) => maestroInscripcion.especialidadTipo)
+  maestrosInscripciones: MaestroInscripcion[];
+ 
+  @OneToMany(() => EspecialidadTipo, (especialidadTipo) => especialidadTipo.especialidadId)
+  especialidadList: EspecialidadTipo[];
 
+  @ManyToOne(() => EspecialidadTipo, (especialidadTipo) => especialidadTipo.especialidadList)
+  @JoinColumn({ name: 'especialidad_id', referencedColumnName: 'id'})
+  especialidadId: EspecialidadTipo;
 }

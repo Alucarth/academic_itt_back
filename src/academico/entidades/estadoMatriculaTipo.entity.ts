@@ -6,16 +6,16 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { MaestroInscripcion } from './maestroInscripcion.entity';
+import { EstudianteInscripcion } from './estudianteInscripcion.entity';
 import { Persona } from './persona.entity';
 
-@Entity({ name: 'formacion_tipo', schema: 'public' })
-export class FormacionTipo {
+@Entity({ name: 'estado_matricula_tipo', schema: 'public' })
+export class EstadoMatriculaTipo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'formacion' })
-  formacion: string;
+  @Column({ type: 'varchar', name: 'estado_matricula' })
+  estadoMatricula: string;
 
   @Column({ type: 'varchar', name: 'comentario' })
   comentario: string;
@@ -39,9 +39,10 @@ export class FormacionTipo {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-  @OneToMany(() => Persona, (persona) => persona.generoTipo)
-  personas: Persona[];
-  
-  @OneToMany(() => MaestroInscripcion, (maestroInscripcion) => maestroInscripcion.formacionTipo)
-  maestrosInscripciones: MaestroInscripcion[];
+  @OneToMany(() => EstudianteInscripcion, (estudianteInscripcion) => estudianteInscripcion.estadoMatriculaFinTipo)
+  estudiantesInscripcionesFin: EstudianteInscripcion[]; 
+
+  @OneToMany(() => EstudianteInscripcion, (estudianteInscripcion) => estudianteInscripcion.estadoMatriculaInicioTipo)
+  estudiantesInscripcionesInicio: EstudianteInscripcion[]; 
+
 }
