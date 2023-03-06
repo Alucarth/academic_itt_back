@@ -9,12 +9,20 @@ export class EtapaEducativaController {
     constructor (
         private readonly etapaEducativaService: EtapaEducativaService 
         ){}
+    @Get(':id')
+    async getById(@Param('id', ParseIntPipe) id: number):Promise<EtapaEducativa>{
+        return await this.etapaEducativaService.getById(id);
+    }
+
     @Get('hijos/:id')
     async getHijosAll(@Param('id', ParseIntPipe) id: number):Promise<EtapaEducativa[]>{
         return await this.etapaEducativaService.findAllRecursiveHijos(id);
     }
+    
     @Get('padres/:id')
     async getAll(@Param('id', ParseIntPipe) id: number):Promise<EtapaEducativa[]>{
         return await this.etapaEducativaService.findAllRecursivePadres(id);
     }
+
+   
 }

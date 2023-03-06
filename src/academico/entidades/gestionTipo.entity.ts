@@ -12,6 +12,9 @@ import { Operativo } from './operativo.entity';
 
 @Entity({ name: 'gestion_tipo', schema: 'public' })
 export class GestionTipo {
+  getAll(id: any): GestionTipo | PromiseLike<GestionTipo> {
+      throw new Error('Method not implemented.');
+  }
   @PrimaryGeneratedColumn()
   id: number;
 

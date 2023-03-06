@@ -43,30 +43,48 @@ export class InstitucionEducativaCurso {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
+  @Column({ name: 'institucion_educativa_sucursal_id', nullable:false })
+  institucionEducativaSucursalId: number;
 
   @ManyToOne(() => InstitucionEducativaSucursal, (institucionEducativaSucursal) => institucionEducativaSucursal.cursos, { nullable: false, cascade: true })
   @JoinColumn({ name: 'institucion_educativa_sucursal_id', referencedColumnName: 'id'})
   institucionEducativaSucursal: InstitucionEducativaSucursal;
   
+  @Column({ name: 'gestion_tipo_id', nullable:false })
+  gestionTipoId: number;
+
   @ManyToOne(() => GestionTipo, (gestionTipo) => gestionTipo.cursos, { nullable: false, cascade: true })
   @JoinColumn({ name: 'gestion_tipo_id', referencedColumnName: 'id'})
   gestionTipo: GestionTipo;
   
+  @Column({ name: 'turno_tipo_id', nullable:false })
+  turnoTipoId: number;
+
   @ManyToOne(() => TurnoTipo, (turnoTipo) => turnoTipo.cursos, { nullable: false, cascade: true })
   @JoinColumn({ name: 'turno_tipo_id', referencedColumnName: 'id'})
   turnoTipo: TurnoTipo;
   
+  @Column({ name: 'paralelo_tipo_id', nullable:false })
+  paraleloTipoId: number;
+
   @ManyToOne(() => ParaleloTipo, (paraleloTipo) => paraleloTipo.cursos, { nullable: false, cascade: true })
   @JoinColumn({ name: 'paralelo_tipo_id', referencedColumnName: 'id'})
   paraleloTipo: ParaleloTipo;
+
+  @Column({ name: 'etapa_educativa_id', nullable:false })
+  etapaEducativaId: number;
 
   @ManyToOne(() => EtapaEducativa, (etapaEducativa) => etapaEducativa.cursos, { nullable: false, cascade: true })
   @JoinColumn({ name: 'etapa_educativa_id', referencedColumnName: 'id'})
   etapaEducativa: EtapaEducativa;
   
+  @Column({ name: 'periodo_tipo_id', nullable:false })
+  periodoTipoId: number;
+
   @ManyToOne(() => PeriodoTipo, (periodoTipo) => periodoTipo.cursos, { nullable: false, cascade: true })
   @JoinColumn({ name: 'etapa_educativa_id', referencedColumnName: 'id'})
   periodoTipo: PeriodoTipo;
+
 
   @OneToMany(() => OfertaAcademica, (ofertaAcademica) => ofertaAcademica.institucionEducativaCurso)
   ofertasAcademicas: OfertaAcademica[];

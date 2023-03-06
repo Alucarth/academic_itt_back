@@ -2,23 +2,25 @@ import { Exclude } from 'class-transformer';
 import {
   Column,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Persona } from './persona.entity';
+import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
 
-@Entity({ name: 'sangre_tipo', schema: 'public' })
-export class SangreTipo {
+@Entity({ name: 'financiamiento_tipo', schema: 'public' })
+export class FinanciamientoTipo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'sangre' })
-  sangre: string;
+  @Column({ type: 'varchar', name: 'financiamiento' })
+  financiamiento: string;
 
   @Column({ type: 'varchar', name: 'comentario' })
   comentario: string;
-  
+ 
   @Exclude()
   @UpdateDateColumn({
     name: 'fecha_registro',
@@ -34,10 +36,10 @@ export class SangreTipo {
     default: () => 'CURRENT_TIMESTAMP',
   })
   fechaModificacion: Date;
-
+  
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-  @OneToMany(() => Persona, (persona) => persona.sangreTipo)
-  personas: Persona[];
+ 
+  
 }

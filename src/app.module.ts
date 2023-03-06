@@ -5,7 +5,6 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
 import { InstitucionEducativaModule } from './academico/modulos/institucion_educativa/institucion_educativa.module';
-import { EducacionTipoService } from './academico/catalogos/educacion_tipo/educacion_tipo.service';
 import { EducacionTipoModule } from './academico/catalogos/educacion_tipo/educacion_tipo.module';
 import { InstitucionEducativaAcreditacionEspecialidadModule } from './academico/modulos/institucion_educativa_acreditacion_especialidad/institucion_educativa_acreditacion_especialidad.module';
 import { EspecialidadTipoModule } from './academico/catalogos/especialidad_tipo/especialidad_tipo.module';
@@ -24,6 +23,10 @@ import { CensoTipoModule } from './academico/catalogos/censo_tipo/censo_tipo.mod
 import { UnidadTerritorialTipoModule } from './academico/catalogos/unidad_territorial_tipo/unidad_territorial_tipo.module';
 import { UnidadTerritorialModule } from './academico/catalogos/unidad_territorial/unidad_territorial.module';
 import { OperativoModule } from './academico/modulos/operativo/operativo.module';
+import { GestionTipoModule } from './academico/catalogos/gestion_tipo/gestion_tipo.module';
+import { TurnoTipoModule } from './academico/catalogos/turno_tipo/turno_tipo.module';
+import { ParaleloTipoModule } from './academico/catalogos/paralelo_tipo/paralelo_tipo.module';
+import { InstitucionEducativaCursoModule } from './academico/modulos/institucion_educativa_curso/institucion_educativa_curso.module';
 
 @Module({
   imports: [
@@ -50,7 +53,11 @@ import { OperativoModule } from './academico/modulos/operativo/operativo.module'
     UnidadTerritorialTipoModule,
     UnidadTerritorialModule,
     OperativoModule,
+    GestionTipoModule,
+    TurnoTipoModule,
+    ParaleloTipoModule,
+    InstitucionEducativaCursoModule,
   ],
-  providers: [EducacionTipoService],
+  providers: [],
 })
 export class AppModule {}

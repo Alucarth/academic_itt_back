@@ -8,11 +8,12 @@ import { EntityManager, Repository } from 'typeorm';
 export class EtapaEducativaService {
     constructor(
         @InjectRepository(EtapaEducativa) private etapaEducativaRepository: Repository<EtapaEducativa>,
-        
-        
     ){}
-    async findAllRecursiveHijos( id:number ){
-
+  async getById(id: number){
+    const etapa = await this.etapaEducativaRepository.findOneBy({ id : id })
+    return etapa
+  }
+  async findAllRecursiveHijos( id:number ){
         const sql =
         'WITH RECURSIVE etapa AS (\n' +
         '    SELECT\n' +
@@ -47,10 +48,9 @@ export class EtapaEducativaService {
       console.log(data);
       return data;
 
-    }
+   }
 
-
-    async findAllRecursivePadres( id:number ){
+  async findAllRecursivePadres( id:number ){
 
       const sql =
       'WITH RECURSIVE buscandoPadre AS (\n' +

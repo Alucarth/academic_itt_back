@@ -2,9 +2,11 @@ import { Exclude } from 'class-transformer';
 import {
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Persona } from './persona.entity';
 
 @Entity({ name: 'estado_civil_tipo', schema: 'public' })
 export class EstadoCivilTipo {
@@ -36,4 +38,8 @@ export class EstadoCivilTipo {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
   
+  @OneToMany(() => Persona, (persona) => persona.estadoCivilTipo)
+  personas: Persona[];
+
+
 }

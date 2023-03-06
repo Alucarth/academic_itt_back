@@ -8,13 +8,13 @@ import {
 } from 'typeorm';
 import { Persona } from './persona.entity';
 
-@Entity({ name: 'sangre_tipo', schema: 'public' })
-export class SangreTipo {
+@Entity({ name: 'formacion_tipo', schema: 'public' })
+export class FormacionTipo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'sangre' })
-  sangre: string;
+  @Column({ type: 'varchar', name: 'formacion' })
+  formacion: string;
 
   @Column({ type: 'varchar', name: 'comentario' })
   comentario: string;
@@ -38,6 +38,7 @@ export class SangreTipo {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-  @OneToMany(() => Persona, (persona) => persona.sangreTipo)
+  @OneToMany(() => Persona, (persona) => persona.generoTipo)
   personas: Persona[];
+  
 }
