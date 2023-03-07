@@ -9,6 +9,7 @@ import {
   Request,
   UsePipes,
   ValidationPipe,
+  Delete,
 } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -45,6 +46,26 @@ export class UsersController {
     return this.usersService.getAllBySearch(ci,fechanac,complemento);    
   }
 
+  @Get('/getAllGeneroTipo')
+  getAllGeneroTipo(){
+    return this.usersService.getAllGeneroTipo();
+  }
+
+  @Get('/getAllSangreTipo')
+  getAllSangreTipo(){
+    return this.usersService.getAllSangreTipo();
+  }
+
+  @Get('/getAllEstadoCivilTipo')
+  getAllEstadoCivilTipo(){
+    return this.usersService.getAllEstadoCivilTipo();
+  }
+
+  @Get('/getAllIdiomaTipo')
+  getAllIdiomaTipo(){
+    return this.usersService.getAllIdiomaTipo();
+  }
+
   @Get('/getAllRolesByUserId/:userId')
   getAllRolesByUserId(@Param('userId') id:string){
     return this.usersService.getAllRolesByUserId(parseInt(id));
@@ -66,6 +87,18 @@ export class UsersController {
     console.log('userId', body.userId);
     console.log('rolTipoId', body.rolTipoId);
     return this.usersService.insertNewRolUser(body.userId,body.rolTipoId);
+  }
+
+  @Delete('/rolUser/:userRolId')   
+  deleteRolUser(@Param('userRolId') urid:string) {        
+    console.log('rolTipoId', urid);
+    return this.usersService.deleteRolUser(parseInt(urid));
+  }
+
+  @Delete('/unidadTerritorialUser/:id')   
+  deleteUnidadTerritorialUser(@Param('id') id:string) {        
+    console.log('rolTipoId', id);
+    return this.usersService.deleteUnidadTerritorialUser(parseInt(id));
   }
 
   @Post('/addUnidadTerritorialUser')   
