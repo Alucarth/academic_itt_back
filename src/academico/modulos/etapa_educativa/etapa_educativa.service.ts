@@ -98,6 +98,16 @@ export class EtapaEducativaService {
       return data;
   }
     
+  async findAsignaturasRegimenCarrera( id:number ){
+    const asignaturas = await this.etapaEducativaRepository
+    .createQueryBuilder("a")
+    .innerJoinAndSelect("a.etapasEducativasAsignaturas", "b")
+    .innerJoinAndSelect("b.asignaturaTipo", "c")
+    .where('a.etapaEducativaId = :id ', { id })
+    .orderBy('a.id', 'ASC')
+    .getMany();
+    return asignaturas;
+}
 
    
 }

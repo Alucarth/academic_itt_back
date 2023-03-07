@@ -27,6 +27,7 @@ import { GestionTipoModule } from './academico/catalogos/gestion_tipo/gestion_ti
 import { TurnoTipoModule } from './academico/catalogos/turno_tipo/turno_tipo.module';
 import { ParaleloTipoModule } from './academico/catalogos/paralelo_tipo/paralelo_tipo.module';
 import { InstitucionEducativaCursoModule } from './academico/modulos/institucion_educativa_curso/institucion_educativa_curso.module';
+import { PeriodoTipoModule } from './academico/catalogos/periodo_tipo/periodo_tipo.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { InstitucionEducativaCursoModule } from './academico/modulos/institucion
     TurnoTipoModule,
     ParaleloTipoModule,
     InstitucionEducativaCursoModule,
+    PeriodoTipoModule,
   ],
   providers: [],
 })

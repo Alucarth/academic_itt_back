@@ -7,16 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { AsignaturaTipo } from './asignaturaTipo.entity';
-import { CampoSaberTipo } from './campoSaberTipo.entity';
-import { EducacionTipo } from './educacionTipo.entity';
-import { EspecialidadTipo } from './especialidadTipo.entity';
-import { EtapaEducativa } from './etapaEducativa.entity';
 import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
-import { EtapaEducativaTipo } from './etapaEducativaTipo.entity';
-import { IntervaloTiempoTipo } from './intervaloTiempoTipo.entity';
 import { NivelAcademicoTipo } from './nivelAcademicoTipo.entity';
-import { PlanEstudio } from './planEstudio.entity';
 
 @Entity({ name: 'etapa_educativa_asignatura_nivel_academico', schema: 'public' })
 export class EtapaEducativaAsignaturaNivelAcademico {

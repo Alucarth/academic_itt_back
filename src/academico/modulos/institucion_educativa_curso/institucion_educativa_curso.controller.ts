@@ -18,7 +18,7 @@ export class InstitucionEducativaCursoController {
 
     @Post()
     async createCurso(@Body() dto: CreateInstitucionEducativaCursoDto){
-        
+
         const data = await this.institucionEducativaCursoService.createCurso(dto);
         return data
 

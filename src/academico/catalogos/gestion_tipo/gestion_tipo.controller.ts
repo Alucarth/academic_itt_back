@@ -11,7 +11,7 @@ export class GestionTipoController {
         private readonly gestionTipoService: GestionTipoService
     ){}
 
-    @Get(':id')
+    @Get()
     async getById():Promise<GestionTipo[]>{
         return await this.gestionTipoService.getAll();
     }

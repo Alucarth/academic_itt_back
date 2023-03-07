@@ -23,8 +23,7 @@ export class EtapaEducativa {
   @Column({ type: 'varchar', name: 'etapa_educativa' })
   etapaEducativa: string;
 
-  @Column({ type: 'varchar', name: 'etapa_educativa_id' })
-  etapaEducativaId: string;
+
 
   @Column({ type: 'integer', name: 'ordinal' })
   ordinal: number;
@@ -85,5 +84,15 @@ export class EtapaEducativa {
 
   @OneToMany(() => InstitucionEducativaCurso, (institucionEducativaCurso) => institucionEducativaCurso.etapaEducativa)
   cursos: InstitucionEducativaCurso[];
+
+  @OneToMany(() => EtapaEducativa, (etapaEducativa) => etapaEducativa.etapaEducativaId)
+  etapaEducativaList: EtapaEducativa[];
+
+  @ManyToOne(() => EtapaEducativa, (etapaEducativa) => etapaEducativa.etapaEducativaList)
+  @JoinColumn({ name: 'etapa_educativa_id', referencedColumnName: 'id'})
+  etapaEducativaId: EtapaEducativa;
+
+  /*@Column({ type: 'varchar', name: 'etapa_educativa_id' })
+  etapaEducativaId: string;*/
 
 }
