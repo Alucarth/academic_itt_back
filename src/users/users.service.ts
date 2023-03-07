@@ -91,10 +91,26 @@ export class UsersService {
     console.log('result size: ', result.length);
 
     if(result.length === 0){
-      throw new NotFoundException('No se encontraron registros');
+      //throw new NotFoundException('No se encontraron registros');
+      return ({
+          "statusCode": 201,
+          "message": [
+            "Registro No Encontrado !!"
+          ],
+          "data": [],
+          "code": ""
+        });
     }
             
-    return result;
+    //return result;
+    return  ({
+          "statusCode": 201,
+          "message": [
+            "Registro Encontrado !!"
+          ],
+          "data": result,
+          "code": ""
+        });
   }
 
   async getAllRolesByUserId( userId: number) {
@@ -515,8 +531,8 @@ export class UsersService {
           "message": [
             "Registro Eliminado !!"
           ],
-          "data": 0,
-          "error": ""
+          "data": [],
+          "code": ""
         });
       
         
