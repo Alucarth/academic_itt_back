@@ -7,15 +7,14 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { MaestroInscripcion } from './maestroInscripcion.entity';
-import { Persona } from './persona.entity';
 
-@Entity({ name: 'formacion_tipo', schema: 'public' })
-export class FormacionTipo {
+@Entity({ name: 'cargo_tipo', schema: 'public' })
+export class CargoTipo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'formacion' })
-  formacion: string;
+  @Column({ type: 'varchar', name: 'cargo' })
+  cargo: string;
 
   @Column({ type: 'varchar', name: 'comentario' })
   comentario: string;
@@ -38,10 +37,8 @@ export class FormacionTipo {
 
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
-
-  @OneToMany(() => Persona, (persona) => persona.generoTipo)
-  personas: Persona[];
   
-  @OneToMany(() => MaestroInscripcion, (maestroInscripcion) => maestroInscripcion.formacionTipo)
+  @OneToMany(() => MaestroInscripcion, (maestroInscripcion) => maestroInscripcion.cargoTipo)
   maestrosInscripciones: MaestroInscripcion[];
+
 }

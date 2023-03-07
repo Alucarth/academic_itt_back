@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { MaestroInscripcion } from './maestroInscripcion.entity';
 import { Persona } from './persona.entity';
 
 @Entity({ name: 'idioma_tipo', schema: 'public' })
@@ -44,5 +45,7 @@ export class IdiomaTipo {
   @OneToMany(() => Persona, (persona) => persona.maternoIdiomaTipo)
   personas: Persona[];
 
+  @OneToMany(() => MaestroInscripcion, (maestroInscripcion) => maestroInscripcion.estudioIdiomaTipo)
+  maestrosInscripciones: MaestroInscripcion[];
   
 }

@@ -8,20 +8,23 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
-import { MaestroInscripcion } from './maestroInscripcion.entity';
+import { EstudianteInscripcion } from './estudianteInscripcion.entity';
+import { EtapaEducativaAsignaturaNivelAcademico } from './etapaEducativaAsignaturaNivelAcademico.entity';
+import { InstitucionEducativaAcreditacionEspecialidadNivelAcademico } from './institucionEducativaAcreditacionEspecialidadNivelAcademico.entity';
 
-@Entity({ name: 'financiamiento_tipo', schema: 'public' })
-export class FinanciamientoTipo {
+
+@Entity({ name: 'matricula_tipo', schema: 'public' })
+export class MatriculaTipo {
+    
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'financiamiento' })
-  financiamiento: string;
+  @Column({ type: 'varchar', name: 'matricula' })
+  matricula: string;
 
   @Column({ type: 'varchar', name: 'comentario' })
   comentario: string;
- 
+
   @Exclude()
   @UpdateDateColumn({
     name: 'fecha_registro',
@@ -37,11 +40,11 @@ export class FinanciamientoTipo {
     default: () => 'CURRENT_TIMESTAMP',
   })
   fechaModificacion: Date;
-  
+
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-  @OneToMany(() => MaestroInscripcion, (maestroInscripcion) => maestroInscripcion.financiamientoTipo)
-  maestrosInscripciones: MaestroInscripcion[];
-  
+  @OneToMany(() => EstudianteInscripcion, (estudianteInscripcion) => estudianteInscripcion.matriculaTipo)
+  estudiantesInscripciones: EstudianteInscripcion[];    
+
 }
