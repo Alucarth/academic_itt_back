@@ -141,8 +141,14 @@ export class UsersService {
     if(result.length === 0){
       throw new NotFoundException('No se encontraron registros');
     }
+
+    return this._serviceResp.respuestaHttp201(
+      result,
+      '',
+      'Registro Encontrado !!',
+    );
             
-    return result;
+    //return result;
 
   }
 
@@ -161,7 +167,12 @@ export class UsersService {
       throw new NotFoundException('No se encontraron registros');
     }
             
-    return result;
+    //return result;
+    return this._serviceResp.respuestaHttp201(
+      result,
+      '',
+      'Registro Encontrado !!',
+    );
 
   }
 
@@ -209,13 +220,19 @@ export class UsersService {
     if(result.length === 0){
       throw new NotFoundException('No se encontraron registros');
     }
-            
-    return result;
+      
+    return this._serviceResp.respuestaHttp201(
+      result,
+      'Registro Encontrado !!',
+      '',
+    );
+    //return result;
 
   }
 
   async insertNewRolUser( userId: number, rolTipoId: number) {
 
+    //TODO VALIDAR SI YA EXISTE
     try {
 
       await this.userRepository
@@ -228,12 +245,21 @@ export class UsersService {
         .execute();
 
         console.log('rol adicionado');
-        return 1;
+        //return 1;
+        return this._serviceResp.respuestaHttp201(
+          null,
+          'Registro Creado !!',
+          '',
+        );
 
       
     } catch (error) {
        console.log("Error insertar nuevo rol usuario: ", error);
-       return 0;
+       return this._serviceResp.respuestaHttp409(
+          null,
+          'Dato/Recurso Inexistente !!',
+          error.driverError.detail,
+        );
     }
 
 
@@ -280,12 +306,26 @@ export class UsersService {
         .execute();
 
         console.log('Unidad Territorial adicionada');
-        return 1;
+        //return 1;        
+        return this._serviceResp.respuestaHttp201(
+          null,
+          'Registro Creado !!',
+          '',
+        );
+        
 
       
     } catch (error) {
        console.log("Error insertar nueva Unidad Territorial: ", error);
-       throw new HttpException('Error en formato/valor de fechas', HttpStatus.NOT_FOUND); 
+       //throw new Error(`Error insertar nueva Unidad Territorial: ${error.message}`);
+       //throw new HttpException('Error en la operacion: ', error.message); 
+       //throw new HttpException(new Error(`Error insertar nueva Unidad Territorial: ${error.message}`), HttpStatus.BAD_REQUEST)
+       throw new HttpException({
+          status: HttpStatus.CONFLICT,
+          error: `Error insertar nueva Unidad Territorial: ${error.message}`,
+        }, HttpStatus.ACCEPTED, {
+          cause: error
+        });
        //return 0;
     }
 
@@ -331,6 +371,7 @@ export class UsersService {
 
     //1:BUSCAR LA PERSONA
 
+    try{
     let persona =  await this.getPersonaBySearch(dto.carnet,dto.fechaNacimiento,dto.complemento);    
     
     console.log('existe persona:',persona);
@@ -399,12 +440,30 @@ export class UsersService {
       }
 
     }else{
-      //la persona y el usuario ya existen,
-      return this._serviceResp.respuestaHttp202(300, '','Usuario y Persona ya existen !!');
+      //la persona y el usuario ya existen, argumento no valido
+      return this._serviceResp.respuestaHttp400(null,'Usuario y Persona ya existen !!','');
     }
-
     
-    return this._serviceResp.respuestaHttp200(300, '','mensaje');
+    //return this._serviceResp.respuestaHttp200(300, '','mensaje');
+    return this._serviceResp.respuestaHttp203(
+          persona.identifiers[0].id,
+          'Registro Creado !!',
+          '',
+        );
+    
+    } catch (error) {
+       console.log("Error insertar nueva Unidad Territorial: ", error);
+       //throw new Error(`Error insertar nueva Unidad Territorial: ${error.message}`);
+       //throw new HttpException('Error en la operacion: ', error.message); 
+       //throw new HttpException(new Error(`Error insertar nueva Unidad Territorial: ${error.message}`), HttpStatus.BAD_REQUEST)
+       throw new HttpException({
+          status: HttpStatus.CONFLICT,
+          error: `Error insertar nueva Unidad Territorial: ${error.message}`,
+        }, HttpStatus.ACCEPTED, {
+          cause: error
+        });
+       //return 0;
+    }
   }
 
   async getAllGeneroTipo() {
@@ -420,7 +479,15 @@ export class UsersService {
       throw new NotFoundException('No se encontraron registros');
     }
             
-    return result;
+    //return result;
+    return  ({
+          "statusCode": 201,
+          "message": [
+            ""
+          ],
+          "data": result,
+          "code": ""
+        });
 
   }
 
@@ -437,7 +504,15 @@ export class UsersService {
       throw new NotFoundException('No se encontraron registros');
     }
             
-    return result;
+    //return result;
+    return  ({
+          "statusCode": 201,
+          "message": [
+            ""
+          ],
+          "data": result,
+          "code": ""
+        });
 
   }
 
@@ -454,7 +529,15 @@ export class UsersService {
       throw new NotFoundException('No se encontraron registros');
     }
             
-    return result;
+    //return result;
+    return  ({
+          "statusCode": 201,
+          "message": [
+            "Registro Encontrado !!"
+          ],
+          "data": result,
+          "code": ""
+        });
 
   }
 
@@ -477,6 +560,7 @@ export class UsersService {
 
   async deleteRolUser(user_rol_id: number) {
 
+    //TODO: Validar las tablas dependientes
     try {
       const result = await this.userRepository.createQueryBuilder()
       .delete()
@@ -493,17 +577,20 @@ export class UsersService {
       
       //devuelve 1 si la operacion se ha realizado con exito
       //return result.affected ===1 ? true: false;
-      return ({
-        "statusCode": 201,
-        "message": [
-          "Registro Eliminado !!"
-        ],
-        "data": 0,
-        "error": ""
-      });
+      
+        return this._serviceResp.respuestaHttp203(
+          user_rol_id,
+          'Registro Eliminado !!',
+          '',
+        );
      } catch (err) {
       //throw new Error(`Error eliminando registro: ${err.message}`);
       throw new HttpException('No es posible la operacion, existen datos relacionados !', HttpStatus.FORBIDDEN);
+      /*return this._serviceResp.respuestaHttp400(
+          user_rol_id,
+          'No es posible la operacion, existen datos relacionados !',
+          err.driverError.detail,
+        );*/
     }
 
   }
@@ -526,14 +613,11 @@ export class UsersService {
         
         //devuelve 1 si la operacion se ha realizado con exito
         //return result.affected ===1 ? true: false;
-        return ({
-          "statusCode": 201,
-          "message": [
-            "Registro Eliminado !!"
-          ],
-          "data": [],
-          "code": ""
-        });
+        return this._serviceResp.respuestaHttp203(
+          id,
+          'Registro Eliminado !!',
+          '',
+        );
       
         
     } catch (err) {

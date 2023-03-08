@@ -3,14 +3,14 @@ export class RespuestaM {
   message: string[];
   data: any;
   //fecha: Date;
-  error: string;
+  code: string;
 
   constructor() {
     this.statusCode = 200;
     this.message = [`Ok`];
     this.data = null;
     //this.fecha = null;
-    this.error = null;
+    this.code = null;
   }
 
   setAll(message: string, statusCode: number, data: any) {
