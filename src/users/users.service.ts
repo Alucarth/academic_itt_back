@@ -91,10 +91,26 @@ export class UsersService {
     console.log('result size: ', result.length);
 
     if(result.length === 0){
-      throw new NotFoundException('No se encontraron registros');
+      //throw new NotFoundException('No se encontraron registros');
+      return ({
+          "statusCode": 201,
+          "message": [
+            "Registro No Encontrado !!"
+          ],
+          "data": [],
+          "code": ""
+        });
     }
             
-    return result;
+    //return result;
+    return  ({
+          "statusCode": 201,
+          "message": [
+            "Registro Encontrado !!"
+          ],
+          "data": result,
+          "code": ""
+        });
   }
 
   async getAllRolesByUserId( userId: number) {
@@ -389,6 +405,142 @@ export class UsersService {
 
     
     return this._serviceResp.respuestaHttp200(300, '','mensaje');
+  }
+
+  async getAllGeneroTipo() {
+
+    const result = await this.userRepository.query(`
+    select id,genero from genero_tipo where id in (1,2) order by 1
+    `);
+    
+    console.log('result: ', result);
+    console.log('result size: ', result.length);
+
+    if(result.length === 0){
+      throw new NotFoundException('No se encontraron registros');
+    }
+            
+    return result;
+
+  }
+
+  async getAllSangreTipo() {
+
+    const result = await this.userRepository.query(`
+    select id,sangre from sangre_tipo order by 1
+    `);
+    
+    console.log('result: ', result);
+    console.log('result size: ', result.length);
+
+    if(result.length === 0){
+      throw new NotFoundException('No se encontraron registros');
+    }
+            
+    return result;
+
+  }
+
+  async getAllEstadoCivilTipo() {
+
+    const result = await this.userRepository.query(`
+    select id,estado_civil from estado_civil_tipo order by 1
+    `);
+    
+    console.log('result: ', result);
+    console.log('result size: ', result.length);
+
+    if(result.length === 0){
+      throw new NotFoundException('No se encontraron registros');
+    }
+            
+    return result;
+
+  }
+
+  async getAllIdiomaTipo() {
+
+    const result = await this.userRepository.query(`
+    select id,idioma from idioma_tipo order by 1
+    `);
+    
+    console.log('result: ', result);
+    console.log('result size: ', result.length);
+
+    if(result.length === 0){
+      throw new NotFoundException('No se encontraron registros');
+    }
+            
+    return result;
+
+  }
+
+  async deleteRolUser(user_rol_id: number) {
+
+    try {
+      const result = await this.userRepository.createQueryBuilder()
+      .delete()
+      .from(UsuarioRol)
+      .where("id = :user_rol_id", { user_rol_id })
+      .execute();
+      
+      console.log('result: ', result);
+      console.log('result delete: ', result.affected);
+
+      if(result.affected === 0){
+        throw new NotFoundException('No es posible la operacion, existen datos relacionados !');
+      }
+      
+      //devuelve 1 si la operacion se ha realizado con exito
+      //return result.affected ===1 ? true: false;
+      return ({
+        "statusCode": 201,
+        "message": [
+          "Registro Eliminado !!"
+        ],
+        "data": 0,
+        "error": ""
+      });
+     } catch (err) {
+      //throw new Error(`Error eliminando registro: ${err.message}`);
+      throw new HttpException('No es posible la operacion, existen datos relacionados !', HttpStatus.FORBIDDEN);
+    }
+
+  }
+
+  async deleteUnidadTerritorialUser(id: number) {
+
+    try {
+        const result = await this.userRepository.createQueryBuilder()
+        .delete()
+        .from(UsuarioUniTerrRol)
+        .where("id = :id", { id })
+        .execute();
+        
+        console.log('result: ', result);
+        console.log('result delete: ', result.affected);
+
+        if(result.affected === 0){
+          throw new NotFoundException('No es posible la operacion, existen datos relacionados !');
+        }
+        
+        //devuelve 1 si la operacion se ha realizado con exito
+        //return result.affected ===1 ? true: false;
+        return ({
+          "statusCode": 201,
+          "message": [
+            "Registro Eliminado !!"
+          ],
+          "data": [],
+          "code": ""
+        });
+      
+        
+    } catch (err) {
+      //throw new Error(`Error eliminando registro: ${err.message}`);
+      throw new HttpException('No es posible la operacion, existen datos relacionados !', HttpStatus.FORBIDDEN);
+    }
+
   }
 
 }
