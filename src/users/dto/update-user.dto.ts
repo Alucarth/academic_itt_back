@@ -86,6 +86,7 @@ export class UpdateUserDto {
   @IsNumber()
   nacimientoUnidadTerritorialId: number;
   
+  @IsOptional()
   @IsString()
   expedido: string;
 
