@@ -10,10 +10,8 @@ import {
 } from 'typeorm';
 import { AsignaturaTipo } from './asignaturaTipo.entity';
 import { EstudianteInscripcionOfertaAcademica } from './estudianteInscripcionOfertaAcademica.entity';
-import { GestionTipo } from './gestionTipo.entity';
 import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
-import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
-import { TurnoTipo } from './turnoTipo.entity';
+import { OfertaAcademicaMaestroInscripcion } from './ofertaAcademicaMaestroInscripcion.entity';
 
 @Entity({ name: 'oferta_academica', schema: 'public' })
 export class OfertaAcademica {
@@ -56,5 +54,7 @@ export class OfertaAcademica {
   
   @OneToMany(() => EstudianteInscripcionOfertaAcademica, (estudianteInscripcionOfertaAcademica) => estudianteInscripcionOfertaAcademica.ofertaAcademica)
   estudiantesOfertas: EstudianteInscripcionOfertaAcademica[];
-  
+ 
+  @OneToMany(() => OfertaAcademicaMaestroInscripcion , (ofertaAcademicaMaestroInscripcion) => ofertaAcademicaMaestroInscripcion.ofertaAcademica)
+  ofertasAcademicasMaestrosInscripciones: OfertaAcademicaMaestroInscripcion[];
 }

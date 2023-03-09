@@ -4,6 +4,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -14,6 +15,7 @@ import { FormacionTipo } from './formacionTipo.entity';
 import { GestionTipo } from './gestionTipo.entity';
 import { IdiomaTipo } from './idiomaTipo.entity';
 import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
+import { OfertaAcademicaMaestroInscripcion } from './ofertaAcademicaMaestroInscripcion.entity';
 import { Persona } from './persona.entity';
 
 @Entity({ name: 'maestro_inscripcion', schema: 'public' })
@@ -98,6 +100,7 @@ export class MaestroInscripcion {
   @JoinColumn({ name: 'gestion_tipo_id', referencedColumnName: 'id'})
   gestionTipo: GestionTipo;
 
-
+  @OneToMany(() => OfertaAcademicaMaestroInscripcion , (ofertaAcademicaMaestroInscripcion) => ofertaAcademicaMaestroInscripcion.maestroInscripcion)
+  ofertasAcademicasMaestrosInscripciones: OfertaAcademicaMaestroInscripcion[];
   
 }
