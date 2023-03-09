@@ -686,4 +686,8 @@ export class UsersService {
     }
   }
 
+  async resetPasswordUser(body) {
+
+  }
+
 }

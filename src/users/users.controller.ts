@@ -131,4 +131,10 @@ export class UsersController {
     return  await this.usersService.updateUser(body);
   }
 
+  @Put('/resetPassword')   
+  async resetPasswordUser(@Body() body) {    
+    console.log('controller update',body);
+    return  await this.usersService.resetPasswordUser(body);
+  }
+
 }
