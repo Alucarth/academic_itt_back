@@ -83,6 +83,7 @@ export class CreateUserDto {
   @IsNumber()
   nacimientoUnidadTerritorialId: number;
   
+  @IsOptional()
   @IsString()
   expedido: string;
 

@@ -14,12 +14,16 @@ import { PersonaService } from './persona/persona.service'
 import { PersonaBusquedaCiFechaNacDTO, PersonaMReadDto } from './dto/persona.dto'
 import { CreaPersonaDTO } from './dto/crea-persona.dto';
 import { Persona } from './entity/persona.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User)private userRepository: Repository<User>, private _serviceResp: RespuestaSigedService, private _servicePersona: PersonaService,
+    @InjectRepository(User)private userRepository: Repository<User>, 
+    @InjectRepository(Persona)private personaRepository: Repository<Persona>, 
+    private _serviceResp: RespuestaSigedService, 
+    private _servicePersona: PersonaService,
   ) {}
 
 
@@ -445,7 +449,7 @@ export class UsersService {
     }
     
     //return this._serviceResp.respuestaHttp200(300, '','mensaje');
-    return this._serviceResp.respuestaHttp203(
+    return this._serviceResp.respuestaHttp201(
           persona.identifiers[0].id,
           'Registro Creado !!',
           '',
@@ -627,12 +631,48 @@ export class UsersService {
 
   }
 
-  async updateUser(dto:CreateUserDto) {
+  async updateUser(dto:UpdateUserDto) {
 
     //1:BUSCAR LA PERSONA
 
+    //const result = await this.userRepository.query(`SELECT count(*) as existe FROM persona whwre `);
+    const persona = await this.personaRepository.findOne({
+      where: { id: dto.id },
+    });
+    console.log('persona:' ,persona);
+
+    if(!persona){
+      return this._serviceResp.respuestaHttp404(
+          dto.id,
+          'Registro No Encontrado !!',
+          '',
+        );
+    }
+
+
     try{
-    
+
+       await this.userRepository
+        .createQueryBuilder()        
+        .update(Persona)
+        .set({             
+            generoTipoId: dto.generoTipoId,
+            sangreTipoId: dto.sangreTipoId,
+            maternoIdiomaTipoId: dto.maternoIdiomaTipoId,
+            expedidoUnidadTerritorialId : dto.expedidoUnidadTerritorialId,
+            nacimientoUnidadTerritorialId : dto.nacimientoUnidadTerritorialId,
+            dobleNacionalidad : dto.dobleNacionalidad,
+            tieneDiscapacidad : dto.tieneDiscapacidad            
+        })
+        .where("id = :id", { id: dto.id })
+        .execute()
+
+        return this._serviceResp.respuestaHttp202(
+          dto,
+          'Registro Actualizado !!',
+          '',
+        );
+        
     
     } catch (error) {
        console.log("Error update user: ", error);
@@ -644,6 +684,10 @@ export class UsersService {
         });
        //return 0;
     }
+  }
+
+  async resetPasswordUser(body) {
+
   }
 
 }
