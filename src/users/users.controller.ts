@@ -17,6 +17,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreaPersonaDTO } from './dto/crea-persona.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PersonaBusquedaCiFechaNacDTO, PersonaMReadDto } from './dto/persona.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
 
@@ -124,10 +125,10 @@ export class UsersController {
   }
 
   @Put('/')   
-  async updateUser(@Body() body: CreateUserDto) {
+  async updateUser(@Body() body: UpdateUserDto) {
     //llegan los datos de la persona
     console.log('controller update',body);
-    //return  await this.usersService.updateUser(body);
+    return  await this.usersService.updateUser(body);
   }
 
 }
