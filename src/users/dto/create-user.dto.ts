@@ -2,23 +2,32 @@ import {
   IsBoolean,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
 
-export class CreateUserDto {
+export class CreateUserDto {  
+
+  @IsOptional()
+  @IsNumber()
+  id: number;
+
+   @IsOptional()
   @IsNotEmpty({
     message: 'Username is required',
   })
   username: string;
 
+   @IsOptional()
   @IsString({
     message: 'Email must be a string',
   })
   email: string;
 
+  @IsOptional()
   @IsString()
   @MinLength(4)
   @MaxLength(20)

@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Query,
   Param,
   UseGuards,
@@ -115,11 +116,18 @@ export class UsersController {
     return this.usersService.insertNewUnidadTerritorialUser(usuario_rol_id, unidad_territorial_id, fecha_inicio, fecha_fin, usuario_id);
   }
 
-  @Post('/addUser')   
+  @Post('/')   
   async addUser(@Body() body: CreateUserDto) {
     //llegan los datos de la persona
-    console.log('controller',body);
+    console.log('controller new',body);
     return  await this.usersService.createNewUser(body);
+  }
+
+  @Put('/')   
+  async updateUser(@Body() body: CreateUserDto) {
+    //llegan los datos de la persona
+    console.log('controller update',body);
+    //return  await this.usersService.updateUser(body);
   }
 
 }

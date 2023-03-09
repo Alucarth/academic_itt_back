@@ -627,4 +627,23 @@ export class UsersService {
 
   }
 
+  async updateUser(dto:CreateUserDto) {
+
+    //1:BUSCAR LA PERSONA
+
+    try{
+    
+    
+    } catch (error) {
+       console.log("Error update user: ", error);
+       throw new HttpException({
+          status: HttpStatus.CONFLICT,
+          error: `Error Actualizando Datos Usuario: ${error.message}`,
+        }, HttpStatus.ACCEPTED, {
+          cause: error
+        });
+       //return 0;
+    }
+  }
+
 }
