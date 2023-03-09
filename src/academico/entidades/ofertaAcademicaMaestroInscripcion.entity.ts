@@ -8,19 +8,25 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { EstadoMatriculaTipo } from './estadoMatriculaTipo.entity';
-import { EstudianteInscripcion } from './estudianteInscripcion.entity';
 import { EstudianteOfertaAcademicaMaestroCalificacion } from './estudianteOfertaAcademicaMaestroCalificacion.entity';
-import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
-import { MatriculaTipo } from './matriculaTipo.entity';
+import { MaestroInscripcion } from './maestroInscripcion.entity';
 import { OfertaAcademica } from './ofertaAcademica.entity';
-import { Persona } from './persona.entity';
 
-@Entity({ name: 'estudiante_inscripcion_oferta_academica', schema: 'public' })
-export class EstudianteInscripcionOfertaAcademica {
+@Entity({ name: 'oferta_academica_maestro_inscripcion', schema: 'public' })
+export class OfertaAcademicaMaestroInscripcion {
+
   @PrimaryGeneratedColumn()
   id: number;
-  
+
+  @Column({ type: 'date', name: 'asignacion_fecha_inicio' })
+  asignacionFechaInicio: string;
+
+  @Column({ type: 'date', name: 'asignacion_fecha_fin' })
+  asignacionFechaFin: string;
+
+  @Column({name:'activo', type: 'bool', default: true })
+  activo: boolean;
+
   @Exclude()
   @UpdateDateColumn({
     name: 'fecha_registro',
@@ -40,18 +46,14 @@ export class EstudianteInscripcionOfertaAcademica {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-  @Column({ type: 'integer', name: 'estudiante_asignatura_ma_id' })
-  estudianteAsignaturaMaId: number;
+  @ManyToOne(() => MaestroInscripcion, (maestroInscripcion) => maestroInscripcion.ofertasAcademicasMaestrosInscripciones, { nullable: false, cascade: true })
+  @JoinColumn({ name: 'maestro_inscripcion_id', referencedColumnName: 'id'})
+  maestroInscripcion: MaestroInscripcion;
   
-
-  @ManyToOne(() => EstudianteInscripcion, (estudianteInscripcion) => estudianteInscripcion.estudiantesOfertas, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'estudiante_inscripcion_id', referencedColumnName: 'id'})
-  estudianteInscripcion: EstudianteInscripcion;
-
-  @ManyToOne(() => OfertaAcademica, (ofertaAcademica) => ofertaAcademica.estudiantesOfertas, { nullable: false, cascade: true })
+  @ManyToOne(() => OfertaAcademica, (ofertaAcademica) => ofertaAcademica.ofertasAcademicasMaestrosInscripciones, { nullable: false, cascade: true })
   @JoinColumn({ name: 'oferta_academica_id', referencedColumnName: 'id'})
   ofertaAcademica: OfertaAcademica;
-
+ 
   @OneToMany(() => EstudianteOfertaAcademicaMaestroCalificacion, (estudianteOfertaAcademicaMaestroCalificacion) => estudianteOfertaAcademicaMaestroCalificacion.ofertaAcademicaMaestroInscripcion)
   estudiantesOfertasMaestrosCalificaciones: EstudianteOfertaAcademicaMaestroCalificacion[];
   

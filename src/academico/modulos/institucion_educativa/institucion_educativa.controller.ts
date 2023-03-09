@@ -13,14 +13,29 @@ export class InstitucionEducativaController {
     async getAll():Promise<InstitucionEducativa[]>{
         return await this.institucionEducativaService.getAll();
     }
+    
+    @Get(':id')
+    async getById(@Param('id', ParseIntPipe) id: number):Promise<InstitucionEducativa>{
+        return await this.institucionEducativaService.getById(id);
+    }
+
     @Get('itt')
     async getAllItt():Promise<InstitucionEducativa[]>{
         return await this.institucionEducativaService.getAllItt();
     }
 
-    @Get(':sie')
+    @Get('sie/:sie')
     async getBySie(@Param('sie', ParseIntPipe) sie: number):Promise<InstitucionEducativa[]>{
         return await this.institucionEducativaService.findBySie(sie);
+    }
+
+    @Get('acreditacion/:sie')
+    async getAcreditdoBySie(@Param('sie', ParseIntPipe) sie: number):Promise<InstitucionEducativa[]>{
+        return await this.institucionEducativaService.findAcreditacionBySie(sie);
+    }
+    @Get('itt/:sie')
+    async getOneIttBySie(@Param('sie', ParseIntPipe) sie: number):Promise<InstitucionEducativa>{
+        return await this.institucionEducativaService.findOneAcreditadoBySie(sie);
     }
 
     @Get('carreras/:sie')

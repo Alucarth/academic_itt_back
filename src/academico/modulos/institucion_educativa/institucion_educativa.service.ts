@@ -24,7 +24,17 @@ export class InstitucionEducativaService {
         console.log(itts);
         return itts;
     }
-
+   
+    async getById(id:number){
+        const itt = await this.institucioneducativaRepository
+        .createQueryBuilder("a")
+        .innerJoinAndSelect("a.educacionTipo", "b")
+        .where('a.id = :id ', { id })
+        .getOneOrFail();
+        console.log(itt);
+        return itt;
+    }
+   
     async findBySie( id:number ){
         const itts = await this.institucioneducativaRepository
         .createQueryBuilder("a")
@@ -54,6 +64,25 @@ export class InstitucionEducativaService {
         .orderBy('a.id', 'ASC')
         .getMany();
         return itts;
+    }
+    async findOneAcreditadoBySie( id:number ){
+        console.log(id);
+        const itt = await this.institucioneducativaRepository
+        .createQueryBuilder("a")
+        .innerJoinAndSelect("a.educacionTipo", "b")
+        .innerJoinAndSelect("a.estadoInstitucionEducativaTipo", "c")
+        .innerJoinAndSelect("a.acreditados", "e")
+        .innerJoinAndSelect("e.convenioTipo", "f")
+        .innerJoinAndSelect("e.dependenciaTipo", "g")
+        .innerJoinAndSelect("e.acreditacionTipo", "i")
+       // .select('a.id as id, a.institucion_educativa')
+        .where('b.id in (7,8,9)  ')
+        .andWhere('a.id = :id ', { id })
+        .andWhere('e.vigente = :vigente ', { vigente: 'TRUE'})
+        .orderBy('a.id', 'ASC')
+        //.getOneOrFail();
+        .getRawOne();
+        return itt;
     }
     async findEspecialidadBySie( id:number ){
         const itts = await this.institucioneducativaRepository
