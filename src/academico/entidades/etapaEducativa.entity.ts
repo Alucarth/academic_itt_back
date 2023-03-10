@@ -13,6 +13,7 @@ import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
 import { EtapaEducativaTipo } from './etapaEducativaTipo.entity';
 import { InstitucionEducativaAcreditacionEtapaEducativa } from './institucionEducativaAcreditacionEtapaEducativa.entity';
 import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
+import { OperativoEtapaEducativa } from './operativoEtapaEducativa.entity';
 
 @Entity({ name: 'etapa_educativa', schema: 'public' })
 export class EtapaEducativa {
@@ -94,5 +95,8 @@ export class EtapaEducativa {
 
   /*@Column({ type: 'varchar', name: 'etapa_educativa_id' })
   etapaEducativaId: string;*/
+
+  @OneToMany(() => OperativoEtapaEducativa, (operativoEtapaEducativa) => operativoEtapaEducativa.etapaEducativa)
+  operativosEtapas: OperativoEtapaEducativa[];
 
 }

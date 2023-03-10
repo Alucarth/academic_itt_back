@@ -11,6 +11,7 @@ import {
 import { EtapaEducativa } from './etapaEducativa.entity';
 import { InstitucionEducativa } from './institucionEducativa.entity';
 import { Operativo } from './operativo.entity';
+import { OperativoEtapaEducativa } from './operativoEtapaEducativa.entity';
 import { PlanEstudio } from './planEstudio.entity';
 import { SistemaEducacionTipo } from './sistemaEducacionTipo.entity';
 
@@ -65,4 +66,8 @@ export class EducacionTipo {
   
   @OneToMany(() => Operativo, (operativo) => operativo.educacionTipo)
   operativos: Operativo[];
+
+  @OneToMany(() => OperativoEtapaEducativa, (operativoEtapaEducativa) => operativoEtapaEducativa.educacionTipo)
+  operativosEtapas: OperativoEtapaEducativa[];
+  
 }

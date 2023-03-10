@@ -83,7 +83,7 @@ export class InstitucionEducativaCurso {
   periodoTipoId: number;
 
   @ManyToOne(() => PeriodoTipo, (periodoTipo) => periodoTipo.cursos, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'etapa_educativa_id', referencedColumnName: 'id'})
+  @JoinColumn({ name: 'periodo_tipo_id', referencedColumnName: 'id'})
   periodoTipo: PeriodoTipo;
 
 

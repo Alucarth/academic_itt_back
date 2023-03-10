@@ -28,6 +28,7 @@ import { TurnoTipoModule } from './academico/catalogos/turno_tipo/turno_tipo.mod
 import { ParaleloTipoModule } from './academico/catalogos/paralelo_tipo/paralelo_tipo.module';
 import { InstitucionEducativaCursoModule } from './academico/modulos/institucion_educativa_curso/institucion_educativa_curso.module';
 import { PeriodoTipoModule } from './academico/catalogos/periodo_tipo/periodo_tipo.module';
+import { OperativoEtapaEducativaModule } from './academico/modulos/operativo_etapa_educativa/operativo_etapa_educativa.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { PeriodoTipoModule } from './academico/catalogos/periodo_tipo/periodo_ti
     ParaleloTipoModule,
     InstitucionEducativaCursoModule,
     PeriodoTipoModule,
+    OperativoEtapaEducativaModule,
   ],
   providers: [],
 })

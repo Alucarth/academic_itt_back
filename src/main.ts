@@ -7,11 +7,23 @@ import { RolesGuard } from './auth/guards/roles.guard';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {cors : true});
   const logger = new Logger('Bootstrap');
+   // Global Guards (see https://docs.nestjs.com/guards#global-guards)
+   const reflector = app.get(Reflector);
+   app.useGlobalGuards(new RolesGuard(reflector));
+   
+   app.useGlobalPipes(
+     new ValidationPipe({
+       whitelist: true,
+     }),
+   );
+   app.setGlobalPrefix('api');
+
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Sistema Academico ITT')
     .setDescription('API de sistema academico')
     .setVersion('1.0')
     .addTag('Academico ITT')
+    .setBasePath('api')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
@@ -24,16 +36,7 @@ async function bootstrap() {
     },
   });
 
-  // Global Guards (see https://docs.nestjs.com/guards#global-guards)
-  const reflector = app.get(Reflector);
-  app.useGlobalGuards(new RolesGuard(reflector));
-  
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-    }),
-  );
-  app.setGlobalPrefix('api');
+ 
 
   // app starts listening on port 3003
   await app.listen(3005);

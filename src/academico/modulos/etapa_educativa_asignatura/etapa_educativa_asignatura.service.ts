@@ -54,4 +54,5 @@ export class EtapaEducativaAsignaturaService {
         .getMany();
         return asignaturas;
     }
+   
 }
