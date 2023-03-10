@@ -17,6 +17,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreaPersonaDTO } from './dto/crea-persona.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PersonaBusquedaCiFechaNacDTO, PersonaMReadDto } from './dto/persona.dto';
+import { UpdatePasswordUserDto } from './dto/update-password-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
@@ -135,6 +136,12 @@ export class UsersController {
   async resetPasswordUser(@Body() body) {    
     console.log('controller update',body);
     return  await this.usersService.resetPasswordUser(body);
+  }
+
+  @Put('/changePassword')   
+  async changePasswordUser(@Body() body:UpdatePasswordUserDto) {    
+    console.log('controller update',body);
+    return  await this.usersService.changePasswordUser(body);
   }
 
 }

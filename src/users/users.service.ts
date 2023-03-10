@@ -687,6 +687,107 @@ export class UsersService {
   }
 
   async resetPasswordUser(body) {
+    //TODO: validar que sea numero
+
+    const id_user = parseInt(body.id);
+
+    //1:BUSCAR usuario    
+    const user = await this.userRepository.findOne({
+      where: { id: id_user},
+    });
+    console.log('persona:' ,user);
+
+    if(!user){
+      return this._serviceResp.respuestaHttp404(
+          id_user,
+          'Registro No Encontrado !!',
+          '',
+        );
+    }
+
+    try{
+
+      const hashPassword = await bcrypt.hash('123456', 10);
+
+       await this.userRepository
+        .createQueryBuilder()        
+        .update(User)
+        .set({  
+          password : hashPassword                      
+        })
+        .where("id = :id", { id: id_user})
+        .execute()
+
+        return this._serviceResp.respuestaHttp202(
+          id_user,
+          'Registro Actualizado !!',
+          '',
+        );
+        
+    
+    } catch (error) {
+       console.log("Error reset password: ", error);
+       throw new HttpException({
+          status: HttpStatus.CONFLICT,
+          error: `Error reset Password Usuario: ${error.message}`,
+        }, HttpStatus.ACCEPTED, {
+          cause: error
+        });       
+    }
+
+
+  }
+
+
+  async changePasswordUser(body) {
+    //TODO: validar que sea numero ?
+
+    const id_user = parseInt(body.id);
+
+    //1:BUSCAR usuario    
+    const user = await this.userRepository.findOne({
+      where: { id: id_user},
+    });
+    console.log('persona:' ,user);
+
+    if(!user){
+      return this._serviceResp.respuestaHttp404(
+          id_user,
+          'Registro No Encontrado !!',
+          '',
+        );
+    }
+
+    try{
+
+      const hashPassword = await bcrypt.hash(body.password, 10);
+
+       await this.userRepository
+        .createQueryBuilder()        
+        .update(User)
+        .set({  
+          password : hashPassword                      
+        })
+        .where("id = :id", { id: id_user})
+        .execute()
+
+        return this._serviceResp.respuestaHttp202(
+          id_user,
+          'Registro Actualizado !!',
+          '',
+        );
+        
+    
+    } catch (error) {
+       console.log("Error reset password: ", error);
+       throw new HttpException({
+          status: HttpStatus.CONFLICT,
+          error: `Error reset Password Usuario: ${error.message}`,
+        }, HttpStatus.ACCEPTED, {
+          cause: error
+        });       
+    }
+
 
   }
 
