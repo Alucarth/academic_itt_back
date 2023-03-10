@@ -69,6 +69,16 @@ export class UsersController {
     return this.usersService.getAllIdiomaTipo();
   }
 
+  @Get('/getAllDeptoTipo')
+  getAllDeptoTipo(){
+    return this.usersService.getAllDeptoTipo();
+  }
+
+  @Get('/getAllProvByDeptoCodigo/:codigoDepto')
+  getAllProvinciaByDeptoCodigo(@Param('codigoDepto') codigoDepto:string){  
+    return this.usersService.getAllProvinciaByDeptoCodigo(parseInt(codigoDepto));
+  }
+
   @Get('/getAllRolesByUserId/:userId')
   getAllRolesByUserId(@Param('userId') id:string){
     return this.usersService.getAllRolesByUserId(parseInt(id));

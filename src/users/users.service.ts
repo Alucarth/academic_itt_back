@@ -562,6 +562,47 @@ export class UsersService {
 
   }
 
+  async getAllDeptoTipo() {
+
+    const result = await this.userRepository.query(`
+    select codigo,sigla,departamento from ci_expedido_tipo order by 1
+    `);
+    
+    console.log('result: ', result);
+    console.log('result size: ', result.length);
+
+    if(result.length === 0){
+      throw new NotFoundException('No se encontraron registros');
+    }
+            
+    return result;
+
+  }
+
+  async getAllProvinciaByDeptoCodigo(codigoDepto: number) {
+
+    const result = await this.userRepository.query(`
+      SELECT
+        id, lugar, codigo
+      FROM
+        unidad_territorial 
+      WHERE
+        unidad_territorial_tipo_id = 2
+        AND unidad_territorial_id in (select id from unidad_territorial where codigo = '${codigoDepto}' and unidad_territorial_tipo_id = 1)
+        order by codigo
+    `);
+    
+    console.log('result: ', result);
+    console.log('result size: ', result.length);
+
+    if(result.length === 0){
+      throw new NotFoundException('No se encontraron registros');
+    }
+            
+    return result;
+
+  }
+
   async deleteRolUser(user_rol_id: number) {
 
     //TODO: Validar las tablas dependientes
