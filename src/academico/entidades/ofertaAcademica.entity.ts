@@ -19,11 +19,11 @@ export class OfertaAcademica {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({name:'opcional', type: 'bool', default: true })
+  @Column({name:'opcional', type: 'bool', default: true , nullable:true})
   opcional: boolean;
 
-  @Column({ type: 'integer', name: 'institucion_educativa_curso_oferta_am_id' })
-  institucionEducativaCursoOfertaAmId: number;
+  @Column({ type: 'integer', name: 'institucioneducativa_curso_oferta_am_id', nullable: true })
+  institucioneducativaCursoOfertaAmId: number;
 
   @Exclude()
   @UpdateDateColumn({
@@ -48,8 +48,8 @@ export class OfertaAcademica {
   @JoinColumn({ name: 'asignatura_tipo_id', referencedColumnName: 'id'})
   asignaturaTipo: AsignaturaTipo;
   
-  @ManyToOne(() => InstitucionEducativaCurso, (institucionEducativaCurso) => institucionEducativaCurso.ofertasAcademicas, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'institucion_educativa_sucursal_id', referencedColumnName: 'id'})
+  @ManyToOne(() => InstitucionEducativaCurso, (institucionEducativaCurso) => institucionEducativaCurso.ofertasAcademicas, { nullable: false, cascade: true, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'institucion_educativa_curso_id', referencedColumnName: 'id'})
   institucionEducativaCurso: InstitucionEducativaCurso;
   
   @OneToMany(() => EstudianteInscripcionOfertaAcademica, (estudianteInscripcionOfertaAcademica) => estudianteInscripcionOfertaAcademica.ofertaAcademica)

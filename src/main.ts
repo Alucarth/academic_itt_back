@@ -30,9 +30,9 @@ async function bootstrap() {
 
   // SwaggerModule setup (see https://docs.nestjs.com/recipes/swagger)
   SwaggerModule.setup('docs', app, document, {
-    explorer: true,
+    explorer: false,
     swaggerOptions:{
-      filter:true,
+      filter:false,
     },
   });
 

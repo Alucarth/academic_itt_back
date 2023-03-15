@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { EducacionTipo } from './educacionTipo.entity';
+import { EstudianteInscripcionCalificacionGeneral } from './estudianteInscripcionCalificacionGeneral.entity';
 import { EstudianteOfertaAcademicaMaestroCalificacion } from './estudianteOfertaAcademicaMaestroCalificacion.entity';
 import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
 import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
@@ -65,4 +66,7 @@ export class PeriodoTipo {
   @OneToMany(() => OperativoEtapaEducativa, (operativoEtapaEducativa) => operativoEtapaEducativa.periodoTipo)
   operativosEtapas: OperativoEtapaEducativa[];
   
+  @OneToMany(() => EstudianteInscripcionCalificacionGeneral, (estudianteInscripcionCalificacionGeneral) => estudianteInscripcionCalificacionGeneral.periodoTipo)
+  estudiantesCalificacionesGenerales: EstudianteInscripcionCalificacionGeneral[];
+
 }

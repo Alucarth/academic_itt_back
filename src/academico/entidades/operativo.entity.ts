@@ -66,7 +66,7 @@ export class Operativo {
   @JoinColumn({ name: 'evento_tipo_id', referencedColumnName: 'id'})
   eventoTipo: EventoTipo;
   
-  @ManyToOne(() => PeriodoTipo, (PeriodoTipo) => PeriodoTipo.operativos, { nullable: false, cascade: true })
+  @ManyToOne(() => PeriodoTipo, (periodoTipo) => periodoTipo.operativos, { nullable: false, cascade: true })
   @JoinColumn({ name: 'periodo_tipo_id', referencedColumnName: 'id'})
   periodoTipo: PeriodoTipo;
   

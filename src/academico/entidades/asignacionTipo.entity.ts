@@ -9,19 +9,20 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
+import { OfertaAcademica } from './ofertaAcademica.entity';
 import { Tarea } from './tarea.entity';
 
-@Entity({ name: 'intervalo_tiempo_tipo', schema: 'public' })
-export class IntervaloTiempoTipo {
+@Entity({ name: 'asignacion_tipo', schema: 'public' })
+export class AsignacionTipo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'intervalo_tiempo' })
-  intervaloTiempo: string;
-
-  @Column({ type: 'varchar', name: 'observacion' })
-  observacion: string;
- 
+  @Column({ type: 'varchar', name: 'asignacion' })
+  asignacion: string;
+  
+  @Column({ type: 'varchar', name: 'comentario' })
+  comentario: string;
+  
   @Exclude()
   @UpdateDateColumn({
     name: 'fecha_registro',
@@ -37,14 +38,11 @@ export class IntervaloTiempoTipo {
     default: () => 'CURRENT_TIMESTAMP',
   })
   fechaModificacion: Date;
-  
+
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-  @OneToMany(() => EtapaEducativaAsignatura, (etapaEducativaAsignatura) => etapaEducativaAsignatura.intervaloTiempoTipo)
-  etapasEducativasAsignaturas: EtapaEducativaAsignatura[];
-
-  @OneToMany(() => Tarea, (tarea) => tarea.intervaloTiempoTipo)
+  @OneToMany(() => Tarea, (tarea) => tarea.asignacionTipo)
   tareas: Tarea[];
   
 }

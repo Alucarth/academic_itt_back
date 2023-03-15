@@ -14,6 +14,7 @@ import { InstitucionEducativaAcreditacion } from './institucionEducativaAcredita
 import { InstitucionEducativaAcreditacionEspecialidad } from './institucionEducativaAcreditacionEspecialidad.entity';
 import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
 import { JurisdiccionGeografica } from './jurisdiccionGeografica.entity';
+import { TramiteInstitucionEducativa } from './tramiteInstitucionEducativa.entity';
 
 @Entity({ name: 'institucion_educativa', schema: 'public' })
 export class InstitucionEducativa {
@@ -72,4 +73,7 @@ export class InstitucionEducativa {
   @OneToMany(() => InstitucionEducativaAcreditacion, (institucionEducativaAcreditacion) => institucionEducativaAcreditacion.institucionEducativa)
   acreditados: InstitucionEducativaAcreditacion[];
   
+  @OneToMany(() => TramiteInstitucionEducativa, (tramiteInstitucionEducativa) => tramiteInstitucionEducativa.institucionEducativa)
+  tramitesInstituciones: TramiteInstitucionEducativa[];
+
 }
