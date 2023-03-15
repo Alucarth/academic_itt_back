@@ -572,20 +572,18 @@ export class UsersService {
 
   async getAllDeptoTipo() {
 
+    //unidad_territorial_tipo_id = 6 censo_2014
+
     const result = await this.userRepository.query(`
     SELECT	
         unidad_territorial.id, 	
-        sigla, 
-        departamento as lugar
-      FROM
-        ci_expedido_tipo
-        INNER JOIN
+        comentario as sigla, 
+        lugar
+      FROM        
         unidad_territorial
-        ON 
-          ci_expedido_tipo.codigo = unidad_territorial.codigo
-        where unidad_territorial_tipo_id = 1
+      where unidad_territorial_tipo_id = 8 and lugar <> 'NINGUNO'
       ORDER BY
-        1 ASC
+        2 ASC
     `);
     
     console.log('result: ', result);
@@ -618,13 +616,79 @@ export class UsersService {
         order by codigo
     `);*/
 
-    const result = await this.userRepository.query(`
+    /*const result = await this.userRepository.query(`
       SELECT
         id, lugar
       FROM
         unidad_territorial 
       WHERE
         unidad_territorial_tipo_id = 2 and unidad_territorial_id = ${codigoDepto} and codigo <> '0'
+		order by 2
+    `);*/
+
+    const result = await this.userRepository.query(`
+      SELECT
+        id, lugar
+      FROM
+        unidad_territorial 
+      WHERE
+        unidad_territorial_tipo_id = 9 and unidad_territorial_id = ${codigoDepto} and codigo <> '0'
+		order by 2
+    `);
+    
+    console.log('result: ', result);
+    console.log('result size: ', result.length);
+
+    if(result.length === 0){
+      throw new NotFoundException('No se encontraron registros');
+    }
+            
+    //return result;
+    return this._serviceResp.respuestaHttp200(
+          result,
+          '',
+          '',
+        );
+
+  }
+
+  async getAllMunicipioByProvinciaId(provId: number) {
+
+    const result = await this.userRepository.query(`
+      SELECT
+        id, lugar
+      FROM
+        unidad_territorial 
+      WHERE
+        unidad_territorial_tipo_id = 10 and unidad_territorial_id = ${provId} 
+		order by 2
+    `);
+    
+    console.log('result: ', result);
+    console.log('result size: ', result.length);
+
+    if(result.length === 0){
+      throw new NotFoundException('No se encontraron registros');
+    }
+            
+    //return result;
+    return this._serviceResp.respuestaHttp200(
+          result,
+          '',
+          '',
+        );
+
+  }
+
+   async getAllComunidadByMunicipioId(provId: number) {
+
+    const result = await this.userRepository.query(`
+      SELECT
+        id, lugar
+      FROM
+        unidad_territorial 
+      WHERE
+        unidad_territorial_tipo_id = 11 and unidad_territorial_id = ${provId} 
 		order by 2
     `);
     

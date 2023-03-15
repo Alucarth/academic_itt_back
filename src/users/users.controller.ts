@@ -79,6 +79,16 @@ export class UsersController {
     return this.usersService.getAllProvinciaByDeptoCodigo(parseInt(codigoDepto));
   }
 
+  @Get('/getAllMuniByProvId/:provId')
+  getAllMuniByProvId(@Param('provId') provId:string){  
+    return this.usersService.getAllMunicipioByProvinciaId(parseInt(provId));
+  }
+
+  @Get('/getAllComByMunId/:munId')
+  getAllComByMunId(@Param('munId') munId:string){  
+    return this.usersService.getAllComunidadByMunicipioId(parseInt(munId));
+  }
+
   @Get('/getAllRolesByUserId/:userId')
   getAllRolesByUserId(@Param('userId') id:string){
     return this.usersService.getAllRolesByUserId(parseInt(id));
