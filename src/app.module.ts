@@ -30,6 +30,8 @@ import { InstitucionEducativaCursoModule } from './academico/modulos/institucion
 import { PeriodoTipoModule } from './academico/catalogos/periodo_tipo/periodo_tipo.module';
 import { OperativoEtapaEducativaModule } from './academico/modulos/operativo_etapa_educativa/operativo_etapa_educativa.module';
 import { OfertaAcademicaModule } from './academico/modulos/oferta_academica/oferta_academica.module';
+import { EstudianteInscripcionModule } from './academico/modulos/estudiante_inscripcion/estudiante_inscripcion.module';
+import { PersonaModule } from './academico/modulos/persona/persona.module';
 
 @Module({
   imports: [
@@ -63,6 +65,8 @@ import { OfertaAcademicaModule } from './academico/modulos/oferta_academica/ofer
     PeriodoTipoModule,
     OperativoEtapaEducativaModule,
     OfertaAcademicaModule,
+    EstudianteInscripcionModule,
+    PersonaModule,
   ],
   providers: [],
 })

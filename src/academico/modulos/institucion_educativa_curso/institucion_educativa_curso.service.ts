@@ -54,6 +54,7 @@ export class InstitucionEducativaCursoService {
           }
 
           const crearResult = await this.institucionEducativaCursoRepository.runTransaction(op)
+
           if(crearResult){
             return this._serviceResp.respuestaHttp201(
                 crearResult.id,
@@ -91,14 +92,14 @@ export class InstitucionEducativaCursoService {
             return deleteCurso;
           }
           const crearResult = await this.institucionEducativaCursoRepository.runTransaction(op)
+
           if(crearResult){
               return this._serviceResp.respuestaHttp201(
                   '',
                   'Borrados datos de Curso y Oferta  !!',
                   '',
               );
-            }  
-        
+          }  
     }
     
 }

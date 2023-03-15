@@ -40,17 +40,5 @@ export class OfertaAcademicaRepository {
     
         return await transaction.getRepository(OfertaAcademica).save(ofertas)
     }
-    /*
-    async delete(id: string) {
-        return await this.dataSource.getRepository(OfertaAcademica).delete(id)
-      }
-    async deleteOfertaAcademicaByCurso(asignaturas) {
-
-        const ofertas: OfertaAcademica[] = asignaturas.map((item) => {
-            this.delete(item.id);          
-        });
     
-        return await transaction.getRepository(OfertaAcademica).save(ofertas)
-    }
-  */
 }

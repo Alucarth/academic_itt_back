@@ -23,8 +23,8 @@ export class EstudianteInscripcion {
   @Column({ type: 'varchar', name: 'observacion' })
   observacion: string;
 
-  @Column({ type: 'date', name: 'fecha_inscripcion' })
-  fechaInscripcion: string;
+  @Column({ type: 'date', name: 'fecha_inscripcion', nullable:true })
+  fechaInscripcion: Date | null;
 
   @Exclude()
   @UpdateDateColumn({
@@ -48,6 +48,9 @@ export class EstudianteInscripcion {
   @Column({ type: 'integer', name: 'estudiante_inscripcion_am_id' })
   estudianteInscripcionAmId: number;
 
+  @Column({ name: 'persona_id', nullable:false })
+  personaId: number;
+
   @ManyToOne(() => Persona, (persona) => persona.estudiantesInscripciones, { nullable: false, cascade: true })
   @JoinColumn({ name: 'persona_id', referencedColumnName: 'id'})
   persona: Persona;
@@ -56,6 +59,9 @@ export class EstudianteInscripcion {
   @JoinColumn({ name: 'estado_matricula_fin_tipo_id', referencedColumnName: 'id'})
   estadoMatriculaFinTipo: EstadoMatriculaTipo;
   
+  @Column({ name: 'institucion_educativa_curso_id', nullable:false })
+  institucionEducativaCursoId: number;
+
   @ManyToOne(() => InstitucionEducativaCurso, (institucionEducativaCurso) => institucionEducativaCurso.estudiantesInscripciones, { nullable: false, cascade: true })
   @JoinColumn({ name: 'institucion_educativa_curso_id', referencedColumnName: 'id'})
   institucionEducativaCurso: InstitucionEducativaCurso;
