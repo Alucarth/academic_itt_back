@@ -565,7 +565,19 @@ export class UsersService {
   async getAllDeptoTipo() {
 
     const result = await this.userRepository.query(`
-    select codigo,sigla,departamento from ci_expedido_tipo order by 1
+    SELECT	
+        unidad_territorial.id, 	
+        sigla, 
+        departamento
+      FROM
+        ci_expedido_tipo
+        INNER JOIN
+        unidad_territorial
+        ON 
+          ci_expedido_tipo.codigo = unidad_territorial.codigo
+        where unidad_territorial_tipo_id = 1
+      ORDER BY
+        1 ASC
     `);
     
     console.log('result: ', result);
