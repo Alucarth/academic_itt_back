@@ -47,5 +47,10 @@ export class InstitucionEducativaController {
     async getCarrerasBySie(@Param('sie', ParseIntPipe) sie: number):Promise<InstitucionEducativa[]>{
         return await this.institucionEducativaService.findCarrerasBySie(sie);
     }
+
+    @Get('sucursal/:sie/:gestion')
+    async getSucursalGestion(@Param('sie', ParseIntPipe) sie: number, @Param('gestion', ParseIntPipe) gestion: number):Promise<InstitucionEducativa>{
+        return await this.institucionEducativaService.findSucursalGestion(sie, gestion);
+    }
       
 }

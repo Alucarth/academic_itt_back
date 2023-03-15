@@ -11,6 +11,7 @@ import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.ent
 import { MaestroInscripcion } from './maestroInscripcion.entity';
 import { Operativo } from './operativo.entity';
 import { OperativoEtapaEducativa } from './operativoEtapaEducativa.entity';
+import { Tramite } from './tramite.entity';
 
 @Entity({ name: 'gestion_tipo', schema: 'public' })
 export class GestionTipo {
@@ -63,4 +64,7 @@ export class GestionTipo {
 
   @OneToMany(() => OperativoEtapaEducativa, (operativoEtapaEducativa) => operativoEtapaEducativa.gestionTipo)
   operativosEtapas: OperativoEtapaEducativa[];
+
+  @OneToMany(() => Tramite, (tramite) => tramite.gestionTipo)
+  tramites: Tramite[];
 }

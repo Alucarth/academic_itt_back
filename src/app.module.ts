@@ -29,6 +29,7 @@ import { ParaleloTipoModule } from './academico/catalogos/paralelo_tipo/paralelo
 import { InstitucionEducativaCursoModule } from './academico/modulos/institucion_educativa_curso/institucion_educativa_curso.module';
 import { PeriodoTipoModule } from './academico/catalogos/periodo_tipo/periodo_tipo.module';
 import { OperativoEtapaEducativaModule } from './academico/modulos/operativo_etapa_educativa/operativo_etapa_educativa.module';
+import { OfertaAcademicaModule } from './academico/modulos/oferta_academica/oferta_academica.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { OperativoEtapaEducativaModule } from './academico/modulos/operativo_eta
     InstitucionEducativaCursoModule,
     PeriodoTipoModule,
     OperativoEtapaEducativaModule,
+    OfertaAcademicaModule,
   ],
   providers: [],
 })

@@ -115,5 +115,18 @@ export class InstitucionEducativaService {
         console.log(data);
         return data;
     }
- 
+    async findSucursalGestion( sie:number, gestion:number ){
+        console.log("consulta");
+        console.log(sie);
+        console.log(gestion);
+        const sucursal = await this.institucioneducativaRepository
+        .createQueryBuilder("a")
+        .innerJoinAndSelect("a.sucursales", "b")
+        .innerJoinAndSelect("b.gestionTipo", "g")
+        .select(['a.id as id','a.institucionEducativa as institucion_educativa', 'b.id as sucursal_id'])
+        .where('a.id = :id ', { id: sie })
+        .andWhere('g.id = :gestion ', { gestion : gestion }) //PARA SOLO MOSTRAR LA CARRER
+        .getRawOne();
+        return sucursal;
+    }
 }
