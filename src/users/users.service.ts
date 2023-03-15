@@ -558,7 +558,15 @@ export class UsersService {
       throw new NotFoundException('No se encontraron registros');
     }
             
-    return result;
+    //return result;
+    return  ({
+          "statusCode": 201,
+          "message": [
+            ""
+          ],
+          "data": result,
+          "code": ""
+        });
 
   }
 
