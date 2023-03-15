@@ -587,7 +587,13 @@ export class UsersService {
       throw new NotFoundException('No se encontraron registros');
     }
             
-    return result;
+    //return result;
+    return this._serviceResp.respuestaHttp200(
+          result,
+          '',
+          '',
+        );
+    
 
   }
 
@@ -621,7 +627,12 @@ export class UsersService {
       throw new NotFoundException('No se encontraron registros');
     }
             
-    return result;
+    //return result;
+    return this._serviceResp.respuestaHttp200(
+          result,
+          '',
+          '',
+        );
 
   }
 
