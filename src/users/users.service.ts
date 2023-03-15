@@ -523,7 +523,7 @@ export class UsersService {
   async getAllEstadoCivilTipo() {
 
     const result = await this.userRepository.query(`
-    select id,estado_civil from estado_civil_tipo order by 1
+    select id,estado_civil as "estadoCivil" from estado_civil_tipo order by 1
     `);
     
     console.log('result: ', result);
@@ -576,7 +576,7 @@ export class UsersService {
     SELECT	
         unidad_territorial.id, 	
         sigla, 
-        departamento
+        departamento as lugar
       FROM
         ci_expedido_tipo
         INNER JOIN
