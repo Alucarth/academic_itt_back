@@ -574,7 +574,7 @@ export class UsersService {
     FROM
       unidad_territorial 
     WHERE
-      unidad_territorial_tipo_id = 1 
+      unidad_territorial_tipo_id = 8
       AND unidad_territorial_id = ${idPais}
     ORDER BY
       2 ASC
