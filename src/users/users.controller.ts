@@ -69,9 +69,14 @@ export class UsersController {
     return this.usersService.getAllIdiomaTipo();
   }
 
-  @Get('/getAllDeptoTipo')
-  getAllDeptoTipo(){
-    return this.usersService.getAllDeptoTipo();
+  @Get('/getAllDeptoTipo/:idPais')
+  getAllDeptoTipo(@Param('idPais') idPais:string){
+    return this.usersService.getAllDeptoTipo(parseInt(idPais));
+  }
+
+  @Get('/getAllExpedidoTipo')
+  getAllExpedidoTipo(){
+    return this.usersService.getAllExpedidoTipo();
   }
 
   @Get('/getAllPaisTipo')

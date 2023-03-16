@@ -570,7 +570,42 @@ export class UsersService {
 
   }
 
-  async getAllDeptoTipo() {
+  async getAllDeptoTipo(idPais: number) {
+
+    //unidad_territorial_tipo_id = 6 censo_2014
+
+    const result = await this.userRepository.query(`
+    SELECT
+      unidad_territorial.ID,
+      comentario AS sigla,
+      lugar 
+    FROM
+      unidad_territorial 
+    WHERE
+      unidad_territorial_tipo_id = 1 
+      AND unidad_territorial_id = ${idPais}
+    ORDER BY
+      2 ASC
+    `);
+    
+    console.log('result: ', result);
+    console.log('result size: ', result.length);
+
+    if(result.length === 0){
+      throw new NotFoundException('No se encontraron registros');
+    }
+            
+    //return result;
+    return this._serviceResp.respuestaHttp200(
+          result,
+          '',
+          '',
+        );
+    
+
+  }
+
+  async getAllExpedidoTipo() {
 
     //unidad_territorial_tipo_id = 6 censo_2014
 
