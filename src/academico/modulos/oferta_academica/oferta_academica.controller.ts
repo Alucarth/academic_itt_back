@@ -1,8 +1,10 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { OfertaAcademica } from 'src/academico/entidades/ofertaAcademica.entity';
 import { OfertaAcademicaService } from './oferta_academica.service';
 
 @Controller('oferta-academica')
+@ApiTags('oferta-academica')
 export class OfertaAcademicaController {
     constructor(
         private readonly ofertaAcademicaService: OfertaAcademicaService

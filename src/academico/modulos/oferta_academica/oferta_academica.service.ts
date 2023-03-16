@@ -7,8 +7,9 @@ export class OfertaAcademicaService {
         @Inject(OfertaAcademicaRepository)
         private ofertaAcademicaRepositorio: OfertaAcademicaRepository,
     ){}
-    async findAsignaturasByCursoId( id:number ){
+    
+    async findAsignaturasByCursoId(id:number){
         return await this.ofertaAcademicaRepositorio.findAsignaturasByCursoId(id);
-      
     }
+
 }

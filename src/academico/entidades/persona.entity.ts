@@ -40,13 +40,13 @@ export class Persona {
   nombre: string;
   
   @Column({ type: 'date', name: 'fecha_nacimiento' })
-  fechaNacimiento: string;
+  fechaNacimiento: Date | null;
 
   @Column({ type: 'varchar', name: 'codigo_rude' })
   codigoRude: string;
 
-  @Column({ type: 'varchar', name: 'nacimiento_oficilia' })
-  nacimientoOficilia: string;
+  @Column({ type: 'varchar', name: 'nacimiento_oficialia' })
+  nacimientoOficialia: string;
 
   @Column({ type: 'varchar', name: 'nacimiento_libro' })
   nacimientoLibro: string;
@@ -112,36 +112,60 @@ export class Persona {
   @Column({ type: 'varchar', name: 'email' })
   email: string;
 
+  @Column({ name: 'genero_tipo_id', nullable:false })
+  generoTipoId: number;
+
   @ManyToOne(() => GeneroTipo, (generoTipo) => generoTipo.personas, { nullable: false, cascade: true })
   @JoinColumn({ name: 'genero_tipo_id', referencedColumnName: 'id'})
   generoTipo: GeneroTipo;
+
+  @Column({ name: 'sangre_tipo_id', nullable:false })
+  sangreTipoId: number;
 
   @ManyToOne(() => SangreTipo, (sangreTipo) => sangreTipo.personas, { nullable: false, cascade: true })
   @JoinColumn({ name: 'sangre_tipo_id', referencedColumnName: 'id'})
   sangreTipo: SangreTipo;
   
+  @Column({ name: 'segip_tipo_id', nullable:false })
+  segipTipoId: number;
+
   @ManyToOne(() => SegipTipo, (segipTipo) => segipTipo.personas, { nullable: false, cascade: true })
   @JoinColumn({ name: 'segip_tipo_id', referencedColumnName: 'id'})
   segipTipo: SegipTipo;
+
+  @Column({ name: 'estado_civil_tipo_id', nullable:false })
+  estadoCivilTipoId: number;
 
   @ManyToOne(() => EstadoCivilTipo, (estadoCivilTipo) => estadoCivilTipo.personas, { nullable: false, cascade: true })
   @JoinColumn({ name: 'estado_civil_tipo_id', referencedColumnName: 'id'})
   estadoCivilTipo: EstadoCivilTipo;
 
+  @Column({ name: 'materno_idioma_tipo_id', nullable:false })
+  maternoIdiomaTipoId: number;
+
   @ManyToOne(() => IdiomaTipo, (idiomaTipo) => idiomaTipo.personas, { nullable: false, cascade: true })
   @JoinColumn({ name: 'materno_idioma_tipo_id', referencedColumnName: 'id'})
   maternoIdiomaTipo: IdiomaTipo;
+
+  @Column({ name: 'expedido_unidad_territorial_id', nullable:false })
+  expedidoUnidadTerritorialId: number;
 
   @ManyToOne(() => UnidadTerritorial, (unidadTerritorial) => unidadTerritorial.personasExpedidos, { nullable: false, cascade: true })
   @JoinColumn({ name: 'expedido_unidad_territorial_id', referencedColumnName: 'id'})
   expedidoUnidadTerritorial: UnidadTerritorial;
 
+  @Column({ name: 'nacimiento_unidad_territorial_id', nullable:false })
+  nacimientoUnidadTerritorialId: number;
+
   @ManyToOne(() => UnidadTerritorial, (unidadTerritorial) => unidadTerritorial.personasNacimiento, { nullable: false, cascade: true })
   @JoinColumn({ name: 'nacimiento_unidad_territorial_id', referencedColumnName: 'id'})
   nacimientoUnidadTerritorial: UnidadTerritorial;
 
+  @Column({ name: 'ci_expedido_tipo_id', nullable:false })
+  ciExpedidoTipoId: number;
+
   @ManyToOne(() => CiExpedidoTipo, (ciExpedidoTipo) => ciExpedidoTipo.personas, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'idioma_tipo_id', referencedColumnName: 'id'})
+  @JoinColumn({ name: 'ci_expedido_tipo_id', referencedColumnName: 'id'})
   ciExpedidoTipo: CiExpedidoTipo;
    
   @OneToMany(() => PersonaDetalle, (personaDetalle) => personaDetalle.persona)
