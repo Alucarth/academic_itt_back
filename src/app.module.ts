@@ -33,6 +33,9 @@ import { OfertaAcademicaModule } from './academico/modulos/oferta_academica/ofer
 import { EstudianteInscripcionModule } from './academico/modulos/estudiante_inscripcion/estudiante_inscripcion.module';
 import { PersonaModule } from './academico/modulos/persona/persona.module';
 
+import { MaestroInscripcionModule } from './academico/modulos/maestro_inscripcion/maestro_inscripcion.module';
+
+
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
@@ -67,6 +70,7 @@ import { PersonaModule } from './academico/modulos/persona/persona.module';
     OfertaAcademicaModule,
     EstudianteInscripcionModule,
     PersonaModule,
+    MaestroInscripcionModule,
   ],
   providers: [],
 })
