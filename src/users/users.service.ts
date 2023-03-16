@@ -938,4 +938,62 @@ export class UsersService {
 
   }
 
+  async getAllMunicipioByProvinciaId(provId: number) {
+
+    const result = await this.userRepository.query(`
+      SELECT
+        id, lugar
+      FROM
+        unidad_territorial 
+      WHERE
+        unidad_territorial_tipo_id = 10 and unidad_territorial_id = ${provId} 
+		order by 2
+    `);
+    
+    console.log('result: ', result);
+    console.log('result size: ', result.length);
+
+    if(result.length === 0){
+      throw new NotFoundException('No se encontraron registros');
+    }
+            
+    //return result;
+    return this._serviceResp.respuestaHttp200(
+          result,
+          '',
+          '',
+        );
+
+  }
+
+   async getAllComunidadByMunicipioId(provId: number) {
+
+    const result = await this.userRepository.query(`
+      SELECT
+        id, lugar
+      FROM
+        unidad_territorial 
+      WHERE
+        unidad_territorial_tipo_id = 11 and unidad_territorial_id = ${provId} 
+		order by 2
+    `);
+    
+    console.log('result: ', result);
+    console.log('result size: ', result.length);
+
+    if(result.length === 0){
+      throw new NotFoundException('No se encontraron registros');
+    }
+            
+    //return result;
+    return this._serviceResp.respuestaHttp200(
+          result,
+          '',
+          '',
+        );
+
+  }
+
+
+
 }
