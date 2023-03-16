@@ -672,7 +672,7 @@ export class UsersService {
 
   async getAllProvinciaByDeptoCodigo(codigoDepto: number) {
 
-    const result = await this.userRepository.query(`
+    /*const result = await this.userRepository.query(`
       SELECT
         id, lugar, codigo
       FROM
@@ -681,6 +681,16 @@ export class UsersService {
         unidad_territorial_tipo_id = 2
         AND unidad_territorial_id in (select id from unidad_territorial where codigo = '${codigoDepto}' and unidad_territorial_tipo_id = 1)
         order by codigo
+    `);*/
+
+    const result = await this.userRepository.query(`
+      SELECT
+        id, lugar, codigo
+      FROM
+        unidad_territorial 
+      WHERE
+        unidad_territorial_tipo_id = 9
+        AND unidad_territorial_id  = ${codigoDepto} order by 2
     `);
     
     console.log('result: ', result);

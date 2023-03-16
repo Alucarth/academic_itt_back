@@ -84,9 +84,9 @@ export class UsersController {
     return this.usersService.getAllExpedidoTipo();
   }
 
-  @Get('/getAllProvByDeptoCodigo/:codigoDepto')
-  getAllProvinciaByDeptoCodigo(@Param('codigoDepto') codigoDepto:string){  
-    return this.usersService.getAllProvinciaByDeptoCodigo(parseInt(codigoDepto));
+  @Get('/getAllProvByDeptoId/:deptoID')
+  getAllProvinciaByDeptoCodigo(@Param('deptoID') deptoID:string){  
+    return this.usersService.getAllProvinciaByDeptoCodigo(parseInt(deptoID));
   }
 
   @Get('/getAllRolesByUserId/:userId')
