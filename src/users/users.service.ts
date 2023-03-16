@@ -558,7 +558,12 @@ export class UsersService {
       throw new NotFoundException('No se encontraron registros');
     }
             
-    return result;
+    //return result;
+    return this._serviceResp.respuestaHttp200(
+          result,
+          '',
+          '',
+        );
 
   }
 
@@ -637,7 +642,7 @@ export class UsersService {
     SELECT	
         unidad_territorial.id, 	
         sigla, 
-        departamento
+        departamento as lugar
       FROM
         ci_expedido_tipo
         INNER JOIN
@@ -656,7 +661,12 @@ export class UsersService {
       throw new NotFoundException('No se encontraron registros');
     }
             
-    return result;
+    //return result;
+    return this._serviceResp.respuestaHttp200(
+          result,
+          '',
+          '',
+        );
 
   }
 
@@ -680,7 +690,12 @@ export class UsersService {
       throw new NotFoundException('No se encontraron registros');
     }
             
-    return result;
+    //return result;
+    return this._serviceResp.respuestaHttp200(
+          result,
+          '',
+          '',
+        );
 
   }
 
