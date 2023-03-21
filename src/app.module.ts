@@ -34,6 +34,7 @@ import { EstudianteInscripcionModule } from './academico/modulos/estudiante_insc
 import { PersonaModule } from './academico/modulos/persona/persona.module';
 
 import { MaestroInscripcionModule } from './academico/modulos/maestro_inscripcion/maestro_inscripcion.module';
+import { EstudianteInscripcionOfertaAcademicaModule } from './academico/modulos/estudiante_inscripcion_oferta_academica/estudiante_inscripcion_oferta_academica.module';
 
 
 @Module({
@@ -71,6 +72,7 @@ import { MaestroInscripcionModule } from './academico/modulos/maestro_inscripcio
     EstudianteInscripcionModule,
     PersonaModule,
     MaestroInscripcionModule,
+    EstudianteInscripcionOfertaAcademicaModule,
   ],
   providers: [],
 })

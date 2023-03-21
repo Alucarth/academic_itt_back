@@ -34,7 +34,7 @@ export class OperativoService {
         const gestion = await this.operativoRepository
         .createQueryBuilder("a")
         .innerJoinAndSelect("a.institucionEducativaSucursal", "b")
-        .innerJoinAndSelect("a.institucionEducativa", "c")
+        .innerJoinAndSelect("b.institucionEducativa", "c")
         .innerJoinAndSelect("a.periodoTipo", "c")
         .innerJoinAndSelect("a.gestionTipo", "d")
         .where('c.id = :id ', { sie })
