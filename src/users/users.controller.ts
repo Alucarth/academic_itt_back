@@ -99,6 +99,11 @@ export class UsersController {
     return this.usersService.getAllComunidadByMunicipioId(parseInt(munId));
   }
 
+  @Get('/getAllRoles')
+  getAllRoles(){
+    return this.usersService.getAllRoles();
+  }
+
   @Get('/getAllRolesByUserId/:userId')
   getAllRolesByUserId(@Param('userId') id:string){
     return this.usersService.getAllRolesByUserId(parseInt(id));

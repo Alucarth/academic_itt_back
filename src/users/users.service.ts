@@ -117,6 +117,31 @@ export class UsersService {
         });
   }
 
+  async getAllRoles() {
+
+    const result = await this.userRepository.query(`SELECT
+      id, rol
+    FROM
+      rol_tipo order by 2`);
+
+    
+    console.log('result: ', result);
+    console.log('result size: ', result.length);
+
+    if(result.length === 0){
+      throw new NotFoundException('No se encontraron registros');
+    }
+
+    return this._serviceResp.respuestaHttp201(
+      result,
+      'Registro Encontrado !!',
+      '',
+    );
+            
+    //return result;
+
+  }
+
   async getAllRolesByUserId( userId: number) {
 
     const result = await this.userRepository.query(`SELECT
