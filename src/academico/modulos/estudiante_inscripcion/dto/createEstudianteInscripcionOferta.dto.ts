@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class CreateEstudianteInscripcionDto {
+export class CreateEstudianteInscripcionOfertaDto {
 
   @IsNotEmpty({ message: "la Persona es requerido" })
   @IsNumber()
@@ -10,8 +10,7 @@ export class CreateEstudianteInscripcionDto {
   @IsNumber()
   institucionEducativaCursoId: number;
 
-  
-  @IsNumber()
-  usuarioId: number;
+  @IsNotEmpty()
+  ofertas: Array<string>;
 
 }

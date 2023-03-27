@@ -55,21 +55,28 @@ export class EstudianteInscripcion {
   @JoinColumn({ name: 'persona_id', referencedColumnName: 'id'})
   persona: Persona;
 
+  @Column({ name: 'estado_matricula_fin_tipo_id', nullable:false })
+  estadoMatriculaFinTipoId: number;
+
   @ManyToOne(() => EstadoMatriculaTipo, (estadoMatriculaTipo) => estadoMatriculaTipo.estudiantesInscripcionesFin, { nullable: false, cascade: true })
   @JoinColumn({ name: 'estado_matricula_fin_tipo_id', referencedColumnName: 'id'})
   estadoMatriculaFinTipo: EstadoMatriculaTipo;
   
-  @Column({ name: 'institucion_educativa_curso_id', nullable:false })
+  @Column({ name: 'institucion_educativa_curso_id' })
   institucionEducativaCursoId: number;
-
+  
   @ManyToOne(() => InstitucionEducativaCurso, (institucionEducativaCurso) => institucionEducativaCurso.estudiantesInscripciones, { nullable: false, cascade: true })
   @JoinColumn({ name: 'institucion_educativa_curso_id', referencedColumnName: 'id'})
   institucionEducativaCurso: InstitucionEducativaCurso;
 
+  @Column({ name: 'matricula_tipo_id', nullable:false })
+  matriculaTipoId: number;
   @ManyToOne(() => MatriculaTipo, (matriculaTipo) => matriculaTipo.estudiantesInscripciones, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'institucion_educativa_curso_id', referencedColumnName: 'id'})
+  @JoinColumn({ name: 'matricula_tipo_id', referencedColumnName: 'id'})
   matriculaTipo: MatriculaTipo;
 
+  @Column({ name: 'estado_matricula_inicio_tipo_id', nullable:false })
+  estadoMatriculaInicioTipoId: number;
   @ManyToOne(() => EstadoMatriculaTipo, (estadoMatriculaTipo) => estadoMatriculaTipo.estudiantesInscripcionesInicio, { nullable: false, cascade: true })
   @JoinColumn({ name: 'estado_matricula_inicio_tipo_id', referencedColumnName: 'id'})
   estadoMatriculaInicioTipo: EstadoMatriculaTipo;
