@@ -207,6 +207,8 @@ export class UsersService {
 
   async getAllNewRolesByUserId( userId: number) {
 
+    //subiendo todo nuevamente
+
     /*await this.userRepository
                 .createQueryBuilder()
                 .update(User)

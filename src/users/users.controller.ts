@@ -41,7 +41,9 @@ export class UsersController {
     return req.user;
   }
 
-  @Get('/getAllBySearch')
+  /**/
+
+  @Get('/getAllBySearch')  
   getAllBySearch(@Query('carnetIdentidad') ci:string,@Query('fechaNacimiento') fechanac:string,@Query('complemento') complemento:string){    
     console.log('ci: ',ci);
     console.log('fechanac: ',fechanac);
