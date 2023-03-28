@@ -1026,6 +1026,57 @@ export class UsersService {
 
   }
 
+  async changeStatusUser(userId) {
+
+    //1:BUSCAR el usuario
+
+    //const result = await this.userRepository.query(`SELECT count(*) as existe FROM persona whwre `);
+    const usuario = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    console.log('persona:' ,usuario);
+
+    if(!usuario){
+      return this._serviceResp.respuestaHttp404(
+          userId,
+          'Registro No Encontrado !!',
+          '',
+        );
+    }
+
+
+    try{
+
+      const nuevoEstado = !usuario.activo 
+
+       await this.userRepository
+        .createQueryBuilder()        
+        .update(User)
+        .set({
+            activo : nuevoEstado
+        })
+        .where("id = :id", { id: userId })
+        .execute()
+
+        return this._serviceResp.respuestaHttp202(
+          userId,
+          'Registro Actualizado !!',
+          '',
+        );
+        
+    
+    } catch (error) {
+       console.log("Error update user: ", error);
+       throw new HttpException({
+          status: HttpStatus.CONFLICT,
+          error: `Error Actualizando Estado Usuario: ${error.message}`,
+        }, HttpStatus.ACCEPTED, {
+          cause: error
+        });
+       //return 0;
+    }
+  }
+
 
 
 }

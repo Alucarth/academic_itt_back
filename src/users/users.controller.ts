@@ -141,6 +141,12 @@ export class UsersController {
     return this.usersService.deleteUnidadTerritorialUser(parseInt(id));
   }
 
+  @Put('/changeStatusByUserId')   
+  changeStatusUser(@Body() body) {
+      console.log('userId', body.userId);
+      return this.usersService.changeStatusUser(body.userId);
+  }
+
   @Post('/addUnidadTerritorialUser')   
   addUnidadTerritorialUser(@Body() body) {
     //TODO: validar fechas desde el front ?    
