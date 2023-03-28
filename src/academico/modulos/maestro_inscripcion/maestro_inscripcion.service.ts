@@ -82,7 +82,12 @@ export class MaestroInscripcionService {
     console.log('result size: ', result.length);
 
     if(result.length === 0){
-      throw new NotFoundException('No se encontraron registros');
+      //throw new NotFoundException('No se encontraron registros');
+        return this._serviceResp.respuestaHttp404(
+        result,
+        'Registro No Encontrado !!',
+        '',
+        );
     }
             
     //return result;

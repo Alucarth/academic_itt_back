@@ -193,7 +193,12 @@ export class UsersService {
     console.log('result size: ', result.length);
 
     if(result.length === 0){
-      throw new NotFoundException('No se encontraron registros');
+      console.log('not found');
+      return this._serviceResp.respuestaHttp404(
+      '',
+      '',
+      'Registro No Encontrado !!',
+    );
     }
             
     //return result;

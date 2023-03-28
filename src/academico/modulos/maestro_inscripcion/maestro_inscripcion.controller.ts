@@ -20,12 +20,17 @@ import { MaestroInscripcionService } from '../maestro_inscripcion/maestro_inscri
 @Controller('maestro-inscripcion')
 export class MaestroInscripcionController {
 
-    constructor(private readonly usersService: MaestroInscripcionService) {}
+  constructor(private readonly usersService: MaestroInscripcionService) {}
 
     
   @Get('/getAllDocentesByUeGestion/:ueId/:gestionId')
   getAllDocentesByUeGestion(@Param('ueId') ueId:string, @Param('gestionId') gestionId:string ){
     return this.usersService.getAllDocentesByUeGestion(ueId);
   }
+
+  /*@Get('/getAllDirectivosByUeGestion/:ueId/:gestionId')
+  getAllDirectivosByUeGestion(@Param('ueId') ueId:string, @Param('gestionId') gestionId:string ){
+    return this.usersService.getAllDirectivosByUeGestion(ueId);
+  }*/
 
 }
