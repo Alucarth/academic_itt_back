@@ -28,9 +28,14 @@ export class MaestroInscripcionController {
     return this.usersService.getAllDocentesByUeGestion(ueId);
   }
 
-  /*@Get('/getAllDirectivosByUeGestion/:ueId/:gestionId')
+  @Get('/getAllDirectivosByUeGestion/:ueId/:gestionId')
   getAllDirectivosByUeGestion(@Param('ueId') ueId:string, @Param('gestionId') gestionId:string ){
     return this.usersService.getAllDirectivosByUeGestion(ueId);
-  }*/
+  }
+
+  @Get('/getAllAdministrativosByUeGestion/:ueId/:gestionId')
+  getAllAdministrativosByUeGestion(@Param('ueId') ueId:string, @Param('gestionId') gestionId:string ){
+    return this.usersService.getAllAdministrativosByUeGestion(ueId);
+  }
 
 }
