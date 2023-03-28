@@ -1,20 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EspecialidadTipo } from 'src/academico/entidades/especialidadTipo.entity';
 import { Repository } from 'typeorm';
+import { FinanciamientoTipo } from 'src/academico/entidades/financiamientoTipo.entity';
 import { NotFoundException , HttpException} from '@nestjs/common';
 import { RespuestaSigedService } from '../../../shared/respuesta.service'
 
+
 @Injectable()
-export class EspecialidadTipoService {
+export class FinanciamientoTipoService {
+
     constructor(
-        @InjectRepository(EspecialidadTipo)
-        private especialidadTipoRepository: Repository<EspecialidadTipo>,
+        @InjectRepository(FinanciamientoTipo)
+        private financiamientoTipoRepository: Repository<FinanciamientoTipo>,
         private _serviceResp: RespuestaSigedService, 
     ){}
         async getAll(){
             //var result: EspecialidadTipo[] = [];
-            const result =  await this.especialidadTipoRepository.find()
+            const result =  await this.financiamientoTipoRepository.find()
 
             return this._serviceResp.respuestaHttp201(
             result,
@@ -23,4 +25,6 @@ export class EspecialidadTipoService {
             );
 
         }
+
+
 }

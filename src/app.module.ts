@@ -36,6 +36,10 @@ import { PersonaModule } from './academico/modulos/persona/persona.module';
 import { MaestroInscripcionModule } from './academico/modulos/maestro_inscripcion/maestro_inscripcion.module';
 import { EstudianteInscripcionOfertaAcademicaModule } from './academico/modulos/estudiante_inscripcion_oferta_academica/estudiante_inscripcion_oferta_academica.module';
 
+import { FormacionTipoModule } from './academico/catalogos/formacion_tipo/formacion_tipo.module';
+import { FinanciamientoTipoModule } from './academico/catalogos/financiamiento_tipo/financiamiento_tipo.module';
+import { CargoTipoModule } from './academico/catalogos/cargo_tipo/cargo_tipo.module';
+
 
 @Module({
   imports: [
@@ -73,6 +77,9 @@ import { EstudianteInscripcionOfertaAcademicaModule } from './academico/modulos/
     PersonaModule,
     MaestroInscripcionModule,
     EstudianteInscripcionOfertaAcademicaModule,
+    FormacionTipoModule,
+    FinanciamientoTipoModule,
+    CargoTipoModule
   ],
   providers: [],
 })

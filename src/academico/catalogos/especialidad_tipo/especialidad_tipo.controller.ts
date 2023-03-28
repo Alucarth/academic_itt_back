@@ -8,7 +8,7 @@ export class EspecialidadTipoController {
         private readonly especialidadTipoService: EspecialidadTipoService
     ){}
     @Get()
-    async getAll():Promise<EspecialidadTipo[]>{
+    async getAll(){
         return await this.especialidadTipoService.getAll();
     }
 }
