@@ -147,6 +147,12 @@ export class UsersController {
       return this.usersService.changeStatusUser(body.userId);
   }
 
+  @Put('/changeStatusByRolUserId')   
+  changeStatusRolUser(@Body() body) {
+      console.log('userId', body.userId);
+      return this.usersService.changeStatusRolUser(body.userId);
+  }
+
   @Post('/addUnidadTerritorialUser')   
   addUnidadTerritorialUser(@Body() body) {
     //TODO: validar fechas desde el front ?    

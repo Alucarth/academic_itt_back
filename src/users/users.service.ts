@@ -1077,6 +1077,55 @@ export class UsersService {
     }
   }
 
+  async changeStatusRolUser(userRolId) {
+
+
+    const result = await this.userRepository.query(`SELECT * FROM usuario_rol where id = ${userRolId}`);
+    
+    console.log('result: ', result);
+    console.log('result size: ', result.length);
+
+    if(result.length === 0){
+      return this._serviceResp.respuestaHttp404(
+          userRolId,
+          'Registro No Encontrado !!',
+          '',
+        );
+    }
+
+
+    try{
+
+      const nuevoEstado = !result[0].activo 
+
+       await this.userRepository
+        .createQueryBuilder()        
+        .update(UsuarioRol)
+        .set({
+            activo : nuevoEstado
+        })
+        .where("id = :id", { id: userRolId })
+        .execute()
+
+        return this._serviceResp.respuestaHttp202(
+          userRolId,
+          'Registro Actualizado !!',
+          '',
+        );
+        
+    
+    } catch (error) {
+       console.log("Error update user: ", error);
+       throw new HttpException({
+          status: HttpStatus.CONFLICT,
+          error: `Error Actualizando Estado Usuario: ${error.message}`,
+        }, HttpStatus.ACCEPTED, {
+          cause: error
+        });
+       //return 0;
+    }
+  }
+
 
 
 }
