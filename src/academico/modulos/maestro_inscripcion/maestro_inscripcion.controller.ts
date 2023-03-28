@@ -27,6 +27,11 @@ export class MaestroInscripcionController {
   getAllDocentesByUeGestion(@Param('ueId') ueId:string, @Param('gestionId') gestionId:string ){
     return this.usersService.getAllDocentesByUeGestion(ueId);
   }
+ 
+  @Get('/getMaestroInscripcionById/:maestroInscripcionId')
+  getMaestroInscripcionById(@Param('maestroInscripcionId') maestroInscripcionId:string){
+    return this.usersService.getMaestroInscripcionById(parseInt(maestroInscripcionId));
+  }
 
   @Get('/getAllDirectivosByUeGestion/:ueId/:gestionId')
   getAllDirectivosByUeGestion(@Param('ueId') ueId:string, @Param('gestionId') gestionId:string ){
