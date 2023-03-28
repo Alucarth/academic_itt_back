@@ -82,7 +82,7 @@ export class EtapaEducativaService {
       ') SELECT\n' +
       '    *\n' +
       'FROM\n' +
-      '    buscandoPadre where id>0 order by id ';
+      '    buscandoPadre where id>0 order by id desc ';
     const values = [id];
     const data = await this.etapaEducativaRepository.query(sql, values);
     console.log(data);

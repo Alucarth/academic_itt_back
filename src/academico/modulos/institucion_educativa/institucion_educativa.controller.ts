@@ -15,8 +15,10 @@ export class InstitucionEducativaController {
     }
     
     @Get(':id')
-    async getById(@Param('id', ParseIntPipe) id: number):Promise<InstitucionEducativa>{
-        return await this.institucionEducativaService.getById(id);
+    async getById(@Param('id', ParseIntPipe) id: number){
+        const resp  = await this.institucionEducativaService.getBySieId(id);
+        console.log(resp);
+        return resp;
     }
 
     @Get('itt')

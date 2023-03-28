@@ -21,6 +21,16 @@ export class OperativoEtapaEducativaService {
          return operativoEtapa;
         
     }
+    async getByEtapaEducativaId( id : number){
+        const operativoEtapa = await this.operativoEtapaEducativaRepository
+        .createQueryBuilder("a")
+        .innerJoinAndSelect("a.periodoTipo", "b")
+        .where( "a.etapaEducativaId = :id ",  {id: id} )
+        .getMany();
+
+        return operativoEtapa;
+       
+   }
     async createOperativoEtapaEducativa (dto: CreateOperativoEtapaEducativaDto) {
              
         const datoOperativoEtapa = await this.operativoEtapaEducativaRepository.findOneBy( 

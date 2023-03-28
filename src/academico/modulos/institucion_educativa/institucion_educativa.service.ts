@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {  InjectRepository } from '@nestjs/typeorm';
 import { InstitucionEducativa } from 'src/academico/entidades/institucionEducativa.entity';
+import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { Repository } from 'typeorm';
 
 
@@ -8,6 +9,7 @@ import { Repository } from 'typeorm';
 export class InstitucionEducativaService {
     constructor(
         @InjectRepository(InstitucionEducativa) private institucioneducativaRepository: Repository<InstitucionEducativa>,
+        private _serviceResp: RespuestaSigedService, 
     ){}
 
     async getAll(){
@@ -25,14 +27,28 @@ export class InstitucionEducativaService {
         return itts;
     }
    
-    async getById(id:number){
+    async getBySieId(id:number){
         const itt = await this.institucioneducativaRepository
         .createQueryBuilder("a")
         .innerJoinAndSelect("a.educacionTipo", "b")
         .where('a.id = :id ', { id })
-        .getOneOrFail();
-        console.log(itt);
-        return itt;
+        .getOne();
+
+        
+        if(!itt){
+            return this._serviceResp.respuestaHttp404(
+                id,
+                'Registro No Encontrado !!',
+                '',
+              );
+        }
+
+        return this._serviceResp.respuestaHttp200(
+            itt,
+            '',
+            '',
+          );
+          //return itt;
     }
    
     async findBySie( id:number ){
