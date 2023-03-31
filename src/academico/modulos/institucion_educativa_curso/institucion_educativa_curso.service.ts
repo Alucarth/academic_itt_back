@@ -15,7 +15,7 @@ export class InstitucionEducativaCursoService {
         
         @Inject(InstitucionEducativaCursoRepository) 
         private institucionEducativaCursoRepository: InstitucionEducativaCursoRepository,
-        
+
         @Inject(EtapaEducativaAsignaturaRepository)
         private etapaEducativaAsignaturaRepository: EtapaEducativaAsignaturaRepository,
 
@@ -25,8 +25,6 @@ export class InstitucionEducativaCursoService {
         @Inject(InstitucionEducativaSucursalRepository)
         private institucionEducativaSucursalRepository: InstitucionEducativaSucursalRepository,
         private _serviceResp: RespuestaSigedService, 
-        
-        
         
     ){}
 
@@ -38,7 +36,12 @@ export class InstitucionEducativaCursoService {
     async getBySie(sie:number, gestion:number, periodo:number){
       const cursos = await this.institucionEducativaCursoRepository.getAllBySie(sie, gestion, periodo)
       return cursos
-  }
+    }
+
+    async getByEtapa(id:number, gestion:number, periodo:number){
+      const cursos = await this.institucionEducativaCursoRepository.getAllByEtapa(id, gestion, periodo)
+      return cursos
+    }
 
     async createCurso (dto: CreateInstitucionEducativaCursoDto) {
       const sucursal =  await this.institucionEducativaSucursalRepository.findSucursalBySieGestion(dto.institucionEducativaId, dto.gestionTipoId);
