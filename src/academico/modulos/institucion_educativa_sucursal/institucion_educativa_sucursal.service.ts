@@ -1,69 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InstitucionEducativaSucursal } from 'src/academico/entidades/institucionEducativaSucursal.entity';
 import { Repository } from 'typeorm';
+import { InstitucionEducativaSucursalRepository } from './institucion_educativa_sucursal.repository';
 
 @Injectable()
 export class InstitucionEducativaSucursalService {
     constructor(
-        @InjectRepository(InstitucionEducativaSucursal)
-        private institucionEducativaSucursalRepository: Repository<InstitucionEducativaSucursal>
+        @Inject(InstitucionEducativaSucursalRepository)
+        private institucionEducativaSucursalRepository: InstitucionEducativaSucursalRepository
     ){}
+
     async getAllIttSucursales(){
-        const sucursales = await this.institucionEducativaSucursalRepository
-        .createQueryBuilder("a")
-        .innerJoinAndSelect("a.institucionEducativa", "b")
-        .innerJoinAndSelect("a.jurisdiccionGeografica", "c")
-        .innerJoinAndSelect("b.educacionTipo", "d")
-        .innerJoinAndSelect("a.estadoInstitucionEducativaTipo", "e")
-       // .select('b.id', 'b.institucionEducativa')
-        .where('d.id in (7,8,9)  ')
-        .andWhere('e.id = 10  ')
-        .orderBy('a.id', 'ASC')
-        .getMany();
-        console.log(sucursales);
+        const sucursales = await this.institucionEducativaSucursalRepository.getAllIttSucursales();
         return sucursales;
+
     }
 
+    
     async findSucursalBySie( id:number ){
-        const itt = await this.institucionEducativaSucursalRepository
-        .createQueryBuilder("a")
-        .innerJoinAndSelect("a.institucionEducativa", "d")
-        .innerJoinAndSelect("d.educacionTipo", "b")
-        .innerJoinAndSelect("a.jurisdiccionGeografica", "c")
-        .where('d.id = :id ', { id })
-        .orderBy('a.id', 'ASC')
-        .getMany();
-        return itt;
+        const sucursal = await this.institucionEducativaSucursalRepository.findSucursalBySie(id);
+        return sucursal;
+
+        
+    }
+    async findSucursalBySieGestion( id:number, gestion:number ){
+        const sucursal = await this.institucionEducativaSucursalRepository.findSucursalBySieGestion(id, gestion);
+        return sucursal;
+
+        
     }
     async findEspecialidadesBySie( id:number ){
-        const especialidades = await this.institucionEducativaSucursalRepository
-        .createQueryBuilder("a")
-        .innerJoinAndSelect("a.institucionEducativa", "c")
-        .innerJoinAndSelect("a.acreditacionEspecialidades", "b")
-        .innerJoinAndSelect("b.especialidadTipo", "d")
-        .innerJoinAndSelect("b.especialidadesNivelesAcademicos", "e")
-        .innerJoinAndSelect("e.especialidadesNivelesIntervalos", "f")
-        .innerJoinAndSelect("f.intervaloGestionTipo", "g")
-        .innerJoinAndSelect("e.nivelAcademicoTipo", "h")
-        .where('c.id = :id ', { id })
-        .orderBy('d.id', 'ASC')
-        .getMany();
-        return especialidades;
+        const sucursal = await this.institucionEducativaSucursalRepository.findEspecialidadesBySie(id);
+        return sucursal;
     }
     async findEspecialidadesBySucursal( id:number ){
-        const especialidades = await this.institucionEducativaSucursalRepository
-        .createQueryBuilder("a")
-        .innerJoinAndSelect("a.acreditacionEspecialidades", "b")
-        .innerJoinAndSelect("b.especialidadTipo", "d")
-        .innerJoinAndSelect("b.especialidadesNivelesAcademicos", "e")
-        .innerJoinAndSelect("e.especialidadesNivelesIntervalos", "f")
-        .innerJoinAndSelect("f.intervaloGestionTipo", "g")
-        .innerJoinAndSelect("e.nivelAcademicoTipo", "h")
-        .where('a.id = :id ', { id })
-        .orderBy('d.id', 'ASC')
-        .getMany();
-        return especialidades;
+        const sucursal = await this.institucionEducativaSucursalRepository.findEspecialidadesBySucursal(id);
+        return sucursal;
+
+      
     }
     
 }

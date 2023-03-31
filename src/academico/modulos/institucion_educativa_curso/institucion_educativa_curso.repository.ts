@@ -15,7 +15,30 @@ export class InstitucionEducativaCursoRepository {
         return  await this.dataSource.getRepository(InstitucionEducativaCurso).find();
         
     }
+    async getAllBySie(sie:number, gestion:number, periodo:number){
+console.log(sie);
+console.log(gestion);
+console.log(periodo);
+        const cursos = await this.dataSource.getRepository(InstitucionEducativaCurso)
+        .createQueryBuilder("a")
+        //.innerJoinAndSelect("a.educacionTipo", "b")
+        .innerJoinAndSelect("a.institucionEducativaSucursal", "s")
+        .innerJoinAndSelect("a.turnoTipo", "t")
+        .innerJoinAndSelect("a.paraleloTipo", "p")
+        .innerJoinAndSelect("a.ofertasAcademicas", "o")
+        .innerJoinAndSelect("o.asignaturaTipo", "at")
+        .where('a.periodoTipo = :periodo ', { periodo })
+        .where('a.gestionTipo = :gestion ', { gestion })
+        .where('s.institucionEducativa = :sie ', { sie })
+        .orderBy('a.id', 'ASC')
+        .getMany();
+        console.log("ofertas desde backen");
+        console.log(cursos);
+        return cursos;
+        
+    }
     async createCurso(
+
         dto: CreateInstitucionEducativaCursoDto, 
         transaction: EntityManager
         ) {
@@ -26,7 +49,7 @@ export class InstitucionEducativaCursoRepository {
         curso.paraleloTipoId = dto.paraleloTipoId;
         curso.institucionEducativaSucursalId = dto.institucionEducativaSucursalId;
         curso.periodoTipoId = dto.periodoTipoId;
-        curso.usuarioId = dto.usuarioId;
+        curso.usuarioId = 1;// dto.usuarioId;
 
         const result = await transaction.getRepository(InstitucionEducativaCurso).save(curso);
        

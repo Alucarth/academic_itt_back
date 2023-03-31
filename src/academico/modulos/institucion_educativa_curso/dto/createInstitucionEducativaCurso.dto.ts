@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateInstitucionEducativaCursoDto {
 
@@ -20,14 +20,18 @@ export class CreateInstitucionEducativaCursoDto {
 
   @IsNotEmpty()
   @IsNumber()
-  institucionEducativaSucursalId: number;
+  institucionEducativaId: number;
+
+
 
   @IsNotEmpty()
   @IsNumber()
   periodoTipoId: number;
 
-  @IsNotEmpty()
-  @IsNumber()
+  @IsOptional()
+  institucionEducativaSucursalId: number;
+    
+  @IsOptional()
   usuarioId: number;
 
 }

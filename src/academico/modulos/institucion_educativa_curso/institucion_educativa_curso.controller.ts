@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { InstitucionEducativaCurso } from 'src/academico/entidades/institucionEducativaCurso.entity';
+import { InstitucionEducativaSucursalService } from '../institucion_educativa_sucursal/institucion_educativa_sucursal.service';
 import { CreateInstitucionEducativaCursoDto } from './dto/createInstitucionEducativaCurso.dto';
 import { UpdateInstitucionEducativaCursoDto } from './dto/updateInstitucionEducativaCurso';
 import { InstitucionEducativaCursoService } from './institucion_educativa_curso.service';
@@ -9,12 +10,17 @@ import { InstitucionEducativaCursoService } from './institucion_educativa_curso.
 @Controller('institucion-educativa-curso')
 export class InstitucionEducativaCursoController {
     constructor (
-        private readonly institucionEducativaCursoService: InstitucionEducativaCursoService 
+        private readonly institucionEducativaCursoService: InstitucionEducativaCursoService,
+        
         ){}
 
     @Get(':id')
     async getById():Promise<InstitucionEducativaCurso[]>{
         return await this.institucionEducativaCursoService.getAll();
+    }
+    @Get('sie-gestion-periodo/:sie/:gestion/:periodo')
+    async getBySie(@Param('sie') sie: number,@Param('gestion') gestion: number,@Param('periodo') periodo: number):Promise<InstitucionEducativaCurso[]>{
+        return await this.institucionEducativaCursoService.getBySie(sie, gestion, periodo);
     }
 
     @Post()

@@ -51,7 +51,7 @@ export class PeriodoTipo {
   usuarioId: number;
 
   @ManyToOne(() => IntervaloGestionTipo, (intervaloGestionTipo) => intervaloGestionTipo.periodos, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'educacion_tipo_id', referencedColumnName: 'id'})
+  @JoinColumn({ name: 'intervalo_gestion_tipo_id', referencedColumnName: 'id'})
   intervaloGestionTipo: IntervaloGestionTipo;
 
   @OneToMany(() => Operativo, (operativo) => operativo.periodoTipo)

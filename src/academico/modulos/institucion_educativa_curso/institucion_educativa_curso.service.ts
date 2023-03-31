@@ -2,6 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { EntityManager } from 'typeorm';
 import { EtapaEducativaAsignaturaRepository } from '../etapa_educativa_asignatura/etapa_educativa_asignatura.repository';
+import { InstitucionEducativaSucursalRepository } from '../institucion_educativa_sucursal/institucion_educativa_sucursal.repository';
+import { InstitucionEducativaSucursalService } from '../institucion_educativa_sucursal/institucion_educativa_sucursal.service';
 import { OfertaAcademicaRepository } from '../oferta_academica/oferta_academica.repository';
 import { CreateInstitucionEducativaCursoDto } from './dto/createInstitucionEducativaCurso.dto';
 import { UpdateInstitucionEducativaCursoDto } from './dto/updateInstitucionEducativaCurso';
@@ -10,13 +12,20 @@ import { InstitucionEducativaCursoRepository } from './institucion_educativa_cur
 @Injectable()
 export class InstitucionEducativaCursoService {
     constructor(
+        
         @Inject(InstitucionEducativaCursoRepository) 
         private institucionEducativaCursoRepository: InstitucionEducativaCursoRepository,
+        
         @Inject(EtapaEducativaAsignaturaRepository)
         private etapaEducativaAsignaturaRepository: EtapaEducativaAsignaturaRepository,
+
         @Inject(OfertaAcademicaRepository)
         private ofertaAcademicaRepository: OfertaAcademicaRepository,
+
+        @Inject(InstitucionEducativaSucursalRepository)
+        private institucionEducativaSucursalRepository: InstitucionEducativaSucursalRepository,
         private _serviceResp: RespuestaSigedService, 
+        
         
         
     ){}
@@ -26,7 +35,17 @@ export class InstitucionEducativaCursoService {
         return cursos
     }
 
+    async getBySie(sie:number, gestion:number, periodo:number){
+      const cursos = await this.institucionEducativaCursoRepository.getAllBySie(sie, gestion, periodo)
+      return cursos
+  }
+
     async createCurso (dto: CreateInstitucionEducativaCursoDto) {
+      const sucursal =  await this.institucionEducativaSucursalRepository.findSucursalBySieGestion(dto.institucionEducativaId, dto.gestionTipoId);
+      if(sucursal){
+        dto.institucionEducativaSucursalId = sucursal.id;
+      }
+      console.log(dto);
 
           const op = async (transaction: EntityManager) => {
             const nuevoCurso =  await this.institucionEducativaCursoRepository.createCurso(

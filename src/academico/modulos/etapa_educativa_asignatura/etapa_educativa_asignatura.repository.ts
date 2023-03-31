@@ -45,13 +45,13 @@ export class EtapaEducativaAsignaturaRepository {
         return asignaturas;
     }
     async findAsignaturasByEtapaId( id:number ){
+        console.log(id);
         const asignaturas = await this.dataSource.getRepository(EtapaEducativaAsignatura)
         .createQueryBuilder("a")
         .innerJoinAndSelect("a.asignaturaTipo", "b")
-        .innerJoinAndSelect("a.etapaEducativa", "c")
-        .where('c.etapaEducativaId = :id ', { id })
-        .orderBy('c.id', 'ASC')
+        .where('a.etapaEducativa = :id ', { id })
         .getMany();
+        console.log(asignaturas);
         return asignaturas;
     }
     async findAsignaturasByEtapaId2222( id:number ){
