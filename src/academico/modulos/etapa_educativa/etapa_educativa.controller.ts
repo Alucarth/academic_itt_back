@@ -33,7 +33,12 @@ export class EtapaEducativaController {
         return await this.etapaEducativaService.findCarrerasBySie(id);
     }
 
-    
+    @Get('asiganturasByCarreraId/:id')
+    async getAllAsignaturasByCarreraId(@Param('id', ParseIntPipe) id: number):Promise<EtapaEducativa[]>{
+        return await this.etapaEducativaService.findAsignaturasRegimenCarrera(id);
+    }
+
+
   
    
 }
