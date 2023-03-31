@@ -29,7 +29,7 @@ export class EtapaEducativaController {
     }
 
     @Get('carrerasBySie/:id')
-    async getAllCarrerasBySie(@Param('id', ParseIntPipe) id: number):Promise<EtapaEducativa[]>{
+    async getAllCarrerasBySie(@Param('id', ParseIntPipe) id: number){
         return await this.etapaEducativaService.findCarrerasBySie(id);
     }
 

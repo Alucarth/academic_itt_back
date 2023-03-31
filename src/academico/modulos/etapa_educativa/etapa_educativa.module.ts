@@ -4,10 +4,11 @@ import { EtapaEducativa } from 'src/academico/entidades/etapaEducativa.entity';
 import { DatabaseModule } from 'src/database/database.module';
 import { EtapaEducativaController } from './etapa_educativa.controller';
 import { EtapaEducativaService } from './etapa_educativa.service';
+import { RespuestaSigedService } from "../../../shared/respuesta.service";
 
 @Module({
   imports: [DatabaseModule, TypeOrmModule.forFeature([EtapaEducativa])],
   controllers: [EtapaEducativaController],
-  providers: [EtapaEducativaService]
+  providers: [EtapaEducativaService, RespuestaSigedService],
 })
 export class EtapaEducativaModule {}
