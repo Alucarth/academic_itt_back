@@ -106,11 +106,7 @@ export class EtapaEducativaService {
     console.log(data);
     //return data;
 
-    return this._serviceResp.respuestaHttp201(
-      data,
-      "Datos Encontrados !!",
-      ""
-    );
+    return this._serviceResp.respuestaHttp201(data, "Datos Encontrados !!", "");
   }
 
   async findAsignaturasRegimenCarrera(id: number) {
@@ -121,6 +117,66 @@ export class EtapaEducativaService {
       .where("a.etapaEducativaId = :id ", { id })
       .orderBy("a.id", "ASC")
       .getMany();
-    return asignaturas;
+    //return asignaturas;
+
+    return this._serviceResp.respuestaHttp201(
+      asignaturas,
+      "Datos Encontrados !!",
+      ""
+    );
+  }
+
+  async findAllNivelAcademico() {
+    const asignaturas = await this.etapaEducativaRepository.query(`SELECT
+      id, etapa_educativa, etapa_educativa_tipo_id
+    FROM
+      etapa_educativa     
+    WHERE
+      activo = true and etapa_educativa_tipo_id = 25 `);
+
+    return this._serviceResp.respuestaHttp201(
+      asignaturas,
+      "Datos Encontrados !!",
+      ""
+    );
+  }
+
+  async findClasificadorByTipoId(nivelId: number, regimenId: number) {
+
+    let asignaturas = ''
+    
+    if(regimenId === 0){
+
+      const asignaturas = await this.etapaEducativaRepository.query(`SELECT
+        id, etapa_educativa, etapa_educativa_tipo_id
+        FROM
+          etapa_educativa     
+        WHERE
+          activo = true and etapa_educativa_tipo_id = '${nivelId}' `);
+      
+      return this._serviceResp.respuestaHttp201(
+        asignaturas,
+        "Datos Encontrados !!",
+        ""
+      );
+
+
+    }else{
+      console.log('here');
+      const asignaturas = await this.etapaEducativaRepository.query(`SELECT
+        id, etapa_educativa, etapa_educativa_tipo_id
+        FROM
+          etapa_educativa     
+        WHERE
+          activo = true and etapa_educativa_tipo_id = ${nivelId} and etapa_educativa_id = ${regimenId} `);
+
+      return this._serviceResp.respuestaHttp201(
+        asignaturas,
+        "Datos Encontrados !!",
+        ""
+      );
+    }
+
+    
   }
 }
