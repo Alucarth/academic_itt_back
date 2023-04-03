@@ -1,14 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { EtapaEducativa } from 'src/academico/entidades/etapaEducativa.entity';
+import { EtapaEducativaTipo } from 'src/academico/entidades/etapaEducativaTipo.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { RespuestaSigedService } from "../../../shared/respuesta.service";
+import { CreateEtapaEducativaDto } from './dto/createEtapaEducativa.dto';
 
 @Injectable()
 export class EtapaEducativaService {
   constructor(
     @InjectRepository(EtapaEducativa)
     private etapaEducativaRepository: Repository<EtapaEducativa>,
+    @InjectRepository(EtapaEducativaTipo)
+    private etapaEducativaTipoRepository: Repository<EtapaEducativaTipo>,
     private _serviceResp: RespuestaSigedService
   ) {}
   async getById(id: number) {
@@ -106,11 +110,7 @@ export class EtapaEducativaService {
     console.log(data);
     //return data;
 
-    return this._serviceResp.respuestaHttp201(
-      data,
-      "Datos Encontrados !!",
-      ""
-    );
+    return this._serviceResp.respuestaHttp201(data, "Datos Encontrados !!", "");
   }
 
   async findAsignaturasRegimenCarrera(id: number) {
@@ -121,6 +121,127 @@ export class EtapaEducativaService {
       .where("a.etapaEducativaId = :id ", { id })
       .orderBy("a.id", "ASC")
       .getMany();
-    return asignaturas;
+    //return asignaturas;
+
+    return this._serviceResp.respuestaHttp201(
+      asignaturas,
+      "Datos Encontrados !!",
+      ""
+    );
+  }
+
+  async findAllNivelAcademico() {
+    const asignaturas = await this.etapaEducativaRepository.query(`SELECT
+      id, etapa_educativa, etapa_educativa_tipo_id
+    FROM
+      etapa_educativa     
+    WHERE
+      activo = true and etapa_educativa_tipo_id = 25 `);
+
+    return this._serviceResp.respuestaHttp201(
+      asignaturas,
+      "Datos Encontrados !!",
+      ""
+    );
+  }
+
+  async findClasificadorByTipoId(nivelId: number, regimenId: number) {
+    if (regimenId === 0) {
+      const asignaturas = await this.etapaEducativaRepository.query(`SELECT
+        id, etapa_educativa, etapa_educativa_tipo_id
+        FROM
+          etapa_educativa     
+        WHERE
+          activo = true and etapa_educativa_tipo_id = '${nivelId}' `);
+
+      return this._serviceResp.respuestaHttp201(
+        asignaturas,
+        "Datos Encontrados !!",
+        ""
+      );
+    } else {
+      console.log("here");
+      const asignaturas = await this.etapaEducativaRepository.query(`SELECT
+        id, etapa_educativa, etapa_educativa_tipo_id
+        FROM
+          etapa_educativa     
+        WHERE
+          activo = true and etapa_educativa_tipo_id = ${nivelId} and etapa_educativa_id = ${regimenId} `);
+
+      return this._serviceResp.respuestaHttp201(
+        asignaturas,
+        "Datos Encontrados !!",
+        ""
+      );
+    }
+  }
+
+  async createNewEtapaEducativa(dto: CreateEtapaEducativaDto) {
+    /*
+    {	
+    "etapaEducativaTipoId": 28,
+    "etapa_educativa": "electronica avanzada",
+    "etapaEducativaId" : 1471,
+    "ordinal" : 0,
+    "educacionTipoId": 0,
+    "usuarioId": 100,
+    "codigo27" : 1471,
+    "codigo26" : 1459,
+    "codigo25" : 1455    
+  } 
+  */
+
+    if (dto.etapaEducativaTipoId < 25 && dto.etapaEducativaTipoId > 29) {
+      return this._serviceResp.respuestaHttp404(
+        dto.etapaEducativaTipoId,
+        "etapaEducativaTipoId no encontrado!!",
+        ""
+      );
+    }
+
+    const etapaEducativaTipo = await this.etapaEducativaTipoRepository.findOne({
+      where: { id: dto.etapaEducativaTipoId },
+    });
+    console.log("etapaEducativaTipo: ", etapaEducativaTipo);
+
+    try {
+      await this.etapaEducativaRepository
+        .createQueryBuilder()
+        .insert()
+        .into(EtapaEducativa)
+        .values([
+          {
+            etapaEducativaTipo: etapaEducativaTipo,
+            etapaEducativa: dto.etapaEducativa,
+            activo: true,
+          },
+        ])
+        .execute();
+    } catch (error) {
+      console.log("Error insertar nueva etapa educativa: ", error);
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: `Error insertar nueva etapa educativa: ${error.message}`,
+        },
+        HttpStatus.ACCEPTED,
+        {
+          cause: error,
+        }
+      );
+    }
+  }
+
+  async getAsignaturasLike(body) {
+    let buscado = body.buscado
+    const asignaturas = await this.etapaEducativaRepository.query(`
+      SELECT * from asignatura_tipo where asignatura like '%${buscado}%'
+      `);
+
+    return this._serviceResp.respuestaHttp201(
+      asignaturas,
+      "Datos Encontrados !!",
+      ""
+    );
   }
 }
