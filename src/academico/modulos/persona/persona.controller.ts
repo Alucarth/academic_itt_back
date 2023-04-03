@@ -18,9 +18,11 @@ export class PersonaController {
     }
     @Post('busqueda')
     async getPersonaByCiComplemento(@Body() dto: SearchDatoDto){
-        const dato = await this.personaService.findPersonaByDato(dto);
-        console.log(dato);
-        return dato;
+        console.log("fin dratp 1");
+        console.log(dto);
+        console.log("fin dratp 2");
+        return await this.personaService.findPersonaByDato(dto);
+        
     }
 
     @Post()

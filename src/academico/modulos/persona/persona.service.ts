@@ -17,7 +17,22 @@ export class PersonaService {
       
     }
     async findPersonaByDato( dto:SearchDatoDto ){
-        return await this.personaRepositorio.getPersonaByDato(dto);
+        const person = await this.personaRepositorio.getPersonaByDato(dto);
+        console.log(person);
+        console.log("_____________________________________________");
+        if(!person){
+            return this._serviceResp.respuestaHttp404(
+                '0',
+                'Registro No Encontrado !!',
+                '',
+              );
+        }
+
+        return this._serviceResp.respuestaHttp200(
+            person,
+            '',
+            '',
+          );
       
     }
     async createPersona (dto: CreatePersonaoDto) {
