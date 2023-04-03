@@ -23,6 +23,11 @@ export class InstitucionEducativaCursoController {
         return await this.institucionEducativaCursoService.getBySie(sie, gestion, periodo);
     }
 
+    @Get('etapa-gestion-periodo/:id/:gestion/:periodo')
+    async getByCarrera(@Param('id') id: number,@Param('gestion') gestion: number,@Param('periodo') periodo: number):Promise<InstitucionEducativaCurso[]>{
+        return await this.institucionEducativaCursoService.getByEtapa(id, gestion, periodo);
+    }
+
     @Post()
     async createCurso(@Body() dto: CreateInstitucionEducativaCursoDto){
         console.log('controller insert',dto);

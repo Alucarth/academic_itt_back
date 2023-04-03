@@ -37,6 +37,27 @@ console.log(periodo);
         return cursos;
         
     }
+    async getAllByEtapa(id:number, gestion:number, periodo:number){
+        console.log(id);
+        console.log(gestion);
+        console.log(periodo);
+                const cursos = await this.dataSource.getRepository(InstitucionEducativaCurso)
+                .createQueryBuilder("a")
+                .innerJoinAndSelect("a.turnoTipo", "t")
+                .innerJoinAndSelect("a.paraleloTipo", "p")
+                .innerJoinAndSelect("a.ofertasAcademicas", "o")
+                .innerJoinAndSelect("o.asignaturaTipo", "at")
+                .innerJoinAndSelect("a.etapaEducativa", "e")
+                .where('a.periodoTipo = :periodo ', { periodo })
+                .where('a.gestionTipo = :gestion ', { gestion })
+                .where('e.etapaEducativaId = :id ', { id })
+                .orderBy('a.id', 'ASC')
+                .getMany();
+                console.log("ofertas desde backen");
+                console.log(cursos);
+                return cursos;
+                
+            }
     async createCurso(
 
         dto: CreateInstitucionEducativaCursoDto, 
