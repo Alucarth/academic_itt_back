@@ -364,4 +364,55 @@ export class EtapaEducativaService {
       ""
     );
   }
+
+  async changeStatusById(body) {
+    //TODO: validar body
+    const result = await this.etapaEducativaRepository.query(
+      `SELECT * FROM etapa_educativa where id = ${body.etapaEducativaId}`
+    );
+
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
+
+    if (result.length === 0) {
+      return this._serviceResp.respuestaHttp404(
+        body.etapaEducativaId,
+        "Registro No Encontrado !!",
+        ""
+      );
+    }
+
+    try {
+      const nuevoEstado = !result[0].activo;
+
+      await this.educacionTipoRepository
+        .createQueryBuilder()
+        .update(EtapaEducativa)
+        .set({
+          activo: nuevoEstado,
+        })
+        .where("id = :id", { id: body.etapaEducativaId })
+        .execute();
+
+      return this._serviceResp.respuestaHttp202(
+        body.etapaEducativaId,
+        "Registro Actualizado !!",
+        ""
+      );
+    } catch (error) {
+      console.log("Error update etapa_educativa: ", error);
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: `Error Actualizando Estado etapa_educativa: ${error.message}`,
+        },
+        HttpStatus.ACCEPTED,
+        {
+          cause: error,
+        }
+      );
+      //return 0;
+    }
+  }
+
 }

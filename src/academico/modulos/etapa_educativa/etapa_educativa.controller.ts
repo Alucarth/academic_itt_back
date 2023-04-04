@@ -53,13 +53,18 @@ export class EtapaEducativaController {
   }
 
   @Post("/")
-  async addUser(@Body() body: CreateEtapaEducativaDto) {    
+  async addUser(@Body() body: CreateEtapaEducativaDto) {
     console.log("controller new", body);
     return await this.etapaEducativaService.createNewEtapaEducativa(body);
   }
 
+  @Post("/changeStatusById")
+  async changeStatusById(@Body() body) {    
+    return await this.etapaEducativaService.changeStatusById(body);
+  }
+
   @Post("/getAsignaturasLike")
-  async getAsignaturasLike(@Body() body) {        
+  async getAsignaturasLike(@Body() body) {
     return await this.etapaEducativaService.getAsignaturasLike(body);
   }
 }
