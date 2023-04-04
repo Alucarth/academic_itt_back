@@ -17,13 +17,17 @@ export class CreateEtapaEducativaDto {
   @IsNotEmpty({ message: "la denominacion de la etapa es requerida" })
   etapaEducativa: string;
 
+  /*
   @IsNotEmpty({ message: "etapaEducativaId  es requerida" })
   @IsNumber()
   etapaEducativaId: number;
+  */
 
+  /*
   @IsNotEmpty({ message: "ordinal  es requerida" })
   @IsNumber()
   ordinal: number;
+  */
 
   @IsNotEmpty({ message: "educacionTipoId  es requerida" })
   @IsNumber()

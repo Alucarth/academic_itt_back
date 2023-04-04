@@ -1,22 +1,54 @@
-import { Injectable, HttpStatus } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { MaestroInscripcion } from 'src/academico/entidades/maestroInscripcion.entity';
-import { Repository } from 'typeorm';
-import { NotFoundException , HttpException} from '@nestjs/common';
-import { RespuestaSigedService } from '../../../shared/respuesta.service'
+import { Injectable, HttpStatus } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { MaestroInscripcion } from "src/academico/entidades/maestroInscripcion.entity";
+import { Repository } from "typeorm";
+import { NotFoundException, HttpException } from "@nestjs/common";
+import { RespuestaSigedService } from "../../../shared/respuesta.service";
+import { CreateMaestroInscripcionDto } from "./dto/createMaestroInscripcion.dto";
+import { Persona } from "src/users/entity/persona.entity";
+import { InstitucionEducativa } from "src/academico/entidades/institucionEducativa.entity";
+import { InstitucionEducativaSucursal } from "src/academico/entidades/institucionEducativaSucursal.entity";
+import { FormacionTipo } from "src/academico/entidades/formacionTipo.entity";
+import { FinanciamientoTipo } from "src/academico/entidades/financiamientoTipo.entity";
+import { EspecialidadTipo } from "src/academico/entidades/especialidadTipo.entity";
+import { CargoTipo } from "src/academico/entidades/cargoTipo.entity";
+import { GestionTipo } from "src/academico/entidades/gestionTipo.entity";
+import { IdiomaTipo } from "src/academico/entidades/idiomaTipo.entity";
+import { PeriodoTipo } from "src/academico/entidades/periodoTipo.entity";
+import { UpdateMaestroInscripcionDto } from "./dto/updateMaestroInscripcion.dto";
 
 @Injectable()
 export class MaestroInscripcionService {
+  constructor(
+    @InjectRepository(MaestroInscripcion)
+    private maestroRepository: Repository<MaestroInscripcion>,
+    @InjectRepository(Persona)
+    private personaRepository: Repository<Persona>,
+    @InjectRepository(MaestroInscripcion)
+    private maeRepository: Repository<MaestroInscripcion>,
+    @InjectRepository(InstitucionEducativaSucursal)
+    private iesRepository: Repository<InstitucionEducativaSucursal>,
+    @InjectRepository(FormacionTipo)
+    private formacionRepository: Repository<FormacionTipo>,
+    @InjectRepository(FinanciamientoTipo)
+    private ftipoRepository: Repository<FinanciamientoTipo>,
+    @InjectRepository(EspecialidadTipo)
+    private espeTipoRepository: Repository<EspecialidadTipo>,
+    @InjectRepository(CargoTipo)
+    private cargoTipoRepository: Repository<CargoTipo>,
+    @InjectRepository(GestionTipo)
+    private gestionTipoRepository: Repository<GestionTipo>,
+    @InjectRepository(IdiomaTipo)
+    private idiomaRepository: Repository<IdiomaTipo>,
+    @InjectRepository(PeriodoTipo)
+    private periodoRepository: Repository<PeriodoTipo>,
+    private _serviceResp: RespuestaSigedService
+  ) {}
 
-    constructor(
-        @InjectRepository(MaestroInscripcion)private maeRepository: Repository<MaestroInscripcion>,
-         private _serviceResp: RespuestaSigedService, 
-    ) {}
+  async getAllDocentesByUeGestion(ueId: string) {
+    console.log("ueId: ", ueId);
 
-    async getAllDocentesByUeGestion(ueId: string) {
-        console.log('ueId: ', ueId);
-    
-        const result = await this.maeRepository.query(`
+    const result = await this.maeRepository.query(`
         SELECT
             maestro_inscripcion.id, 
             persona.paterno, 
@@ -77,32 +109,30 @@ export class MaestroInscripcionService {
             where institucion_educativa_id = ${ueId} and maestro_inscripcion.gestion_tipo_id = 2023 and cargo_tipo_id in (1) 
             order by 2,3,4;`);
 
-    
-        console.log('result: ', result);
-        console.log('result size: ', result.length);
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
 
-        if(result.length === 0){
-        //throw new NotFoundException('No se encontraron registros');
-            return this._serviceResp.respuestaHttp404(
-            result,
-            'Registro No Encontrado !!',
-            '',
-            );
-        }
-                
-        //return result;
-        return this._serviceResp.respuestaHttp201(
+    if (result.length === 0) {
+      //throw new NotFoundException('No se encontraron registros');
+      return this._serviceResp.respuestaHttp404(
         result,
-        'Registro Encontrado !!',
-        '',
-        );
-
+        "Registro No Encontrado !!",
+        ""
+      );
     }
 
-    async getAllDirectivosByUeGestion(ueId: string) {
-        console.log('ueId: ', ueId);
-    
-        const result = await this.maeRepository.query(`
+    //return result;
+    return this._serviceResp.respuestaHttp201(
+      result,
+      "Registro Encontrado !!",
+      ""
+    );
+  }
+
+  async getAllDirectivosByUeGestion(ueId: string) {
+    console.log("ueId: ", ueId);
+
+    const result = await this.maeRepository.query(`
         SELECT
             maestro_inscripcion.id, 
             persona.paterno, 
@@ -163,32 +193,30 @@ export class MaestroInscripcionService {
             where institucion_educativa_id = ${ueId} and maestro_inscripcion.gestion_tipo_id = 2023 and cargo_tipo_id in (2,12) 
             order by 2,3,4;`);
 
-    
-        console.log('result: ', result);
-        console.log('result size: ', result.length);
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
 
-        if(result.length === 0){
-        //throw new NotFoundException('No se encontraron registros');
-            return this._serviceResp.respuestaHttp404(
-            result,
-            'Registro No Encontrado !!',
-            '',
-            );
-        }
-                
-        //return result;
-        return this._serviceResp.respuestaHttp201(
+    if (result.length === 0) {
+      //throw new NotFoundException('No se encontraron registros');
+      return this._serviceResp.respuestaHttp404(
         result,
-        'Registro Encontrado !!',
-        '',
-        );
-
+        "Registro No Encontrado !!",
+        ""
+      );
     }
 
-    async getAllAdministrativosByUeGestion(ueId: string) {
-        console.log('ueId: ', ueId);
-    
-        const result = await this.maeRepository.query(`
+    //return result;
+    return this._serviceResp.respuestaHttp201(
+      result,
+      "Registro Encontrado !!",
+      ""
+    );
+  }
+
+  async getAllAdministrativosByUeGestion(ueId: string) {
+    console.log("ueId: ", ueId);
+
+    const result = await this.maeRepository.query(`
         SELECT
             maestro_inscripcion.id, 
             persona.paterno, 
@@ -250,32 +278,30 @@ export class MaestroInscripcionService {
             and cargo_tipo_id in (3,4,5,6,7,14,17) 
             order by 2,3,4;`);
 
-    
-        console.log('result: ', result);
-        console.log('result size: ', result.length);
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
 
-        if(result.length === 0){
-        //throw new NotFoundException('No se encontraron registros');
-            return this._serviceResp.respuestaHttp404(
-            result,
-            'Registro No Encontrado !!',
-            '',
-            );
-        }
-                
-        //return result;
-        return this._serviceResp.respuestaHttp201(
+    if (result.length === 0) {
+      //throw new NotFoundException('No se encontraron registros');
+      return this._serviceResp.respuestaHttp404(
         result,
-        'Registro Encontrado !!',
-        '',
-        );
-
+        "Registro No Encontrado !!",
+        ""
+      );
     }
 
-    async getMaestroInscripcionById(id : number) {
-        console.log('ueId: ', id);
-    
-        const result = await this.maeRepository.query(`
+    //return result;
+    return this._serviceResp.respuestaHttp201(
+      result,
+      "Registro Encontrado !!",
+      ""
+    );
+  }
+
+  async getMaestroInscripcionById(id: number) {
+    console.log("ueId: ", id);
+
+    const result = await this.maeRepository.query(`
         SELECT
             maestro_inscripcion.id, 
             persona.paterno, 
@@ -335,27 +361,357 @@ export class MaestroInscripcionService {
                 maestro_inscripcion.especialidad_tipo_id = especialidad_tipo.id
             where maestro_inscripcion.id = ${id};`);
 
-    
-        console.log('result: ', result);
-        console.log('result size: ', result.length);
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
 
-        if(result.length === 0){
-        //throw new NotFoundException('No se encontraron registros');
-            return this._serviceResp.respuestaHttp404(
-            result,
-            'Registro No Encontrado !!',
-            '',
-            );
-        }
-                
-        //return result;
-        return this._serviceResp.respuestaHttp201(
+    if (result.length === 0) {
+      //throw new NotFoundException('No se encontraron registros');
+      return this._serviceResp.respuestaHttp404(
         result,
-        'Registro Encontrado !!',
-        '',
-        );
-
+        "Registro No Encontrado !!",
+        ""
+      );
     }
 
+    //return result;
+    return this._serviceResp.respuestaHttp201(
+      result,
+      "Registro Encontrado !!",
+      ""
+    );
+  }
 
+  async createNewMaestroInscripcion(dto: CreateMaestroInscripcionDto) {
+    //1:BUSCAR LA PERSONA
+    const persona = await this.personaRepository.findOne({
+      where: { id: dto.personaId },
+    });
+    console.log("persona:", persona);
+
+    if (!persona) {
+      return this._serviceResp.respuestaHttp404(
+        dto.personaId,
+        "Registro No Encontrado !!",
+        ""
+      );
+    }
+
+    try {
+      let institucionEducativaSucursal = await this.iesRepository.findOne({
+        where: { id: dto.institucionEducativaSucursalId },
+      });
+      console.log(
+        "institucionEducativaSucursal : ",
+        institucionEducativaSucursal
+      );
+
+      let formacionTipo = await this.formacionRepository.findOne({
+        where: { id: dto.formacionTipoId },
+      });
+      console.log("formacionTipo : ", formacionTipo);
+
+      let financiamientoTipo = await this.ftipoRepository.findOne({
+        where: { id: dto.financiamientoTipoId },
+      });
+      console.log("financiamientoTipo : ", financiamientoTipo);
+
+      let cargoTipo = await this.cargoTipoRepository.findOne({
+        where: { id: dto.cargoTipoId },
+      });
+      console.log("cargoTipo : ", cargoTipo);
+
+      let especialidadTipo = await this.espeTipoRepository.findOne({
+        where: { id: dto.especialidadTipoId },
+      });
+      console.log("especialidadTipo : ", especialidadTipo);
+
+      let gestionTipo = await this.gestionTipoRepository.findOne({
+        where: { id: dto.gestionTipoId },
+      });
+      console.log("gestionTipo : ", gestionTipo);
+
+      let idiomaTipo = await this.idiomaRepository.findOne({
+        where: { id: dto.estudioIdiomaTipoId },
+      });
+      console.log("idiomaTipo : ", idiomaTipo);
+
+      /*let periodoTipo = await this.periodoRepository.findOne({
+        where: { id: dto.periodoTipoId },
+      });
+      console.log("periodoTipo : ", periodoTipo);*/
+
+      //TODO: no hay periodo_tipo_id en el entity, va ? no va ? alguien sabe ?
+
+      const res = await this.personaRepository
+        .createQueryBuilder()
+        .insert()
+        .into(MaestroInscripcion)
+        .values([
+          {
+            persona: persona,
+            institucionEducativaSucursal: institucionEducativaSucursal,
+            formacionTipo: formacionTipo,
+            financiamientoTipo: financiamientoTipo,
+            cargoTipo: cargoTipo,
+            especialidadTipo: especialidadTipo,
+            gestionTipo: gestionTipo,
+            normalista: dto.normalista,
+            formacionDescripcion: dto.formacionDescripcion,
+            braile: dto.braile,
+            estudioIdiomaTipo: idiomaTipo,
+            asignacionFechaInicio: dto.asignacionFechaInicio,
+            asignacionFechaFin: dto.asignacionFechaFin,
+            item: dto.item,
+            maestroInscripcionIdAm: dto.maestroInscripcionIdAm,
+          },
+        ])
+        .execute();
+
+      console.log("res:", res);
+      console.log("Maestro Inscripcion adicionado");
+      return this._serviceResp.respuestaHttp201(null, "Registro Creado !!", "");
+    } catch (error) {
+      console.log("Error insertar maestro inscripcion: ", error);
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: `Error insertar maestro inscripcion: ${error.message}`,
+        },
+        HttpStatus.ACCEPTED,
+        {
+          cause: error,
+        }
+      );
+    }
+  }
+
+  async updateMaestroInscripcion(dto: UpdateMaestroInscripcionDto) {
+    //1:BUSCAR el registro
+    const result = await this.personaRepository.query(
+      `SELECT * FROM maestro_inscripcion where id = ${dto.id}`
+    );
+
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
+
+    if (result.length === 0) {
+      return this._serviceResp.respuestaHttp404(
+        dto.id,
+        "Registro No Encontrado !!",
+        ""
+      );
+    }
+
+    //2:BUSCAR LA PERSONA
+    const persona = await this.personaRepository.findOne({
+      where: { id: dto.personaId },
+    });
+    console.log("persona:", persona);
+
+    if (!persona) {
+      return this._serviceResp.respuestaHttp404(
+        dto.personaId,
+        "Persona No Encontrada !!",
+        ""
+      );
+    }
+
+    /* institucionEducativaSucursal */
+    let institucionEducativaSucursal = await this.iesRepository.findOne({
+      where: { id: dto.institucionEducativaSucursalId },
+    });
+    console.log(
+      "institucionEducativaSucursal : ",
+      institucionEducativaSucursal
+    );
+    if (!institucionEducativaSucursal) {
+      return this._serviceResp.respuestaHttp404(
+        dto.institucionEducativaSucursalId,
+        "institucionEducativaSucursal No Encontrada !!",
+        ""
+      );
+    }
+
+    /* formacionTipo */
+    let formacionTipo = await this.formacionRepository.findOne({
+      where: { id: dto.formacionTipoId },
+    });
+    console.log("formacionTipo : ", formacionTipo);
+    if (!formacionTipo) {
+      return this._serviceResp.respuestaHttp404(
+        dto.formacionTipoId,
+        "formacionTipo No Encontrada !!",
+        ""
+      );
+    }
+    /** financiamientoTipo */
+    let financiamientoTipo = await this.ftipoRepository.findOne({
+      where: { id: dto.financiamientoTipoId },
+    });
+    console.log("financiamientoTipo : ", financiamientoTipo);
+    if (!financiamientoTipo) {
+      return this._serviceResp.respuestaHttp404(
+        dto.financiamientoTipoId,
+        "financiamiento No Encontrada !!",
+        ""
+      );
+    }
+
+    /** cargoTipo */
+    let cargoTipo = await this.cargoTipoRepository.findOne({
+      where: { id: dto.cargoTipoId },
+    });
+    console.log("cargoTipo : ", cargoTipo);
+    if (!cargoTipo) {
+      return this._serviceResp.respuestaHttp404(
+        dto.cargoTipoId,
+        "cargoTipoId No Encontrada !!",
+        ""
+      );
+    }
+
+    /** especialidadTipo */
+    let especialidadTipo = await this.espeTipoRepository.findOne({
+      where: { id: dto.especialidadTipoId },
+    });
+    console.log("especialidadTipo : ", especialidadTipo);
+    if (!especialidadTipo) {
+      return this._serviceResp.respuestaHttp404(
+        dto.especialidadTipoId,
+        "especialidadTipo No Encontrada !!",
+        ""
+      );
+    }
+
+    /** gestionTipo */
+    let gestionTipo = await this.gestionTipoRepository.findOne({
+      where: { id: dto.gestionTipoId },
+    });
+    console.log("gestionTipo : ", gestionTipo);
+    if (!gestionTipo) {
+      return this._serviceResp.respuestaHttp404(
+        dto.gestionTipoId,
+        "gestionTipo No Encontrada !!",
+        ""
+      );
+    }
+
+    /** idiomaTipo */
+    let idiomaTipo = await this.idiomaRepository.findOne({
+      where: { id: dto.estudioIdiomaTipoId },
+    });
+    console.log("idiomaTipo : ", idiomaTipo);
+    if (!idiomaTipo) {
+      return this._serviceResp.respuestaHttp404(
+        dto.estudioIdiomaTipoId,
+        "idiomaTipo No Encontrada !!",
+        ""
+      );
+    }
+
+    try {
+      //let periodoTipo = await this.periodoRepository.findOne({
+      //  where: { id: dto.periodoTipoId },
+      //});
+      //console.log("periodoTipo : ", periodoTipo);
+
+      //TODO: no hay periodo_tipo_id en el entity, va ? no va ? alguien sabe ?
+
+      /*const res =  await this.maestroRepository
+        .update({ id: dto.id }, dto)*/
+
+      const res = await this.maestroRepository
+        .createQueryBuilder()
+        .update(MaestroInscripcion)
+        .set({
+          persona: persona,
+          institucionEducativaSucursal: institucionEducativaSucursal,
+          formacionTipo: formacionTipo,
+          financiamientoTipo: financiamientoTipo,
+          cargoTipo: cargoTipo,
+          especialidadTipo: especialidadTipo,
+          gestionTipo: gestionTipo,
+          normalista: dto.normalista,
+          formacionDescripcion: dto.formacionDescripcion,
+          braile: dto.braile,
+          estudioIdiomaTipo: idiomaTipo,
+          asignacionFechaInicio: dto.asignacionFechaInicio,
+          asignacionFechaFin: dto.asignacionFechaFin,
+          item: dto.item,
+          maestroInscripcionIdAm: dto.maestroInscripcionIdAm,
+        })
+        .where("id = :id", { id: dto.id })
+        .execute();
+
+      console.log("res:", res);
+      console.log("Maestro Inscripcion actualizado");
+      return this._serviceResp.respuestaHttp202(
+        null,
+        "Registro Actualizado !!",
+        ""
+      );
+    } catch (error) {
+      console.log("Error update maestro inscripcion: ", error);
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: `Error update maestro inscripcion: ${error.message}`,
+        },
+        HttpStatus.ACCEPTED,
+        {
+          cause: error,
+        }
+      );
+    }
+  }
+
+  async changeStatusById(body) {
+    //TODO: validar body
+    const result = await this.personaRepository.query(
+      `SELECT * FROM maestro_inscripcion where id = ${body.maestroInscripcionId}`
+    );
+
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
+
+    if (result.length === 0) {
+      return this._serviceResp.respuestaHttp404(
+        body.maestroInscripcionId,
+        "Registro No Encontrado !!",
+        ""
+      );
+    }
+
+    try {
+      const nuevoEstado = !result[0].vigente;
+
+      await this.personaRepository
+        .createQueryBuilder()
+        .update(MaestroInscripcion)
+        .set({
+          vigente: nuevoEstado,
+        })
+        .where("id = :id", { id: body.maestroInscripcionId })
+        .execute();
+
+      return this._serviceResp.respuestaHttp202(
+        body.maestroInscripcionId,
+        "Registro Actualizado !!",
+        ""
+      );
+    } catch (error) {
+      console.log("Error update user: ", error);
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: `Error Actualizando Estado Usuario: ${error.message}`,
+        },
+        HttpStatus.ACCEPTED,
+        {
+          cause: error,
+        }
+      );
+      //return 0;
+    }
+  }
 }

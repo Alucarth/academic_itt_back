@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { EtapaEducativa } from 'src/academico/entidades/etapaEducativa.entity';
 import { EtapaEducativaTipo } from 'src/academico/entidades/etapaEducativaTipo.entity';
+import { EducacionTipo } from 'src/academico/entidades/educacionTipo.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { RespuestaSigedService } from "../../../shared/respuesta.service";
 import { CreateEtapaEducativaDto } from './dto/createEtapaEducativa.dto';
@@ -13,6 +14,8 @@ export class EtapaEducativaService {
     private etapaEducativaRepository: Repository<EtapaEducativa>,
     @InjectRepository(EtapaEducativaTipo)
     private etapaEducativaTipoRepository: Repository<EtapaEducativaTipo>,
+    @InjectRepository(EducacionTipo)
+    private educacionTipoRepository: Repository<EducacionTipo>,
     private _serviceResp: RespuestaSigedService
   ) {}
   async getById(id: number) {
@@ -185,13 +188,13 @@ export class EtapaEducativaService {
     "ordinal" : 0,
     "educacionTipoId": 0,
     "usuarioId": 100,
-    "codigo27" : 1471,
-    "codigo26" : 1459,
-    "codigo25" : 1455    
+    "codigo27" : 1471,  area de formacion
+    "codigo26" : 1459,  nivel
+    "codigo25" : 1455   regimen
   } 
   */
 
-    if (dto.etapaEducativaTipoId < 25 && dto.etapaEducativaTipoId > 29) {
+    if (dto.etapaEducativaTipoId < 25 || dto.etapaEducativaTipoId > 29) {
       return this._serviceResp.respuestaHttp404(
         dto.etapaEducativaTipoId,
         "etapaEducativaTipoId no encontrado!!",
@@ -204,8 +207,75 @@ export class EtapaEducativaService {
     });
     console.log("etapaEducativaTipo: ", etapaEducativaTipo);
 
+    const educacionTipo = await this.educacionTipoRepository.findOne({
+      where: { id: dto.educacionTipoId },
+    });
+    console.log("educacionTipo: ", educacionTipo);
+    if (!educacionTipo) {
+      return this._serviceResp.respuestaHttp404(
+        dto.educacionTipoId,
+        "educacionTipo no encontrado!!",
+        ""
+      );
+    }
+
+    /** validamos 27 area de formacion, 26 regimen  y 25 nivel */
+    const etapaEducativa = await this.etapaEducativaRepository.findOne({
+      where: { id: dto.codigo27 },
+    });
+    console.log("etapaEducativa: ", etapaEducativa);
+    if (!etapaEducativa) {
+      return this._serviceResp.respuestaHttp404(
+        dto.codigo27,
+        "etapaEducativa Area de Formacion no encontrado!!",
+        ""
+      );
+    }
+
+    let regimentxt = ''
+    let veces = 0
+    
+    const etapaEducativa26 = await this.etapaEducativaRepository.findOne({
+      where: { id: dto.codigo26 },
+    });
+    console.log("etapaEducativa26: ", etapaEducativa26);
+    if (!etapaEducativa26) {
+      return this._serviceResp.respuestaHttp404(
+        dto.codigo26,
+        "regimen de estudios no encontrado!!",
+        ""
+      );
+    }else{
+      regimentxt = etapaEducativa26.etapaEducativa
+      if(regimentxt === 'ANUAL'){
+        veces = 3
+        regimentxt = " AÑO"
+      }else{
+        veces = 6
+        regimentxt = " SEMESTRE"
+      }
+    }
+
+    const etapaEducativa25 = await this.etapaEducativaRepository.findOne({
+      where: { id: dto.codigo25 },
+    });
+    console.log("etapaEducativa25: ", etapaEducativa25);
+    if (!etapaEducativa25) {
+      return this._serviceResp.respuestaHttp404(
+        dto.codigo25,
+        "nivel academico no encontrado!!",
+        ""
+      );
+    }
+
+    /* la duracion para los 3 o 6 inserts*/
+    const etapaEducativaTipo29 = await this.etapaEducativaTipoRepository.findOne({
+      where: { id: 29 },
+    });
+    console.log("etapaEducativaTipo29: ", etapaEducativaTipo29);
+
     try {
-      await this.etapaEducativaRepository
+      const result = await this.etapaEducativaRepository
         .createQueryBuilder()
         .insert()
         .into(EtapaEducativa)
@@ -214,9 +284,59 @@ export class EtapaEducativaService {
             etapaEducativaTipo: etapaEducativaTipo,
             etapaEducativa: dto.etapaEducativa,
             activo: true,
+            ordinal: 0,
+            educacionTipo: educacionTipo,
+            etapaEducativaId: etapaEducativa,
           },
         ])
+        .returning("id")
         .execute();
+
+      let nuevaCarreraId = result.identifiers[0].id;
+      console.log("nueva carrera id: ", result.identifiers[0].id);
+
+      const newEtapaEducativa = await this.etapaEducativaRepository.findOne({
+        where: { id: result.identifiers[0].id },
+      });
+      console.log("newEtapaEducativa: ", newEtapaEducativa);
+      if (!newEtapaEducativa) {
+        return this._serviceResp.respuestaHttp404(
+          result.identifiers[0].id,
+          "New etapaEducativa  no encontrado!!",
+          ""
+        );
+      }
+
+      // CREAR LOS SEMESTRES O AÑOS SEGUN EL REGIMEN
+
+      for(let i=1; i<= veces; i++ ){
+        console.log(i, i + regimentxt);
+
+        const result = await this.etapaEducativaRepository
+          .createQueryBuilder()
+          .insert()
+          .into(EtapaEducativa)
+          .values([
+            {
+              etapaEducativaTipo: etapaEducativaTipo29,
+              etapaEducativa: i + "° " + regimentxt,
+              activo: true,
+              ordinal: 0,
+              educacionTipo: educacionTipo,
+              etapaEducativaId: newEtapaEducativa,
+            },
+          ])
+          .returning("id")
+          .execute();
+      }
+
+      return this._serviceResp.respuestaHttp201(
+        nuevaCarreraId,
+        "Registro Creado !!",
+        ""
+      );
+
+
     } catch (error) {
       console.log("Error insertar nueva etapa educativa: ", error);
       throw new HttpException(

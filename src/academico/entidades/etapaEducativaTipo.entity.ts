@@ -51,7 +51,7 @@ export class EtapaEducativaTipo {
   usuarioId: number;
 
   @ManyToOne(() => SistemaEducacionTipo, (sistemaEducacionTipo) => sistemaEducacionTipo.educacionTipos, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'sistema_educacion_tipo_id', referencedColumnName: 'id'})
+  @JoinColumn({ name: 'educacion_tipo_id', referencedColumnName: 'id'})
   sistemaEducacionTipo: SistemaEducacionTipo;
 
   @OneToMany(() => EtapaEducativa, (etapaEducativa) => etapaEducativa.etapaEducativaTipo)
