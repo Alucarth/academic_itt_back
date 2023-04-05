@@ -50,7 +50,7 @@ export class AsignaturaTipoService {
         console.log("res:", res);
         console.log("asignaturatipo adicionado");
         return this._serviceResp.respuestaHttp201(
-          null,
+          res.identifiers[0].id,
           "Registro Creado !!",
           ""
         );
