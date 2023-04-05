@@ -16,6 +16,7 @@ import { GestionTipo } from './gestionTipo.entity';
 import { IdiomaTipo } from './idiomaTipo.entity';
 import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
 import { OfertaAcademicaMaestroInscripcion } from './ofertaAcademicaMaestroInscripcion.entity';
+import { PeriodoTipo } from './periodoTipo.entity';
 import { Persona } from './persona.entity';
 
 @Entity({ name: 'maestro_inscripcion', schema: 'public' })
@@ -99,6 +100,10 @@ export class MaestroInscripcion {
   @ManyToOne(() => GestionTipo, (gestionTipo) => gestionTipo.maestrosInscripciones, { nullable: false, cascade: true })
   @JoinColumn({ name: 'gestion_tipo_id', referencedColumnName: 'id'})
   gestionTipo: GestionTipo;
+
+  @ManyToOne(() => PeriodoTipo, (periodoTipo) => periodoTipo.maestrosInscripciones, { nullable: false, cascade: true })
+  @JoinColumn({ name: 'periodo_tipo_id', referencedColumnName: 'id'})
+  periodoTipo: PeriodoTipo;
 
   @OneToMany(() => OfertaAcademicaMaestroInscripcion , (ofertaAcademicaMaestroInscripcion) => ofertaAcademicaMaestroInscripcion.maestroInscripcion)
   ofertasAcademicasMaestrosInscripciones: OfertaAcademicaMaestroInscripcion[];

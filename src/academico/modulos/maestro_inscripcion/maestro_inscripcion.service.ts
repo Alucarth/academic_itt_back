@@ -1,4 +1,4 @@
-import { Injectable, HttpStatus } from "@nestjs/common";
+import { Injectable, HttpStatus, Inject } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { MaestroInscripcion } from "src/academico/entidades/maestroInscripcion.entity";
 import { Repository } from "typeorm";
@@ -16,6 +16,7 @@ import { GestionTipo } from "src/academico/entidades/gestionTipo.entity";
 import { IdiomaTipo } from "src/academico/entidades/idiomaTipo.entity";
 import { PeriodoTipo } from "src/academico/entidades/periodoTipo.entity";
 import { UpdateMaestroInscripcionDto } from "./dto/updateMaestroInscripcion.dto";
+import { InstitucionEducativaSucursalRepository } from "../institucion_educativa_sucursal/institucion_educativa_sucursal.repository";
 
 @Injectable()
 export class MaestroInscripcionService {
@@ -28,6 +29,9 @@ export class MaestroInscripcionService {
     private maeRepository: Repository<MaestroInscripcion>,
     @InjectRepository(InstitucionEducativaSucursal)
     private iesRepository: Repository<InstitucionEducativaSucursal>,
+    @Inject(InstitucionEducativaSucursalRepository)
+    private institucionEducativaSucursalRepository: InstitucionEducativaSucursalRepository,
+       
     @InjectRepository(FormacionTipo)
     private formacionRepository: Repository<FormacionTipo>,
     @InjectRepository(FinanciamientoTipo)
@@ -397,13 +401,19 @@ export class MaestroInscripcionService {
     }
 
     try {
-      let institucionEducativaSucursal = await this.iesRepository.findOne({
+     /* let institucionEducativaSucursal = await this.iesRepository.findOne({
         where: { id: dto.institucionEducativaSucursalId },
       });
       console.log(
         "institucionEducativaSucursal : ",
         institucionEducativaSucursal
-      );
+      );*/
+
+      const sucursal =  await this.institucionEducativaSucursalRepository.findSucursalBySieGestion(dto.institucionEducativaId, dto.gestionTipoId);
+      if(sucursal){
+        dto.institucionEducativaSucursalId = sucursal.id;
+        console.log()
+      }
 
       let formacionTipo = await this.formacionRepository.findOne({
         where: { id: dto.formacionTipoId },
@@ -435,10 +445,10 @@ export class MaestroInscripcionService {
       });
       console.log("idiomaTipo : ", idiomaTipo);
 
-      /*let periodoTipo = await this.periodoRepository.findOne({
+      let periodoTipo = await this.periodoRepository.findOne({
         where: { id: dto.periodoTipoId },
       });
-      console.log("periodoTipo : ", periodoTipo);*/
+      console.log("periodoTipo : ", periodoTipo);
 
       //TODO: no hay periodo_tipo_id en el entity, va ? no va ? alguien sabe ?
 
@@ -449,7 +459,7 @@ export class MaestroInscripcionService {
         .values([
           {
             persona: persona,
-            institucionEducativaSucursal: institucionEducativaSucursal,
+            institucionEducativaSucursal: sucursal,
             formacionTipo: formacionTipo,
             financiamientoTipo: financiamientoTipo,
             cargoTipo: cargoTipo,
@@ -463,13 +473,14 @@ export class MaestroInscripcionService {
             asignacionFechaFin: dto.asignacionFechaFin,
             item: dto.item,
             maestroInscripcionIdAm: dto.maestroInscripcionIdAm,
+            periodoTipo: periodoTipo,
           },
         ])
         .execute();
 
       console.log("res:", res);
       console.log("Maestro Inscripcion adicionado");
-      return this._serviceResp.respuestaHttp201(null, "Registro Creado !!", "");
+      return this._serviceResp.respuestaHttp201(res.identifiers, "Registro Creado !!", "");
     } catch (error) {
       console.log("Error insertar maestro inscripcion: ", error);
       throw new HttpException(

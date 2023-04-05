@@ -1,7 +1,9 @@
 import { Controller, Get } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { FinanciamientoTipo } from 'src/academico/entidades/financiamientoTipo.entity';
 import { FinanciamientoTipoService } from './financiamiento_tipo.service';
 
+@ApiTags('financiamiento-tipo')
 @Controller('financiamiento-tipo')
 export class FinanciamientoTipoController {
 

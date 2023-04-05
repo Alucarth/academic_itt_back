@@ -18,8 +18,7 @@ export class PersonaService {
     }
     async findPersonaByDato( dto:SearchDatoDto ){
         const person = await this.personaRepositorio.getPersonaByDato(dto);
-        console.log(person);
-        console.log("_____________________________________________");
+        
         if(!person){
             return this._serviceResp.respuestaHttp404(
                 '0',
@@ -43,7 +42,7 @@ export class PersonaService {
         }
         const existePersona = await this.personaRepositorio.getPersonaByDato(datoBusqueda);
         console.log(existePersona);
-        if(existePersona.length == 0){
+        if(!existePersona){
             const dato = await this.personaRepositorio.crearPersona(dto);
             return this._serviceResp.respuestaHttp201(
                 dato.id,

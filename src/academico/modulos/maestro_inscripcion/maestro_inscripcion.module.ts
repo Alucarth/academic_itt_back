@@ -14,6 +14,7 @@ import { CargoTipo } from "../../entidades/cargoTipo.entity";
 import { GestionTipo } from "../../entidades/gestionTipo.entity";
 import { IdiomaTipo } from "../../entidades/idiomaTipo.entity";
 import { PeriodoTipo } from "../../entidades/periodoTipo.entity";
+import { InstitucionEducativaSucursalRepository } from '../institucion_educativa_sucursal/institucion_educativa_sucursal.repository';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { PeriodoTipo } from "../../entidades/periodoTipo.entity";
     TypeOrmModule.forFeature([PeriodoTipo]),
   ],
   controllers: [MaestroInscripcionController],
-  providers: [MaestroInscripcionService, RespuestaSigedService],
+  providers: [MaestroInscripcionService, RespuestaSigedService, InstitucionEducativaSucursalRepository],
   exports: [MaestroInscripcionService],
 })
 export class MaestroInscripcionModule {}

@@ -5,9 +5,13 @@ export class CreateMaestroInscripcionDto {
   @IsNumber()
   personaId: number;
 
-  @IsNotEmpty({ message: "la UE Sucursal es requerida" })
+  @IsOptional({ message: "la UE Sucursal es requerida" })
   @IsNumber()
   institucionEducativaSucursalId: number;
+
+  @IsNotEmpty({ message: "la UE Sucursal es requerida" })
+  @IsNumber()
+  institucionEducativaId: number;
 
   @IsNotEmpty({ message: "la formacion es requerida" })
   @IsNumber()
@@ -21,7 +25,7 @@ export class CreateMaestroInscripcionDto {
   @IsNumber()
   cargoTipoId: number;
 
-  @IsNotEmpty({ message: "la especialidad es requerida" })
+  @IsOptional({ message: "la especialidad es requerida" })
   @IsNumber()
   especialidadTipoId: number;
 
@@ -35,10 +39,10 @@ export class CreateMaestroInscripcionDto {
   normalista: boolean;
 
   @IsOptional()
-  @IsNotEmpty({ message: "vigente es requerido" })
-  @IsNumber()
   vigente: number;
 
+  @IsOptional()
+  @IsString()
   formacionDescripcion: string;
 
   @IsOptional()
@@ -50,11 +54,11 @@ export class CreateMaestroInscripcionDto {
   estudioIdiomaTipoId: number;
 
   @IsOptional()
-  @IsDateString()
+  @IsString()
   asignacionFechaInicio: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsString()
   asignacionFechaFin: string;
 
   @IsOptional()

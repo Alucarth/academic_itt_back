@@ -14,6 +14,7 @@ import { EstudianteOfertaAcademicaMaestroCalificacion } from './estudianteOferta
 import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
 import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
 import { IntervaloGestionTipo } from './intervaloGestionTipo.entity';
+import { MaestroInscripcion } from './maestroInscripcion.entity';
 import { Operativo } from './operativo.entity';
 import { OperativoEtapaEducativa } from './operativoEtapaEducativa.entity';
 
@@ -68,5 +69,8 @@ export class PeriodoTipo {
   
   @OneToMany(() => EstudianteInscripcionCalificacionGeneral, (estudianteInscripcionCalificacionGeneral) => estudianteInscripcionCalificacionGeneral.periodoTipo)
   estudiantesCalificacionesGenerales: EstudianteInscripcionCalificacionGeneral[];
+
+  @OneToMany(() => MaestroInscripcion, (maestroInscripcion) => maestroInscripcion.periodoTipo)
+  maestrosInscripciones: MaestroInscripcion[];
 
 }
