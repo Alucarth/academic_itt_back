@@ -13,6 +13,8 @@ import { CampoSaberTipo } from "../../entidades/campoSaberTipo.entity";
 import { CreateEtapaEducativaAsignaturaDto } from "./dto/createEtapaEducativaAsignatura.dto";
 import { CreateAsignaturaTipoDto } from "src/academico/catalogos/asignatura_tipo/dto/createAsignaturaTipo.dto";
 import { RespuestaSigedService } from "../../../shared/respuesta.service";
+import { DeleteEtapaEducativaAsignaturaDto } from "./dto/deleteEtapaEducativaAsignatura.dto";
+import { UpdateEtapaEducativaAsignaturaDto } from "./dto/updateEtapaEducativaAsignatura.dto";
 
 @Injectable()
 export class EtapaEducativaAsignaturaService {
@@ -68,6 +70,148 @@ export class EtapaEducativaAsignaturaService {
     return await this.etapaEducativaAsignaturaRepositorio.findAsignaturasByEtapaId(
       id
     );
+  }
+
+  async update(dto: UpdateEtapaEducativaAsignaturaDto) {
+    //el registro existe ?
+    const etapaEducativaAsignatura =
+      await this.etapaEducativaAsignaturaRepository.findOne({
+        where: { id: dto.id },
+      });
+    console.log("etapaEducativaAsignatura:", etapaEducativaAsignatura);
+
+    if (!etapaEducativaAsignatura) {
+      return this._serviceResp.respuestaHttp404(
+        dto.id,
+        "etapaEducativaAsignaturaId No Encontrado !!",
+        ""
+      );
+    }
+
+    // validar llaves foraneas
+    const etapaEducativa = await this.etapaEducativaRepository.findOne({
+      where: { id: dto.etapaEducativaId },
+    });
+    console.log("etapaEducativa:", etapaEducativa);
+
+    if (!etapaEducativa) {
+      return this._serviceResp.respuestaHttp404(
+        dto.etapaEducativaId,
+        "etapaEducativaId No Encontrado !!",
+        ""
+      );
+    }
+
+    const asignaturaTipo = await this.asignaturaTipoRepository.findOne({
+      where: { id: dto.asignaturaTipoId },
+    });
+    console.log("asignaturaTipo:", asignaturaTipo);
+
+    if (!asignaturaTipo) {
+      return this._serviceResp.respuestaHttp404(
+        dto.asignaturaTipoId,
+        "asignaturaTipo No Encontrado !!",
+        ""
+      );
+    }
+    const intervaloTiempoTipo =
+      await this.intervaloTiempoTipoRepository.findOne({
+        where: { id: dto.intervaloTiempoTipoId },
+      });
+    console.log("intervaloTiempoTipo:", intervaloTiempoTipo);
+
+    if (!intervaloTiempoTipo) {
+      return this._serviceResp.respuestaHttp404(
+        dto.intervaloTiempoTipoId,
+        "intervaloTiempoTipo No Encontrado !!",
+        ""
+      );
+    }
+
+    const planEstudioTipo = await this.planEstudioTipoRepository.findOne({
+      where: { id: dto.planEstudioTipoId },
+    });
+    console.log("planEstudioTipo:", planEstudioTipo);
+
+    if (!planEstudioTipo) {
+      return this._serviceResp.respuestaHttp404(
+        dto.planEstudioTipoId,
+        "planEstudioTipo No Encontrado !!",
+        ""
+      );
+    }
+
+    const especialidadTipo = await this.especialidadTipoRepository.findOne({
+      where: { id: dto.especialidadTipoId },
+    });
+    console.log("especialidadTipo:", especialidadTipo);
+
+    if (!especialidadTipo) {
+      return this._serviceResp.respuestaHttp404(
+        dto.especialidadTipoId,
+        "especialidadTipo No Encontrado !!",
+        ""
+      );
+    }
+
+    const campoSaberTipo = await this.campoSaberTipoRepository.findOne({
+      where: { id: dto.campoSaberTipoId },
+    });
+    console.log("campoSaberTipo:", campoSaberTipo);
+
+    if (!campoSaberTipo) {
+      return this._serviceResp.respuestaHttp404(
+        dto.campoSaberTipoId,
+        "campoSaberTipo No Encontrado !!",
+        ""
+      );
+    }
+
+    //validadas las claves foraneas se procede a la creacion del registro
+
+    //TODO: obtener usuario !!!
+    let user_id = 10;
+
+    try {
+      console.log("dto: ", dto);
+
+      const res = await this.etapaEducativaAsignaturaRepository
+        .createQueryBuilder()
+        .update(EtapaEducativaAsignatura)
+        .set({
+          etapaEducativa: etapaEducativa,
+          asignaturaTipo: asignaturaTipo,
+          planEstudio: planEstudioTipo,
+          especialidadTipo: especialidadTipo,
+          intervaloTiempoTipo: intervaloTiempoTipo,
+          cargaHoraria: dto.cargaHoraria,
+          opcional: dto.opcional,
+          comentario: dto.comentario,
+          usuarioId: user_id,
+        })
+        .where("id = :id", { id: dto.id })
+        .execute();
+
+      console.log("res:", res);
+      console.log("Etapa Educativa Asignatura actualizado !!");
+      return this._serviceResp.respuestaHttp202(
+        res.affected,
+        "Registro Actualizado !!",
+        ""
+      );
+    } catch (error) {
+      console.log("Error insertar etapa_educativa_asignatura: ", error);
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: `Error insertar etapa_educativa_asignatura: ${error.message}`,
+        },
+        HttpStatus.ACCEPTED,
+        {
+          cause: error,
+        }
+      );
+    }
   }
 
   async create(dto: CreateEtapaEducativaAsignaturaDto) {
@@ -153,7 +297,7 @@ export class EtapaEducativaAsignaturaService {
     //validadas las claves foraneas se procede a la creacion del registro
 
     //TODO: obtener usuario !!!
-    let user_id = 1
+    let user_id = 1;
 
     try {
       const res = await this.etapaEducativaAsignaturaRepository
@@ -170,8 +314,7 @@ export class EtapaEducativaAsignaturaService {
             cargaHoraria: dto.cargaHoraria,
             opcional: dto.opcional,
             comentario: dto.comentario,
-            usuarioId: user_id            
-            
+            usuarioId: user_id,
           },
         ])
         .execute();
@@ -196,5 +339,36 @@ export class EtapaEducativaAsignaturaService {
         }
       );
     }
+  }
+
+  async delete(dto: DeleteEtapaEducativaAsignaturaDto) {
+    // validar llaves foraneas
+    const etapaEducativaAsignatura =
+      await this.etapaEducativaAsignaturaRepository.findOne({
+        where: { id: dto.id },
+      });
+    console.log("etapaEducativaAsignatura:", etapaEducativaAsignatura);
+
+    if (!etapaEducativaAsignatura) {
+      return this._serviceResp.respuestaHttp404(
+        dto.id,
+        "etapaEducativaAsignaturaId No Encontrado !!",
+        ""
+      );
+    }
+
+    try {
+      const res = await this.etapaEducativaAsignaturaRepository.delete({
+        id: dto.id,
+      });
+
+      console.log("res:", res);
+      console.log("Etapa Educativa Asignatura eliminada");
+      return this._serviceResp.respuestaHttp203(
+        res,
+        "Registro eliminado !!",
+        ""
+      );
+    } catch (error) {}
   }
 }

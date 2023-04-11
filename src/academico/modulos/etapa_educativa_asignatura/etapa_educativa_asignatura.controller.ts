@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { EtapaEducativaAsignatura } from 'src/academico/entidades/etapaEducativaAsignatura.entity';
 import { EtapaEducativaAsignaturaService } from './etapa_educativa_asignatura.service';
 import { CreateAsignaturaTipoDto } from 'src/academico/catalogos/asignatura_tipo/dto/createAsignaturaTipo.dto';
 import { CreateEtapaEducativaAsignaturaDto } from './dto/createEtapaEducativaAsignatura.dto';
+import { DeleteEtapaEducativaAsignaturaDto } from './dto/deleteEtapaEducativaAsignatura.dto';
+import { UpdateEtapaEducativaAsignaturaDto } from './dto/updateEtapaEducativaAsignatura.dto';
 
 @ApiTags("etapa-educativa-asignatura")
 @Controller("etapa-educativa-asignatura")
@@ -61,4 +63,16 @@ export class EtapaEducativaAsignaturaController {
   async create(@Body() body: CreateEtapaEducativaAsignaturaDto) {
     return await this.etapaEducativaAsignaturaService.create(body);
   }
+
+  @Put("/")
+  async update(@Body() body: UpdateEtapaEducativaAsignaturaDto) {
+    return await this.etapaEducativaAsignaturaService.update(body);
+  }
+
+  @Delete("/")
+  async delete(@Body() body: DeleteEtapaEducativaAsignaturaDto) {
+    return await this.etapaEducativaAsignaturaService.delete(body);
+  }
+
+
 }
