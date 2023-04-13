@@ -1072,6 +1072,38 @@ export class UsersService {
         AND SUBSTRING ( codigo, 1, 1 ) = '${deptoId}'`
     );
   }
+  
+  async getAllMenuByUserRolId( userRolId: number) {
+
+    const result = await this.userRepository.query(`select unidad_territorial_usuario_rol_app_menu.id as unidad_territorial_usuario_rol_app_menu_id, app_tipo.url_sistema as app, rol_tipo.rol, menu_tipo.detalle_menu as menu, unidad_territorial_usuario_rol_app_menu.activo
+    from usuario_rol
+    inner join unidad_territorial_usuario_rol on unidad_territorial_usuario_rol.usuario_rol_id = usuario_rol.id
+    inner join unidad_territorial_usuario_rol_app on unidad_territorial_usuario_rol_app.unidad_territorial_usuario_rol_id = unidad_territorial_usuario_rol.id 
+    inner join unidad_territorial_usuario_rol_app_menu on unidad_territorial_usuario_rol_app_menu.unidad_territorial_usuario_rol_app_id = unidad_territorial_usuario_rol_app.id
+    --inner join menu_sistema_rol on menu_sistema_rol.rol_tipo_id = usuario_rol.rol_tipo_id 
+    --inner join menu_sistema on menu_sistema.id = menu_sistema_rol.menu_sistema_id and unidad_territorial_usuario_rol_app.app_tipo_id = menu_sistema.app_tipo_id 
+    inner join menu_tipo on menu_tipo.id = unidad_territorial_usuario_rol_app_menu.menu_tipo_id 
+    inner join app_tipo on app_tipo.id = unidad_territorial_usuario_rol_app.app_tipo_id 
+    inner join rol_tipo on rol_tipo.id = usuario_rol.rol_tipo_id
+    where usuario_rol.id = ${userRolId}`);
+
+    
+    console.log('result: ', result);
+    console.log('result size: ', result.length);
+
+    if(result.length === 0){
+      throw new NotFoundException('No se encontraron registros');
+    }
+
+    return this._serviceResp.respuestaHttp200(
+      result,
+      '',
+      'Registro Encontrado !!',
+    );
+            
+    //return result;
+
+  }
 
   async getTuicionByUserRolId(urid: number) {
     const result1 = await this.userRepository.query(

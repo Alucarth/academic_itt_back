@@ -210,4 +210,10 @@ export class UsersController {
     console.log("controller update", body);
     return await this.usersService.changePasswordUser(body);
   }
+
+  @Get('/getAllMenuByUserRolId/:userRolId')
+  getAllMenuByUserRolId(@Param('userRolId') urid:string){
+    return this.usersService.getAllMenuByUserRolId(parseInt(urid));
+  }
+
 }
