@@ -193,4 +193,9 @@ export class UsersController {
     return  await this.usersService.changePasswordUser(body);
   }
 
+  @Get('/getAllMenuByUserRolId/:userRolId')
+  getAllMenuByUserRolId(@Param('userRolId') urid:string){
+    return this.usersService.getAllMenuByUserRolId(parseInt(urid));
+  }
+
 }
