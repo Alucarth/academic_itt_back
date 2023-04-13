@@ -7,11 +7,12 @@ import { DatabaseModule } from '../database/database.module';
 import { RespuestaSigedService } from '../shared/respuesta.service'
 import { PersonaService } from './persona/persona.service';
 import { Persona  } from './entity/persona.entity';
+import { JwtService } from "@nestjs/jwt";
 
 @Module({
   imports: [DatabaseModule, TypeOrmModule.forFeature([User]),  TypeOrmModule.forFeature([Persona])],
   controllers: [UsersController],
-  providers: [UsersService, RespuestaSigedService, PersonaService],
+  providers: [UsersService, RespuestaSigedService, PersonaService, JwtService],
   exports: [UsersService, PersonaService],
 })
 

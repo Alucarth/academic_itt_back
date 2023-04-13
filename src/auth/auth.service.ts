@@ -84,7 +84,9 @@ export class AuthService {
 
       }
 
-      const payload = { id:result[0].user_id , expiresIn: 60};
+      
+
+      const payload = { id:result[0].user_id , rolid:100, appid: 2, expiresIn: 60};
 
       //los roles del usuario
       const result_roles = await this.userRepository.query(`
