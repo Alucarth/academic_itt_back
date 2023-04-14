@@ -222,4 +222,9 @@ export class UsersController {
     return this.usersService.changeStatusUserRolUtAppMenu(body.userRolUtAppMenuId);
   }
 
+  @Get("/getAllAppTipo")
+  getAllAppTipo() {
+    return this.usersService.getAllAppTipo();
+  }
+
 }

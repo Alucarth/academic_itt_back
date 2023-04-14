@@ -1290,4 +1290,25 @@ export class UsersService {
         break;
     }
   }
+
+  async getAllAppTipo() {
+    const result = await this.userRepository.query(`
+    select id, url_sistema as app from app_tipo order by 1
+    `);
+
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
+
+    if (result.length === 0) {
+      throw new NotFoundException("No se encontraron registros");
+    }
+
+    //return result;
+    return {
+      statusCode: 200,
+      message: [""],
+      data: result,
+      code: "",
+    };
+  }
 }
