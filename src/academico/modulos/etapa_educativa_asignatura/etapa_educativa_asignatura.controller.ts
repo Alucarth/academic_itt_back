@@ -6,6 +6,7 @@ import { CreateAsignaturaTipoDto } from 'src/academico/catalogos/asignatura_tipo
 import { CreateEtapaEducativaAsignaturaDto } from './dto/createEtapaEducativaAsignatura.dto';
 import { DeleteEtapaEducativaAsignaturaDto } from './dto/deleteEtapaEducativaAsignatura.dto';
 import { UpdateEtapaEducativaAsignaturaDto } from './dto/updateEtapaEducativaAsignatura.dto';
+import { CreatePlanEstudiosDto } from './dto/createPlanEstudios.dto';
 
 @ApiTags("etapa-educativa-asignatura")
 @Controller("etapa-educativa-asignatura")
@@ -74,5 +75,8 @@ export class EtapaEducativaAsignaturaController {
     return await this.etapaEducativaAsignaturaService.delete(body);
   }
 
-
+  @Post("/PlanEstudios")
+  async createPlanEstudios(@Body() body: CreatePlanEstudiosDto) {
+    return await this.etapaEducativaAsignaturaService.createPlanEstudios(body);
+  }
 }

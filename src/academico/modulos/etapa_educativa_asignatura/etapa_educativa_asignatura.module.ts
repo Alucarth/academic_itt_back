@@ -8,8 +8,11 @@ import { EtapaEducativaAsignaturaService } from './etapa_educativa_asignatura.se
 import { EtapaEducativa } from "../../entidades/etapaEducativa.entity";
 import { AsignaturaTipo } from "../../entidades/asignaturaTipo.entity";
 import { IntervaloTiempoTipo } from "../../entidades/intervaloTiempoTipo.entity";
+import { IntervaloGestionTipo } from "../../entidades/intervaloGestionTipo.entity";
 import { EspecialidadTipo } from "../../entidades/especialidadTipo.entity";
 import { PlanEstudio } from "../../entidades/planEstudio.entity";
+import { EducacionTipo } from "../../entidades/educacionTipo.entity";
+
 import { CampoSaberTipo } from "../../entidades/campoSaberTipo.entity";
 import { RespuestaSigedService } from "../../../shared/respuesta.service";
 
@@ -29,6 +32,8 @@ import { RespuestaSigedService } from "../../../shared/respuesta.service";
     TypeOrmModule.forFeature([PlanEstudio]),
     TypeOrmModule.forFeature([EspecialidadTipo]),
     TypeOrmModule.forFeature([CampoSaberTipo]),
+    TypeOrmModule.forFeature([EducacionTipo]),
+    TypeOrmModule.forFeature([IntervaloGestionTipo]),
   ],
   controllers: [EtapaEducativaAsignaturaController],
 })
