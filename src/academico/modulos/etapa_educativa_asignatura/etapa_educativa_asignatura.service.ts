@@ -7,6 +7,7 @@ import { EtapaEducativaAsignaturaRepository } from "./etapa_educativa_asignatura
 import { EtapaEducativa } from "../../entidades/etapaEducativa.entity";
 import { AsignaturaTipo } from "../../entidades/asignaturaTipo.entity";
 import { IntervaloTiempoTipo } from "../../entidades/intervaloTiempoTipo.entity";
+import { IntervaloGestionTipo } from "../../entidades/intervaloGestionTipo.entity";
 import { PlanEstudio } from "../../entidades/planEstudio.entity";
 import { EspecialidadTipo } from "../../entidades/especialidadTipo.entity";
 import { CampoSaberTipo } from "../../entidades/campoSaberTipo.entity";
@@ -15,6 +16,8 @@ import { CreateAsignaturaTipoDto } from "src/academico/catalogos/asignatura_tipo
 import { RespuestaSigedService } from "../../../shared/respuesta.service";
 import { DeleteEtapaEducativaAsignaturaDto } from "./dto/deleteEtapaEducativaAsignatura.dto";
 import { UpdateEtapaEducativaAsignaturaDto } from "./dto/updateEtapaEducativaAsignatura.dto";
+import { CreatePlanEstudiosDto } from "./dto/createPlanEstudios.dto";
+import { EducacionTipo } from "src/academico/entidades/educacionTipo.entity";
 
 @Injectable()
 export class EtapaEducativaAsignaturaService {
@@ -35,6 +38,10 @@ export class EtapaEducativaAsignaturaService {
     private campoSaberTipoRepository: Repository<CampoSaberTipo>,
     @InjectRepository(EtapaEducativaAsignatura)
     private etapaEducativaAsignaturaRepository: Repository<EtapaEducativaAsignatura>,
+    @InjectRepository(EducacionTipo)
+    private educacionTipoRepository: Repository<EducacionTipo>,
+    @InjectRepository(IntervaloGestionTipo)
+    private intervaloGestionTipoRepository: Repository<IntervaloGestionTipo>,
     private _serviceResp: RespuestaSigedService
   ) {}
 
@@ -371,4 +378,78 @@ export class EtapaEducativaAsignaturaService {
       );
     } catch (error) {}
   }
+
+   async createPlanEstudios(dto: CreatePlanEstudiosDto) {
+
+    let user_id = 0;
+
+    const intervaloGestionTipo =
+      await this.intervaloGestionTipoRepository.findOne({
+        where: { id: dto.intervaloGestionTipoId },
+      });
+    console.log("intervaloGestionTipo:", intervaloGestionTipo);
+
+    if (!intervaloGestionTipo) {
+      return this._serviceResp.respuestaHttp404(
+        dto.intervaloGestionTipoId,
+        "intervaloGestionTipo No Encontrado !!",
+        ""
+      );
+    }
+
+    const educacionTipo =
+      await this.educacionTipoRepository.findOne({
+        where: { id: dto.educacionTipoId },
+      });
+    console.log("educacionTipo:", educacionTipo);
+
+    if (!educacionTipo) {
+      return this._serviceResp.respuestaHttp404(
+        dto.educacionTipoId,
+        "educacionTipo No Encontrado !!",
+        ""
+      );
+    }
+
+    try {
+      const res = await this.etapaEducativaAsignaturaRepository
+        .createQueryBuilder()
+        .insert()
+        .into(PlanEstudio)
+        .values([
+          {
+            documentoNumero: dto.documentoNumero,
+            documentoUrl: dto.documentoUrl,
+            activo: dto.activo,
+            comentario: dto.comentario,
+            usuarioId: user_id,
+            intervaloGestionTipo: intervaloGestionTipo,
+            educacionTipo: educacionTipo,
+            //documentoFecha: dto.documentoFecha
+            
+          },
+        ])
+        .execute();
+
+      console.log("res:", res);
+      console.log("Plan de Estudio adicionado");
+      return this._serviceResp.respuestaHttp201(
+        res.identifiers[0].id,
+        "Registro Creado !!",
+        ""
+      );
+    } catch (error) {
+      console.log("Error insertar etapa_educativa_asignatura: ", error);
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: `Error insertar etapa_educativa_asignatura: ${error.message}`,
+        },
+        HttpStatus.ACCEPTED,
+        {
+          cause: error,
+        }
+      );
+    }
+   }
 }
