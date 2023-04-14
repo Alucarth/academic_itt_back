@@ -216,4 +216,10 @@ export class UsersController {
     return this.usersService.getAllMenuByUserRolId(parseInt(urid));
   }
 
+  @Put("/changeStatusMenuByUserRolUtAppId")
+  async changeStatusUserRolUtAppMenu(@Body() body) {
+    console.log("userId", body.userRolUtAppMenuId);
+    return this.usersService.changeStatusUserRolUtAppMenu(body.userRolUtAppMenuId);
+  }
+
 }

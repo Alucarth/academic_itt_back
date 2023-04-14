@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entity/users.entity';
 import { UsuarioRol } from './entity/usuarioRol.entity';
+import { UnidadTerritorialUsuarioRolAppMenu } from './entity/unidadTerritorialUsuarioRolAppMenu.entity';
 import * as bcrypt from 'bcrypt';
 import { Client } from 'pg';
 import { NotFoundException , HttpException} from '@nestjs/common';
@@ -1103,6 +1104,54 @@ export class UsersService {
             
     //return result;
 
+  }
+
+  async changeStatusUserRolUtAppMenu(userRolUtAppMenuId) {
+
+    const result = await this.userRepository.query(`select * from unidad_territorial_usuario_rol_app_menu where id  = ${userRolUtAppMenuId}`);
+    
+    console.log('result: ', result);
+    console.log('result size: ', result.length);
+
+    if(result.length === 0){
+      return this._serviceResp.respuestaHttp404(
+          userRolUtAppMenuId,
+          'Registro No Encontrado !!',
+          '',
+        );
+    }
+
+
+    try{
+
+      const nuevoEstado = !result[0].activo 
+
+       await this.userRepository
+        .createQueryBuilder()        
+        .update(UnidadTerritorialUsuarioRolAppMenu)
+        .set({
+            activo : nuevoEstado
+        })
+        .where("id = :id", { id: userRolUtAppMenuId })
+        .execute()
+
+        return this._serviceResp.respuestaHttp202(
+          userRolUtAppMenuId,
+          'Registro Actualizado !!',
+          '',
+        );
+        
+    
+    } catch (error) {
+       console.log("Error update user: ", error);
+       throw new HttpException({
+          status: HttpStatus.CONFLICT,
+          error: `Error Actualizando Estado Usuario: ${error.message}`,
+        }, HttpStatus.ACCEPTED, {
+          cause: error
+        });
+       //return 0;
+    }
   }
 
   async getTuicionByUserRolId(urid: number) {
