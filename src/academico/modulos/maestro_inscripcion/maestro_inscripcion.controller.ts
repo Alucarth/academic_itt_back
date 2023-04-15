@@ -17,6 +17,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { MaestroInscripcionService } from '../maestro_inscripcion/maestro_inscripcion.service';
 import { CreateMaestroInscripcionDto } from './dto/createMaestroInscripcion.dto';
+import { CreateOfertaAcademicaMaestroInscripcionDto } from './dto/createOfertaAcademicaMaestroInscripcion.dto';
 import { UpdateMaestroInscripcionDto } from './dto/updateMaestroInscripcion.dto';
 @ApiTags("maestro-inscripcion")
 @Controller("maestro-inscripcion")
@@ -25,11 +26,22 @@ export class MaestroInscripcionController {
 
   @Get("/getAllDocentesByUeGestion/:ueId/:gestionId")
   getAllDocentesByUeGestion(
-    @Param("ueId") ueId: string,
-    @Param("gestionId") gestionId: string
+    @Param("ueId") ueId: number,
+    @Param("gestionId") gestionId: number
   ) {
     return this.usersService.getAllDocentesByUeGestion(ueId);
   }
+
+  @Get("/getAllDocentesByUeGestionPeriodo/:personaId/:gestionId/:periodoId/:ueId")
+  getAllDocentesByUeGestionDocente(
+    @Param("personaId") personaId: number,
+    @Param("gestionId") gestionId: number,
+    @Param("periodoId") periodoId: number,
+    @Param("ueId") ueId: number,
+  ) {
+    return this.usersService.getMaestroInscripcionByPersonaGestionPeriodo(personaId, gestionId, periodoId, ueId);
+  }
+
 
   @Get("/getMaestroInscripcionById/:maestroInscripcionId")
   getMaestroInscripcionById(
@@ -39,6 +51,16 @@ export class MaestroInscripcionController {
       parseInt(maestroInscripcionId)
     );
   }
+
+  @Get("/getAllDocentesByUeGestionPeriodo/:ueId/:gestionId/:periodoId")
+  getListaDocentesByUeGestion(
+    @Param("ueId") ueId: number,
+    @Param("gestionId") gestionId: number,
+    @Param("periodoId") periodoId: number
+  ) {
+    return this.usersService.getAllDocentesByUeGestionPeriodo(ueId, gestionId, periodoId);
+  }
+
 
   @Get("/getAllDirectivosByUeGestion/:ueId/:gestionId")
   getAllDirectivosByUeGestion(
@@ -59,7 +81,15 @@ export class MaestroInscripcionController {
   @Post("/")
   async addUser(@Body() body: CreateMaestroInscripcionDto) {
     console.log("controller new", body);
-    return await this.usersService.createNewMaestroInscripcion(body);
+    
+    return await this.usersService.createUpdateMaestroInscripcion(body);
+  }
+
+  @Post("/oferta-academica")
+  async addOfertaAcademica(@Body() dto: CreateOfertaAcademicaMaestroInscripcionDto) {
+    console.log("controller new", dto);
+    
+    return await this.usersService.createOFertaAcademicaMaestroInscripcion(dto);
   }
 
   @Put("/")

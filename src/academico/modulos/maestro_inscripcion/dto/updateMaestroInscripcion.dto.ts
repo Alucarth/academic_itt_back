@@ -13,11 +13,11 @@ export class UpdateMaestroInscripcionDto {
   @IsNumber()
   id: number;
 
-  @IsNotEmpty({ message: "la Persona es requerido" })
+  @IsOptional({ message: "la Persona es requerido" })
   @IsNumber()
   personaId: number;
 
-  @IsNotEmpty({ message: "la UE Sucursal es requerida" })
+  @IsOptional({ message: "la UE Sucursal es requerida" })
   @IsNumber()
   institucionEducativaSucursalId: number;
 
@@ -33,11 +33,11 @@ export class UpdateMaestroInscripcionDto {
   @IsNumber()
   cargoTipoId: number;
 
-  @IsNotEmpty({ message: "la especialidad es requerida" })
+  @IsOptional({ message: "la especialidad es requerida" })
   @IsNumber()
   especialidadTipoId: number;
 
-  @IsNotEmpty({ message: "la gestion es requerida" })
+  @IsOptional({ message: "la gestion es requerida" })
   @IsNumber()
   gestionTipoId: number;
 
@@ -46,16 +46,18 @@ export class UpdateMaestroInscripcionDto {
   normalista: boolean;
 
   @IsOptional()
-  @IsNotEmpty({ message: "vigente es requerido" })
   @IsBoolean()
   vigente: boolean;
 
+  @IsOptional()
+  @IsString()
   formacionDescripcion: string;
 
   @IsOptional()
   @IsBoolean()
   braile: boolean;
 
+  @IsOptional()
   @IsNumber()
   estudioIdiomaTipoId: number;
 

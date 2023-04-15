@@ -15,7 +15,7 @@ export class PersonaRepository {
         return  await this.dataSource.getRepository(Persona).findBy({id : id});
     }
     async getPersonaByDato(dto:SearchDatoDto){
-        return  await this.dataSource.getRepository(Persona).findBy({
+        return  await this.dataSource.getRepository(Persona).findOneBy({
             carnetIdentidad : dto.carnetIdentidad,
             complemento:dto?.complemento
             });
