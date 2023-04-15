@@ -49,8 +49,10 @@ export class PlanEstudio {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
+  /*
   @Column({ type: 'integer', name: 'usuario_id' })
   asignaturaId: number;
+  */
 
   @ManyToOne(() => EducacionTipo, (educacionTipo) => educacionTipo.planesEstudios, { nullable: false, cascade: true })
   @JoinColumn({ name: 'educacion_tipo_id', referencedColumnName: 'id'})

@@ -15,7 +15,7 @@ export class CampoSaberTipo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'campoSaber' })
+  @Column({ type: 'varchar', name: 'campo_saber' })
   campoSaber: string;
 
   @Column({ type: 'varchar', name: 'abreviacion' })
