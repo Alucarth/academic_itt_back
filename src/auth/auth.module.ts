@@ -10,17 +10,23 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { AuthController } from './auth.controller';
 import { RolesGuard } from './guards/roles.guard';
 import { User } from '../users/entity/users.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
     PassportModule,
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '23d' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        privateKey: configService.get("JWT_SECRET"),
+        signOptions: {
+          expiresIn: 3600,
+        },
+      }),
+      inject: [ConfigService],
     }),
     forwardRef(() => UsersModule),
-
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, RolesGuard],
   controllers: [AuthController],

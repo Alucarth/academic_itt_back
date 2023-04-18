@@ -1,6 +1,7 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { join } from 'path';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 export const getDatabaseDataSourceOptions = ({
   port,
@@ -26,8 +27,8 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   type: 'postgres',
   host: '172.20.0.103',
   port: 5434,
-  username: 'cvallejos',
-  password: 'cvallejos123',
+  username: 'dcastillo',
+  password: 'dcastillo123',
   database: 'sie_produccion',
   entities: [join(__dirname, '../', '**', '*.entity.{ts,js}')],
   synchronize: false,

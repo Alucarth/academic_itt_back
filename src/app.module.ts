@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './config/typeorm.config';
+import { ConfigModule } from '@nestjs/config';
+
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
@@ -39,11 +41,23 @@ import { EstudianteInscripcionOfertaAcademicaModule } from './academico/modulos/
 import { FormacionTipoModule } from './academico/catalogos/formacion_tipo/formacion_tipo.module';
 import { FinanciamientoTipoModule } from './academico/catalogos/financiamiento_tipo/financiamiento_tipo.module';
 import { CargoTipoModule } from './academico/catalogos/cargo_tipo/cargo_tipo.module';
-
+import { MallaCurricularModule } from './academico/modulos/malla-curricular/malla-curricular.module';
+import { config } from './config';
+import { ConfigService } from "@nestjs/config";
+import { DatabaseConfig } from './database.config';
+import { OfertaAcademicaMaestroInscripcionModule } from './academico/modulos/oferta_academica_maestro_inscripcion/oferta_academica_maestro_inscripcion.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(typeOrmConfig),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [config],
+    }),
+    //TypeOrmModule.forRoot(typeOrmConfig),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useClass: DatabaseConfig,
+    }),
     UsersModule,
     AuthModule,
     ProductsModule,
@@ -79,7 +93,9 @@ import { CargoTipoModule } from './academico/catalogos/cargo_tipo/cargo_tipo.mod
     EstudianteInscripcionOfertaAcademicaModule,
     FormacionTipoModule,
     FinanciamientoTipoModule,
-    CargoTipoModule
+    CargoTipoModule,
+    MallaCurricularModule,
+    OfertaAcademicaMaestroInscripcionModule,
   ],
   providers: [],
 })
