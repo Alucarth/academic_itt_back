@@ -365,7 +365,11 @@ export class UsersService {
 
       console.log("Unidad Territorial adicionada");
       //return 1;
-      return this._serviceResp.respuestaHttp201(null, "Registro Creado !!", "");
+      return this._serviceResp.respuestaHttp201(
+        nuevoUTRol,
+        "Registro Creado !!",
+        ""
+      );
     } catch (error) {
       console.log("Error insertar nueva Unidad Territorial: ", error);
       //throw new Error(`Error insertar nueva Unidad Territorial: ${error.message}`);
