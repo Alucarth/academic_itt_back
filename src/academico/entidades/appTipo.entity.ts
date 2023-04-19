@@ -20,9 +20,6 @@ export class AppTipo {
   @Column({ type: 'varchar', name: 'url_sistema' })
   urlSistema: string;
 
-  @Column({ type: 'varchar', name: 'comentario' })
-  comentario: string;
-
   @Exclude()
   @UpdateDateColumn({
     name: 'fecha_inicio',

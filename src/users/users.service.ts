@@ -10,6 +10,8 @@ import { Client } from 'pg';
 import { NotFoundException , HttpException} from '@nestjs/common';
 import { EntityManager, getConnection, getManager } from 'typeorm';
 import { UsuarioUniTerrRol } from './entity/usuarioUniTerrRol.entity';
+import { UnidadTerritorialUsuarioRolApp } from '../academico/entidades/unidadTerritorialUsuarioRolApp.entity';
+
 import { RespuestaSigedService } from '../shared/respuesta.service'
 import { PersonaService } from './persona/persona.service'
 import { PersonaBusquedaCiFechaNacDTO, PersonaMReadDto } from './dto/persona.dto'
@@ -18,11 +20,16 @@ import { Persona } from './entity/persona.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtService } from "@nestjs/jwt";
 
+import { AppTipo } from "../academico/entidades/appTipo.entity";
+
+
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Persona) private personaRepository: Repository<Persona>,
+    @InjectRepository(AppTipo) private appRepository: Repository<AppTipo>,
+    @InjectRepository(UsuarioUniTerrRol) private uturRepository: Repository<UsuarioUniTerrRol>,
     private _serviceResp: RespuestaSigedService,
     private _servicePersona: PersonaService,
     private jwtService: JwtService
@@ -276,8 +283,26 @@ export class UsersService {
     unidadTerrId: number,
     fechaInicio: string,
     fechaFin: string,
-    userId: number
+    userId: number,
+    apps: []
   ) {
+
+    for (let i = 0; i < apps.length; i++) {
+      const appTipo = await this.appRepository.findOne({
+        where: { id: apps[i] },
+      });
+
+      if(!appTipo){
+        return this._serviceResp.respuestaHttp404(
+          apps[i],
+          "AppId No Existe !!",
+          ""
+        );
+      }
+
+    }
+
+
     try {
       var parsedDate = Date.parse(fechaInicio);
       console.log(parsedDate);
@@ -299,7 +324,7 @@ export class UsersService {
         //throw new NotFoundException('No se encontraron registros');
       }
 
-      await this.userRepository
+      const nuevoRegistro = await this.userRepository
         .createQueryBuilder()
         .insert()
         .into(UsuarioUniTerrRol)
@@ -314,9 +339,37 @@ export class UsersService {
         ])
         .execute();
 
+      let idCreado = nuevoRegistro.identifiers[0].id;
+      const nuevoUTRol = await this.uturRepository.findOne({
+        where: { id: idCreado },
+      });
+
+      for (let i = 0; i < apps.length; i++) {
+        const appTipo = await this.appRepository.findOne({
+          where: { id: apps[i] },
+        });
+
+        await this.userRepository
+          .createQueryBuilder()
+          .insert()
+          .into(UnidadTerritorialUsuarioRolApp)
+          .values([
+            {
+              appTipo: appTipo,
+              usuarioId: 1,
+              unidadTerritorialUsuarioRol: nuevoUTRol,
+            },
+          ])
+          .execute();
+      }
+
       console.log("Unidad Territorial adicionada");
       //return 1;
-      return this._serviceResp.respuestaHttp201(null, "Registro Creado !!", "");
+      return this._serviceResp.respuestaHttp201(
+        nuevoUTRol,
+        "Registro Creado !!",
+        ""
+      );
     } catch (error) {
       console.log("Error insertar nueva Unidad Territorial: ", error);
       //throw new Error(`Error insertar nueva Unidad Territorial: ${error.message}`);

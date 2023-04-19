@@ -7,10 +7,17 @@ import { DatabaseModule } from '../database/database.module';
 import { RespuestaSigedService } from '../shared/respuesta.service'
 import { PersonaService } from './persona/persona.service';
 import { Persona  } from './entity/persona.entity';
+import { AppTipo } from "../academico/entidades/appTipo.entity";
+import { UsuarioUniTerrRol } from "./entity/usuarioUniTerrRol.entity";
 import { JwtService } from "@nestjs/jwt";
 
 @Module({
-  imports: [DatabaseModule, TypeOrmModule.forFeature([User]),  TypeOrmModule.forFeature([Persona])],
+  imports: [DatabaseModule, 
+    TypeOrmModule.forFeature([User]),  
+    TypeOrmModule.forFeature([Persona]),
+    TypeOrmModule.forFeature([AppTipo]),
+    TypeOrmModule.forFeature([UsuarioUniTerrRol])
+  ],
   controllers: [UsersController],
   providers: [UsersService, RespuestaSigedService, PersonaService, JwtService],
   exports: [UsersService, PersonaService],
