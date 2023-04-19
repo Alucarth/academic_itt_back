@@ -18,13 +18,6 @@ import { UnidadTerritorialUsuarioRolAppMenu } from './unidadTerritorialUsuarioRo
 export class UnidadTerritorialUsuarioRolApp {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column({ type: 'date', name: 'fecha_inicio' })
-  fechaInicio: string;
-
-  @Column({ type: 'date', name: 'fecha_fin' })
-  fechaFin: string;
-
   
   @Exclude()
   @UpdateDateColumn({

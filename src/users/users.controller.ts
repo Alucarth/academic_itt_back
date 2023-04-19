@@ -174,13 +174,15 @@ export class UsersController {
     let usuario_id = body.userId; //82849
     let fecha_inicio = body.fechaInicio; //2023-01-01
     let fecha_fin = body.fechaFin; //2023-12-31
+    let apps = body.sistemas;
 
     return this.usersService.insertNewUnidadTerritorialUser(
       usuario_rol_id,
       unidad_territorial_id,
       fecha_inicio,
       fecha_fin,
-      usuario_id
+      usuario_id,
+      apps
     );
   }
 
