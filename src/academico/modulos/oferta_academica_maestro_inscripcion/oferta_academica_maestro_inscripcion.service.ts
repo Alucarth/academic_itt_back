@@ -1,47 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MaestroInscripcion } from 'src/academico/entidades/maestroInscripcion.entity';
 import { OfertaAcademica } from 'src/academico/entidades/ofertaAcademica.entity';
 import { OfertaAcademicaMaestroInscripcion } from 'src/academico/entidades/ofertaAcademicaMaestroInscripcion.entity';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CreateOfertaAcademicaMaestroInscripcionDto } from './dto/createOfertaAcademicaMaestroInscripcion.dto';
+import { OfertaAcademicaMaestroInscripcionRepository } from './oferta_academica_maestro_inscripcion.repository';
 
 @Injectable()
 export class OfertaAcademicaMaestroInscripcionService {
+    institucionEducativaCursoRepository: any;
     constructor(
-        @InjectRepository(OfertaAcademicaMaestroInscripcion)
-        private oaMaeRepository: Repository<OfertaAcademicaMaestroInscripcion>,
+        @Inject(OfertaAcademicaMaestroInscripcionRepository)
+        private oaMaeRepository: OfertaAcademicaMaestroInscripcionRepository,
         private _serviceResp: RespuestaSigedService,
     ){}
+
+    async getAll(){
+        const oaMaes = await this.oaMaeRepository.getAll()
+        return oaMaes;
+    }
+
 
     async createOFertaAcademicaMaestroInscripcion(dto: CreateOfertaAcademicaMaestroInscripcionDto) {
 
         console.log("servicio de insercion inicio");
-        /*const maestroInscripcion = new MaestroInscripcion();
-          maestroInscripcion.id = 125
-          const ofertaAcademica = new OfertaAcademica();
-          ofertaAcademica.id = 19694218;*/
-        /*
-        const ofertaAcademicaMaestroInscripcion  = new OfertaAcademicaMaestroInscripcion();
-        ofertaAcademicaMaestroInscripcion.maestroInscripcionId = 125;
-        ofertaAcademicaMaestroInscripcion.ofertaAcademicaId = 19694218;
-            
-        console.log("servicio de insercion fin");
-        return await this.oaMaeRepository.save(ofertaAcademicaMaestroInscripcion);*/
+        const op = async (transaction: EntityManager) => {
+            const nuevoCurso =  await this.oaMaeRepository.createOfertaAcademicaMaestroInscripcion(
+              dto,
+              transaction
+            )
+            return nuevoCurso;
+          }
 
-        const ofertasAcademicas: OfertaAcademicaMaestroInscripcion[] = dto.ofertaAcademica.map((item) => {     
-          const ofertaAcademicaMaestroInscripcion  = new OfertaAcademicaMaestroInscripcion();
-          ofertaAcademicaMaestroInscripcion.maestroInscripcionId = dto.maestroInscripcionId;
-          ofertaAcademicaMaestroInscripcion.ofertaAcademicaId =  item.id;
-          return ofertaAcademicaMaestroInscripcion;
-        });
-    
-        const ofertaMaestro = await this.oaMaeRepository.save(ofertasAcademicas);
-        console.log(ofertaMaestro);
-        if(ofertaMaestro != undefined){
+        const crearResult = await this.oaMaeRepository.runTransaction(op)
+
+        if(crearResult){
             return this._serviceResp.respuestaHttp201(
-                ofertaMaestro,
+                crearResult,
                 'Registro de curso y maestro  Creado !!',
                 '',
             );
@@ -51,7 +48,11 @@ export class OfertaAcademicaMaestroInscripcionService {
             'No se pudo guardar la información !!',
             '',
         );
-
   
+    }
+
+    async getByEtapa(id:number, gestion:number, periodo:number){
+        const cursos = await this.oaMaeRepository.getAllByEtapa(id, gestion, periodo)
+        return cursos
     }
 }

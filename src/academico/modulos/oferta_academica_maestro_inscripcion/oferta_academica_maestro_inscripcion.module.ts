@@ -4,6 +4,7 @@ import { OfertaAcademicaMaestroInscripcion } from 'src/academico/entidades/ofert
 import { DatabaseModule } from 'src/database/database.module';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { OfertaAcademicaMaestroInscripcionController } from './oferta_academica_maestro_inscripcion.controller';
+import { OfertaAcademicaMaestroInscripcionRepository } from './oferta_academica_maestro_inscripcion.repository';
 import { OfertaAcademicaMaestroInscripcionService } from './oferta_academica_maestro_inscripcion.service';
 
 @Module({
@@ -11,6 +12,9 @@ import { OfertaAcademicaMaestroInscripcionService } from './oferta_academica_mae
     DatabaseModule,
     TypeOrmModule.forFeature([OfertaAcademicaMaestroInscripcion])],
     controllers: [OfertaAcademicaMaestroInscripcionController],
-    providers: [OfertaAcademicaMaestroInscripcionService, RespuestaSigedService]
+    providers: [
+      OfertaAcademicaMaestroInscripcionService, 
+      OfertaAcademicaMaestroInscripcionRepository, 
+      RespuestaSigedService]
 })
 export class OfertaAcademicaMaestroInscripcionModule {}
