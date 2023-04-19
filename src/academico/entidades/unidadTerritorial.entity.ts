@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Persona } from './persona.entity';
+import { UnidadTerritorialUsuarioRol } from './unidadTerritorialUsuarioRol.entity';
 
 @Entity({ name: 'unidad_territorial', schema: 'public' })
 export class UnidadTerritorial {
@@ -52,5 +53,8 @@ export class UnidadTerritorial {
 
   @OneToMany(() => Persona, (persona) => persona.nacimientoUnidadTerritorial)
   personasNacimiento: Persona[];
+
+  @OneToMany(() => UnidadTerritorialUsuarioRol, (unidadTerritorialUsuarioRol) => unidadTerritorialUsuarioRol.unidadTerritorial)
+  unidadesTerritorialesUsuariosRoles: UnidadTerritorialUsuarioRol[];
   
 }

@@ -16,9 +16,9 @@ export class InstitucionEducativaCursoRepository {
         
     }
     async getAllBySie(sie:number, gestion:number, periodo:number){
-console.log(sie);
-console.log(gestion);
-console.log(periodo);
+        console.log(sie);
+        console.log(gestion);
+        console.log(periodo);
         const cursos = await this.dataSource.getRepository(InstitucionEducativaCurso)
         .createQueryBuilder("a")
         //.innerJoinAndSelect("a.educacionTipo", "b")

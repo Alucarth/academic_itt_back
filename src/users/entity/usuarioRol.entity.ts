@@ -5,7 +5,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { UnidadTerritorialUsuarioRol } from 'src/academico/entidades/unidadTerritorialUsuarioRol.entity';
 
 @Entity({ name: 'usuario_rol', schema: 'public' })
 export class UsuarioRol {
@@ -26,4 +28,7 @@ export class UsuarioRol {
 
   @UpdateDateColumn({ name: 'fecha_modificacion', type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
   fechaModificacion: Date;
+
+  @OneToMany(() => UnidadTerritorialUsuarioRol, (unidadTerritorialUsuarioRol) => unidadTerritorialUsuarioRol.unidadTerritorial)
+  unidadesTerritorialesUsuariosRoles: UnidadTerritorialUsuarioRol[];
 }

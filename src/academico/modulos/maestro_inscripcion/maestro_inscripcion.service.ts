@@ -18,9 +18,8 @@ import { PeriodoTipo } from "src/academico/entidades/periodoTipo.entity";
 import { UpdateMaestroInscripcionDto } from "./dto/updateMaestroInscripcion.dto";
 import { InstitucionEducativaSucursalRepository } from "../institucion_educativa_sucursal/institucion_educativa_sucursal.repository";
 import { UpdateMaestroInscripcionDatoDto } from "./dto/updateMaestroInscripcionDato.dto";
-import { CreateOfertaAcademicaMaestroInscripcionDto } from "./dto/createOfertaAcademicaMaestroInscripcion.dto";
-import { OfertaAcademicaMaestroInscripcion } from "src/academico/entidades/ofertaAcademicaMaestroInscripcion.entity";
-import { OfertaAcademica } from "src/academico/entidades/ofertaAcademica.entity";
+
+
 
 @Injectable()
 export class MaestroInscripcionService {
@@ -31,6 +30,7 @@ export class MaestroInscripcionService {
     private personaRepository: Repository<Persona>,
     @InjectRepository(MaestroInscripcion)
     private maeRepository: Repository<MaestroInscripcion>,
+  
     @InjectRepository(InstitucionEducativaSucursal)
     private iesRepository: Repository<InstitucionEducativaSucursal>,
     @Inject(InstitucionEducativaSucursalRepository)
@@ -589,28 +589,7 @@ export class MaestroInscripcionService {
 
   }
 
-  async createOFertaAcademicaMaestroInscripcion(dto: CreateOfertaAcademicaMaestroInscripcionDto) {
-
-      const ofertas: OfertaAcademicaMaestroInscripcion[] = dto.ofertaAcademica.map((item) => {     
-
-        const maestroInscripcion = new MaestroInscripcion();
-        maestroInscripcion.id = dto.maestroInscripcionId;
-
-        const ofertaAcademica = new OfertaAcademica();
-          ofertaAcademica.id = item;
-
-        const ofertaAcademicaMaestroInscripcion  = new OfertaAcademicaMaestroInscripcion()
-        ofertaAcademicaMaestroInscripcion.maestroInscripcion = maestroInscripcion;
-        ofertaAcademicaMaestroInscripcion.ofertaAcademica = ofertaAcademica;
-        return ofertaAcademicaMaestroInscripcion;
-      });
-  
-      return await this.maeRepository.save(ofertas)
-  
-
-  
-
-  }
+ 
 
   async createNewMaestroInscripcion(dto: CreateMaestroInscripcionDto) {
     //1:BUSCAR LA PERSONA

@@ -10,8 +10,9 @@ import {
 } from 'typeorm';
 import { MaestroInscripcion } from './maestroInscripcion.entity';
 import { EducacionTipo } from './educacionTipo.entity';
+import { UnidadTerritorialUsuarioRolApp } from './unidadTerritorialUsuarioRolApp.entity';
 
-@Entity({ name: 'cargo_tipo', schema: 'public' })
+@Entity({ name: 'app_tipo', schema: 'public' })
 export class AppTipo {
   @PrimaryGeneratedColumn()
   id: number;
@@ -60,5 +61,8 @@ export class AppTipo {
   @ManyToOne(() => EducacionTipo, (educacionTipo) => educacionTipo.etapasEducativas, { nullable: false, cascade: true })
   @JoinColumn({ name: 'educacion_tipo_id', referencedColumnName: 'id'})
   educacionTipo: EducacionTipo;
+
+  @OneToMany(() => UnidadTerritorialUsuarioRolApp, (unidadTerritorialUsuarioRolApp) => unidadTerritorialUsuarioRolApp.appTipo)
+  unidadesTerritorialesUsuariosRolesApps: UnidadTerritorialUsuarioRolApp[];
 
 }

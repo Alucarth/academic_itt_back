@@ -17,7 +17,6 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { MaestroInscripcionService } from '../maestro_inscripcion/maestro_inscripcion.service';
 import { CreateMaestroInscripcionDto } from './dto/createMaestroInscripcion.dto';
-import { CreateOfertaAcademicaMaestroInscripcionDto } from './dto/createOfertaAcademicaMaestroInscripcion.dto';
 import { UpdateMaestroInscripcionDto } from './dto/updateMaestroInscripcion.dto';
 @ApiTags("maestro-inscripcion")
 @Controller("maestro-inscripcion")
@@ -79,18 +78,12 @@ export class MaestroInscripcionController {
   }
 
   @Post("/")
-  async addUser(@Body() body: CreateMaestroInscripcionDto) {
+  async addMaestroInscripciom(@Body() body: CreateMaestroInscripcionDto) {
     console.log("controller new", body);
     
     return await this.usersService.createUpdateMaestroInscripcion(body);
   }
-
-  @Post("/oferta-academica")
-  async addOfertaAcademica(@Body() dto: CreateOfertaAcademicaMaestroInscripcionDto) {
-    console.log("controller new", dto);
-    
-    return await this.usersService.createOFertaAcademicaMaestroInscripcion(dto);
-  }
+  
 
   @Put("/")
   async UpdateMaestroInscripcion(@Body() body: UpdateMaestroInscripcionDto) {

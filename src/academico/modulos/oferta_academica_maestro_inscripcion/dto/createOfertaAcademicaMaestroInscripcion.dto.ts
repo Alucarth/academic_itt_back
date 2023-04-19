@@ -6,5 +6,5 @@ export class CreateOfertaAcademicaMaestroInscripcionDto {
   maestroInscripcionId: number;
 
   @IsNotEmpty()
-  ofertaAcademica: Array<number>
+  ofertaAcademica: Array<any>
 }

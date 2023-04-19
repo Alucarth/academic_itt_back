@@ -46,10 +46,16 @@ export class OfertaAcademicaMaestroInscripcion {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
+  @Column({ name: 'maestro_incripcion_id', nullable:false })
+  maestroInscripcionId: number;
+
   @ManyToOne(() => MaestroInscripcion, (maestroInscripcion) => maestroInscripcion.ofertasAcademicasMaestrosInscripciones, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'maestro_inscripcion_id', referencedColumnName: 'id'})
+  @JoinColumn({ name: 'maestro_incripcion_id', referencedColumnName: 'id'})
   maestroInscripcion: MaestroInscripcion;
   
+  @Column({ name: 'oferta_academica_id', nullable:false })
+  ofertaAcademicaId: number;
+
   @ManyToOne(() => OfertaAcademica, (ofertaAcademica) => ofertaAcademica.ofertasAcademicasMaestrosInscripciones, { nullable: false, cascade: true })
   @JoinColumn({ name: 'oferta_academica_id', referencedColumnName: 'id'})
   ofertaAcademica: OfertaAcademica;
