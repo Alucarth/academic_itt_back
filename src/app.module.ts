@@ -46,6 +46,7 @@ import { config } from './config';
 import { ConfigService } from "@nestjs/config";
 import { DatabaseConfig } from './database.config';
 import { OfertaAcademicaMaestroInscripcionModule } from './academico/modulos/oferta_academica_maestro_inscripcion/oferta_academica_maestro_inscripcion.module';
+import { SegipModule } from './segip/segip.module';
 
 @Module({
   imports: [
@@ -96,6 +97,7 @@ import { OfertaAcademicaMaestroInscripcionModule } from './academico/modulos/ofe
     CargoTipoModule,
     MallaCurricularModule,
     OfertaAcademicaMaestroInscripcionModule,
+    SegipModule,
   ],
   providers: [],
 })

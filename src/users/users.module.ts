@@ -10,17 +10,19 @@ import { Persona  } from './entity/persona.entity';
 import { AppTipo } from "../academico/entidades/appTipo.entity";
 import { UsuarioUniTerrRol } from "./entity/usuarioUniTerrRol.entity";
 import { JwtService } from "@nestjs/jwt";
+import { SegipModule } from "src/segip/segip.module";
 
 @Module({
-  imports: [DatabaseModule, 
-    TypeOrmModule.forFeature([User]),  
+  imports: [
+    DatabaseModule,
+    TypeOrmModule.forFeature([User]),
     TypeOrmModule.forFeature([Persona]),
     TypeOrmModule.forFeature([AppTipo]),
-    TypeOrmModule.forFeature([UsuarioUniTerrRol])
+    TypeOrmModule.forFeature([UsuarioUniTerrRol]),
+    SegipModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, RespuestaSigedService, PersonaService, JwtService],
   exports: [UsersService, PersonaService],
 })
-
 export class UsersModule {}
