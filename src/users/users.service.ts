@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -25,6 +25,9 @@ import { SegipService } from "src/segip/segip.service";
 
 @Injectable()
 export class UsersService {
+
+  logger: Logger;  
+
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Persona) private personaRepository: Repository<Persona>,
@@ -34,8 +37,11 @@ export class UsersService {
     private _serviceResp: RespuestaSigedService,
     private _servicePersona: PersonaService,
     private jwtService: JwtService,
-    private readonly segipService: SegipService
-  ) {}
+    private readonly segipService: SegipService    
+  ) 
+  {
+    this.logger = new Logger();
+  }
 
   async create(createUserDto: CreateUserDto) {
     try {
@@ -423,6 +429,11 @@ export class UsersService {
 
   async createNewUser(dto: CreateUserDto) {
     //1:BUSCAR LA PERSONA
+
+    /*this.logger.log('log');
+    this.logger.error('error');
+    this.logger.debug('debug');
+    this.logger.warn('warn');*/
 
     try {
       /*let persona = await this.getPersonaBySearch(

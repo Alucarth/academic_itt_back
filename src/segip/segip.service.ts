@@ -1,4 +1,4 @@
-import { Injectable  } from "@nestjs/common";
+import { Injectable, Logger  } from "@nestjs/common";
 import { map } from "rxjs/operators";
 import * as dayjs from "dayjs";
 import { Console } from "console";
@@ -23,6 +23,9 @@ enum EstadosDatosEnum {
 
 @Injectable()
 export class SegipService {
+
+  logger: Logger;
+
   constructor(
     private http: HttpService,
     private configService: ConfigService
