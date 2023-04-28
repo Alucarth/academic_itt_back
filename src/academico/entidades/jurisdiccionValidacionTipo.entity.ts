@@ -2,26 +2,27 @@ import { Exclude } from 'class-transformer';
 import {
   Column,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UnidadTerritorial } from './unidadTerritorial.entity';
+import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
+import { JurisdiccionGeografica } from './jurisdiccionGeografica.entity';
+import { Tarea } from './tarea.entity';
 
-@Entity({ name: 'unidad_territorial_tipo', schema: 'public' })
-export class UnidadTerritorialTipo {
+@Entity({ name: 'jurisdiccion_validacion_tipo', schema: 'public' })
+export class JurisdiccionValidacionTipo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'unidad_territorial' })
-  unidadTerritorial: string;
+  @Column({ type: 'varchar', name: 'jurisdiccion_validacion' })
+  jurisdiccionValidacion: string;
 
   @Column({ type: 'varchar', name: 'comentario' })
   comentario: string;
-
-  @Column({ type: 'integer', name: 'orden' })
-  orden: number;
-  
+ 
   @Exclude()
   @UpdateDateColumn({
     name: 'fecha_registro',
@@ -37,12 +38,12 @@ export class UnidadTerritorialTipo {
     default: () => 'CURRENT_TIMESTAMP',
   })
   fechaModificacion: Date;
-
+  
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-  @OneToMany(() => UnidadTerritorial , (unidadTerritorial) => unidadTerritorial.unidadTerritorialTipo)
-  unidadesTerritoriales: UnidadTerritorial[];
+  @OneToMany(() => JurisdiccionGeografica, (jurisdiccionGeografica) => jurisdiccionGeografica.jurisdiccionValidacionTipo)
+  jurisdiccionesGeograficas: JurisdiccionGeografica[];
   
-  
+
 }

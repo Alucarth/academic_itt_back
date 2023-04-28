@@ -15,6 +15,7 @@ import { FormacionTipo } from './formacionTipo.entity';
 import { GestionTipo } from './gestionTipo.entity';
 import { IdiomaTipo } from './idiomaTipo.entity';
 import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
+import { MaestroInscripcionIdioma } from './maestroInscripcionIdioma.entity';
 import { OfertaAcademicaMaestroInscripcion } from './ofertaAcademicaMaestroInscripcion.entity';
 import { PeriodoTipo } from './periodoTipo.entity';
 import { Persona } from './persona.entity';
@@ -107,5 +108,8 @@ export class MaestroInscripcion {
 
   @OneToMany(() => OfertaAcademicaMaestroInscripcion , (ofertaAcademicaMaestroInscripcion) => ofertaAcademicaMaestroInscripcion.maestroInscripcion)
   ofertasAcademicasMaestrosInscripciones: OfertaAcademicaMaestroInscripcion[];
+
+  @OneToMany(() => MaestroInscripcionIdioma , (maestroInscripcionIdioma) => maestroInscripcionIdioma.maestroInscripcion)
+  maestrosInscripcionesIdiomas: MaestroInscripcionIdioma[];
   
 }

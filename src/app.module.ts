@@ -23,7 +23,6 @@ import { SegipTipoModule } from './academico/catalogos/segip_tipo/segip_tipo.mod
 import { AreaGeograficaTipoModule } from './academico/catalogos/area_geografica_tipo/area_geografica_tipo.module';
 import { CensoTipoModule } from './academico/catalogos/censo_tipo/censo_tipo.module';
 import { UnidadTerritorialTipoModule } from './academico/catalogos/unidad_territorial_tipo/unidad_territorial_tipo.module';
-import { UnidadTerritorialModule } from './academico/catalogos/unidad_territorial/unidad_territorial.module';
 import { OperativoModule } from './academico/modulos/operativo/operativo.module';
 import { GestionTipoModule } from './academico/catalogos/gestion_tipo/gestion_tipo.module';
 import { TurnoTipoModule } from './academico/catalogos/turno_tipo/turno_tipo.module';
@@ -43,9 +42,11 @@ import { FinanciamientoTipoModule } from './academico/catalogos/financiamiento_t
 import { CargoTipoModule } from './academico/catalogos/cargo_tipo/cargo_tipo.module';
 import { MallaCurricularModule } from './academico/modulos/malla-curricular/malla-curricular.module';
 import { config } from './config';
-import { ConfigService } from "@nestjs/config";
+//import { ConfigService } from "@nestjs/config";
 import { DatabaseConfig } from './database.config';
 import { OfertaAcademicaMaestroInscripcionModule } from './academico/modulos/oferta_academica_maestro_inscripcion/oferta_academica_maestro_inscripcion.module';
+import { UnidadTerritorialModule } from './academico/modulos/unidad_territorial/unidad_territorial.module';
+import { JurisdiccionGeograficaModule } from './academico/modulos/jurisdiccion_geografica/jurisdiccion_geografica.module';
 
 @Module({
   imports: [
@@ -96,6 +97,7 @@ import { OfertaAcademicaMaestroInscripcionModule } from './academico/modulos/ofe
     CargoTipoModule,
     MallaCurricularModule,
     OfertaAcademicaMaestroInscripcionModule,
+    JurisdiccionGeograficaModule,
   ],
   providers: [],
 })

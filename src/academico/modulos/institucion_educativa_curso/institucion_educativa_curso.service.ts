@@ -84,6 +84,11 @@ export class InstitucionEducativaCursoService {
                 '',
             );
           }
+          return this._serviceResp.respuestaHttp500(
+            "",
+            'No se pudo guardar la información !!',
+            '',
+        );
     }
 
     async updateCurso (dto: UpdateInstitucionEducativaCursoDto) {
@@ -122,6 +127,12 @@ export class InstitucionEducativaCursoService {
                   '',
               );
           }  
+          return this._serviceResp.respuestaHttp500(
+            "",
+            'No se pudo eliminar la información !!',
+            '',
+        );
+
     }
     
 }

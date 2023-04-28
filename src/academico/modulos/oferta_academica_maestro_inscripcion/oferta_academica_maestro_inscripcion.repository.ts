@@ -19,6 +19,7 @@ export class OfertaAcademicaMaestroInscripcionRepository {
 
     async createOfertaAcademicaMaestroInscripcion(
 
+
         dto: CreateOfertaAcademicaMaestroInscripcionDto, 
         transaction: EntityManager
         ) {
@@ -64,5 +65,29 @@ export class OfertaAcademicaMaestroInscripcionRepository {
                 console.log(cursos);
                 return cursos;
                 
-            }
+    }
+
+    async getOfertasAcademicas(idMaestroInscripcion: number) {
+        return await this.dataSource
+          .getRepository(OfertaAcademicaMaestroInscripcion)
+          .createQueryBuilder('o')
+          .where('o.maestroInscripcionId = :idMaestroInscripcion', { idMaestroInscripcion })
+          .getMany()
+    }
+
+    async deleteOfertaAcademicaMaestroInscripcion(
+        id: number, 
+        transaction: EntityManager){
+        
+        await  transaction
+         .getRepository(OfertaAcademicaMaestroInscripcion)
+         .createQueryBuilder('o')
+         .delete()
+         .from(OfertaAcademicaMaestroInscripcion)
+         .where('id = :id', { id:id })
+         .execute();
+         
+       return await  transaction.getRepository(OfertaAcademicaMaestroInscripcion).delete(id)
+
+    }
 }

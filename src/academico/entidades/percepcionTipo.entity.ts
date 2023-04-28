@@ -6,21 +6,19 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UnidadTerritorial } from './unidadTerritorial.entity';
+import { InstitucionEducativaAcreditacion } from './institucionEducativaAcreditacion.entity';
+import { MaestroInscripcionIdioma } from './maestroInscripcionIdioma.entity';
 
-@Entity({ name: 'unidad_territorial_tipo', schema: 'public' })
-export class UnidadTerritorialTipo {
+@Entity({ name: 'percepcion_tipo', schema: 'public' })
+export class PercepcionTipo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'unidad_territorial' })
-  unidadTerritorial: string;
+  @Column({ type: 'varchar', name: 'percepcion' })
+  percepcion: string;
 
-  @Column({ type: 'varchar', name: 'comentario' })
-  comentario: string;
-
-  @Column({ type: 'integer', name: 'orden' })
-  orden: number;
+  @Column({ type: 'boolean', name: 'activo' })
+  activo: boolean;
   
   @Exclude()
   @UpdateDateColumn({
@@ -41,8 +39,7 @@ export class UnidadTerritorialTipo {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-  @OneToMany(() => UnidadTerritorial , (unidadTerritorial) => unidadTerritorial.unidadTerritorialTipo)
-  unidadesTerritoriales: UnidadTerritorial[];
-  
+  @OneToMany(() => MaestroInscripcionIdioma , (maestroInscripcionIdioma) => maestroInscripcionIdioma.percepcionTipo)
+  maestrosInscripcionesIdiomas: MaestroInscripcionIdioma[];
   
 }

@@ -11,6 +11,7 @@ import {
 import { MaestroInscripcion } from './maestroInscripcion.entity';
 import { EducacionTipo } from './educacionTipo.entity';
 import { UnidadTerritorialUsuarioRolApp } from './unidadTerritorialUsuarioRolApp.entity';
+import { MenuSistema } from './menuSistema.entity';
 
 @Entity({ name: 'app_tipo', schema: 'public' })
 export class AppTipo {
@@ -61,5 +62,7 @@ export class AppTipo {
 
   @OneToMany(() => UnidadTerritorialUsuarioRolApp, (unidadTerritorialUsuarioRolApp) => unidadTerritorialUsuarioRolApp.appTipo)
   unidadesTerritorialesUsuariosRolesApps: UnidadTerritorialUsuarioRolApp[];
-
+  
+  @OneToMany(() => MenuSistema , (menuSistema) => menuSistema.appTipo)
+  menusSistemas: MenuSistema[];
 }

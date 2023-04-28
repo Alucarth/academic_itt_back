@@ -8,13 +8,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { EstadoMatriculaTipo } from './estadoMatriculaTipo.entity';
 import { EstudianteInscripcion } from './estudianteInscripcion.entity';
-import { EstudianteInscripcionOfertaAcademica } from './estudianteInscripcionOfertaAcademica.entity';
-import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
-import { MatriculaTipo } from './matriculaTipo.entity';
 import { PeriodoTipo } from './periodoTipo.entity';
-import { Persona } from './persona.entity';
 
 @Entity({ name: 'estudiante_inscripcion_calificacion_general', schema: 'public' })
 export class EstudianteInscripcionCalificacionGeneral {

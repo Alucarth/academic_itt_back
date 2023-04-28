@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { InstitucionEducativaAcreditacion } from './institucionEducativaAcreditacion.entity';
+import { JurisdiccionGeografica } from './jurisdiccionGeografica.entity';
 
 @Entity({ name: 'acreditacion_tipo', schema: 'public' })
 export class AcreditacionTipo {
@@ -40,4 +41,7 @@ export class AcreditacionTipo {
 
   @OneToMany(() => InstitucionEducativaAcreditacion, (institucionEducativaAcreditacion) => institucionEducativaAcreditacion.acreditacionTipo)
   acreditados: InstitucionEducativaAcreditacion[];
+
+  @OneToMany(() => JurisdiccionGeografica, (jurisdiccionGeografica) => jurisdiccionGeografica.acreditacionTipo)
+  jurisdiccionesGeograficas: JurisdiccionGeografica[];
 }

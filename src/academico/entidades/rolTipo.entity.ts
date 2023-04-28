@@ -6,23 +6,28 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { MaestroInscripcion } from './maestroInscripcion.entity';
-import { MaestroInscripcionIdioma } from './maestroInscripcionIdioma.entity';
+import { MenuSistemaRol } from './menuSistemaRol.entity';
 import { Persona } from './persona.entity';
 
-@Entity({ name: 'idioma_tipo', schema: 'public' })
-export class IdiomaTipo {
+@Entity({ name: 'rol_tipo', schema: 'public' })
+export class RolTipo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'idioma' })
-  idioma: string;
+  @Column({ type: 'varchar', name: 'rol' })
+  rol: string;
+
+  @Column({ type: 'integer', name: 'ordinal' })
+  ordinal: number;
 
   @Column({ type: 'varchar', name: 'abreviacion' })
   abreviacion: string;
 
   @Column({ type: 'varchar', name: 'comentario' })
   comentario: string;
+
+  @Column({ type: 'boolean', name: 'activo' })
+  activo: boolean;
   
   @Exclude()
   @UpdateDateColumn({
@@ -43,14 +48,10 @@ export class IdiomaTipo {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-  @OneToMany(() => Persona, (persona) => persona.maternoIdiomaTipo)
-  personas: Persona[];
-
-  @OneToMany(() => MaestroInscripcion, (maestroInscripcion) => maestroInscripcion.estudioIdiomaTipo)
-  maestrosInscripciones: MaestroInscripcion[];
-
-  @OneToMany(() => MaestroInscripcionIdioma , (maestroInscripcionIdioma) => maestroInscripcionIdioma.idiomaTipo)
-  maestrosInscripcionesIdiomas: MaestroInscripcionIdioma[];
+  @Column({ type: 'integer', name: 'rol_tipo_id' })
+  rolTipoId: number;
   
+  @OneToMany(() => MenuSistemaRol , (menuSistemaRol) => menuSistemaRol.rolTipo)
+  menusSistemasRoles: MenuSistemaRol[];
   
 }

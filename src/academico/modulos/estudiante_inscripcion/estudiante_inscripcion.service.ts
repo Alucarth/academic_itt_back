@@ -36,6 +36,7 @@ export class EstudianteInscripcionService {
         if(!dato){
          const dato = await this.estudianteInscripcionRepositorio.createInscripcion(dto);
          return dato;
+         
         }
         return dato
     }
