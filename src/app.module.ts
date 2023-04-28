@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './config/typeorm.config';
 import { ConfigModule } from '@nestjs/config';
@@ -45,8 +45,13 @@ import { config } from './config';
 //import { ConfigService } from "@nestjs/config";
 import { DatabaseConfig } from './database.config';
 import { OfertaAcademicaMaestroInscripcionModule } from './academico/modulos/oferta_academica_maestro_inscripcion/oferta_academica_maestro_inscripcion.module';
+
 import { UnidadTerritorialModule } from './academico/modulos/unidad_territorial/unidad_territorial.module';
 import { JurisdiccionGeograficaModule } from './academico/modulos/jurisdiccion_geografica/jurisdiccion_geografica.module';
+
+import { SegipModule } from './segip/segip.module';
+import { LoggerMiddleware } from './utils/logger.middleware';
+
 
 @Module({
   imports: [
@@ -97,8 +102,17 @@ import { JurisdiccionGeograficaModule } from './academico/modulos/jurisdiccion_g
     CargoTipoModule,
     MallaCurricularModule,
     OfertaAcademicaMaestroInscripcionModule,
+
     JurisdiccionGeograficaModule,
+
+    SegipModule,
+
   ],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+
+}

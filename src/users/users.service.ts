@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -21,19 +21,27 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtService } from "@nestjs/jwt";
 
 import { AppTipo } from "../academico/entidades/appTipo.entity";
-
+import { SegipService } from "src/segip/segip.service";
 
 @Injectable()
 export class UsersService {
+
+  logger: Logger;  
+
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Persona) private personaRepository: Repository<Persona>,
     @InjectRepository(AppTipo) private appRepository: Repository<AppTipo>,
-    @InjectRepository(UsuarioUniTerrRol) private uturRepository: Repository<UsuarioUniTerrRol>,
+    @InjectRepository(UsuarioUniTerrRol)
+    private uturRepository: Repository<UsuarioUniTerrRol>,
     private _serviceResp: RespuestaSigedService,
     private _servicePersona: PersonaService,
-    private jwtService: JwtService
-  ) {}
+    private jwtService: JwtService,
+    private readonly segipService: SegipService    
+  ) 
+  {
+    this.logger = new Logger();
+  }
 
   async create(createUserDto: CreateUserDto) {
     try {
@@ -286,22 +294,19 @@ export class UsersService {
     userId: number,
     apps: []
   ) {
-
     for (let i = 0; i < apps.length; i++) {
       const appTipo = await this.appRepository.findOne({
         where: { id: apps[i] },
       });
 
-      if(!appTipo){
+      if (!appTipo) {
         return this._serviceResp.respuestaHttp404(
           apps[i],
           "AppId No Existe !!",
           ""
         );
       }
-
     }
-
 
     try {
       var parsedDate = Date.parse(fechaInicio);
@@ -425,102 +430,168 @@ export class UsersService {
   async createNewUser(dto: CreateUserDto) {
     //1:BUSCAR LA PERSONA
 
+    /*this.logger.log('log');
+    this.logger.error('error');
+    this.logger.debug('debug');
+    this.logger.warn('warn');*/
+
     try {
-      let persona = await this.getPersonaBySearch(
+      /*let persona = await this.getPersonaBySearch(
         dto.carnet,
         dto.fechaNacimiento,
         dto.complemento
-      );
+      );*/
 
-      console.log("existe persona:", persona);
+      const persona = await this.personaRepository.findOne({
+        where: {
+          //id: 33013287,
+          carnetIdentidad: dto.carnet,
+          complemento: dto.complemento,
+          paterno: dto.paterno,
+          materno: dto.materno,
+          nombre: dto.nombres,
+          //TODO: fechaNacimiento: dto.fechaNacimiento
+        },
+      });
 
-      //persona = 1;
-      if (persona === 0) {
-        // se debe crear la persona
-        //TODO: validar SEGIP
+      //dto.tipoCarnet = 1 NACIONAL, 2 EXTRANJERO;
 
-        const validaSegip = true;
+      // SI LA PERSONA YA EXISTE, PASA SIN VALIDACION, SE ENTIENDE QUE
+      //SUS DATOS SON VALIDOS
+      if (!persona) {
+        // se debe crear la persona, antes se VALIDA SEGIP
+        let arrayaux = dto.fechaNacimiento.split("-");
+        //console.log(arrayaux);
+        const fechaSegip = arrayaux[2] + "/" + arrayaux[1] + "/" + arrayaux[0];
+        //console.log("fechaSegip", fechaSegip);
 
-        if (validaSegip) {
-          //crear persona y usuario para SISTEMA ITT
+        const personasegip = {
+          nombres: dto.nombres.toUpperCase(),
+          paterno: dto.paterno.toUpperCase(),
+          materno: dto.materno.toUpperCase(),
+          ci: dto.carnet,
+          fechaNacimiento: fechaSegip, //'19/02/2014 ',
+          complemento: dto.complemento,
+        };
+        //console.log("personasegip", personasegip);
 
-          persona = await this.userRepository
-            .createQueryBuilder()
-            .insert()
-            .into(Persona)
-            .values([
-              {
-                carnetIdentidad: dto.carnet,
-                complemento: dto.complemento,
-                paterno: dto.paterno,
-                materno: dto.materno,
-                nombre: dto.nombres,
-                fechaNacimiento: dto.fechaNacimiento,
-                generoTipoId: dto.generoTipoId,
-                sangreTipoId: dto.sangreTipoId,
-                maternoIdiomaTipoId: dto.maternoIdiomaTipoId,
-                expedidoUnidadTerritorialId: dto.expedidoUnidadTerritorialId,
-                nacimientoUnidadTerritorialId:
-                  dto.nacimientoUnidadTerritorialId,
-                dobleNacionalidad: dto.dobleNacionalidad,
-                tieneDiscapacidad: dto.tieneDiscapacidad,
-              },
-            ])
-            .returning("id")
-            .execute();
+        const segipdata = await this.segipService.contrastar(
+          personasegip,
+          dto.tipoCarnet
+        );
+        //console.log("segipdata", segipdata);
+        if (segipdata["finalizado"] === false) {
+          return { message: "Datos SEGIP no corresponden", segipdata };
+        }
+        console.log("CONSTRASTACION VALIDA");
+        //si NO existe la persona, se crea el usuario, que por regla de base de datos
+        //NO deberia existir
 
-          console.log("nueva persona id: ", persona.identifiers[0].id);
+        const nuevaPersona = await this.userRepository
+          .createQueryBuilder()
+          .insert()
+          .into(Persona)
+          .values([
+            {
+              carnetIdentidad: dto.carnet,
+              complemento: dto.complemento,
+              paterno: dto.paterno,
+              materno: dto.materno,
+              nombre: dto.nombres,
+              fechaNacimiento: dto.fechaNacimiento,
+              generoTipoId: dto.generoTipoId,
+              sangreTipoId: dto.sangreTipoId,
+              maternoIdiomaTipoId: dto.maternoIdiomaTipoId,
+              expedidoUnidadTerritorialId: dto.expedidoUnidadTerritorialId,
+              nacimientoUnidadTerritorialId: dto.nacimientoUnidadTerritorialId,
+              dobleNacionalidad: dto.dobleNacionalidad,
+              tieneDiscapacidad: dto.tieneDiscapacidad,
+              segipTipoId: 1,  //verificado segip
+            },
+          ])
+          .returning("id")
+          .execute();
 
-          const persona_id = persona.identifiers[0].id;
-          //const password = '123456';
+        console.log("nueva persona id: ", nuevaPersona.identifiers[0].id);
+        const persona_id = nuevaPersona.identifiers[0].id;
+
+        //TODO: el password por defecto es const password = '123456';
+        const hashPassword = await bcrypt.hash("123456", 10);
+
+        //creamos el usuario
+        await this.userRepository
+          .createQueryBuilder()
+          .insert()
+          .into(User)
+          .values([
+            {
+              personaId: persona_id,
+              username: dto.carnet,
+              password: hashPassword,
+              activo: true,
+            },
+          ])
+          .execute();
+
+        return this._serviceResp.respuestaHttp201(
+          nuevaPersona.identifiers[0].id,
+          "Registro Creado !!",
+          ""
+        );
+      } else {
+        //la persona ya existe, verificamos si existe el usuario
+        // OJO, no deberia tener mas de un usuario (REGLA DE BASE DATOS)
+
+        const roles = await this.userRepository.query(`
+        select count(*) as existe from usuario where persona_id = ${persona.id}  `);
+
+        //console.log("personaid", persona.id);
+        //console.log('roles', roles);
+
+        if (roles[0].existe == 0) {
+          // no existe el usuario, se crea
           const hashPassword = await bcrypt.hash("123456", 10);
 
-          //creamos el usuario
           await this.userRepository
             .createQueryBuilder()
             .insert()
             .into(User)
             .values([
               {
-                personaId: persona_id,
+                personaId: persona.id,
                 username: dto.carnet,
                 password: hashPassword,
                 activo: true,
               },
             ])
             .execute();
+
+          return this._serviceResp.respuestaHttp201(
+            persona.id,
+            "Registro Creado !!",
+            ""
+          );
         } else {
-          //no paso la validacion segip
-          return this._serviceResp.respuestaHttp202(
-            "error",
-            "",
-            "Datos no validos SEGIP!!"
+          return this._serviceResp.respuestaHttp400(
+            null,
+            "Usuario y Persona ya existen !!",
+            ""
           );
         }
-      } else {
-        //la persona y el usuario ya existen, argumento no valido
-        return this._serviceResp.respuestaHttp400(
-          null,
-          "Usuario y Persona ya existen !!",
-          ""
-        );
       }
 
       //return this._serviceResp.respuestaHttp200(300, '','mensaje');
       return this._serviceResp.respuestaHttp201(
-        persona.identifiers[0].id,
+        //persona.identifiers[0].id,
         "Registro Creado !!",
         ""
       );
     } catch (error) {
-      console.log("Error insertar nueva Unidad Territorial: ", error);
-      //throw new Error(`Error insertar nueva Unidad Territorial: ${error.message}`);
-      //throw new HttpException('Error en la operacion: ', error.message);
-      //throw new HttpException(new Error(`Error insertar nueva Unidad Territorial: ${error.message}`), HttpStatus.BAD_REQUEST)
+      console.log("Error insertar persona/usuario: ", error);      
       throw new HttpException(
         {
           status: HttpStatus.CONFLICT,
-          error: `Error insertar nueva Unidad Territorial: ${error.message}`,
+          error: `xError insertar nueva Unidad Territorial: ${error.message}`,
         },
         HttpStatus.ACCEPTED,
         {
@@ -1126,10 +1197,10 @@ export class UsersService {
         AND SUBSTRING ( codigo, 1, 1 ) = '${deptoId}'`
     );
   }
-  
-  async getAllMenuByUserRolId( userRolId: number) {
 
-    const result = await this.userRepository.query(`select unidad_territorial_usuario_rol_app_menu.id as unidad_territorial_usuario_rol_app_menu_id, app_tipo.url_sistema as app, rol_tipo.rol, menu_tipo.detalle_menu as menu, unidad_territorial_usuario_rol_app_menu.activo
+  async getAllMenuByUserRolId(userRolId: number) {
+    const result = await this.userRepository
+      .query(`select unidad_territorial_usuario_rol_app_menu.id as unidad_territorial_usuario_rol_app_menu_id, app_tipo.url_sistema as app, rol_tipo.rol, menu_tipo.detalle_menu as menu, unidad_territorial_usuario_rol_app_menu.activo
     from usuario_rol
     inner join unidad_territorial_usuario_rol on unidad_territorial_usuario_rol.usuario_rol_id = usuario_rol.id
     inner join unidad_territorial_usuario_rol_app on unidad_territorial_usuario_rol_app.unidad_territorial_usuario_rol_id = unidad_territorial_usuario_rol.id 
@@ -1141,69 +1212,68 @@ export class UsersService {
     inner join rol_tipo on rol_tipo.id = usuario_rol.rol_tipo_id
     where usuario_rol.id = ${userRolId}`);
 
-    
-    console.log('result: ', result);
-    console.log('result size: ', result.length);
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
 
-    if(result.length === 0){
-      throw new NotFoundException('No se encontraron registros');
+    if (result.length === 0) {
+      throw new NotFoundException("No se encontraron registros");
     }
 
     return this._serviceResp.respuestaHttp200(
       result,
-      '',
-      'Registro Encontrado !!',
+      "",
+      "Registro Encontrado !!"
     );
-            
-    //return result;
 
+    //return result;
   }
 
   async changeStatusUserRolUtAppMenu(userRolUtAppMenuId) {
+    const result = await this.userRepository.query(
+      `select * from unidad_territorial_usuario_rol_app_menu where id  = ${userRolUtAppMenuId}`
+    );
 
-    const result = await this.userRepository.query(`select * from unidad_territorial_usuario_rol_app_menu where id  = ${userRolUtAppMenuId}`);
-    
-    console.log('result: ', result);
-    console.log('result size: ', result.length);
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
 
-    if(result.length === 0){
+    if (result.length === 0) {
       return this._serviceResp.respuestaHttp404(
-          userRolUtAppMenuId,
-          'Registro No Encontrado !!',
-          '',
-        );
+        userRolUtAppMenuId,
+        "Registro No Encontrado !!",
+        ""
+      );
     }
 
+    try {
+      const nuevoEstado = !result[0].activo;
 
-    try{
-
-      const nuevoEstado = !result[0].activo 
-
-       await this.userRepository
-        .createQueryBuilder()        
+      await this.userRepository
+        .createQueryBuilder()
         .update(UnidadTerritorialUsuarioRolAppMenu)
         .set({
-            activo : nuevoEstado
+          activo: nuevoEstado,
         })
         .where("id = :id", { id: userRolUtAppMenuId })
-        .execute()
+        .execute();
 
-        return this._serviceResp.respuestaHttp202(
-          userRolUtAppMenuId,
-          'Registro Actualizado !!',
-          '',
-        );
-        
-    
+      return this._serviceResp.respuestaHttp202(
+        userRolUtAppMenuId,
+        "Registro Actualizado !!",
+        ""
+      );
     } catch (error) {
-       console.log("Error update user: ", error);
-       throw new HttpException({
+      console.log("Error update user: ", error);
+      throw new HttpException(
+        {
           status: HttpStatus.CONFLICT,
           error: `Error Actualizando Estado Usuario: ${error.message}`,
-        }, HttpStatus.ACCEPTED, {
-          cause: error
-        });
-       //return 0;
+        },
+        HttpStatus.ACCEPTED,
+        {
+          cause: error,
+        }
+      );
+      //return 0;
     }
   }
 
@@ -1287,15 +1357,16 @@ export class UsersService {
 
         let data = [];
 
-        for(let x=0; x<resultdep.length; x++ ){
-
+        for (let x = 0; x < resultdep.length; x++) {
           let arraydistritos = [];
           let distritos = [];
 
           const codigo = resultdep[x]["codigo"];
           const lugar = resultdep[x]["lugar"];
 
-          const resultddist = await this.getDistritoByDeptoId(parseInt(codigo)).then((mydata) => {
+          const resultddist = await this.getDistritoByDeptoId(
+            parseInt(codigo)
+          ).then((mydata) => {
             console.log("resultddist", mydata);
             let depto = {
               id: codigo,
@@ -1306,7 +1377,6 @@ export class UsersService {
             data.push(depto);
             console.log("data1: ", data);
           });
-
         }
 
         /*resultdep.forEach(async (element) => {

@@ -158,5 +158,8 @@ export class Persona {
   
   @Column({ type: 'bigint', default: 0, name: 'nacimiento_unidad_territorial_id' })
   nacimientoUnidadTerritorialId: number;
+  
+  @Column({ type: 'bigint', default: 0, name: 'segip_tipo_id' })
+  segipTipoId: number;
 
 }
