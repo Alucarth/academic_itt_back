@@ -35,9 +35,16 @@ export class InstitucionEducativaSucursalRepository {
         .innerJoinAndSelect("a.jurisdiccionGeografica", "c")
         .innerJoinAndSelect("b.educacionTipo", "d")
         .innerJoinAndSelect("a.estadoInstitucionEducativaTipo", "e")
+        .innerJoinAndSelect("c.localidadUnidadTerritorial2001", "u1")
+        .innerJoinAndSelect("u1.unidadTerritorialPadre", "up1")
+        .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
+        .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
+        .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
+        .innerJoinAndSelect("b.acreditados", "s")
+        .innerJoinAndSelect("s.dependenciaTipo", "dt")
        // .select('b.id', 'b.institucionEducativa')
         .where('d.id in (7,8,9)  ')
-        .andWhere('e.id = 10  ')
+        .andWhere('e.id = 10 ')
         .orderBy('a.id', 'ASC')
         .getMany();
         console.log(sucursales);
