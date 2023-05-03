@@ -1,40 +1,38 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {  InjectRepository } from '@nestjs/typeorm';
 import { InstitucionEducativa } from 'src/academico/entidades/institucionEducativa.entity';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
+import { InstitucionEducativaAcreditacionRepository } from '../institucion_educativa_acreditacion/institucion_educativa_acreditacion.repository';
+import { InstitucionEducativaSucursalRepository } from '../institucion_educativa_sucursal/institucion_educativa_sucursal.repository';
+import { CreateInstitucionEducativaDto } from './dto/createInstitucionEducativa.dto';
+import { InstitucionEducativaRepository } from './institucion_educativa.repository';
 
 
 @Injectable()
 export class InstitucionEducativaService {
     constructor(
-        @InjectRepository(InstitucionEducativa) private institucioneducativaRepository: Repository<InstitucionEducativa>,
+        @InjectRepository(InstitucionEducativa) private institucionEducativaRepository: Repository<InstitucionEducativa>,
+        @Inject(InstitucionEducativaRepository) private institucionEducativaRepositorio: InstitucionEducativaRepository,
+        @Inject(InstitucionEducativaAcreditacionRepository) private institucionEducativaAcreditacionRepositorio: InstitucionEducativaAcreditacionRepository,
+        @Inject(InstitucionEducativaSucursalRepository) private institucionEducativaSucursalRepositorio: InstitucionEducativaSucursalRepository,
         private _serviceResp: RespuestaSigedService, 
     ){}
 
     async getAll(){
-        return await this.institucioneducativaRepository.find()
+        return await this.institucionEducativaRepositorio.getAll();
     }
 
     async getAllItt(){
-        const itts = await this.institucioneducativaRepository
-        .createQueryBuilder("a")
-        .innerJoinAndSelect("a.educacionTipo", "b")
-        .where('b.id in (7,8,9)  ')
-        .orderBy('a.id', 'ASC')
-        .getMany();
-        console.log(itts);
-        return itts;
+        const itt = await this.institucionEducativaRepositorio.getAllItt();
+        return itt;
     }
-   
-    async getBySieId(id:number){
-        const itt = await this.institucioneducativaRepository
-        .createQueryBuilder("a")
-        .innerJoinAndSelect("a.educacionTipo", "b")
-        .where('a.id = :id ', { id })
-        .getOne();
 
-        
+    
+    async getBySieId(id:number){
+
+        const itt = await this.institucionEducativaRepositorio.getBySieId(id);
+                
         if(!itt){
             return this._serviceResp.respuestaHttp404(
                 id,
@@ -52,97 +50,123 @@ export class InstitucionEducativaService {
     }
    
     async findBySie( id:number ){
-        const itts = await this.institucioneducativaRepository
-        .createQueryBuilder("a")
-        //.innerJoinAndSelect("a.educacionTipo", "b")
-        .innerJoinAndSelect("a.jurisdiccionGeografica", "c")
-        .innerJoinAndSelect("a.sucursales", "d")
-        .leftJoinAndSelect("a.acreditados", "e")
-        .leftJoinAndSelect("e.convenioTipo", "f")
-        .leftJoinAndSelect("e.dependenciaTipo", "g")
-        .leftJoinAndSelect("e.acreditacionTipo", "h")
-        .select(["a","c","d","e","f","g","h"])
-        .where('a.educacionTipo in (7,8,9)  ')
-        .where('a.id = :id ', { id })
-        .orderBy('a.id', 'ASC')
-        .getMany();
-        return itts;
+        const itts = await this.institucionEducativaRepositorio.findBySie(id);
+        if(!itts){
+            return this._serviceResp.respuestaHttp404(
+                id,
+                'Registro No Encontrado !!',
+                '',
+              );
+        }
+
+        return this._serviceResp.respuestaHttp200(
+            itts,
+            '',
+            '',
+          );
+          //return itt;
     }
     async findAcreditacionBySie( id:number ){
-        const itts = await this.institucioneducativaRepository
-        .createQueryBuilder("a")
-        .innerJoinAndSelect("a.educacionTipo", "b")
-        .innerJoinAndSelect("a.jurisdiccionGeografica", "c")
-        .innerJoinAndSelect("a.sucursales", "d")
-        .innerJoinAndSelect("a.acreditados", "e")
-        .where('b.id in (7,8,9)  ')
-        .where('a.id = :id ', { id })
-        .orderBy('a.id', 'ASC')
-        .getMany();
+        const itts = await this.institucionEducativaRepositorio.findAcreditacionBySie(id);
         return itts;
     }
+
     async findOneAcreditadoBySie( id:number ){
         console.log(id);
-        const itt = await this.institucioneducativaRepository
-        .createQueryBuilder("a")
-        .innerJoinAndSelect("a.educacionTipo", "b")
-        .innerJoinAndSelect("a.estadoInstitucionEducativaTipo", "c")
-        .innerJoinAndSelect("a.acreditados", "e")
-        .innerJoinAndSelect("e.convenioTipo", "f")
-        .innerJoinAndSelect("e.dependenciaTipo", "g")
-        .innerJoinAndSelect("e.acreditacionTipo", "i")
-       // .select('a.id as id, a.institucion_educativa')
-        .where('b.id in (7,8,9)  ')
-        .andWhere('a.id = :id ', { id })
-        .andWhere('e.vigente = :vigente ', { vigente: 'TRUE'})
-        .orderBy('a.id', 'ASC')
-        //.getOneOrFail();
-        .getRawOne();
+        const itt = await this.institucionEducativaRepositorio.findOneAcreditadoBySie(id);
         return itt;
     }
     async findEspecialidadBySie( id:number ){
-        const itts = await this.institucioneducativaRepository
-        .createQueryBuilder("a")
-        .innerJoinAndSelect("a.educacionTipo", "b")
-        .innerJoinAndSelect("a.jurisdiccionGeografica", "c")
-        .where('b.id in (7,8,9)  ')
-        .where('a.id = :id ', { id })
-        .orderBy('a.id', 'ASC')
-        .getMany();
+
+        const itts = await this.institucionEducativaRepositorio.findEspecialidadBySie(id);
+        
         return itts;
     }
     async findEtapasBySie( id:number ){
-        const carreras = await this.institucioneducativaRepository
-        .createQueryBuilder("a")
-        .innerJoinAndSelect("a.acreditados", "b")
-        .innerJoinAndSelect("b.acreditadosEtapasEducativas", "c")
-        .innerJoinAndSelect("c.etapaEducativa", "d")
-        .where('a.id = :id ', { id })
-        .andWhere('d.etapaEducativaTipo = 28 ') //PARA SOLO MOSTRAR LA CARRER
-        .orderBy('a.id', 'ASC')
-        .getMany();
+        const carreras = await this.institucionEducativaRepositorio.findEtapasBySie(id);
         return carreras;
     }
 
     async findCarrerasBySie( id:number ){
-        const values = ['etapa_educativa_tipo',25,28,id,'etapa_educativa','codigo','etapa_educativa','etapa_educativa_tipo_id'];
-        const sql = 'select * from sp_genera_acreditacion_oferta_json($1,$2,$3,$4,$5,$6,$7,$8)';
-        const data = await this.institucioneducativaRepository.query(sql, values);
+        const data = await this.institucionEducativaRepositorio.findCarrerasBySie(id);
         console.log(data);
         return data;
     }
     async findSucursalGestion( sie:number, gestion:number ){
+
         console.log("consulta");
         console.log(sie);
         console.log(gestion);
-        const sucursal = await this.institucioneducativaRepository
-        .createQueryBuilder("a")
-        .innerJoinAndSelect("a.sucursales", "b")
-        .innerJoinAndSelect("b.gestionTipo", "g")
-        .select(['a.id as id','a.institucionEducativa as institucion_educativa', 'b.id as sucursal_id'])
-        .where('a.id = :id ', { id: sie })
-        .andWhere('g.id = :gestion ', { gestion : gestion }) //PARA SOLO MOSTRAR LA CARRER
-        .getRawOne();
+        const sucursal = await this.institucionEducativaRepositorio.findSucursalGestion(sie, gestion);
         return sucursal;
+    }
+
+    async generateCodigo(id:number){
+        const codigo =  await this.institucionEducativaRepositorio.getCodigo(id);
+        return codigo;
+   }
+    
+    async createInstitucionEducativa (dto: CreateInstitucionEducativaDto) {
+
+        const institucion =  await this.institucionEducativaRepositorio.findInstitucionEducativaInstituto(dto.jurisdiccionGeograficaId);
+        
+        if(!institucion){
+            console.log(dto);
+            const codigo =  await this.generateCodigo(dto.jurisdiccionGeograficaId);
+            dto.codigo = codigo;
+            
+            const op = async (transaction: EntityManager) => {
+              const nuevaInstitucion =  await this.institucionEducativaRepositorio.createInstitucionEducativa(
+                dto,
+                transaction
+              )
+  
+              if(nuevaInstitucion?.id){
+                  console.log(nuevaInstitucion.id);    
+                  //Obtener todas las asignaturas
+                  const acreditacion  = await this.institucionEducativaAcreditacionRepositorio.findAcreditacion(nuevaInstitucion.id);
+                  console.log(acreditacion);   
+      
+                  if(acreditacion){
+                      //Crear la oferta academica 
+                      await this.institucionEducativaAcreditacionRepositorio.createInstitucionEducativaAcreditacion(
+                          1, 
+                          nuevaInstitucion.id, 
+                          dto, 
+                          transaction
+                      );
+                  }
+                  
+                  //Obtener todas las asignaturas
+                  const sucursal  = await this.institucionEducativaSucursalRepositorio.findSucursalBySieVigente(nuevaInstitucion.id);
+                  console.log(sucursal);  
+                  if(sucursal){
+                    await this.institucionEducativaSucursalRepositorio.createInstitucionEducativaSucursal(
+                        1, 
+                        nuevaInstitucion.id, 
+                        dto, 
+                        transaction
+                    );
+                }
+
+              }
+              return nuevaInstitucion;
+            }
+  
+            const crearResult = await this.institucionEducativaRepositorio.runTransaction(op)
+  
+            if(crearResult){
+              return this._serviceResp.respuestaHttp201(
+                  crearResult.id,
+                  'Registro de Institución Educativa Creado !!',
+                  '',
+              );
+            }
+        }
+            return this._serviceResp.respuestaHttp500(
+              "",
+              'No se pudo guardar la información !!',
+              '',
+          );
     }
 }

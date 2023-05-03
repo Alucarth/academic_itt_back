@@ -19,6 +19,16 @@ export class UnidadTerritorialController {
     async getOneById(@Param('id') id: number):Promise<UnidadTerritorial>{
         return await this.unidadTerritorialService.findUnidadTerritorial(id);
     }
+
+    /*@Get('/:id')
+    async generaCodigo(@Param('id') id: number):Promise<UnidadTerritorial>{
+        //return await this.unidadTerritorialService.createCodigo(id);
+    }*/
+
+    @Get('dependientes/:id')
+    async getDependientes(@Param('id') id: number){
+        return await this.unidadTerritorialService.findDependientes(id);
+    }
     
   
 

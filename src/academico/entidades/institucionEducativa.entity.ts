@@ -28,10 +28,10 @@ export class InstitucionEducativa {
 
   //educacion_tipo_id * a 1
   @Column({ type: 'date', name: 'fecha_fundacion' })
-  fechaFundacion: Date;
+  fechaFundacion: String;
 
   @Column({ type: 'date', name: 'fecha_cierre' })
-  fechaCierre: Date;
+  fechaCierre: String;
 
   @Column({ type: 'varchar', name: 'observacion' })
   observacion: string;
@@ -55,13 +55,24 @@ export class InstitucionEducativa {
   @Column({ type: 'integer', name: 'usuario_id' })
   uduarioId: number;
 
+  @Column({ type: 'integer', name: 'educacion_tipo_id' })
+  educacionTipoId: number;
+
   @ManyToOne(() => EducacionTipo, (educacionTipo) => educacionTipo.instituciones, { nullable: false, cascade: true })
   @JoinColumn({ name: 'educacion_tipo_id', referencedColumnName: 'id'})
   educacionTipo: EducacionTipo;
 
+
+  @Column({ type: 'integer', name: 'estado_institucion_educativa_tipo_id' })
+  estadoInstitucionEducativaTipoId: number;
+
+
   @ManyToOne(() => EstadoInstitucionEductivaTipo, (estadoInstitucionEducativaTipo) => estadoInstitucionEducativaTipo.instituciones, { nullable: false, cascade: true })
   @JoinColumn({ name: 'estado_institucion_educativa_tipo_id', referencedColumnName: 'id'})
   estadoInstitucionEducativaTipo: EstadoInstitucionEductivaTipo;
+
+  @Column({ type: 'integer', name: 'jurisdiccion_geografica_id' })
+  jurisdiccionGeograficaId: number;
 
   @ManyToOne(() => JurisdiccionGeografica, (jurisdiccionGeografica) => jurisdiccionGeografica.instituciones, { nullable: false, cascade: true })
   @JoinColumn({ name: 'jurisdiccion_geografica_id', referencedColumnName: 'id'})

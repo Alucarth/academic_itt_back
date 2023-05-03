@@ -51,6 +51,9 @@ import { JurisdiccionGeograficaModule } from './academico/modulos/jurisdiccion_g
 
 import { SegipModule } from './segip/segip.module';
 import { LoggerMiddleware } from './utils/logger.middleware';
+import { ConvenioTipoModule } from './academico/catalogos/convenio_tipo/convenio_tipo.module';
+import { DependenciaTipoModule } from './academico/catalogos/dependencia_tipo/dependencia_tipo.module';
+import { InstitucionEducativaAcreditacionModule } from './academico/modulos/institucion_educativa_acreditacion/institucion_educativa_acreditacion.module';
 
 
 @Module({
@@ -106,6 +109,12 @@ import { LoggerMiddleware } from './utils/logger.middleware';
     JurisdiccionGeograficaModule,
 
     SegipModule,
+
+    ConvenioTipoModule,
+
+    DependenciaTipoModule,
+
+    InstitucionEducativaAcreditacionModule,
 
   ],
   providers: [],

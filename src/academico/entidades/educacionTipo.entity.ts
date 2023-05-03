@@ -51,6 +51,9 @@ export class EducacionTipo {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
+  @Column({ type: 'integer', name: 'sistema_educacion_tipo_id' })
+  sistemaEducacionTipoId: number;
+
   @ManyToOne(() => SistemaEducacionTipo, (sistemaEducacionTipo) => sistemaEducacionTipo.educacionTipos, { nullable: false, cascade: true })
   @JoinColumn({ name: 'sistema_educacion_tipo_id', referencedColumnName: 'id'})
   sistemaEducacionTipo: SistemaEducacionTipo;

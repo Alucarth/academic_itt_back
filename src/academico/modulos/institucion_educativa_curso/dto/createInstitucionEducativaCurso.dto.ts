@@ -22,8 +22,6 @@ export class CreateInstitucionEducativaCursoDto {
   @IsNumber()
   institucionEducativaId: number;
 
-
-
   @IsNotEmpty()
   @IsNumber()
   periodoTipoId: number;

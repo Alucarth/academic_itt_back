@@ -66,6 +66,9 @@ export class InstitucionEducativaSucursal {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
+  @Column({ type: 'integer', name: 'jurisdiccion_geografica_id' })
+  jurisdiccionGeograficaId: number;
+
   @ManyToOne(() => JurisdiccionGeografica, (jurisdiccionGeografica) => jurisdiccionGeografica.sucursales, { nullable: false, cascade: true })
   @JoinColumn({ name: 'jurisdiccion_geografica_id', referencedColumnName: 'id'})
   jurisdiccionGeografica: JurisdiccionGeografica;
@@ -74,10 +77,16 @@ export class InstitucionEducativaSucursal {
   @JoinColumn({ name: 'gestion_tipo_id', referencedColumnName: 'id'})
   gestionTipo: GestionTipo;
 
+  @Column({ type: 'integer', name: 'institucion_educativa_id' })
+  institucionEducativaId: number;
+
   @ManyToOne(() => InstitucionEducativa, (institucionEducativa) => institucionEducativa.sucursales, { nullable: false, cascade: true })
   @JoinColumn({ name: 'institucion_educativa_id', referencedColumnName: 'id'})
   institucionEducativa: InstitucionEducativa;
   
+  @Column({ type: 'integer', name: 'estado_institucion_educativa_tipo_id' })
+  estadoInstitucionEducativaTipoId: number;
+
   @ManyToOne(() => EstadoInstitucionEductivaTipo, (estadoInstitucionEducativaTipo) => estadoInstitucionEducativaTipo.sucursales, { nullable: false, cascade: true })
   @JoinColumn({ name: 'estado_institucion_educativa_tipo_id', referencedColumnName: 'id'})
   estadoInstitucionEducativaTipo: EstadoInstitucionEductivaTipo;

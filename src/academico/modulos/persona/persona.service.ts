@@ -18,7 +18,8 @@ export class PersonaService {
     }
     async findPersonaByDato( dto:SearchDatoDto ){
         const person = await this.personaRepositorio.getPersonaByDato(dto);
-        
+        console.log(person);
+        console.log("fin---------------");
         if(!person){
             return this._serviceResp.respuestaHttp404(
                 '0',

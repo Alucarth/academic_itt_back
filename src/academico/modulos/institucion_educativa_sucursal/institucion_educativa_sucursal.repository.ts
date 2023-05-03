@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InstitucionEducativaSucursal } from 'src/academico/entidades/institucionEducativaSucursal.entity';
 import { DataSource, EntityManager } from 'typeorm'
+import { CreateInstitucionEducativaDto } from '../institucion_educativa/dto/createInstitucionEducativa.dto';
 
 
 @Injectable()
@@ -15,7 +16,15 @@ export class InstitucionEducativaSucursalRepository {
         .where('d.id = :sie ', { sie })
         .andWhere('a.gestionTipo = :gestion ', { gestion })
         .getOne();
-        
+        return itt;
+    }
+    async findSucursalBySieVigente( sie:number ){
+        const itt = await this.dataSource.getRepository(InstitucionEducativaSucursal)
+        .createQueryBuilder("a")
+        .innerJoinAndSelect("a.institucionEducativa", "d")       
+        .where('d.id = :sie ', { sie })
+        .andWhere('a.vigente = true ')
+        .getOne();
         return itt;
     }
    
@@ -85,4 +94,18 @@ export class InstitucionEducativaSucursalRepository {
         .getMany();
         return especialidades;
     }
+
+    async createInstitucionEducativaSucursal(idUsuario,id:number,dto:CreateInstitucionEducativaDto, transaction) {
+          
+        const sucursal  = new InstitucionEducativaSucursal()
+        sucursal.institucionEducativaId = id;
+        sucursal.jurisdiccionGeograficaId = dto.jurisdiccionGeograficaId;
+        sucursal.estadoInstitucionEducativaTipoId = 10;
+        sucursal.usuarioId = idUsuario;
+        sucursal.sucursalNombre = dto.sucursalNombre;
+        sucursal.sucursalCodigo = dto.sucursalCodigo;
+        sucursal.vigente = true;
+        sucursal.observacion = '';         
+      return await transaction.getRepository(InstitucionEducativaSucursal).save(sucursal)
+  }
 }
