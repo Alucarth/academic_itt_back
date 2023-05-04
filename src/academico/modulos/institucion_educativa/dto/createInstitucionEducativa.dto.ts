@@ -4,46 +4,41 @@ export class CreateInstitucionEducativaDto {
 
   @IsNotEmpty({ message: "Debe ingresar el codigo de la Ubicación Geográfica" })
   @IsNumber()
-  jurisdiccionGeograficaId: number;
+  jurisdiccion_geografica_id: number;
 
   @IsNotEmpty({ message: "Debe ingresar el nombre de la Institución Educativa" })
   @IsString()
-  institucionEducativa: string;
+  institucion_educativa: string;
 
   @IsNotEmpty({ message: "Debe seleccionar la educación Tipo" })
   @IsNumber()
-  educacionTipoId: number;
+  educacion_tipo_id: number;
 
   @IsOptional()
   @IsString()
   observacion: string;
 
-  @IsNotEmpty({ message: "Debe seleccionar el tipo de convenio" })
-  @IsNumber()
-  convenioTipoId: number;
-
   @IsNotEmpty({ message: "Debe seleccionar el tipo de dependencia" })
   @IsNumber()
-  dependenciaTipoId: number;
+  dependencia_tipo_id: number;
 
   @IsOptional({ message: "Debe ingresar la fecha de resolución" })
   @IsString()
-  fechaResolucion: string;
+  fecha_resolucion: string;
 
   @IsOptional({ message: "Debe ingresar el número de resolución" })
   @IsString()
-  numeroResolucion: string;
+  numero_resolucion: string;
 
   @IsOptional()
   @IsString()
-  sucursalNombre: string;
+  sucursal_nombre: string;
 
   @IsOptional()
   @IsNumber()
-  sucursalCodigo: number;
+  sucursal_codigo: number;
 
   @IsOptional()
   codigo: number;
-
 
 }

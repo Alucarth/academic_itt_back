@@ -27,14 +27,14 @@ export class InstitucionEducativaAcreditacionRepository {
           
           const acreditacion  = new InstitucionEducativaAcreditacion()
           acreditacion.institucionEducativaId = id;
-          acreditacion.convenioTipoId = dto.convenioTipoId;
-          acreditacion.dependenciaTipoId = dto.dependenciaTipoId;
-          acreditacion.acreditacionTipoId =2;
-          acreditacion.numeroResolucion = dto.numeroResolucion;
-          acreditacion.fechaResolucion = dto.fechaResolucion;
+          acreditacion.convenioTipoId = 0;
+          acreditacion.dependenciaTipoId = dto.dependencia_tipo_id;
+          acreditacion.acreditacionTipoId = 2;
+          acreditacion.numeroResolucion = dto.numero_resolucion;
+          acreditacion.fechaResolucion = dto.fecha_resolucion;
           acreditacion.usuarioId = idUsuario;
           acreditacion.vigente = true;
-          acreditacion.observacion = '';         
+          acreditacion.observacion = dto.observacion;         
         return await transaction.getRepository(InstitucionEducativaAcreditacion).save(acreditacion)
     }
    

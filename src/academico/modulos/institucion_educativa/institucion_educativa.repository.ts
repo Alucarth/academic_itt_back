@@ -41,9 +41,22 @@ export class InstitucionEducativaRepository {
         .createQueryBuilder("a")
         .innerJoinAndSelect("a.jurisdiccionGeografica", "c")
         .innerJoinAndSelect("a.educacionTipo", "d")
-        .innerJoinAndSelect("a.estadoInstitucionEducativaTipo", "d")
-        .where('a.educacionTipo in (7,8,9)')
+        .innerJoinAndSelect("a.estadoInstitucionEducativaTipo", "e")
+        .where('a.educacionTipo in (7,8,9,11,12,13)')
         .where('c.id = :id ', { id })
+        .orderBy('a.id', 'ASC')
+        .getOne();
+        return itts;
+    }
+    async findInstitucionEducativaLugarNombre( id:number, nombre:string ){
+        const itts = await this.dataSource.getRepository(InstitucionEducativa)
+        .createQueryBuilder("a")
+        .innerJoinAndSelect("a.jurisdiccionGeografica", "c")
+        .innerJoinAndSelect("a.educacionTipo", "d")
+        .innerJoinAndSelect("a.estadoInstitucionEducativaTipo", "e")
+        .where('a.educacionTipo in (7,8,9,11,12,13)')
+        .where('c.id = :id ', { id })
+        .where('a.institucionEducativa = :nombre ', { nombre })
         .orderBy('a.id', 'ASC')
         .getOne();
         return itts;
@@ -153,25 +166,46 @@ export class InstitucionEducativaRepository {
         const data = await this.dataSource.getRepository(JurisdiccionGeografica).query(sql, values);*/
        // console.log(data);
         //return data;
-        return 987654321;
+        
+        return Math.floor(Math.random() * 1000000000);
       }
 
-    async createInstitucionEducativa(
-
+    async insertInstitucionEducativa(
         dto: CreateInstitucionEducativaDto, 
         transaction: EntityManager
         ) {
+            console.log("en repo");
+            console.log(dto);
+            console.log("fin en repo");
+            const institucion = new InstitucionEducativa();
+            institucion.id =dto.codigo;
+            institucion.jurisdiccionGeograficaId = dto.jurisdiccion_geografica_id;
+            institucion.institucionEducativa = dto.institucion_educativa;
+            institucion.educacionTipoId = dto.educacion_tipo_id;
+            institucion.estadoInstitucionEducativaTipoId = 10;
+            institucion.fechaFundacion = dto.fecha_resolucion;
+            return await transaction.getRepository(InstitucionEducativa).save(institucion);
+        
+    }
+
+    async crearInstitucionEducativa(
+        dto: CreateInstitucionEducativaDto, 
+        transaction: EntityManager
+        ) {
+           
         const institucion = new InstitucionEducativa();
         institucion.id = dto.codigo;
-        institucion.jurisdiccionGeograficaId = dto.jurisdiccionGeograficaId;
-        institucion.institucionEducativa = dto.institucionEducativa;
-        institucion.educacionTipoId = dto.educacionTipoId;
+        institucion.jurisdiccionGeograficaId = dto.jurisdiccion_geografica_id;
+        institucion.institucionEducativa = dto.institucion_educativa;
+        institucion.educacionTipoId = dto.educacion_tipo_id;
         institucion.estadoInstitucionEducativaTipoId = 10;
-        institucion.fechaFundacion = dto.fechaResolucion;
+        institucion.fechaFundacion = dto.fecha_resolucion;
        // institucion.usuarioId = 1;// dto.usuarioId;
 
         const result = await transaction.getRepository(InstitucionEducativa).save(institucion);
-       
+        console.log(dto.codigo);
+        console.log(result);
+            console.log("ultimo---reg");
         return result;
     }
 /*

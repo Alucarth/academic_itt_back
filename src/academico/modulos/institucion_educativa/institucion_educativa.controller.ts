@@ -67,6 +67,9 @@ export class InstitucionEducativaController {
     @Post()
     async createCurso(@Body() dto: CreateInstitucionEducativaDto){
         console.log('controller insert',dto);
+        
+        //console.log(Math.floor(Math.random() * 1000000000));
+
         return  await this.institucionEducativaService.createInstitucionEducativa(dto);        
     }
       

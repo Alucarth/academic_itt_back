@@ -73,6 +73,9 @@ export class InstitucionEducativaSucursal {
   @JoinColumn({ name: 'jurisdiccion_geografica_id', referencedColumnName: 'id'})
   jurisdiccionGeografica: JurisdiccionGeografica;
 
+  @Column({ type: 'integer', name: 'gestion_tipo_id' })
+  gestionTipoId: number;
+
   @ManyToOne(() => GestionTipo, (gestionTipo) => gestionTipo.sucursales, { nullable: false, cascade: true })
   @JoinColumn({ name: 'gestion_tipo_id', referencedColumnName: 'id'})
   gestionTipo: GestionTipo;

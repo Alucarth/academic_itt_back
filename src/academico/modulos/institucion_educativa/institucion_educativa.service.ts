@@ -103,52 +103,54 @@ export class InstitucionEducativaService {
 
     async generateCodigo(id:number){
         const codigo =  await this.institucionEducativaRepositorio.getCodigo(id);
+
         return codigo;
+       
    }
     
+
     async createInstitucionEducativa (dto: CreateInstitucionEducativaDto) {
 
-        const institucion =  await this.institucionEducativaRepositorio.findInstitucionEducativaInstituto(dto.jurisdiccionGeograficaId);
+        const institucion =  await this.institucionEducativaRepositorio.findInstitucionEducativaLugarNombre(dto.jurisdiccion_geografica_id, dto.institucion_educativa);
         
         if(!institucion){
-            console.log(dto);
-            const codigo =  await this.generateCodigo(dto.jurisdiccionGeograficaId);
+            //console.log(dto);
+            const codigo =  await this.generateCodigo(dto.jurisdiccion_geografica_id);
             dto.codigo = codigo;
-            
+            console.log("objeto: " + dto);
             const op = async (transaction: EntityManager) => {
-              const nuevaInstitucion =  await this.institucionEducativaRepositorio.createInstitucionEducativa(
+              const nuevaInstitucion =  await this.institucionEducativaRepositorio.crearInstitucionEducativa(
                 dto,
                 transaction
               )
   
-              if(nuevaInstitucion?.id){
-                  console.log(nuevaInstitucion.id);    
+              if(nuevaInstitucion.id){
+                  console.log(nuevaInstitucion);    
                   //Obtener todas las asignaturas
-                  const acreditacion  = await this.institucionEducativaAcreditacionRepositorio.findAcreditacion(nuevaInstitucion.id);
+                  const acreditacion  = await this.institucionEducativaAcreditacionRepositorio.findAcreditacion(codigo);
                   console.log(acreditacion);   
       
-                  if(acreditacion){
+                  if(!acreditacion){
                       //Crear la oferta academica 
                       await this.institucionEducativaAcreditacionRepositorio.createInstitucionEducativaAcreditacion(
                           1, 
-                          nuevaInstitucion.id, 
+                          codigo, 
                           dto, 
                           transaction
                       );
                   }
                   
                   //Obtener todas las asignaturas
-                  const sucursal  = await this.institucionEducativaSucursalRepositorio.findSucursalBySieVigente(nuevaInstitucion.id);
+                  const sucursal  = await this.institucionEducativaSucursalRepositorio.findSucursalBySieVigente(codigo);
                   console.log(sucursal);  
-                  if(sucursal){
+                  if(!sucursal){
                     await this.institucionEducativaSucursalRepositorio.createInstitucionEducativaSucursal(
                         1, 
-                        nuevaInstitucion.id, 
+                        codigo, 
                         dto, 
                         transaction
                     );
                 }
-
               }
               return nuevaInstitucion;
             }
@@ -157,7 +159,7 @@ export class InstitucionEducativaService {
   
             if(crearResult){
               return this._serviceResp.respuestaHttp201(
-                  crearResult.id,
+                  crearResult,
                   'Registro de Institución Educativa Creado !!',
                   '',
               );

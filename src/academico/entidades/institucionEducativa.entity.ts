@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -18,7 +19,7 @@ import { TramiteInstitucionEducativa } from './tramiteInstitucionEducativa.entit
 
 @Entity({ name: 'institucion_educativa', schema: 'public' })
 export class InstitucionEducativa {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   id: number;
 
   //jurisdiccion_geografica_id * a 1

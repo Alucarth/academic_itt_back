@@ -119,13 +119,14 @@ export class InstitucionEducativaSucursalRepository {
           
         const sucursal  = new InstitucionEducativaSucursal()
         sucursal.institucionEducativaId = id;
-        sucursal.jurisdiccionGeograficaId = dto.jurisdiccionGeograficaId;
+        sucursal.jurisdiccionGeograficaId = dto.jurisdiccion_geografica_id;
         sucursal.estadoInstitucionEducativaTipoId = 10;
         sucursal.usuarioId = idUsuario;
-        sucursal.sucursalNombre = dto.sucursalNombre;
-        sucursal.sucursalCodigo = dto.sucursalCodigo;
+        sucursal.sucursalNombre = dto.sucursal_nombre;
+        sucursal.sucursalCodigo = dto.sucursal_codigo;
         sucursal.vigente = true;
-        sucursal.observacion = '';         
+        sucursal.observacion = dto.observacion;         
+        sucursal.gestionTipoId = 2023;//quitar luego         
       return await transaction.getRepository(InstitucionEducativaSucursal).save(sucursal)
   }
 }

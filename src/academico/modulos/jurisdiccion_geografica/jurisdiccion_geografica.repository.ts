@@ -102,7 +102,8 @@ export class JurisdiccionGeograficaRepository {
         const data = await this.dataSource.getRepository(JurisdiccionGeografica).query(sql, values);*/
        // console.log(data);
         //return data;
-        return 123456789;
+        return Math.floor(Math.random() * 1000000000);
+        
       }
 
       async createJurisdiccionGeografica(dto: CreateJurisdiccionGeograficaDto, transaction) {
