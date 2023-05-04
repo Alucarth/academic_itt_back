@@ -35,9 +35,38 @@ export class JurisdiccionGeograficaRepository {
           .innerJoinAndSelect("e.unidadTerritorialTipo", "e1")
           .innerJoinAndSelect("e.unidadTerritorialPadre", "f")
           .innerJoinAndSelect("f.unidadTerritorialTipo", "f1")
+          .select([
+            'a.id as id',
+            'a.codigoEdificioEducativo as codigo_edificio_educativo',
+            'a.cordx as cordx',
+            'a.cordy as cordy',
+            'a.direccion as direccion',
+            'a.zona as zona',
+            'b.id as localidad_id',
+            'b.lugar as localidad',
+            'b1.unidadTerritorial as tipo1',
+            'b1.id as tipo1_id',
+            'c.id as canton_id',
+            'c.lugar as canton',
+            'c1.id as tipo2_id',
+            'c1.unidadTerritorial as tipo2',
+            'd.id as municipio_id',
+            'd.lugar as municipio',
+            'd1.id as tipo3_id',
+            'd1.unidadTerritorial as tipo3',
+            'e.id as provincia_id',
+            'e.lugar as provincia',
+            'e1.id as tipo4_id',
+            'e1.unidadTerritorial as tipo4',
+            'f.id as departamento_id',
+            'f.lugar as departamento',
+            'f1.id as tipo5_id',
+            'f1.unidadTerritorial as tipo5',
+            
+          ])
           .where("a.codigoEdificioEducativo = :id ", { id })
           .orderBy("a.id", "ASC")
-          .getOne();
+          .getRawOne();
         
         return jurisdiccion;
     }

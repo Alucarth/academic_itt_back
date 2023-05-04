@@ -43,9 +43,9 @@ export class InstitucionEducativaSucursalRepository {
         .innerJoinAndSelect("b.acreditados", "s")
         .innerJoinAndSelect("s.dependenciaTipo", "dt")
         .select([
-            'a.id as id',
+            'a.id as sucursal_id',
             'b.id as ie_id',
-            'a.id as acreditado_id',
+            'a.id as acreditacion_id',
             'b.institucionEducativa as institucion_educativa',
             'up4.lugar as departamento',
             'd.educacion as tipo_institucion',
@@ -53,7 +53,7 @@ export class InstitucionEducativaSucursalRepository {
             'dt.dependencia as caracter_juridico',
             'a.sucursal_nombre as sede_sebsede',
             'c.codigoEdificioEducativo as cod_le',
-            
+            'c.id as id_jurisdiccion',
           ])
         .where('d.id in (7,8,9,11,12,13)  ')
         .andWhere('e.id = 10 ')
