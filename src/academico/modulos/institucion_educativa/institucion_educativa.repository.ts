@@ -129,8 +129,8 @@ export class InstitucionEducativaRepository {
             'up3.lugar as provincia',
             'up4.lugar as departamento',
             'j.sucursal_nombre as sede_subsede',
-
-          
+            'e.id as acreditacion_id',
+            'j.id as sucursal_id',
         ])
         .where('b.id in (7,8,9,11,12,13)  ')
         .andWhere('a.id = :id ', { id })
