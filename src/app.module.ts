@@ -54,6 +54,10 @@ import { LoggerMiddleware } from './utils/logger.middleware';
 import { ConvenioTipoModule } from './academico/catalogos/convenio_tipo/convenio_tipo.module';
 import { DependenciaTipoModule } from './academico/catalogos/dependencia_tipo/dependencia_tipo.module';
 import { InstitucionEducativaAcreditacionModule } from './academico/modulos/institucion_educativa_acreditacion/institucion_educativa_acreditacion.module';
+import { NivelAcademicoTipoModule } from './academico/catalogos/nivel_academico_tipo/nivel_academico_tipo.module';
+import { CampoSaberTipoModule } from './academico/catalogos/campo_saber_tipo/campo_saber_tipo.module';
+import { IntervaloGestionTipoModule } from './academico/catalogos/intervalo_gestion_tipo/intervalo_gestion_tipo.module';
+import { TiempoEstudioTipoModule } from './academico/catalogos/tiempo_estudio_tipo/tiempo_estudio_tipo.module';
 
 
 @Module({
@@ -115,6 +119,14 @@ import { InstitucionEducativaAcreditacionModule } from './academico/modulos/inst
     DependenciaTipoModule,
 
     InstitucionEducativaAcreditacionModule,
+
+    NivelAcademicoTipoModule,
+
+    CampoSaberTipoModule,
+
+    IntervaloGestionTipoModule,
+
+    TiempoEstudioTipoModule,
 
   ],
   providers: [],

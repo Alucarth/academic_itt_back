@@ -13,14 +13,6 @@ export class EspecialidadTipoService {
         private _serviceResp: RespuestaSigedService, 
     ){}
         async getAll(){
-            //var result: EspecialidadTipo[] = [];
-            const result =  await this.especialidadTipoRepository.find()
-
-            return this._serviceResp.respuestaHttp201(
-            result,
-            'Registro Encontrado !!',
-            '',
-            );
-
+            return  await this.especialidadTipoRepository.find()
         }
 }
