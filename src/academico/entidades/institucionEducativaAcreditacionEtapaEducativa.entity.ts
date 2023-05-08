@@ -23,8 +23,20 @@ export class InstitucionEducativaAcreditacionEtapaEducativa {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'date', name: 'fecha_resolucion' })
+  fechaResolucion: String;
+
   @Column({ type: 'varchar', name: 'observacion' })
   observacion: string;
+
+  @Column({ type: 'varchar', name: 'numero_resolucion' })
+  numeroResolucion: string;
+
+  @Column({ type: 'integer', name: 'tiempo' })
+  tiempo: number;
+
+  @Column({ type: 'integer', name: 'carga_horaria' })
+  cargaHoraria: number;
 
   @Exclude()
   @UpdateDateColumn({

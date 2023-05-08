@@ -96,6 +96,40 @@ export class EtapaEducativaService {
     return data;
   }
 
+  async findAllDependientesRecursive(id: number) {
+        console.log("dependientes");
+    const lugar = await this.etapaEducativaRepository
+      .createQueryBuilder("a")
+      .innerJoinAndSelect("a.etapaEducativaTipo", "e1")
+      .innerJoinAndSelect("a.etapaEducativaPadre", "p1")
+      .innerJoinAndSelect("p1.etapaEducativaTipo", "e2")
+      .innerJoinAndSelect("p1.etapaEducativaPadre", "p2")
+      .innerJoinAndSelect("p2.etapaEducativaTipo", "e3")
+      .innerJoinAndSelect("p2.etapaEducativaPadre", "p3")
+      .innerJoinAndSelect("p3.etapaEducativaTipo", "e4")
+      .select([
+        'a.id as carrera_id',
+        'a.etapaEducativa as carrera',
+        'e1.id as tipo_carrera_id',
+        'e1.etapaEducativa as tipo_carrera',
+        'p1.id as area_id',
+        'p1.etapaEducativa as area',
+        'e2.id as tipo_area_id',
+        'e2.etapaEducativa as tipo_area',
+        'p2.id as regimen_id',
+        'p2.etapaEducativa as regimen',
+        'e3.id as tipo_regimen_id',
+        'e3.etapaEducativa as tipo_regimen',
+        'p3.id as nivel_id',
+        'p3.etapaEducativa as nivel',
+        'e4.id as tipo_nivel_id',
+        'e4.etapaEducativa as tipo_nivel',
+    ])
+      .where("a.id = :id ", { id })
+      .getRawOne();
+    console.log(lugar);
+    return lugar;
+}
   async findCarrerasBySie(id: number) {
     const values = [
       "etapa_educativa_tipo",
@@ -286,7 +320,7 @@ export class EtapaEducativaService {
             activo: true,
             ordinal: 0,
             educacionTipo: educacionTipo,
-            etapaEducativaId: etapaEducativa,
+            etapaEducativaPadre: etapaEducativa,
           },
         ])
         .returning("id")
@@ -323,7 +357,7 @@ export class EtapaEducativaService {
               activo: true,
               ordinal: 0,
               educacionTipo: educacionTipo,
-              etapaEducativaId: newEtapaEducativa,
+              etapaEducativaPadre: newEtapaEducativa,
             },
           ])
           .returning("id")

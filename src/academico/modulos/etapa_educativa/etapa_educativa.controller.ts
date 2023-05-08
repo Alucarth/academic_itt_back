@@ -21,6 +21,12 @@ export class EtapaEducativaController {
   ): Promise<EtapaEducativa[]> {
     return await this.etapaEducativaService.findAllRecursiveHijos(id);
   }
+  @Get("dependientes/:id")
+  async getDependientesAll(
+    @Param("id", ParseIntPipe) id: number
+  ){
+    return await this.etapaEducativaService.findAllDependientesRecursive(id);
+  }
 
   @Get("padres/:id")
   async getAll(@Param("id", ParseIntPipe) id: number) {

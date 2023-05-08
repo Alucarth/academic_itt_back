@@ -49,6 +49,8 @@ export class EtapaEducativa {
 
   @Column({ type: 'varchar', name: 'codigo' })
   codigo: string;
+
+ 
   
   @Exclude()
   @UpdateDateColumn({
@@ -86,12 +88,12 @@ export class EtapaEducativa {
   @OneToMany(() => InstitucionEducativaCurso, (institucionEducativaCurso) => institucionEducativaCurso.etapaEducativa)
   cursos: InstitucionEducativaCurso[];
 
-  @OneToMany(() => EtapaEducativa, (etapaEducativa) => etapaEducativa.etapaEducativaId)
+  @OneToMany(() => EtapaEducativa, (etapaEducativa) => etapaEducativa.etapaEducativaPadre)
   etapaEducativaList: EtapaEducativa[];
 
   @ManyToOne(() => EtapaEducativa, (etapaEducativa) => etapaEducativa.etapaEducativaList)
   @JoinColumn({ name: 'etapa_educativa_id', referencedColumnName: 'id'})
-  etapaEducativaId: EtapaEducativa;
+  etapaEducativaPadre: EtapaEducativa;
 
   /*@Column({ type: 'varchar', name: 'etapa_educativa_id' })
   etapaEducativaId: string;*/
