@@ -98,11 +98,41 @@ export class InstitucionEducativaRepository {
         .innerJoinAndSelect("a.educacionTipo", "b")
         .innerJoinAndSelect("a.estadoInstitucionEducativaTipo", "c")
         .innerJoinAndSelect("a.acreditados", "e")
+        .innerJoinAndSelect("a.sucursales", "j")
         .innerJoinAndSelect("e.convenioTipo", "f")
         .innerJoinAndSelect("e.dependenciaTipo", "g")
         .innerJoinAndSelect("e.acreditacionTipo", "i")
-       // .select('a.id as id, a.institucion_educativa')
-        .where('b.id in (7,8,9)  ')
+        .innerJoinAndSelect("a.jurisdiccionGeografica", "h")
+        .innerJoinAndSelect("h.localidadUnidadTerritorial2001", "u1")
+        .innerJoinAndSelect("u1.unidadTerritorialPadre", "up1")
+        .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
+        .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
+        .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
+        .select([
+            'a.id as ie_id',
+            'a.institucion_educativa as institucion_educativa',
+            'e.numeroResolucion as numero_resolucion',
+            'e.fechaResolucion as fecha_resolucion',
+            'g.dependencia as caracter_juridico',
+            'b.educacion as tipo_institucion',
+            'c.estadoInstitucionEducativa as estado',
+            'i.acreditacion as acreditacion',
+            'a.observacion as observacion',
+            'h.codigoEdificioEducativo as cod_le',
+            'h.cordx as cordx',
+            'h.cordy as cordy',
+            'h.direccion as direccion',
+            'h.zona as zona',
+            'u1.lugar as localidad',
+            'up1.lugar as canton',
+            'up2.lugar as municipio',
+            'up3.lugar as provincia',
+            'up4.lugar as departamento',
+            'j.sucursal_nombre as sede_subsede',
+
+          
+        ])
+        .where('b.id in (7,8,9,11,12,13)  ')
         .andWhere('a.id = :id ', { id })
         .andWhere('e.vigente = :vigente ', { vigente: 'TRUE'})
         .orderBy('a.id', 'ASC')
