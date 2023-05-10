@@ -1,18 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CarreraAutorizadaResolucion } from 'src/academico/entidades/carreraAutorizadaResolucion.entity';
-import { Repository } from 'typeorm';
+import { Inject, Injectable } from '@nestjs/common';
+import { CarreraAutorizadaResolucionRepository } from './carrera_autorizada_resolucion.repository';
 
 @Injectable()
 export class CarreraAutorizadaResolucionService {
     constructor(
-        @InjectRepository(CarreraAutorizadaResolucion)
-        private carreraAutorizadaResolucionRepositorio: Repository<CarreraAutorizadaResolucion>,
+        @Inject(CarreraAutorizadaResolucionRepository)
+        private carreraAutorizadaResolucionRepositorio: CarreraAutorizadaResolucionRepository,
       
         //private _serviceResp: RespuestaSigedService
       ) {}
-      async getById(id: number) {
-        const carrera = await this.carreraAutorizadaResolucionRepositorio.findOneBy({ id: id });
+      async getOneById(id: number) {
+        const carrera = await this.carreraAutorizadaResolucionRepositorio.getOneBy(id);
         return carrera;
       }
+      async getAll(id: number) {
+        const carrera = await this.carreraAutorizadaResolucionRepositorio.getAll();
+        return carrera;
+      }
+
+
 }
