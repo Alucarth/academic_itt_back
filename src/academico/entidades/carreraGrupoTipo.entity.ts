@@ -22,7 +22,6 @@ export class CarreraGrupoTipo {
   @Column({ type: 'varchar', name: 'grupo' })
   grupo: string;
   
- 
   @Exclude()
   @UpdateDateColumn({
     name: 'fecha_registro',
@@ -41,7 +40,6 @@ export class CarreraGrupoTipo {
 
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
-
 
   @OneToMany(() => CarreraTipo, (carreraTipo) => carreraTipo.carreraGrupoTipo)
   carrerasTipos: CarreraTipo[];
