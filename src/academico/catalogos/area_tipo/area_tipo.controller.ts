@@ -1,15 +1,32 @@
-import { Controller, Get } from '@nestjs/common';
-import { AreaTipoService } from './area_tipo.service';
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { AreaTipoService } from "./area_tipo.service";
 
-@Controller('area-tipo')
+@Controller("area-tipo")
 export class AreaTipoController {
-    constructor(
-        private readonly areaTipoService: AreaTipoService
-    ){}
-    
-    /*SE UTILICO PARA AREA DE FORMACION PARA TECNICA, SE PUEDE AGREGAR UNA TABLA DE RELACION ENTRE SISTEMA_TIPO_CAMPO_SABER */
-    @Get()
-    async getAll(){
-        return await this.areaTipoService.getAll();
-    }
+  constructor(private readonly areaTipoService: AreaTipoService) {}
+
+  @Get()
+  async getAll() {
+    return await this.areaTipoService.getAll();
+  }
+
+  @Get("getById/:id")
+  async getOneById(@Param("id") id: string) {
+    return await this.areaTipoService.getOneById(parseInt(id));
+  }
+
+  @Post()
+  async addAreaTipo(@Body() body) {
+    return await this.areaTipoService.insertRecord(body);
+  }
+
+  @Put()
+  async updateAreaTipo(@Body() body) {
+    return await this.areaTipoService.updateRecord(body);
+  }
+
+  @Delete("/:id")
+  async deleteAreaTipo(@Param("id") id: string) {
+    return await this.areaTipoService.deleteRecord(parseInt(id));
+  }
 }
