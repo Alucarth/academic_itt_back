@@ -18,8 +18,8 @@ export class AreaTipo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'area_formacion' })
-  area_formacion: string;
+  @Column({ type: 'varchar', name: 'area' })
+  area: string;
   
   @Exclude()
   @UpdateDateColumn({

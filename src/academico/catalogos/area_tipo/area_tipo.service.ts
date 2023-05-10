@@ -50,7 +50,7 @@ export class AreaTipoService {
         .into(AreaTipo)
         .values([
           {
-            area_formacion: body.areaFormacion,
+            area: body.areaFormacion,
           },
         ])
         .returning("id")
@@ -82,7 +82,7 @@ export class AreaTipoService {
         .createQueryBuilder()
         .update(AreaTipo)
         .set({
-          area_formacion: body.areaFormacion
+          area: body.areaFormacion
         })
         .where("id = :id", { id: body.id })
         .execute();

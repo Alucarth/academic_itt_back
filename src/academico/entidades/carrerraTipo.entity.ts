@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { CarreraAutorizada } from './carreraAutorizada.entity';
+import { CarreraGrupoTipo } from './carreraGrupoTipo.entity';
 import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
 import { OfertaAcademica } from './ofertaAcademica.entity';
 import { Tarea } from './tarea.entity';
@@ -41,10 +42,15 @@ export class CarreraTipo {
   /*@Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;*/
 
+  @OneToMany(() => CarreraAutorizada, (carreraAutorizada) => carreraAutorizada.carreraTipo)
+  carreras: CarreraAutorizada[];
+
+  @Column({ name: 'carrera_grupo_tipo_id', nullable:false })
   carreraGrupoTipoId: number;
 
-  //TODO: crear la relacion
-  /*@OneToMany(() => CarreraAutorizada, (carreraAutorizada) => carreraAutorizada.carreraTipo)
-  carreras: CarreraAutorizada[];*/
+  @ManyToOne(() => CarreraGrupoTipo, (carreraGrupoTipo) => carreraGrupoTipo.carrerasTipos, { nullable: false, cascade: true })
+  @JoinColumn({ name: 'carrera_grupo_tipo_id', referencedColumnName: 'id'})
+  carreraGrupoTipo: CarreraGrupoTipo;  
+
   
 }
