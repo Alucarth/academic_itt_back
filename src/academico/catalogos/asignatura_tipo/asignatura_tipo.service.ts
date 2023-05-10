@@ -1,6 +1,6 @@
 import { Injectable, HttpStatus } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Like, Repository } from "typeorm";
 import { NotFoundException, HttpException } from "@nestjs/common";
 import { RespuestaSigedService } from "../../../shared/respuesta.service";
 import { CreateAsignaturaTipoDto } from "./dto/createAsignaturaTipo.dto";
@@ -17,11 +17,11 @@ export class AsignaturaTipoService {
 
   async getAsignaturasAll(){
     //var result: EspecialidadTipo[] = [];
-    const result =  await this.asignaturaTipoRepository.find({order: {
-        id: 'DESC'
-        },
+    const result =  await this.asignaturaTipoRepository.find({
+      where: { abreviacion: Like('%A%') },
+      order: {  id: 'desc' },
         skip: 0,
-        take: 20})
+        take: 20});
 
     return this._serviceResp.respuestaHttp201(
     result,
