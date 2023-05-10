@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Inject, Injectable } from '@nestjs/common';
 import { CarreraAutorizadaResolucionRepository } from './carrera_autorizada_resolucion.repository';
 
@@ -20,3 +21,9 @@ export class CarreraAutorizadaResolucionService {
 
 
 }
+=======
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class CarreraAutorizadaResolucionService {}
+>>>>>>> ec8ea5b0c2aad791f271e2c95850f9c3848a7cd6

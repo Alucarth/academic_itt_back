@@ -1,8 +1,7 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
-import { CarreraAutorizadaResolucion } from 'src/academico/entidades/carreraAutorizadaResolucion.entity';
-import { CarreraAutorizadaResolucionService } from './carrera_autorizada_resolucion.service';
+import { Controller } from '@nestjs/common';
 
 @Controller('carrera-autorizada-resolucion')
+<<<<<<< HEAD
 export class CarreraAutorizadaResolucionController {
     constructor(private readonly carreraAutorizadaResolucionService: CarreraAutorizadaResolucionService) {}
     
@@ -36,3 +35,6 @@ export class CarreraAutorizadaResolucionController {
         }
       }*/
 }
+=======
+export class CarreraAutorizadaResolucionController {}
+>>>>>>> ec8ea5b0c2aad791f271e2c95850f9c3848a7cd6
