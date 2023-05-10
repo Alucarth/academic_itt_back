@@ -38,11 +38,13 @@ export class CarreraTipo {
   })
   fechaModificacion: Date;
 
-  @Column({ type: 'integer', name: 'usuario_id' })
-  usuarioId: number;
+  /*@Column({ type: 'integer', name: 'usuario_id' })
+  usuarioId: number;*/
 
+  carreraGrupoTipoId: number;
 
-  @OneToMany(() => CarreraAutorizada, (carreraAutorizada) => carreraAutorizada.carreraTipo)
-  carreras: CarreraAutorizada[];
+  //TODO: crear la relacion
+  /*@OneToMany(() => CarreraAutorizada, (carreraAutorizada) => carreraAutorizada.carreraTipo)
+  carreras: CarreraAutorizada[];*/
   
 }

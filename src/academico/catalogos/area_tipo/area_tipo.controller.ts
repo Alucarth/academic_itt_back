@@ -1,6 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { AreaTipoService } from "./area_tipo.service";
+import { ApiTags } from "@nestjs/swagger";
+import { ApiOperation } from "@nestjs/swagger";
 
+@ApiTags("Crud Catalogo Area Tipo")
 @Controller("area-tipo")
 export class AreaTipoController {
   constructor(private readonly areaTipoService: AreaTipoService) {}

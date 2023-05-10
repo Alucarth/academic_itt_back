@@ -50,9 +50,9 @@ export class CarreraAutorizada {
   @Column({ name: 'carrera_tipo_id', nullable:false })
   carreraTipoId: number;
 
-  @ManyToOne(() => CarreraTipo, (carreraTipo) => carreraTipo.carreras, { nullable: false, cascade: true })
+  /*@ManyToOne(() => CarreraTipo, (carreraTipo) => carreraTipo.carreras, { nullable: false, cascade: true })
   @JoinColumn({ name: 'carrera_tipo_id', referencedColumnName: 'id'})
-  carreraTipo: CarreraTipo;
+  carreraTipo: CarreraTipo;*/
 
   @Column({ name: 'area_tipo_id', nullable:false })
   areaTipoId: number;
