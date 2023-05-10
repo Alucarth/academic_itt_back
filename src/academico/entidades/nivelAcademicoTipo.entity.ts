@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { CarreraAutorizadaResolucion } from './carreraAutorizadaResolucion.entity';
 import { EtapaEducativaAsignaturaNivelAcademico } from './etapaEducativaAsignaturaNivelAcademico.entity';
 import { InstitucionEducativaAcreditacionEspecialidadNivelAcademico } from './institucionEducativaAcreditacionEspecialidadNivelAcademico.entity';
 
@@ -52,4 +53,7 @@ export class NivelAcademicoTipo {
   @OneToMany(() => EtapaEducativaAsignaturaNivelAcademico, (etapaEducativaAsignaturaNivelAcademico) => etapaEducativaAsignaturaNivelAcademico.nivelAcademicoTipo)
   asignaturasNivelesAcademicos: EtapaEducativaAsignaturaNivelAcademico[];
 
+  @OneToMany(() => CarreraAutorizadaResolucion, (carreraAutorizadaResolucion) => carreraAutorizadaResolucion.carreraAutorizada)
+  resoluciones: CarreraAutorizadaResolucion[];
+  
 }

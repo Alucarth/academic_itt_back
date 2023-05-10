@@ -8,6 +8,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { CarreraAutorizada } from './carreraAutorizada.entity';
+import { CarreraTipo } from './carrerraTipo.entity';
 import { EducacionTipo } from './educacionTipo.entity';
 import { EstadoInstitucionEductivaTipo } from './estadoInstitucionEducativaTipo.entity';
 import { GestionTipo } from './gestionTipo.entity';
@@ -105,5 +107,8 @@ export class InstitucionEducativaSucursal {
 
   @OneToMany(() => MaestroInscripcion, (maestroInscripcion) => maestroInscripcion.institucionEducativaSucursal)
   maestrosInscripciones: MaestroInscripcion[];
+
+  @OneToMany(() => CarreraAutorizada, (carreraAutorizada) => carreraAutorizada.institucionEducativaSucursal)
+  carreras: CarreraAutorizada[];
 
 }

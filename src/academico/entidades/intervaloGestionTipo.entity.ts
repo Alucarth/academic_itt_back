@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { CarreraAutorizadaResolucion } from './carreraAutorizadaResolucion.entity';
 import { InstitucionEducativaAcreditacionEspecialidadNivelIntervalo } from './institucionEducativaAcreditacionEspecialidadNivelIntervalo.entity';
 import { PeriodoTipo } from './periodoTipo.entity';
 
@@ -52,4 +53,7 @@ export class IntervaloGestionTipo {
   @OneToMany(() => PeriodoTipo, (PeriodoTipo) => PeriodoTipo.intervaloGestionTipo)
   periodos: PeriodoTipo[];
 
+  @OneToMany(() => CarreraAutorizadaResolucion, (carreraAutorizadaResolucion) => carreraAutorizadaResolucion.carreraAutorizada)
+  resoluciones: CarreraAutorizadaResolucion[];
+  
 }

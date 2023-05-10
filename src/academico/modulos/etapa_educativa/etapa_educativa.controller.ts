@@ -36,6 +36,10 @@ export class EtapaEducativaController {
   async getAllAsignaturas(@Param("id", ParseIntPipe) id: number) {
     return await this.etapaEducativaService.findAsignaturasRegimenCarrera(id);
   }
+  @Get("dependientes/:id/:tipo")
+  async getAllDependientesTipo(@Param("id", ParseIntPipe) id: number, @Param("tipo", ParseIntPipe) tipo: number) {
+    return await this.etapaEducativaService.findDependientesTipo(id, tipo);
+  }
 
   @Get("carrerasBySie/:id")
   async getAllCarrerasBySie(@Param("id", ParseIntPipe) id: number) {

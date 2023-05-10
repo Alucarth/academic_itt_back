@@ -58,6 +58,11 @@ import { NivelAcademicoTipoModule } from './academico/catalogos/nivel_academico_
 import { CampoSaberTipoModule } from './academico/catalogos/campo_saber_tipo/campo_saber_tipo.module';
 import { IntervaloGestionTipoModule } from './academico/catalogos/intervalo_gestion_tipo/intervalo_gestion_tipo.module';
 import { TiempoEstudioTipoModule } from './academico/catalogos/tiempo_estudio_tipo/tiempo_estudio_tipo.module';
+import { AreaTipoModule } from './academico/catalogos/area_tipo/area_tipo.module';
+import { CarreraTipoModule } from './academico/catalogos/carrera_tipo/carrera_tipo.module';
+import { ResolucionTipoModule } from './academico/catalogos/resolucion_tipo/resolucion_tipo.module';
+import { CarreraAutorizadaModule } from './academico/modulos/carrera_autorizada/carrera_autorizada.module';
+import { CarreraAutorizadaResolucionModule } from './academico/modulos/carrera_autorizada_resolucion/carrera_autorizada_resolucion.module';
 
 
 @Module({
@@ -127,6 +132,16 @@ import { TiempoEstudioTipoModule } from './academico/catalogos/tiempo_estudio_ti
     IntervaloGestionTipoModule,
 
     TiempoEstudioTipoModule,
+
+    AreaTipoModule,
+
+    CarreraTipoModule,
+
+    ResolucionTipoModule,
+
+    CarreraAutorizadaModule,
+
+    CarreraAutorizadaResolucionModule,
 
   ],
   providers: [],

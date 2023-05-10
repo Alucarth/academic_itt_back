@@ -24,8 +24,6 @@ export class EtapaEducativa {
   @Column({ type: 'varchar', name: 'etapa_educativa' })
   etapaEducativa: string;
 
-
-
   @Column({ type: 'integer', name: 'ordinal' })
   ordinal: number;
 
@@ -70,10 +68,14 @@ export class EtapaEducativa {
 
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
-  
+
+
   @ManyToOne(() => EducacionTipo, (educacionTipo) => educacionTipo.etapasEducativas, { nullable: false, cascade: true })
   @JoinColumn({ name: 'educacion_tipo_id', referencedColumnName: 'id'})
   educacionTipo: EducacionTipo;
+
+  @Column({ type: 'integer', name: 'etapa_educativa_tipo_id' })
+  etapaEducativaTipoId: number;
 
   @ManyToOne(() => EtapaEducativaTipo, (etapaEducativaTipo) => etapaEducativaTipo.etapasEducativas, { nullable: false, cascade: true })
   @JoinColumn({ name: 'etapa_educativa_tipo_id', referencedColumnName: 'id'})
@@ -91,6 +93,9 @@ export class EtapaEducativa {
   @OneToMany(() => EtapaEducativa, (etapaEducativa) => etapaEducativa.etapaEducativaPadre)
   etapaEducativaList: EtapaEducativa[];
 
+  @Column({ type: 'integer', name: 'etapa_educativa_id' })
+  etapaEducativaId: number;
+  
   @ManyToOne(() => EtapaEducativa, (etapaEducativa) => etapaEducativa.etapaEducativaList)
   @JoinColumn({ name: 'etapa_educativa_id', referencedColumnName: 'id'})
   etapaEducativaPadre: EtapaEducativa;

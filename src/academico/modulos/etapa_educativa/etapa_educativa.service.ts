@@ -97,8 +97,8 @@ export class EtapaEducativaService {
   }
 
   async findAllDependientesRecursive(id: number) {
-        console.log("dependientes");
-    const lugar = await this.etapaEducativaRepository
+        //console.log("dependientes");
+    const etapa = await this.etapaEducativaRepository
       .createQueryBuilder("a")
       .innerJoinAndSelect("a.etapaEducativaTipo", "e1")
       .innerJoinAndSelect("a.etapaEducativaPadre", "p1")
@@ -127,8 +127,8 @@ export class EtapaEducativaService {
     ])
       .where("a.id = :id ", { id })
       .getRawOne();
-    console.log(lugar);
-    return lugar;
+    //console.log(etapa);
+    return etapa;
 }
   async findCarrerasBySie(id: number) {
     const values = [
@@ -181,7 +181,18 @@ export class EtapaEducativaService {
       ""
     );
   }
+  async findDependientesTipo(id:number, tipo_id:number) {
 
+    const etapas = await this.etapaEducativaRepository
+      .createQueryBuilder("a")
+      //.innerJoinAndSelect("a.etapaEducativaTipo", "b")
+      .where("a.etapaEducativaId = :id ", { id })
+      //.where("a.etapaEducativaTipoId = :tipo_id ", { tipo_id })
+      .orderBy("a.id", "ASC")
+      .getMany();
+      return etapas;
+  }
+  
   async findClasificadorByTipoId(nivelId: number, regimenId: number) {
     if (regimenId === 0) {
       const asignaturas = await this.etapaEducativaRepository.query(`SELECT
