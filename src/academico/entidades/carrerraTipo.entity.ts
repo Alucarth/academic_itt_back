@@ -39,13 +39,9 @@ export class CarreraTipo {
   })
   fechaModificacion: Date;
 
-<<<<<<< HEAD
+
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
-=======
-  /*@Column({ type: 'integer', name: 'usuario_id' })
-  usuarioId: number;*/
->>>>>>> ec8ea5b0c2aad791f271e2c95850f9c3848a7cd6
 
   @OneToMany(() => CarreraAutorizada, (carreraAutorizada) => carreraAutorizada.carreraTipo)
   carreras: CarreraAutorizada[];
@@ -55,11 +51,8 @@ export class CarreraTipo {
 
   @ManyToOne(() => CarreraGrupoTipo, (carreraGrupoTipo) => carreraGrupoTipo.carrerasTipos, { nullable: false, cascade: true })
   @JoinColumn({ name: 'carrera_grupo_tipo_id', referencedColumnName: 'id'})
-<<<<<<< HEAD
-  carreraGrupoTipo: CarreraGrupoTipo;
-=======
-  carreraGrupoTipo: CarreraGrupoTipo;  
 
->>>>>>> ec8ea5b0c2aad791f271e2c95850f9c3848a7cd6
+  carreraGrupoTipo: CarreraGrupoTipo;
+
   
 }

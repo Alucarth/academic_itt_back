@@ -62,6 +62,7 @@ export class CarreraAutorizada {
   areaTipo: AreaTipo;
   
 
+  
   @OneToMany(() => CarreraAutorizadaResolucion, (carreraAutorizadaResolucion) => carreraAutorizadaResolucion.carreraAutorizada)
   resoluciones: CarreraAutorizadaResolucion[];
 

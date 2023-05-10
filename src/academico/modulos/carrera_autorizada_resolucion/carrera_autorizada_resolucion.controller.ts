@@ -1,7 +1,8 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { CarreraAutorizadaResolucionService } from './carrera_autorizada_resolucion.service';
 
 @Controller('carrera-autorizada-resolucion')
-<<<<<<< HEAD
+
 export class CarreraAutorizadaResolucionController {
     constructor(private readonly carreraAutorizadaResolucionService: CarreraAutorizadaResolucionService) {}
     
@@ -35,6 +36,4 @@ export class CarreraAutorizadaResolucionController {
         }
       }*/
 }
-=======
-export class CarreraAutorizadaResolucionController {}
->>>>>>> ec8ea5b0c2aad791f271e2c95850f9c3848a7cd6
+

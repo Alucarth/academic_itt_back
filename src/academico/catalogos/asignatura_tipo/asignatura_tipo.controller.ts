@@ -21,11 +21,6 @@ import { CreateAsignaturaTipoDto } from "./dto/createAsignaturaTipo.dto";
 export class AsignaturaTipoController {
   constructor(private readonly asignaturaTipoService: AsignaturaTipoService) {}
 
-  @Get()
-  async getAllAsignaturas(){
-    return await this.asignaturaTipoService.getAsignaturasAll();
-  }
-
   @Post('')
   @ApiOperation({
     summary: "Crea un asignatura",
