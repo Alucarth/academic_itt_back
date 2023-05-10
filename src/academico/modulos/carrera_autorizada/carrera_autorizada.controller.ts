@@ -15,6 +15,7 @@ export class CarreraAutorizadaController {
 
   @Get("sucursal/:id")
   async getAllCarrerasBySie(@Param("id", ParseIntPipe) id: number) {
+    
     return await this.carreraAutorizadaService.getCarrerasBySie(id);
   }
 }

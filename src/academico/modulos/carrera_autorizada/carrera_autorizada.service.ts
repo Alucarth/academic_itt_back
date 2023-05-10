@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
+import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -8,15 +9,15 @@ export class CarreraAutorizadaService {
     constructor(
         @InjectRepository(CarreraAutorizada)
         private carreraAutorizadaRepositorio: Repository<CarreraAutorizada>,
-      
-        //private _serviceResp: RespuestaSigedService
+        private _serviceResp: RespuestaSigedService
+        
       ) {}
       async getById(id: number) {
         const carrera = await this.carreraAutorizadaRepositorio.findOneBy({ id: id });
         return carrera;
       }
       async getCarrerasBySie(id: number) {
-        console.log("aaaaa"+id);
+        
         const carreras = await this.carreraAutorizadaRepositorio
       .createQueryBuilder("ca")
       .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
@@ -36,11 +37,15 @@ export class CarreraAutorizadaService {
         'r.resuelve as resuelve',
         'ct.id as carrera_id',
         'na.nivel_academico as nivel_academico',
-        'ig.intervalo_gestion as intervalo_gestion',       
+        'ig.intervalo_gestion as regimen_tipo',       
     ])
-      .where("i.id = :id ", { id })
+      .where("s.id = :id ", { id })
       .getRawMany();
+      return this._serviceResp.respuestaHttp201(
+        carreras,
+        'Registro Encontrado !!',
+        '',
+        );
     
-    return carreras;
 }
 }

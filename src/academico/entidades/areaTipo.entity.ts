@@ -18,7 +18,7 @@ export class AreaTipo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'asignacion' })
+  @Column({ type: 'varchar', name: 'area' })
   area: string;
   
   @Exclude()
