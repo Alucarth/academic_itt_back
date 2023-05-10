@@ -9,18 +9,18 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { CarreraAutorizada } from './carreraAutorizada.entity';
-import { CarreraGrupoTipo } from './carreraGrupoTipo.entity';
+import { CarreraTipo } from './carrerraTipo.entity';
 import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
 import { OfertaAcademica } from './ofertaAcademica.entity';
 import { Tarea } from './tarea.entity';
 
-@Entity({ name: 'carrera_tipo', schema: 'public' })
-export class CarreraTipo {
+@Entity({ name: 'carrera_grupo_tipo', schema: 'public' })
+export class CarreraGrupoTipo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'carrera' })
-  carrera: string;
+  @Column({ type: 'varchar', name: 'grupo' })
+  grupo: string;
   
  
   @Exclude()
@@ -43,15 +43,7 @@ export class CarreraTipo {
   usuarioId: number;
 
 
-  @OneToMany(() => CarreraAutorizada, (carreraAutorizada) => carreraAutorizada.carreraTipo)
-  carreras: CarreraAutorizada[];
-
-  @Column({ name: 'carrera_grupo_tipo_id', nullable:false })
-  carreraGrupoTipoId: number;
-
-  @ManyToOne(() => CarreraGrupoTipo, (carreraGrupoTipo) => carreraGrupoTipo.carrerasTipos, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'carrera_grupo_tipo_id', referencedColumnName: 'id'})
-  carreraGrupoTipo: CarreraGrupoTipo;
-  
+  @OneToMany(() => CarreraTipo, (carreraTipo) => carreraTipo.carreraGrupoTipo)
+  carrerasTipos: CarreraTipo[];
   
 }
