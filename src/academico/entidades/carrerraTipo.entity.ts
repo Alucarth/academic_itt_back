@@ -39,19 +39,18 @@ export class CarreraTipo {
   })
   fechaModificacion: Date;
 
-
-  @Column({ type: 'integer', name: 'usuario_id' })
-  usuarioId: number;
+  //no existe esta columna
+  /*@Column({ type: 'integer', name: 'usuario_id' })
+  usuarioId: number;*/
 
   @OneToMany(() => CarreraAutorizada, (carreraAutorizada) => carreraAutorizada.carreraTipo)
   carreras: CarreraAutorizada[];
 
-  @Column({ name: 'carrera_grupo_tipo_id', nullable:false })
-  carreraGrupoTipoId: number;
+  /*@Column({ name: 'carrera_grupo_tipo_id', nullable:false })
+  carreraGrupoTipoId: number;*/
 
   @ManyToOne(() => CarreraGrupoTipo, (carreraGrupoTipo) => carreraGrupoTipo.carrerasTipos, { nullable: false, cascade: true })
   @JoinColumn({ name: 'carrera_grupo_tipo_id', referencedColumnName: 'id'})
-
   carreraGrupoTipo: CarreraGrupoTipo;
 
   

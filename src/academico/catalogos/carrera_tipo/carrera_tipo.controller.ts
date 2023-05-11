@@ -40,4 +40,11 @@ export class CarreraTipoController {
   async deleteCarreraTipo(@Param("id") id: string) {
     return await this.carreraTipoService.deleteRecord(parseInt(id));
   }
+
+  //--- CURSOS CORTOS, lo mismo pero
+
+  @Get('/cursos-cortos')
+  async getAllCursosCortos() {
+    return await this.carreraTipoService.getAllCursosCortos();
+  }
 }

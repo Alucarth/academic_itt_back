@@ -2,19 +2,68 @@ import { HttpException, HttpStatus, Injectable, NotFoundException } from "@nestj
 import { InjectRepository } from "@nestjs/typeorm";
 import { RespuestaSigedService } from "../../../shared/respuesta.service";
 import { Repository } from "typeorm";
+import { DataSource, EntityManager } from "typeorm";
 
 import { CarreraTipo } from "src/academico/entidades/carrerraTipo.entity";
+import { CarreraGrupoTipo } from "src/academico/entidades/carreraGrupoTipo.entity";
 
 @Injectable()
 export class CarreraTipoService {
   constructor(
     private _serviceResp: RespuestaSigedService,
+    private dataSource: DataSource,
     @InjectRepository(CarreraTipo)
-    private carreraTipoRepository: Repository<CarreraTipo>
+    private carreraTipoRepository: Repository<CarreraTipo>,
+    @InjectRepository(CarreraGrupoTipo)
+    private carreraGrupoRepository: Repository<CarreraGrupoTipo>
   ) {}
 
   async getAll() {
-    const result = await this.carreraTipoRepository.find();
+    //const result = await this.carreraTipoRepository.find();
+
+    const result = await this.dataSource
+      .getRepository(CarreraTipo)
+      .createQueryBuilder("a")
+      .innerJoinAndSelect("a.carreraGrupoTipo", "d")
+      .select([
+        "a.id",
+        "a.carrera",
+        "a.fechaRegistro",
+        "a.fechaModificacion",
+        "d.id",
+        "d.grupo",
+      ])
+      .getMany();
+
+    console.log(result);
+
+    return this._serviceResp.respuestaHttp200(
+      result,
+      "",
+      "Registro Encontrado !!"
+    );
+  }
+
+  async getAllCursosCortos() {
+    //const result = await this.carreraTipoRepository.find();
+    const solocursoscortos = 2
+    const result = await this.dataSource
+      .getRepository(CarreraTipo)
+      .createQueryBuilder("a")
+      .innerJoinAndSelect("a.carreraGrupoTipo", "d")
+      .select([
+          "a.id",
+          "a.carrera",
+          "a.fechaRegistro",
+          "a.fechaModificacion",
+          "d.id",
+          "d.grupo",
+        ])
+      .where('d.id in (2)')
+      .getMany();
+
+    console.log(result);
+
     return this._serviceResp.respuestaHttp200(
       result,
       "",
@@ -46,7 +95,18 @@ export class CarreraTipoService {
 
   async insertRecord(body) {
     //TODO:validar si existe carreraGrupo
-    const carreraGrupo = 1;
+    const carreraGrupo = await this.carreraGrupoRepository.find({
+      where: {
+        id: body.carreraGrupoTipoId,
+      },
+    });
+    if (carreraGrupo.length == 0) {
+      return this._serviceResp.respuestaHttp404(
+        body.carreraGrupoTipoId,
+        "CarreraGrupo No Encontrado !!",
+        ""
+      );
+    }
 
     try {
       const newRecord = await this.carreraTipoRepository
@@ -56,7 +116,7 @@ export class CarreraTipoService {
         .values([
           {
             carrera: body.carrera,
-            carreraGrupoTipoId: body.carreraGrupoTipoId,
+            carreraGrupoTipo: carreraGrupo[0],
           },
         ])
         .returning("id")
