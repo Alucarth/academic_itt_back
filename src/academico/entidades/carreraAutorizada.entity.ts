@@ -18,8 +18,6 @@ import { MaestroInscripcion } from './maestroInscripcion.entity';
 export class CarreraAutorizada {
   @PrimaryGeneratedColumn()
   id: number;
-
-  
   
   @Exclude()
   @UpdateDateColumn({
@@ -36,6 +34,9 @@ export class CarreraAutorizada {
     default: () => 'CURRENT_TIMESTAMP',
   })
   fechaModificacion: Date;
+
+  @Column({ type: 'boolean', name: 'activo' })
+  activo: boolean;
 
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
@@ -62,7 +63,6 @@ export class CarreraAutorizada {
   areaTipo: AreaTipo;
   
 
-  
   @OneToMany(() => CarreraAutorizadaResolucion, (carreraAutorizadaResolucion) => carreraAutorizadaResolucion.carreraAutorizada)
   resoluciones: CarreraAutorizadaResolucion[];
 

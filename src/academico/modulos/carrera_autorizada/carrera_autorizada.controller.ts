@@ -9,5 +9,9 @@ export class CarreraAutorizadaController {
     async getCarrerasBySucursalId(@Param("id", ParseIntPipe) id: number) {
       return await this.carreraAutorizadaService.getCarrerasBySucursalId(id);
     }
+    @Get("ie/:id")
+    async getCarrerasByIeId(@Param("id", ParseIntPipe) id: number) {
+      return await this.carreraAutorizadaService.getCarrerasByIeId(id);
+    }
 
 }
