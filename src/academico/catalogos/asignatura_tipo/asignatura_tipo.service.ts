@@ -83,6 +83,55 @@ export class AsignaturaTipoService {
     }
   }
 
+  async update(dto: CreateAsignaturaTipoDto) {
+    //TODO: en la tabla actual el campo asignatura_id todo esta con CERO
+    //existe el area tipo = 0 ?
+    const asignaturaTipoCero = await this.asignaturaTipoRepository.findOne({
+      where: { id: 0 },
+    });
+    console.log("persona:", asignaturaTipoCero);
+
+    if (!asignaturaTipoCero) {
+      return this._serviceResp.respuestaHttp404(
+        0,
+        "AsignaturaTipoId no encontrada!",
+        ""
+      );
+    }
+    
+    try {
+      
+      const result = await this.asignaturaTipoRepository
+        .createQueryBuilder()
+        .update(AsignaturaTipo)
+        .set({
+          asignatura: dto.asignatura,
+          abreviacion: dto.abreviacion,
+          comentario: dto.comentario,          
+        })
+        .where("id = :id", { id: dto.id })
+        .execute();
+
+      return this._serviceResp.respuestaHttp201(
+        result,
+        "Registro Actualizado !!",
+        ""
+      );
+    } catch (error) {
+      console.log("Error insertar asignaturatipo: ", error);
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: `Error insertar asignaturatipo: ${error.message}`,
+        },
+        HttpStatus.ACCEPTED,
+        {
+          cause: error,
+        }
+      );
+    }
+  }
+
   async deleteRecord(id: number) {
     const result = await this.asignaturaTipoRepository
       .createQueryBuilder()

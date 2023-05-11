@@ -7,9 +7,14 @@ import {
   Matches,
   MaxLength,
   MinLength,
+  isNumber,
 } from "class-validator";
 
 export class CreateAsignaturaTipoDto {
+  @IsOptional()
+  @IsNumber()
+  id: number;
+
   @IsNotEmpty({
     message: "asignatura is required",
   })
