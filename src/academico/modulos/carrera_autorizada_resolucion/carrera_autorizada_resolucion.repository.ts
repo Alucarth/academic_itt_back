@@ -5,6 +5,7 @@ import { EtapaEducativaAsignatura } from 'src/academico/entidades/etapaEducativa
 import { InstitucionEducativaCurso } from 'src/academico/entidades/institucionEducativaCurso.entity';
 import { OfertaAcademica } from 'src/academico/entidades/ofertaAcademica.entity';
 import { DataSource, EntityManager } from 'typeorm'
+import { CreateCarreraAutorizadaResolucionDto } from './dto/createCarreraAutorizadaResolucion.dto';
 
 @Injectable()
 export class CarreraAutorizadaResolucionRepository {
@@ -50,6 +51,25 @@ export class CarreraAutorizadaResolucionRepository {
       })
     )
   }*/
+
+  async crearCarreraResolucion(
+    usuario,
+    id,
+    dto: CreateCarreraAutorizadaResolucionDto, 
+    transaction: EntityManager,
+    
+    ) {
+    const ca = new CarreraAutorizada();
+    ca.institucionEducativaSucursalId = dto.sucursal_id;
+    ca.carreraTipoId = dto.carrera_tipo_id;
+    ca.areaTipoId = dto.area_tipo_id;
+    
+    //curso.usuarioId = 1;// dto.usuarioId;
+
+    const result = await transaction.getRepository(InstitucionEducativaCurso).save(ca);
+   
+    return result;
+}
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
     }

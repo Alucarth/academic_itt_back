@@ -1,5 +1,6 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
 import { CarreraAutorizadaResolucionService } from './carrera_autorizada_resolucion.service';
+import { CreateCarreraAutorizadaResolucionDto } from './dto/createCarreraAutorizadaResolucion.dto';
 
 @Controller('carrera-autorizada-resolucion')
 
@@ -12,6 +13,16 @@ export class CarreraAutorizadaResolucionController {
     ) {
       return await this.carreraAutorizadaResolucionService.getOneById(id);
     }
+
+     //create carrera_autorizada_resolucion
+   // @UseGuards(JwtAuthGuard, CasbinGuard)
+    @Post()
+    async crear( @Body() dto: CreateCarreraAutorizadaResolucionDto) {
+       
+       // return await this.carreraAutorizadaResolucionService.crear(dto)
+       
+    }
+
 /*
     async actualizarRoles(id, roles, usuarioAuditoria) {
         const usuarioRoles =
