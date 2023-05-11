@@ -46,8 +46,8 @@ export class CarreraTipo {
   @OneToMany(() => CarreraAutorizada, (carreraAutorizada) => carreraAutorizada.carreraTipo)
   carreras: CarreraAutorizada[];
 
-  @Column({ name: 'carrera_grupo_tipo_id', nullable:false })
-  carreraGrupoTipoId: number;
+  /*@Column({ name: 'carrera_grupo_tipo_id', nullable:false })
+  carreraGrupoTipoId: number;*/
 
   @ManyToOne(() => CarreraGrupoTipo, (carreraGrupoTipo) => carreraGrupoTipo.carrerasTipos, { nullable: false, cascade: true })
   @JoinColumn({ name: 'carrera_grupo_tipo_id', referencedColumnName: 'id'})
