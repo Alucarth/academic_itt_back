@@ -24,17 +24,44 @@ export class CarreraTipoService {
     const result = await this.dataSource
       .getRepository(CarreraTipo)
       .createQueryBuilder("a")
-      .innerJoinAndSelect("a.carreraGrupoTipo", "d") 
+      .innerJoinAndSelect("a.carreraGrupoTipo", "d")
       .select([
-        'a.id',
-        'a.carrera',
-        'a.fechaRegistro',
-        'a.fechaModificacion',
-        'd.id',
-        'd.grupo',
-      ])     
+        "a.id",
+        "a.carrera",
+        "a.fechaRegistro",
+        "a.fechaModificacion",
+        "d.id",
+        "d.grupo",
+      ])
       .getMany();
-   
+
+    console.log(result);
+
+    return this._serviceResp.respuestaHttp200(
+      result,
+      "",
+      "Registro Encontrado !!"
+    );
+  }
+
+  async getAllCursosCortos() {
+    //const result = await this.carreraTipoRepository.find();
+    const solocursoscortos = 2
+    const result = await this.dataSource
+      .getRepository(CarreraTipo)
+      .createQueryBuilder("a")
+      .innerJoinAndSelect("a.carreraGrupoTipo", "d")
+      .select([
+          "a.id",
+          "a.carrera",
+          "a.fechaRegistro",
+          "a.fechaModificacion",
+          "d.id",
+          "d.grupo",
+        ])
+      .where('d.id in (2)')
+      .getMany();
+
     console.log(result);
 
     return this._serviceResp.respuestaHttp200(
@@ -67,8 +94,7 @@ export class CarreraTipoService {
   }
 
   async insertRecord(body) {
-    
-    //TODO:validar si existe carreraGrupo    
+    //TODO:validar si existe carreraGrupo
     const carreraGrupo = await this.carreraGrupoRepository.find({
       where: {
         id: body.carreraGrupoTipoId,
