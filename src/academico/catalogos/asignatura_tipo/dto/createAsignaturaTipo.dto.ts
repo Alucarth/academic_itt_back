@@ -15,8 +15,9 @@ export class CreateAsignaturaTipoDto {
   })
   asignatura: string;
 
+  @IsString()
   abreviacion: string;
 
-  comentario: string;  
-  
+  @IsString()
+  comentario: string;
 }
