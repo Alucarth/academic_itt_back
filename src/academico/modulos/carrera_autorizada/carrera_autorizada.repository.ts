@@ -65,10 +65,40 @@ export class CarreraAutorizadaRepository {
             'r.carga_horaria as carga_horaria',
             'r.resuelve as resuelve',
             'na.nivel_academico as nivel_academico',
-            'ig.intervalo_gestion as intervalo_gestion',
+            'ig.intervalo_gestion as regimen_estudio',
+            'rt.resolucion_tipo as tipo_tramite',
         ])
           .where("s.institucionEducativaId = :id ", { id })
           .getRawMany();
+    }
+    async geCarreraById(id){
+        return  await this.dataSource.getRepository(CarreraAutorizada)
+        .createQueryBuilder("ca")
+        .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
+        .innerJoinAndSelect("s.institucionEducativa", "i")
+        .innerJoinAndSelect("ca.carreraTipo", "ct")
+        .innerJoinAndSelect("ca.areaTipo", "at")
+        .innerJoinAndSelect("ca.resoluciones", "r")
+        .innerJoinAndSelect("r.resolucionTipo", "rt")
+        .innerJoinAndSelect("r.nivelAcademicoTipo", "na")
+        .innerJoinAndSelect("r.intervaloGestionTipo", "ig")
+        .select([
+            'i.id as ie_id',
+            'i.institucion_educativa as institucion_educativa',
+            'ca.id as carrera_autorizada_id',
+            'ct.carrera as carrera',
+            'at.area as area',
+            'r.numero_resolucion as numero_resolucion',
+            'r.fecha_resolucion as fecha_resolucion',
+            'r.tiempo_estudio as tiempo_estudio',
+            'r.carga_horaria as carga_horaria',
+            'r.resuelve as resuelve',
+            'na.nivel_academico as nivel_academico',
+            'ig.intervalo_gestion as regimen_estudio',
+            'rt.resolucion_tipo as tipo_tramite',
+        ])
+          .where("ca.id = :id ", { id })
+          .getRawOne();
     }
 
     async createAutorizada(
