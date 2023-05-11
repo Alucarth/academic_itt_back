@@ -65,8 +65,8 @@ export class CarreraAutorizadaRepository {
             'r.carga_horaria as carga_horaria',
             'r.resuelve as resuelve',
             'na.nivel_academico as nivel_academico',
-            'ig.intervalo_gestion as intervalo_gestion',
-            'rt.resolucion_tipo as resolucion_tipo',
+            'ig.intervalo_gestion as regimen_estudio',
+            'rt.resolucion_tipo as tipo_tramite',
         ])
           .where("s.institucionEducativaId = :id ", { id })
           .getRawMany();
@@ -94,7 +94,8 @@ export class CarreraAutorizadaRepository {
             'r.carga_horaria as carga_horaria',
             'r.resuelve as resuelve',
             'na.nivel_academico as nivel_academico',
-            'ig.intervalo_gestion as intervalo_gestion',
+            'ig.intervalo_gestion as regimen_estudio',
+            'rt.resolucion_tipo as tipo_tramite',
         ])
           .where("ca.id = :id ", { id })
           .getRawOne();
