@@ -59,14 +59,23 @@ export class CarreraAutorizadaResolucionRepository {
     transaction: EntityManager,
     
     ) {
-    const ca = new CarreraAutorizada();
-    ca.institucionEducativaSucursalId = dto.sucursal_id;
-    ca.carreraTipoId = dto.carrera_tipo_id;
-    ca.areaTipoId = dto.area_tipo_id;
+    const car = new CarreraAutorizadaResolucion();
+    car.carreraAutorizadaId = id;
+    car.numeroResolucion = dto.numero_resolucion;
+    car.fechaResolucion = dto.fecha_resolucion;
+    car.resolucionTipoId = dto.resolucion_tipo_id;
+    car.resolucionTipoId = dto.resolucion_tipo_id;
+    car.path = '';
+    car.resuelve = dto.resuelve;
+    car.tiempoEstudio = dto.tiempo_estudio;
+    car.cargaHoraria = dto.carga_horaria;
+    car.nivelAcademicoTipoId = dto.nivel_academico_tipo_id;
+    car.intervaloGestionTipoId = dto.intervalo_gestion_tipo_id;
+    car.descripcion =  dto.descripcion;
     
     //curso.usuarioId = 1;// dto.usuarioId;
 
-    const result = await transaction.getRepository(InstitucionEducativaCurso).save(ca);
+    const result = await transaction.getRepository(CarreraAutorizadaResolucion).save(car);
    
     return result;
 }

@@ -18,7 +18,14 @@ export class CarreraTipoController {
 
   @Get()
   async getAll() {
+  //  console.log("lista carreras");
     return await this.carreraTipoService.getAll();
+  }
+  
+  @Get('carreras')
+  async getAllCarreras() {
+    console.log("lista carreras");
+    return await this.carreraTipoService.getAllCarreras();
   }
 
   @Get("getById/:id")
