@@ -23,6 +23,9 @@ export class AsignaturaTipoController {
   constructor(private readonly asignaturaTipoService: AsignaturaTipoService) {}
 
   @Get()
+  @ApiOperation({
+    summary: "Devuelve todas las Asignaturas",
+  })
   async getAll() {
     return await this.asignaturaTipoService.getAll();
   }
@@ -33,5 +36,13 @@ export class AsignaturaTipoController {
   })
   create(@Body() createAsignaturaTipoDto: CreateAsignaturaTipoDto) {
     return this.asignaturaTipoService.create(createAsignaturaTipoDto);
+  }
+
+  @ApiOperation({
+    summary: "Elimina un asignatura",
+  })
+  @Delete("/:id")
+  async deleteCarreraTipo(@Param("id") id: string) {
+    return await this.asignaturaTipoService.deleteRecord(parseInt(id));
   }
 }

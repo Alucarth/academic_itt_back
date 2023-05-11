@@ -17,7 +17,7 @@ export class AsignaturaTipoService {
   async getAll() {
     const result = await this.asignaturaTipoRepository.find({
       where: {
-        id: MoreThanOrEqual(5)
+        id: MoreThanOrEqual(5),
       },
       order: {
         asignatura: "ASC",
@@ -81,5 +81,24 @@ export class AsignaturaTipoService {
         }
       );
     }
+  }
+
+  async deleteRecord(id: number) {
+    const result = await this.asignaturaTipoRepository
+      .createQueryBuilder()
+      .delete()
+      .from(AsignaturaTipo)
+      .where("id = :id", { id })
+      .execute();
+
+    if (result.affected === 0) {
+      throw new NotFoundException("registro no encontrado !");
+    }
+
+    return this._serviceResp.respuestaHttp203(
+      result,
+      "Registro Eliminado !!",
+      ""
+    );
   }
 }
