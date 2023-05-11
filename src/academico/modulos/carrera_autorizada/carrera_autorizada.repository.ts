@@ -84,18 +84,24 @@ export class CarreraAutorizadaRepository {
         .innerJoinAndSelect("r.intervaloGestionTipo", "ig")
         .select([
             'i.id as ie_id',
+            's.id as sucursal_id',
             'i.institucion_educativa as institucion_educativa',
             'ca.id as carrera_autorizada_id',
             'ct.carrera as carrera',
+            'ct.id as carrera_id',
             'at.area as area',
+            'at.id as area_id',
             'r.numero_resolucion as numero_resolucion',
             'r.fecha_resolucion as fecha_resolucion',
             'r.tiempo_estudio as tiempo_estudio',
             'r.carga_horaria as carga_horaria',
             'r.resuelve as resuelve',
             'na.nivel_academico as nivel_academico',
+            'na.id as nivel_academico_tipo_id',
             'ig.intervalo_gestion as regimen_estudio',
+            'ig.id as intervalo_gestion_tipo_id',
             'rt.resolucion_tipo as tipo_tramite',
+            'rt.id as resolucion_tipo_id',
         ])
           .where("ca.id = :id ", { id })
           .getRawOne();
