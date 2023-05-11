@@ -26,5 +26,13 @@ export class CarreraAutorizadaService {
             ""
           );
       }
+      async getCarreraById(id: number) {
+        const carreras = await this.carreraAutorizadaRepositorio.geCarreraById(id);
+        return this._serviceResp.respuestaHttp201(
+            carreras,
+            "Datos Encontrados !!",
+            ""
+          );
+      }
       
 }

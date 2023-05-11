@@ -110,6 +110,7 @@ export class InstitucionEducativaRepository {
         .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
         .select([
             'a.id as ie_id',
+            'j.id as sucursal_id',
             'a.institucion_educativa as institucion_educativa',
             'e.numeroResolucion as numero_resolucion',
             'e.fechaResolucion as fecha_resolucion',
