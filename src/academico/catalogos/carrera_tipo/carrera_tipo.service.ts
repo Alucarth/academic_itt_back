@@ -169,13 +169,27 @@ export class CarreraTipoService {
   }
 
   async updateRecord(body) {
+
+    const carreraGrupo = await this.carreraGrupoRepository.find({
+      where: {
+        id: body.carreraGrupoTipoId,
+      },
+    });
+    if (carreraGrupo.length == 0) {
+      return this._serviceResp.respuestaHttp404(
+        body.carreraGrupoTipoId,
+        "CarreraGrupo No Encontrado !!",
+        ""
+      );
+    }
+
     try {
       const result = await this.carreraTipoRepository
         .createQueryBuilder()
         .update(CarreraTipo)
         .set({
           carrera: body.carrera,
-          //carreraGrupoTipoId: body.carreraGrupoTipoId,
+          carreraGrupoTipo: carreraGrupo[0],
         })
         .where("id = :id", { id: body.id })
         .execute();
