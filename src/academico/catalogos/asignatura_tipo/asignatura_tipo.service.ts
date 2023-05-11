@@ -112,7 +112,7 @@ export class AsignaturaTipoService {
         .where("id = :id", { id: dto.id })
         .execute();
 
-      return this._serviceResp.respuestaHttp201(
+      return this._serviceResp.respuestaHttp202(
         result,
         "Registro Actualizado !!",
         ""
