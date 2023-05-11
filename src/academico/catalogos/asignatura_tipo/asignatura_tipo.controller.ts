@@ -38,6 +38,14 @@ export class AsignaturaTipoController {
     return this.asignaturaTipoService.create(createAsignaturaTipoDto);
   }
 
+  @Put("")
+  @ApiOperation({
+    summary: "Actualiza un asignatura",
+  })
+  update(@Body() createAsignaturaTipoDto: CreateAsignaturaTipoDto) {
+    return this.asignaturaTipoService.update(createAsignaturaTipoDto);
+  }
+
   @ApiOperation({
     summary: "Elimina un asignatura",
   })
