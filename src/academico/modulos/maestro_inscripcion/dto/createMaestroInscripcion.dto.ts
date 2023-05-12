@@ -9,9 +9,11 @@ export class CreateMaestroInscripcionDto {
   @IsNumber()
   institucionEducativaSucursalId: number;
 
-  @IsNotEmpty({ message: "la UE Sucursal es requerida" })
+  
+  @IsNotEmpty({ message: "codigo ITT es requerido" })
   @IsNumber()
   institucionEducativaId: number;
+  
 
   @IsNotEmpty({ message: "la formacion es requerida" })
   @IsNumber()

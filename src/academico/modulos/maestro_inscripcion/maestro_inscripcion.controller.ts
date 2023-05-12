@@ -77,9 +77,9 @@ export class MaestroInscripcionController {
     return this.usersService.getAllAdministrativosByUeGestion(ueId);
   }
 
-  @Post("/")
+  @Post("/")  
   async addMaestroInscripciom(@Body() body: CreateMaestroInscripcionDto) {
-    console.log("controller new", body);
+    console.log("POST addMaestroInscripciom", body);
     
     return await this.usersService.createUpdateMaestroInscripcion(body);
   }
