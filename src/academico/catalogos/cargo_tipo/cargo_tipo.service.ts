@@ -17,7 +17,7 @@ export class CargoTipoService {
             //var result: EspecialidadTipo[] = [];
             const result =  await this.cargoTipoRepository.find()
 
-            return this._serviceResp.respuestaHttp201(
+            return this._serviceResp.respuestaHttp200(
             result,
             'Registro Encontrado !!',
             '',

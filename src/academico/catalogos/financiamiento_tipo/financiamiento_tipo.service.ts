@@ -18,7 +18,7 @@ export class FinanciamientoTipoService {
             //var result: EspecialidadTipo[] = [];
             const result =  await this.financiamientoTipoRepository.find()
 
-            return this._serviceResp.respuestaHttp201(
+            return this._serviceResp.respuestaHttp200(
             result,
             'Registro Encontrado !!',
             '',
