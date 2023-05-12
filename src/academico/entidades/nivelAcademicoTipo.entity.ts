@@ -11,6 +11,7 @@ import {
 import { CarreraAutorizadaResolucion } from './carreraAutorizadaResolucion.entity';
 import { EtapaEducativaAsignaturaNivelAcademico } from './etapaEducativaAsignaturaNivelAcademico.entity';
 import { InstitucionEducativaAcreditacionEspecialidadNivelAcademico } from './institucionEducativaAcreditacionEspecialidadNivelAcademico.entity';
+import { PlanEstudioCarrera } from './planEstudioCarrera.entity';
 
 
 @Entity({ name: 'nivel_academico_tipo', schema: 'public' })
@@ -55,5 +56,9 @@ export class NivelAcademicoTipo {
 
   @OneToMany(() => CarreraAutorizadaResolucion, (carreraAutorizadaResolucion) => carreraAutorizadaResolucion.carreraAutorizada)
   resoluciones: CarreraAutorizadaResolucion[];
+
+  @OneToMany(() => PlanEstudioCarrera, (planEstudioCarrera) => planEstudioCarrera.nivelAcademicoTipo)
+  planesCarreras: PlanEstudioCarrera[];
+  
   
 }

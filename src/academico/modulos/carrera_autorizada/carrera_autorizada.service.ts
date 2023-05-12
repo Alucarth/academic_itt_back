@@ -27,12 +27,11 @@ export class CarreraAutorizadaService {
           );
       }
       async getCarreraById(id: number) {
-        const carreras = await this.carreraAutorizadaRepositorio.geCarreraById(id);
+        const carrera = await this.carreraAutorizadaRepositorio.getCarreraAutorizadaById(id);
         return this._serviceResp.respuestaHttp201(
-            carreras,
+            carrera,
             "Datos Encontrados !!",
             ""
           );
       }
-      
 }

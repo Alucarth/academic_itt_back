@@ -13,6 +13,7 @@ import { InstitucionEducativaAcreditacionEspecialidadNivelIntervalo } from './in
 import { PeriodoTipo } from './periodoTipo.entity';
 
 import { PlanEstudio } from './planEstudio.entity';
+import { PlanEstudioCarrera } from './planEstudioCarrera.entity';
 
 @Entity({ name: 'intervalo_gestion_tipo', schema: 'public' })
 export class IntervaloGestionTipo {
@@ -55,5 +56,9 @@ export class IntervaloGestionTipo {
 
   @OneToMany(() => CarreraAutorizadaResolucion, (carreraAutorizadaResolucion) => carreraAutorizadaResolucion.carreraAutorizada)
   resoluciones: CarreraAutorizadaResolucion[];
+  
+  @OneToMany(() => PlanEstudioCarrera, (planEstudioCarrera) => planEstudioCarrera.intervaloGestionTipo)
+  planesCarreras: PlanEstudioCarrera[];
+  
   
 }

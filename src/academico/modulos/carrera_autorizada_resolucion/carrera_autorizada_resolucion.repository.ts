@@ -21,37 +21,6 @@ export class CarreraAutorizadaResolucionRepository {
         
     }
    
-    /*
-  async crear(
-    dto: CrearUsuarioDto,
-    usuarioAuditoria: string,
-    transaction: EntityManager
-  ) {
-    const carreraAutorizada = await transaction.getRepository(CarreraAutorizada).save(
-      new CarreraAutorizada({
-        institucionEducativaSucursalId: dto.sucursalId,
-        carreraTipoId: dto.carreraTipoId,
-        areaTipoId: dto.areaTipoId,
-        usuarioId: usuarioAuditoria,
-      })
-    )
-
-    const usuarioResult = await transaction.getRepository(Usuario).save(
-      new Usuario({
-        idPersona: personaResult.id,
-        usuarioRol: [],
-        usuario: usuarioDto.usuario || usuarioDto?.persona?.nroDocumento, // TODO revisar usuario
-        estado: usuarioDto?.estado ?? Status.CREATE,
-        correoElectronico: usuarioDto?.correoElectronico,
-        contrasena:
-          usuarioDto?.contrasena ??
-          (await TextService.encrypt(TextService.generateUuid())),
-        ciudadaniaDigital: usuarioDto?.ciudadaniaDigital ?? false,
-        usuarioCreacion: usuarioAuditoria,
-      })
-    )
-  }*/
-
   async crearCarreraResolucion(
     usuario,
     id,

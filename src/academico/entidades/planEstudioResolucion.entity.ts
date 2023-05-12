@@ -11,9 +11,11 @@ import {
 import { EducacionTipo } from './educacionTipo.entity';
 import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
 import { IntervaloGestionTipo } from './intervaloGestionTipo.entity';
+import { PlanEstudioCarrera } from './planEstudioCarrera.entity';
 
 @Entity({ name: 'plan_estudio_resolucion', schema: 'public' })
 export class PlanEstudioResolucion {
+
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -49,5 +51,7 @@ export class PlanEstudioResolucion {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-  
+  @OneToMany(() => PlanEstudioCarrera, (planEstudioCarrera) => planEstudioCarrera.planEstudioResolucion)
+  planesCarreras: PlanEstudioCarrera[];
+
 }

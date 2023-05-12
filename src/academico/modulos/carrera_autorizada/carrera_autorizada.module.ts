@@ -3,8 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
 import { DatabaseModule } from 'src/database/database.module';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
-import { CarreraAutorizadaRepository } from './carrera_autorizada.repository';
 import { CarreraAutorizadaController } from './carrera_autorizada.controller';
+import { CarreraAutorizadaRepository } from './carrera_autorizada.repository';
 import { CarreraAutorizadaService } from './carrera_autorizada.service';
 
 @Module({
@@ -13,7 +13,8 @@ import { CarreraAutorizadaService } from './carrera_autorizada.service';
   ],
   controllers: [CarreraAutorizadaController],
   providers: [CarreraAutorizadaService,
-  CarreraAutorizadaRepository,
-RespuestaSigedService]
+    CarreraAutorizadaRepository,
+    RespuestaSigedService
+  ]
 })
 export class CarreraAutorizadaModule {}

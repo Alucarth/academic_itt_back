@@ -2,27 +2,25 @@ import { Exclude } from 'class-transformer';
 import {
   Column,
   Entity,
-  JoinColumn,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
-import { OfertaAcademica } from './ofertaAcademica.entity';
 import { PlanEstudioAsignatura } from './planEstudioAsignatura.entity';
-import { Tarea } from './tarea.entity';
 
-@Entity({ name: 'asignacion_tipo', schema: 'public' })
-export class AsignacionTipo {
+@Entity({ name: 'regimen_grado_tipo', schema: 'public' })
+export class RegimenGradoTipo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'asignacion' })
-  asignacion: string;
+  @Column({ type: 'varchar', name: 'regimen_grado' })
+  regimenGrado: string;
   
-  @Column({ type: 'varchar', name: 'comentario' })
-  comentario: string;
+  @Column({ type: 'varchar', name: 'sigla' })
+  sigla: string;
+
+  @Column({ type: 'boolean', name: 'activo' })
+  activo: boolean;
   
   @Exclude()
   @UpdateDateColumn({
@@ -43,8 +41,6 @@ export class AsignacionTipo {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-  @OneToMany(() => Tarea, (tarea) => tarea.asignacionTipo)
-  tareas: Tarea[];
-
-
+  @OneToMany(() => PlanEstudioAsignatura, (planEstudioAsignatura) => planEstudioAsignatura.regimenGradoTipo)
+  planesAsignaturas: PlanEstudioAsignatura[];
 }

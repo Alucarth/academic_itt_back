@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
 import { OfertaAcademica } from './ofertaAcademica.entity';
+import { PlanEstudioAsignatura } from './planEstudioAsignatura.entity';
 
 @Entity({ name: 'asignatura_tipo', schema: 'public' })
 export class AsignaturaTipo {
@@ -57,5 +58,7 @@ export class AsignaturaTipo {
   @ManyToOne(() => AsignaturaTipo, (asignaturaTipo) => asignaturaTipo.asignaturaList)
   @JoinColumn({ name: 'asignatura_id', referencedColumnName: 'id'})
   asignaturaId: AsignaturaTipo;
-  
+    
+  @OneToMany(() => PlanEstudioAsignatura, (planEstudioAsignatura) => planEstudioAsignatura.asignaturaTipo)
+  planesAsignaturas: PlanEstudioAsignatura[];
 }

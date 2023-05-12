@@ -1,14 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
-import { CarreraAutorizadaResolucion } from 'src/academico/entidades/carreraAutorizadaResolucion.entity';
-import { EtapaEducativaAsignatura } from 'src/academico/entidades/etapaEducativaAsignatura.entity';
-import { InstitucionEducativaCurso } from 'src/academico/entidades/institucionEducativaCurso.entity';
-import { OfertaAcademica } from 'src/academico/entidades/ofertaAcademica.entity';
 import { DataSource, EntityManager } from 'typeorm'
 import { CreateCarreraAutorizadaResolucionDto } from '../carrera_autorizada_resolucion/dto/createCarreraAutorizadaResolucion.dto';
 
 @Injectable()
 export class CarreraAutorizadaRepository {
+   
     
     constructor(private dataSource: DataSource) {}
 
@@ -16,10 +13,12 @@ export class CarreraAutorizadaRepository {
         return  await this.dataSource.getRepository(CarreraAutorizada).findBy({ id: id });
         
     }
+    
     async getAll(){
         return  await this.dataSource.getRepository(CarreraAutorizada).find();
         
     }
+
     async geAllCarrerasBySucursalId(id){
         return  await this.dataSource.getRepository(CarreraAutorizada)
         .createQueryBuilder("ca")
@@ -45,6 +44,7 @@ export class CarreraAutorizadaRepository {
           .where("s.id = :id ", { id })
           .getRawMany();
     }
+
     async geAllCarrerasByIeId(id){
         return  await this.dataSource.getRepository(CarreraAutorizada)
         .createQueryBuilder("ca")
@@ -71,7 +71,8 @@ export class CarreraAutorizadaRepository {
           .where("s.institucionEducativaId = :id ", { id })
           .getRawMany();
     }
-    async geCarreraById(id){
+    async getCarreraAutorizadaById(id){
+
         return  await this.dataSource.getRepository(CarreraAutorizada)
         .createQueryBuilder("ca")
         .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
@@ -104,6 +105,7 @@ export class CarreraAutorizadaRepository {
             'rt.id as resolucion_tipo_id',
         ])
           .where("ca.id = :id ", { id })
+          .where("ca.activo = true ")
           .getRawOne();
     }
 

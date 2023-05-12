@@ -61,8 +61,12 @@ import { TiempoEstudioTipoModule } from './academico/catalogos/tiempo_estudio_ti
 import { AreaTipoModule } from './academico/catalogos/area_tipo/area_tipo.module';
 import { CarreraTipoModule } from './academico/catalogos/carrera_tipo/carrera_tipo.module';
 import { ResolucionTipoModule } from './academico/catalogos/resolucion_tipo/resolucion_tipo.module';
-import { CarreraAutorizadaModule } from './academico/modulos/carrera_autorizada/carrera_autorizada.module';
 import { CarreraAutorizadaResolucionModule } from './academico/modulos/carrera_autorizada_resolucion/carrera_autorizada_resolucion.module';
+import { PlanEstudioResolucionModule } from './academico/modulos/plan_estudio_resolucion/plan_estudio_resolucion.module';
+import { PlanEstudioCarreraModule } from './academico/modulos/plan_estudio_carrera/plan_estudio_carrera.module';
+import { PlanEstudioAsignaturaModule } from './academico/modulos/plan_estudio_asignatura/plan_estudio_asignatura.module';
+import { CarreraAutorizadaModule } from './academico/modulos/carrera_autorizada/carrera_autorizada.module';
+
 
 
 @Module({
@@ -139,12 +143,18 @@ import { CarreraAutorizadaResolucionModule } from './academico/modulos/carrera_a
 
     ResolucionTipoModule,
 
-    CarreraAutorizadaModule,
 
     CarreraAutorizadaResolucionModule,
 
-  ],
-  providers: [],
+    PlanEstudioResolucionModule,
+
+    PlanEstudioCarreraModule,
+
+    PlanEstudioAsignaturaModule,
+
+    CarreraAutorizadaModule,
+
+  ]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
