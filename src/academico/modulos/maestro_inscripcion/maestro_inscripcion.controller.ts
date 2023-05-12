@@ -23,12 +23,13 @@ import { UpdateMaestroInscripcionDto } from './dto/updateMaestroInscripcion.dto'
 export class MaestroInscripcionController {
   constructor(private readonly usersService: MaestroInscripcionService) {}
 
-  @Get("/getAllDocentesByUeGestion/:ueId/:gestionId")
+  @Get("/getAllDocentesByUeGestion/:ueId/:gestionId/:periodoId")
   getAllDocentesByUeGestion(
     @Param("ueId") ueId: number,
-    @Param("gestionId") gestionId: number
+    @Param("gestionId") gestionId: number,
+    @Param("periodoId") periodoId: number,
   ) {
-    return this.usersService.getAllDocentesByUeGestion(ueId);
+    return this.usersService.getAllDocentesByUeGestion(ueId, gestionId, periodoId);
   }
 
   @Get("/getAllDocentesByUeGestionPeriodo/:personaId/:gestionId/:periodoId/:ueId")

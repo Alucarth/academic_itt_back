@@ -137,7 +137,7 @@ export class MaestroInscripcionService {
     );
   }
 
-  async getAllDocentesByUeGestion(ueId: number) {
+  async getAllDocentesByUeGestion(ueId: number, gestionId: number, periodoId: number) {
     console.log("ueId: ", ueId);
 
     const result = await this.maeRepository.query(`
@@ -198,7 +198,10 @@ export class MaestroInscripcionService {
             especialidad_tipo
             ON 
                 maestro_inscripcion.especialidad_tipo_id = especialidad_tipo.id
-            where institucion_educativa_id = ${ueId} and maestro_inscripcion.gestion_tipo_id = 2023 and cargo_tipo_id in (1) 
+            where institucion_educativa_id = ${ueId} 
+            and maestro_inscripcion.gestion_tipo_id = ${gestionId} 
+            and cargo_tipo_id in (1) 
+            and maestro_inscripcion.periodo_tipo_id = ${periodoId}
             order by 2,3,4;`);
 
     console.log("result: ", result);
