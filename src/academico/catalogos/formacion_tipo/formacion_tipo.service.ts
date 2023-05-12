@@ -17,7 +17,7 @@ export class FormacionTipoService {
             //var result: EspecialidadTipo[] = [];
             const result =  await this.formacionTipoRepository.find()
 
-            return this._serviceResp.respuestaHttp201(
+            return this._serviceResp.respuestaHttp200(
             result,
             'Registro Encontrado !!',
             '',
