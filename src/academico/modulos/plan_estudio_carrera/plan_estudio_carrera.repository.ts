@@ -44,28 +44,30 @@ export class PlanEstudioCarreraRepository {
           .getRawMany();
 
     }
-    async findResolucionesByCarreraId(
+    async findResolucionesByData(
         carrera_id:number,
         nivel_id:number,
         area_id:number,
         intervalo_id:number,
         tiempo:number,
         ){
+            console.log("carrera es");
+            console.log(carrera_id);
         return  await this.dataSource.getRepository(PlanEstudioCarrera)
         .createQueryBuilder("pc")
         .innerJoinAndSelect("pc.planEstudioResolucion", "r")
         .select([
             'pc.id as plan_estudio_carrera_id',
-            'r.id as carrera_resolucion_id',
+            'r.id as plan_estudio_resolucion_id',
             'r.numero_resolucion as numero_resolucion',
             'r.fecha_resolucion as fecha_resolucion',
             'r.activo as activo',
         ])
-          .where("pc.carreraId = :carrera_id ", { carrera_id })
-          .where("pc.areaId = :area_id ", { area_id })
-          .where("pc.nivelAcademicoTipoId = :nivel_id ", { nivel_id })
-          .where("pc.intervaloGestionTipoId = :intervalo_id ", { intervalo_id })
-          .where("pc.tiempoEstudio = :tiempo ", { tiempo })
+          .where("pc.carreraTipoId = :carrera_id ", { carrera_id })
+          //.where("pc.areaTipoId = :area_id ", { area_id })
+          //.where("pc.nivelAcademicoTipoId = :nivel_id ", { nivel_id })
+          //.where("pc.intervaloGestionTipoId = :intervalo_id ", { intervalo_id })
+          //.where("pc.tiempoEstudio = :tiempo ", { tiempo })
           .getRawMany();
 
     }

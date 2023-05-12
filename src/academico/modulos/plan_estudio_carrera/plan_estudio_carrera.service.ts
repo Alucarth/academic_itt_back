@@ -9,9 +9,9 @@ export class PlanEstudioCarreraService {
         
         @Inject(PlanEstudioCarreraRepository) 
         private planEstudioCarreraRepository: PlanEstudioCarreraRepository,
-
+        
         @Inject(CarreraAutorizadaRepository) 
-        private carreraAutorizadaRepository = CarreraAutorizadaRepository,
+        private carreraAutorizadaRepository: CarreraAutorizadaRepository,
          
         private _serviceResp: RespuestaSigedService, 
         
@@ -25,20 +25,20 @@ export class PlanEstudioCarreraService {
         const carreras = await this.planEstudioCarreraRepository.findCarrerasByResolucionId(id)
         return carreras
     }
-    async getCarreraById(id:number){
+    async getPlanesCarreraById(id:number){
         
         const carrera = await this.planEstudioCarreraRepository.findCarreraById(id)
         
         return carrera
     }
-    async getResolucionesByCarreraId(
+    async getResolucionesByData(
         carrera_id:number,
         nivel_id:number,
         area_id:number,
         intervalo_id:number,
         tiempo:number){
         
-        const carrera = await this.planEstudioCarreraRepository.findResolucionesByCarreraId(
+        const carrera = await this.planEstudioCarreraRepository.findResolucionesByData(
             carrera_id,
             nivel_id,
             area_id,
@@ -47,26 +47,38 @@ export class PlanEstudioCarreraService {
         return carrera
     }
 
-    async planesCarreraId(id:number){
+    async getResolucionesByCarreraAutorizadaId(id:number){
         
-        //const sucursal =  await this.institucionEducativaSucursalRepository.findSucursalBySieGestion(1, 2023);
-        
-        
-        //console.log(carrera);
-        
-        console.log("datoooo");
-        //onsole.log(carrera);
-       /* if(dato){
-            const carreras = await this.planEstudioCarreraRepository.findResolucionesByCarreraId(
-                 dato.carreraTipoId,
-                 dato.nivelAcademicoTipoId,
-                 dato.areaTipoId,
-                 dato.intervaloGestionTipoId,
-                 dato.tiempo
+        const carreraAutorizada = await this.carreraAutorizadaRepository.getCarreraAutorizadaById(id);
 
+        if(carreraAutorizada){
+            const resoluciones = await this.planEstudioCarreraRepository.findResolucionesByData(
+                carreraAutorizada.carrera_id,
+                carreraAutorizada.nivel_academico_tipo_id,
+                carreraAutorizada.area_id,
+                carreraAutorizada.intervalo_gestion_tipo_id,
+                carreraAutorizada.tiempo_estudio
             )
-            return carreras
-        }*/
+            if(resoluciones.length>0){
+                return this._serviceResp.respuestaHttp201(
+                    resoluciones,
+                    "Registro Encontrado !!",
+                    ""
+                );
+            }
+            else{
+                return this._serviceResp.respuestaHttp404(
+                    '',
+                    "No existen resoluciones de planes de estudio !!",
+                    ""
+                  );
+            }
+        }
         
+        return this._serviceResp.respuestaHttp404(
+            '',
+            "Se produjo un error !!",
+            ""
+          );
     }
 }
