@@ -3,99 +3,105 @@ import { Transform } from 'class-transformer';
 import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class UpdatePersonaoDto {
+  
+  @IsNotEmpty({ message: "ID es requerido" })
+  @IsNumber()
+  id: number;
 
-    @IsNotEmpty({ message: "el Numero de Carnet es requerido" })
-    @IsString()
-    @Transform(({ value }) => value?.trim())
-    carnetIdentidad: string;
+  /*
+  @IsNotEmpty({ message: "el Numero de Carnet es requerido" })
+  @IsString()
+  @Transform(({ value }) => value?.trim())
+  carnetIdentidad: string;
 
-    @IsString()
-    complemento: string;
-    
-    @IsString()
-    paterno: string;
+  @IsString()
+  complemento: string;
 
-    @IsNotEmpty({ message: "el Ap. Materno es requerido" })
-    @IsString()
-    materno: string;
+  @IsString()
+  paterno: string;
 
-    @IsNotEmpty({ message: "el Nombre es requerido" })
-    @IsString()
-    nombre: string;
+  @IsNotEmpty({ message: "el Ap. Materno es requerido" })
+  @IsString()
+  materno: string;
 
-    @IsDateString()
-    fechaNacimiento?: Date | null
-    
-    @IsNotEmpty({ message: "Genero es requerido" })
-    @IsNumber()
-    generoTipoId: number;
-    
-    @IsNotEmpty({ message: "Estado Civil es requerido" })
-    @IsNumber()
-    estadoCivilTipoId: number;
+  @IsNotEmpty({ message: "el Nombre es requerido" })
+  @IsString()
+  nombre: string;
 
-    @IsNotEmpty({ message: "Sangre tipo es requerido" })
-    @IsNumber()
-    sangreTipoId: number;
+  @IsDateString()
+  fechaNacimiento?: Date | null;
+  */
 
-    @IsNotEmpty({ message: "Idioma materno es requerido" })
-    @IsNumber()
-    maternoIdiomaTipoId: number;
+  @IsNotEmpty({ message: "Genero es requerido" })
+  @IsNumber()
+  generoTipoId: number;
 
-    @IsNotEmpty({ message: "Segip  tipo es requerido" })
-    @IsNumber()
-    segipTipoId: number;
+  @IsNotEmpty({ message: "Estado Civil es requerido" })
+  @IsNumber()
+  estadoCivilTipoId: number;
 
-    @IsNotEmpty({ message: "Lugar de expedicion es requerido" })
-    @IsNumber()
-    expedidoUnidadTerritorialId: number;
+  /*
+  @IsNotEmpty({ message: "Sangre tipo es requerido" })
+  @IsNumber()
+  sangreTipoId: number;*/
 
-    @IsNotEmpty({ message: "Lugar de nacimiento es requerido" })
-    @IsNumber()
-    nacimientoUnidadTerritorialId: number;
+  @IsNotEmpty({ message: "Idioma materno es requerido" })
+  @IsNumber()
+  maternoIdiomaTipoId: number;
 
-    @IsString()
-    nacimientoOficialia: string;
+  /*
+  @IsNotEmpty({ message: "Segip  tipo es requerido" })
+  @IsNumber()
+  segipTipoId: number;*/
 
-    @IsString()
-    nacimientoLibro: string;
+  @IsNotEmpty({ message: "Lugar de expedicion es requerido" })
+  @IsNumber()
+  expedidoUnidadTerritorialId: number;
 
-    @IsString()
-    nacimientoPartida: string;
+  @IsNotEmpty({ message: "Lugar de nacimiento es requerido" })
+  @IsNumber()
+  nacimientoUnidadTerritorialId: number;
 
-    @IsString()
-    nacimientoFolio: string;
+  @IsString()
+  nacimientoOficialia: string;
 
-    @IsString()
-    carnetIbc: string;
+  @IsString()
+  nacimientoLibro: string;
 
-    @IsString()
-    pasaporte: string;
+  @IsString()
+  nacimientoPartida: string;
 
-    @IsString()
-    libretaMilitar: string;
+  @IsString()
+  nacimientoFolio: string;
 
-    @IsBoolean()
-    dobleNacionalidad: boolean;
+  @IsString()
+  carnetIbc: string;
 
-    @IsString()
-    codigoRda: string;
+  @IsString()
+  pasaporte: string;
 
-    @IsString()
-    nacimientoLocalidad: string;
+  @IsString()
+  libretaMilitar: string;
 
-    @IsBoolean()
-    tieneDiscapacidad: boolean;
-   
-    @IsString()
-    telefono: string;
+  @IsBoolean()
+  dobleNacionalidad: boolean;
 
-    @IsString()
-    email: string;
-   
-    @IsNotEmpty()
-    @IsNumber()
-    ciExpedidoTipoId: number;
+  @IsString()
+  codigoRda: string;
 
+  @IsString()
+  nacimientoLocalidad: string;
 
+  @IsBoolean()
+  tieneDiscapacidad: boolean;
+
+  @IsString()
+  telefono: string;
+
+  @IsString()
+  email: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  ciExpedidoTipoId: number;
 }
