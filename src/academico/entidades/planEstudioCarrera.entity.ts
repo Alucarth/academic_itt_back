@@ -11,6 +11,7 @@ import {
 import { AreaTipo } from './areaTipo.entity';
 import { CarreraTipo } from './carrerraTipo.entity';
 import { InstitutoPlanEstudioCarrera } from './institutoPlanEstudioCarrera.entity';
+
 import { IntervaloGestionTipo } from './intervaloGestionTipo.entity';
 import { NivelAcademicoTipo } from './nivelAcademicoTipo.entity';
 import { PlanEstudioAsignatura } from './planEstudioAsignatura.entity';
