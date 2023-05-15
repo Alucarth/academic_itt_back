@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPLanEstudioCarrera.entity';
+import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPlanEstudioCarrera.entity';
 import { DatabaseModule } from 'src/database/database.module';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { InstitutoPlanEstudioCarreraController } from './instituto_plan_estudio_carrera.controller';

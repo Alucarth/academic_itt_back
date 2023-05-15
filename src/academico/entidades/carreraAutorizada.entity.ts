@@ -12,7 +12,7 @@ import { AreaTipo } from './areaTipo.entity';
 import { CarreraAutorizadaResolucion } from './carreraAutorizadaResolucion.entity';
 import { CarreraTipo } from './carrerraTipo.entity';
 import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
-import { InstitutoPlanEstudioCarrera } from './institutoPLanEstudioCarrera.entity';
+import { InstitutoPlanEstudioCarrera } from './institutoPlanEstudioCarrera.entity';
 import { MaestroInscripcion } from './maestroInscripcion.entity';
 
 @Entity({ name: 'carrera_autorizada', schema: 'public' })
