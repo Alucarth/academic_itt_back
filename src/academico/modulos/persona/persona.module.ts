@@ -8,12 +8,9 @@ import { PersonaRepository } from './persona.repository';
 import { PersonaService } from './persona.service';
 
 @Module({
-  imports:[DatabaseModule, TypeOrmModule.forFeature([Persona])],
+  imports: [DatabaseModule, TypeOrmModule.forFeature([Persona])],
   controllers: [PersonaController],
-  providers: [
-    PersonaService, 
-    PersonaRepository,
-    RespuestaSigedService
-  ]
+  providers: [PersonaService, PersonaRepository, RespuestaSigedService],
+  exports: [PersonaService],
 })
 export class PersonaModule {}
