@@ -4,21 +4,10 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { CarreraAutorizada } from './carreraAutorizada.entity';
-import { CarreraTipo } from './carrerraTipo.entity';
-import { EducacionTipo } from './educacionTipo.entity';
-import { EstadoInstitucionEductivaTipo } from './estadoInstitucionEducativaTipo.entity';
-import { GestionTipo } from './gestionTipo.entity';
-import { InstitucionEducativa } from './institucionEducativa.entity';
-import { InstitucionEducativaAcreditacionEspecialidad } from './institucionEducativaAcreditacionEspecialidad.entity';
-import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
-import { JurisdiccionGeografica } from './jurisdiccionGeografica.entity';
-import { MaestroInscripcion } from './maestroInscripcion.entity';
-import { Operativo } from './operativo.entity';
 import { PlanEstudioCarrera } from './planEstudioCarrera.entity';
 
 @Entity({ name: 'instituto_plan_estudio_carrera', schema: 'public' })
