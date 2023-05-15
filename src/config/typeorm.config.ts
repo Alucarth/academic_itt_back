@@ -3,6 +3,8 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 import { join } from 'path';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
+
+require('dotenv').config()
 export const getDatabaseDataSourceOptions = ({
   port,
   host,
@@ -25,11 +27,11 @@ export const getDatabaseDataSourceOptions = ({
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
   type: 'postgres',
-  host: '172.20.0.103',
-  port: 5434,
-  username: 'dcastillo',
-  password: 'dcastillo123',
-  database: 'sie_produccion',
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT),
+  username: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DATABASE,
   entities: [join(__dirname, '../', '**', '*.entity.{ts,js}')],
   synchronize: false,
 };
