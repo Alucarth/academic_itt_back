@@ -2,7 +2,7 @@ import { Optional } from '@nestjs/common';
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class CreatePersonaoDto {
+export class UpdatePersonaoDto {
 
     @IsNotEmpty({ message: "el Numero de Carnet es requerido" })
     @IsString()
