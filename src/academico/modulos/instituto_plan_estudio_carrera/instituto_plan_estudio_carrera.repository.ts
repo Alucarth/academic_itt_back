@@ -3,6 +3,7 @@ import { InstitucionEducativaSucursal } from 'src/academico/entidades/institucio
 import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPLanEstudioCarrera.entity';
 import { DataSource, EntityManager } from 'typeorm'
 import { CreateInstitucionEducativaDto } from '../institucion_educativa/dto/createInstitucionEducativa.dto';
+import { CreateInstitutoPlanEstudioCarreraDto } from './dto/createInstitutoPlanEstudioCarrera.dto';
 
 
 @Injectable()
@@ -40,19 +41,20 @@ export class InstitutoPlanEstudioCarreraRepository {
         return itt;
     }
    
-/*
-    async createInstitucionEducativaSucursal(idUsuario,id:number,dto:CreateInstitucionEducativaDto, transaction) {
+
+    async createInstitutoPlanEstudioCarrera(idUsuario,dto:CreateInstitutoPlanEstudioCarreraDto, transaction) {
           
-        const sucursal  = new InstitucionEducativaSucursal()
-        sucursal.institucionEducativaId = id;
-        sucursal.jurisdiccionGeograficaId = dto.jurisdiccion_geografica_id;
-        sucursal.estadoInstitucionEducativaTipoId = 10;
-        sucursal.usuarioId = idUsuario;
-        sucursal.sucursalNombre = dto.sucursal_nombre;
-        sucursal.sucursalCodigo = dto.sucursal_codigo;
-        sucursal.vigente = true;
-        sucursal.observacion = dto.observacion;         
-        sucursal.gestionTipoId = 2023;//quitar luego         
-      return await transaction.getRepository(InstitucionEducativaSucursal).save(sucursal)
-  }*/
+        const institutoPlan  = new InstitutoPlanEstudioCarrera()
+        institutoPlan.planEstudioCarreraId = dto.plan_estudio_carrera_id;
+        institutoPlan.carreraAutorizadaId = dto.carrera_autorizada_id;
+        institutoPlan.activo = true;
+        institutoPlan.observacion = 'ASIGNACION';
+        institutoPlan.usuarioId = 1;
+        
+        
+      return await transaction.getRepository(InstitutoPlanEstudioCarrera).save(institutoPlan)
+  }
+  async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
+    return this.dataSource.manager.transaction<T>(op)
+}
 }
