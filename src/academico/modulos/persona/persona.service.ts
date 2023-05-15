@@ -54,7 +54,7 @@ export class PersonaService {
         }else{
             return this._serviceResp.respuestaHttp400(
                 existePersona,
-                'Persona ya existen !!',
+                'Persona ya existe !!',
                 '');
         }
         
