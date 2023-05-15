@@ -23,6 +23,7 @@ export class InstitutoPlanEstudioCarreraRepository {
         .innerJoinAndSelect("pe.planEstudioResolucion", "pr")       
         .leftJoinAndSelect("pe.planesAsignaturas", "pa")       
         .leftJoinAndSelect("pa.asignaturaTipo", "a")       
+        .leftJoinAndSelect("pa.regimenGradoTipo", "rg")       
         .select([
             'ip.id',
             'ip.observacion',
@@ -33,6 +34,7 @@ export class InstitutoPlanEstudioCarreraRepository {
             'pr.descripcion',
             'pr.activo',
             'pa.horas',
+            'rg.regimenGrado',
             'a.asignatura',
             'a.abreviacion',
         ])
