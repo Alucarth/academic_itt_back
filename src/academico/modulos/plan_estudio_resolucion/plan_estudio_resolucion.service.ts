@@ -2,6 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { EntityManager } from 'typeorm';
 import { CarreraAutorizadaRepository } from '../carrera_autorizada/carrera_autorizada.repository';
+import { InstitutoPlanEstudioCarreraRepository } from '../instituto_plan_estudio_carrera/instituto_plan_estudio_carrera.repository';
+import { PlanEstudioCarreraRepository } from '../plan_estudio_carrera/plan_estudio_carrera.repository';
 import { CreatePlanEstudioResolucionDto } from './dto/createPlanEstudioResolucion.dto';
 import { PlanEstudioResolucionRepository } from './plan_estudio_resolucion.repository';
 
@@ -14,6 +16,12 @@ export class PlanEstudioResolucionService {
 
         @Inject(CarreraAutorizadaRepository) 
         private carreraAutorizadaRepository: CarreraAutorizadaRepository,
+
+        @Inject(PlanEstudioCarreraRepository) 
+        private planEstudioCarreraRepository: PlanEstudioCarreraRepository,
+       
+        @Inject(InstitutoPlanEstudioCarreraRepository) 
+        private institutoPlanEstudioCarreraRepository: InstitutoPlanEstudioCarreraRepository,
        
         private _serviceResp: RespuestaSigedService, 
         
@@ -34,13 +42,36 @@ export class PlanEstudioResolucionService {
     }
 
     async crear(dto: CreatePlanEstudioResolucionDto) {
+        
         // verificar la carrera ya existe
     const carreraAutorizada =await this.carreraAutorizadaRepository.getCarreraAutorizadaById(dto.carrera_autorizada_id);
     console.log("carrera autorizada");
     console.log(carreraAutorizada);
+    console.log(dto);
         const op = async (transaction: EntityManager) => {
             const planResolucion = await this.planEstudioResolucionRepository.crearPlanEstudioResolucion(dto, transaction);
             if(planResolucion?.id){
+                //crear plan estudio carrera
+                let datos = {
+                    carrera_autorizada_id: carreraAutorizada.carrera_autorizada_id,
+                    carrera_id: carreraAutorizada.carrera_id,                   
+                    area_id: carreraAutorizada.area_id,
+                    tiempo_estudio: carreraAutorizada.tiempo_estudio,
+                    carga_horaria: carreraAutorizada.carga_horaria,
+                    nivel_academico_tipo_id: carreraAutorizada.nivel_academico_tipo_id,
+                    intervalo_gestion_tipo_id: carreraAutorizada.intervalo_gestion_tipo_id,
+                }   
+                console.log(datos);
+                const planCarrera = await this.planEstudioCarreraRepository.crearPlanCarrera(planResolucion?.id, dto, datos, transaction);
+                
+                if(planCarrera?.id){
+                    let datopc = {
+                        plan_estudio_carrera_id:planCarrera.id,
+                        carrera_autorizada_id:carreraAutorizada.carrera_autorizada_id
+                    }
+                    await this.institutoPlanEstudioCarreraRepository.createInstitutoPlanEstudioCarrera(1,datopc, transaction);
+                }
+
               return planResolucion;
             }
         }

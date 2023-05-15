@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { PlanEstudioCarrera } from 'src/academico/entidades/planEstudioCarrera.entity';
 import { DataSource, EntityManager } from 'typeorm'
+import { CreatePlanEstudioResolucionDto } from '../plan_estudio_resolucion/dto/createPlanEstudioResolucion.dto';
 
 @Injectable()
 export class PlanEstudioCarreraRepository {
@@ -71,6 +72,29 @@ export class PlanEstudioCarreraRepository {
           .getRawMany();
 
     }
+
+    async crearPlanCarrera(
+        id:number,
+        dto: CreatePlanEstudioResolucionDto,
+        datos: any,
+        transaction: EntityManager,
+        ) {
+            const pc = new PlanEstudioCarrera();
+            pc.planEstudioResolucionId = id;
+            pc.carreraTipoId = datos.carrera_id;
+            pc.nivelAcademicoTipoId = datos.nivel_academico_tipo_id;
+            pc.areaTipoId = datos.area_id;
+            pc.intervaloGestionTipoId = datos.intervalo_gestion_tipo_id;
+            pc.tiempoEstudio = datos.tiempo_estudio;
+            pc.cargaHoraria = datos.carga_horaria;
+            pc.denominacion = dto.denominacion;
+            pc.activo = true;
+            pc.usuarioId = 1;
+            const result = await transaction.getRepository(PlanEstudioCarrera).save(pc);
+       
+        return result;
+    }
+
    
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
