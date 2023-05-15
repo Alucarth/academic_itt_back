@@ -67,6 +67,7 @@ import { PlanEstudioCarreraModule } from './academico/modulos/plan_estudio_carre
 import { PlanEstudioAsignaturaModule } from './academico/modulos/plan_estudio_asignatura/plan_estudio_asignatura.module';
 import { CarreraAutorizadaModule } from './academico/modulos/carrera_autorizada/carrera_autorizada.module';
 import { InstitutoPlanEstudioCarreraModule } from './academico/modulos/instituto_plan_estudio_carrera/instituto_plan_estudio_carrera.module';
+import { InscripcionModule } from './academico/modulos/inscripcion/inscripcion.module';
 
 
 
@@ -156,6 +157,9 @@ import { InstitutoPlanEstudioCarreraModule } from './academico/modulos/instituto
     CarreraAutorizadaModule,
 
     InstitutoPlanEstudioCarreraModule,
+
+    InscripcionModule,
+
 
   ]
 })
