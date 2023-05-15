@@ -12,6 +12,7 @@ import { AreaTipo } from './areaTipo.entity';
 import { CarreraAutorizadaResolucion } from './carreraAutorizadaResolucion.entity';
 import { CarreraTipo } from './carrerraTipo.entity';
 import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
+import { InstitutoPlanEstudioCarrera } from './institutoPLanEstudioCarrera.entity';
 import { MaestroInscripcion } from './maestroInscripcion.entity';
 
 @Entity({ name: 'carrera_autorizada', schema: 'public' })
@@ -65,5 +66,8 @@ export class CarreraAutorizada {
 
   @OneToMany(() => CarreraAutorizadaResolucion, (carreraAutorizadaResolucion) => carreraAutorizadaResolucion.carreraAutorizada)
   resoluciones: CarreraAutorizadaResolucion[];
+
+  @OneToMany(() => InstitutoPlanEstudioCarrera, (institutoPlanEstudioCarrera) => institutoPlanEstudioCarrera.carreraAutorizada)
+  institutosPlanesCarreras: InstitutoPlanEstudioCarrera[];
 
 }
