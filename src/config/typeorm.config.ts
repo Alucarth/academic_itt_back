@@ -26,9 +26,9 @@ export const getDatabaseDataSourceOptions = ({
 export const typeOrmConfig: TypeOrmModuleOptions = {
   type: 'postgres',
   host: '172.20.0.103',
-  port: 5434,
-  username: 'dcastillo',
-  password: 'dcastillo123',
+  port: 5435,
+  username: 'dtorrez',
+  password: 'dtorrez123',
   database: 'sie_produccion',
   entities: [join(__dirname, '../', '**', '*.entity.{ts,js}')],
   synchronize: false,
