@@ -4,36 +4,27 @@ import { Transform } from 'class-transformer';
 import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateInscriptionDto {
-  @IsNotEmpty({ message: "observacion es requerido" })
-  @IsString()
-  @Transform(({ value }) => value?.trim())
+  
+  @IsString()  
   observacion: string;
 
   @IsNotEmpty()
   @IsNumber()
-  institucionEducativaSucursalId: number;
+  matriculaEstudianteId: number;
 
   @IsNotEmpty()
   @IsNumber()
-  personaId: number;
-
-  @IsNotEmpty({ message: "codigoEstudiante es requerido" })
-  @IsString()
-  codigoEstudiante: string;
-
-  @IsNotEmpty({ message: "docMatricula es requerido" })
-  @IsString()
-  docMatricula;
+  aulaId: number;
 
   @IsNotEmpty()
   @IsNumber()
-  gestionTipoId: number;
+  estadoMatriculaTipoId: number;
 
   @IsNotEmpty()
   @IsNumber()
-  periodoTipoId: number;
+  estadoMatriculaInicioTipoId: number;
 
   @IsNotEmpty()
   @IsNumber()
-  planEstudioCarreraTipoId: number;
+  ofertaCurricularId: number;
 }

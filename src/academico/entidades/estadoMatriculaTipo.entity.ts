@@ -48,7 +48,8 @@ export class EstadoMatriculaTipo {
 
   @OneToMany(() => InstitutoEstudianteInscripcion, (institutoEstudianteInscripcion) => institutoEstudianteInscripcion.estadoMatriculaTipo)
   institutoEstudianteInscripcions: InstitutoEstudianteInscripcion[];
-
+/*
   @OneToMany(() => InstitutoEstudianteInscripcion, (institutoEstudianteInscripcion) => institutoEstudianteInscripcion.estadoMatriculaInicioTipo)
   institutoEstudianteInscripcionsInicio: InstitutoEstudianteInscripcion[];
+  */
 }

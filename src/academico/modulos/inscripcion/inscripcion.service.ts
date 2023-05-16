@@ -12,6 +12,9 @@ import { InstitucionEducativaSucursal } from "../../entidades/institucionEducati
 import { GestionTipo } from "../../entidades/gestionTipo.entity";
 import { PeriodoTipo } from "../../entidades/periodoTipo.entity";
 import { PlanEstudioCarrera } from "../../entidades/planEstudioCarrera.entity";
+import { Aula } from "../../entidades/aula.entity";
+import { EstadoMatriculaTipo } from "../../entidades/estadoMatriculaTipo.entity";
+import { OfertaCurricular } from "../../entidades/ofertaCurricular.entity";
 
 import { CreatePersonaoDto } from "../persona/dto/createPersona.dto";
 import { CreateInscriptionDto } from "./dto/createInscription.dto";
@@ -34,6 +37,12 @@ export class InscripcionService {
     private periodoTipoRepository: Repository<PeriodoTipo>,
     @InjectRepository(PlanEstudioCarrera)
     private planEstudioRepository: Repository<PlanEstudioCarrera>,
+    @InjectRepository(Aula)
+    private aulaRepository: Repository<Aula>,
+    @InjectRepository(EstadoMatriculaTipo)
+    private estadoMatriculaRepository: Repository<EstadoMatriculaTipo>,
+    @InjectRepository(OfertaCurricular)
+    private ofertaCurricularRepository: Repository<OfertaCurricular>,
     private _serviceResp: RespuestaSigedService,
     private _servicePersona: PersonaService
   ) {}
@@ -233,11 +242,123 @@ export class InscripcionService {
   }
 
   async createInscription(dto: CreateInscriptionDto) {
+    //1: existe matricula ?
+    const matriculaEstudiante = await this.matriculaRepository.findOne({
+      where: {
+        id: dto.matriculaEstudianteId,
+      },
+    });
+    if (!matriculaEstudiante) {
+      return this._serviceResp.respuestaHttp404(
+        "0",
+        "Matricula No Encontrado !!",
+        ""
+      );
+    }
+
+    //2: existe aula ?
+    const aula = await this.aulaRepository.findOne({
+      where: {
+        id: dto.aulaId
+      },
+    });
+    if (!aula) {
+      return this._serviceResp.respuestaHttp404(
+        "0",
+        "aula No Encontrado !!",
+        ""
+      );
+    }
+
+    //3: existe estado matricula ?
+    const estadoMatriculaTipo = await this.estadoMatriculaRepository.findOne({
+      where: {
+        id: dto.estadoMatriculaTipoId
+      },
+    });
+    if (!estadoMatriculaTipo) {
+      return this._serviceResp.respuestaHttp404(
+        "0",
+        "estadoMatriculaTipo No Encontrado !!",
+        ""
+      );    
+    }
+
+    //4: existe estado matricula Inicio?
+    const estadoMatriculaTipoInicio = await this.estadoMatriculaRepository.findOne({
+      where: {
+        id: dto.estadoMatriculaInicioTipoId
+      },
+    });
+    if (!estadoMatriculaTipoInicio) {
+      return this._serviceResp.respuestaHttp404(
+        "0",
+        "estadoMatriculaTipoInicio No Encontrado !!",
+        ""
+      );
+    }
+
+    //5: existe oferta curricular?
+    const ofertaCurricular = await this.ofertaCurricularRepository.findOne({
+      where: {
+        id: dto.ofertaCurricularId
+      },
+    });
+    if (!ofertaCurricular) {
+      return this._serviceResp.respuestaHttp404(
+        "0",
+        "ofertaCurricular No Encontrado !!",
+        ""
+      );
+    }
 
     //insert en instituto_estudiante_inscripcion
 
+    try {
+
+        const res = await this.inscripcionRepository
+          .createQueryBuilder()
+          .insert()
+          .into(InstitutoEstudianteInscripcion)
+          .values([
+            {
+              observacion: dto.observacion,
+              usuarioId: 0,
+              estadoMatriculaInicioTipoId: dto.estadoMatriculaInicioTipoId,
+              aula: aula,
+              ofertaCurricular: ofertaCurricular,
+              estadoMatriculaTipo: estadoMatriculaTipo,
+              matriculaEstudiante: matriculaEstudiante,
+            },
+          ])
+          .returning("id")
+          .execute();
+
+        console.log("res:", res);
+        let inscripcionId = res.identifiers[0].id;
+
+        return this._serviceResp.respuestaHttp201(
+          inscripcionId,
+          "Registro Creado !!",
+          ""
+        );
 
 
+        
+    } catch (error) {
 
+        console.log("Error insertar inscripcion: ", error);
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: `Error insertar Matricula: ${error.message}`,
+          },
+          HttpStatus.ACCEPTED,
+          {
+            cause: error,
+          }
+        );
+        
+    }
   }
 }

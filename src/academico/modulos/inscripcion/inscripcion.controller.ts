@@ -10,6 +10,7 @@ import {
 import { ApiTags } from "@nestjs/swagger";
 import { InscripcionService } from "./inscripcion.service";
 import { CreateInscriptionDto } from "./dto/createInscription.dto";
+import { CreateMatriculaDto } from "./dto/createMatricula.dto";
 
 @ApiTags("Matriculacion e Inscripcion")
 @Controller("inscripcion")
@@ -23,7 +24,7 @@ export class InscripcionController {
   }
 
   @Post('/matricula')
-  async create(@Body() dto: CreateInscriptionDto) {
+  async create(@Body() dto: CreateMatriculaDto) {
     
     const res = await this.inscripcionService.createMatricula(dto);   
     return res;

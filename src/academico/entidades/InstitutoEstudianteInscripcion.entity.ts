@@ -19,8 +19,8 @@ export class InstitutoEstudianteInscripcion {
   @PrimaryGeneratedColumn({ type: "integer", name: "id" })
   id: number;
 
-  @Column("smallint", { name: "estadomatricula_inicio_tipo_id" })
-  estadomatriculaInicioTipoId: number;
+  /*@Column("smallint", { name: "estadomatricula_inicio_tipo_id" })
+  estadomatriculaInicioTipoId: number;*/
 
   @Column("character varying", {
     name: "observacion",
@@ -71,12 +71,12 @@ export class InstitutoEstudianteInscripcion {
   @Column("integer", { name: "estadomatricula_inicio_tipo_id" })
   estadoMatriculaInicioTipoId: number;
 
-  @ManyToOne(
+  /*@ManyToOne(
     () => EstadoMatriculaTipo,
     (estadoMatriculaTipo) => estadoMatriculaTipo.institutoEstudianteInscripcionsInicio
   )
   @JoinColumn([{ name: "estadomatricula_inicio_tipo_id", referencedColumnName: "id" }])
-  estadoMatriculaInicioTipo: EstadoMatriculaTipo;
+  estadoMatriculaInicioTipo: EstadoMatriculaTipo;*/
 
   @Column("integer", { name: "matricula_estudiante_id" })
   matriculaEstudianteId: number;

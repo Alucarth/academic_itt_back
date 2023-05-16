@@ -15,6 +15,9 @@ import { InstitucionEducativaSucursal } from "../../entidades/institucionEducati
 import { GestionTipo } from "../../entidades/gestionTipo.entity";
 import { PeriodoTipo } from "../../entidades/periodoTipo.entity";
 import { PlanEstudioCarrera } from "../../entidades/planEstudioCarrera.entity";
+import { Aula } from "../../entidades/aula.entity";
+import { EstadoMatriculaTipo } from "../../entidades/estadoMatriculaTipo.entity";
+import { OfertaCurricular } from "../../entidades/ofertaCurricular.entity";
 
 @Module({
   imports: [
@@ -27,6 +30,9 @@ import { PlanEstudioCarrera } from "../../entidades/planEstudioCarrera.entity";
     TypeOrmModule.forFeature([GestionTipo]),
     TypeOrmModule.forFeature([PeriodoTipo]),
     TypeOrmModule.forFeature([PlanEstudioCarrera]),
+    TypeOrmModule.forFeature([EstadoMatriculaTipo]),
+    TypeOrmModule.forFeature([Aula]),
+    TypeOrmModule.forFeature([OfertaCurricular]),
   ],
   controllers: [InscripcionController],
   providers: [InscripcionService, RespuestaSigedService],
