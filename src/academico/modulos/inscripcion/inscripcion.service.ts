@@ -15,6 +15,7 @@ import { PlanEstudioCarrera } from "../../entidades/planEstudioCarrera.entity";
 
 import { CreatePersonaoDto } from "../persona/dto/createPersona.dto";
 import { CreateInscriptionDto } from "./dto/createInscription.dto";
+import { CreateMatriculaDto } from "./dto/createMatricula.dto";
 
 @Injectable()
 export class InscripcionService {
@@ -37,7 +38,7 @@ export class InscripcionService {
     private _servicePersona: PersonaService
   ) {}
 
-  async createMatricula(dto: CreateInscriptionDto) {
+  async createMatricula(dto: CreateMatriculaDto) {
     //1: existe la persona ?
     const persona = await this._servicePersona.findPersona(dto.personaId);
     //console.log('persona: ', persona);
@@ -231,5 +232,12 @@ export class InscripcionService {
     }
   }
 
-  async createInscription(dto: CreateInscriptionDto) {}
+  async createInscription(dto: CreateInscriptionDto) {
+
+    //insert en instituto_estudiante_inscripcion
+
+
+
+
+  }
 }
