@@ -5,36 +5,39 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { RespuestaSigedService } from "src/shared/respuesta.service";
 import { PersonaService } from "../persona/persona.service";
 
-import { MatriculaEstudiante } from '../../entidades/matriculaEstudiante.entity';
-import { InstitucionEducativaEstudiante } from '../../entidades/InstitucionEducativaEstudiante.entity';
-import { InstitutoEstudianteInscripcion } from '../../entidades/InstitutoEstudianteInscripcion.entity';
-import { InstitucionEducativaSucursal } from '../../entidades/institucionEducativaSucursal.entity';
-import { GestionTipo } from '../../entidades/gestionTipo.entity';
-import { PeriodoTipo } from '../../entidades/periodoTipo.entity';
-import { PlanEstudioCarrera } from '../../entidades/planEstudioCarrera.entity';
-
+import { MatriculaEstudiante } from "../../entidades/matriculaEstudiante.entity";
+import { InstitucionEducativaEstudiante } from "../../entidades/InstitucionEducativaEstudiante.entity";
+import { InstitutoEstudianteInscripcion } from "../../entidades/InstitutoEstudianteInscripcion.entity";
+import { InstitucionEducativaSucursal } from "../../entidades/institucionEducativaSucursal.entity";
+import { GestionTipo } from "../../entidades/gestionTipo.entity";
+import { PeriodoTipo } from "../../entidades/periodoTipo.entity";
+import { PlanEstudioCarrera } from "../../entidades/planEstudioCarrera.entity";
 
 import { CreatePersonaoDto } from "../persona/dto/createPersona.dto";
 import { CreateInscriptionDto } from "./dto/createInscription.dto";
 
-
 @Injectable()
 export class InscripcionService {
-
-
-    constructor(   
-        @InjectRepository(MatriculaEstudiante)  private matriculaRepository: Repository<MatriculaEstudiante>,     
-        @InjectRepository(InstitucionEducativaEstudiante)  private ieeRepository: Repository<InstitucionEducativaEstudiante>,     
-        @InjectRepository(InstitutoEstudianteInscripcion)  private inscripcionRepository: Repository<InstitutoEstudianteInscripcion>,     
-        @InjectRepository(InstitucionEducativaSucursal)  private ieSucursalRepository: Repository<InstitucionEducativaSucursal>,     
-        @InjectRepository(GestionTipo)  private gestionTipoRepository: Repository<GestionTipo>,     
-        @InjectRepository(PeriodoTipo)  private periodoTipoRepository: Repository<PeriodoTipo>,     
-        @InjectRepository(PlanEstudioCarrera)  private planEstudioRepository: Repository<PlanEstudioCarrera>,     
-        private _serviceResp: RespuestaSigedService,
-        private _servicePersona: PersonaService
+  constructor(
+    @InjectRepository(MatriculaEstudiante)
+    private matriculaRepository: Repository<MatriculaEstudiante>,
+    @InjectRepository(InstitucionEducativaEstudiante)
+    private ieeRepository: Repository<InstitucionEducativaEstudiante>,
+    @InjectRepository(InstitutoEstudianteInscripcion)
+    private inscripcionRepository: Repository<InstitutoEstudianteInscripcion>,
+    @InjectRepository(InstitucionEducativaSucursal)
+    private ieSucursalRepository: Repository<InstitucionEducativaSucursal>,
+    @InjectRepository(GestionTipo)
+    private gestionTipoRepository: Repository<GestionTipo>,
+    @InjectRepository(PeriodoTipo)
+    private periodoTipoRepository: Repository<PeriodoTipo>,
+    @InjectRepository(PlanEstudioCarrera)
+    private planEstudioRepository: Repository<PlanEstudioCarrera>,
+    private _serviceResp: RespuestaSigedService,
+    private _servicePersona: PersonaService
   ) {}
 
-  async createInscription(dto: CreateInscriptionDto) {
+  async createMatricula(dto: CreateInscriptionDto) {
     //1: existe la persona ?
     const persona = await this._servicePersona.findPersona(dto.personaId);
     //console.log('persona: ', persona);
@@ -113,7 +116,7 @@ export class InscripcionService {
     //6: esxiste planEstudioCarrera ?
     const planEstudioCarrera = await this.planEstudioRepository.findOne({
       where: {
-        id: dto.planEstudioCarreraTipoId
+        id: dto.planEstudioCarreraTipoId,
       },
     });
 
@@ -159,27 +162,54 @@ export class InscripcionService {
 
       const institucionEducativaEstudiante = await this.ieeRepository.findOne({
         where: {
-          id : ieeId,
+          id: ieeId,
         },
       });
 
-      //insert en  matricula estudiante
-      const resMat = await this.matriculaRepository
-        .createQueryBuilder()
-        .insert()
-        .into(MatriculaEstudiante)
-        .values([
-          {
-            docMatricula: dto.docMatricula,
-            usuarioId: 0,
-            gestionTipo: gestionTipo,
-            periodoTipo: periodoTipo,
-            planEstudioCarrera: planEstudioCarrera,
-            institucionEducativaEstudiante: institucionEducativaEstudiante,
-          },
-        ])
-        .returning("id")
-        .execute();
+      //ya existe un registro para la gestion, periodo, ue, plan ?
+      const existeMat = await this.matriculaRepository.query(`
+        select count(*) as existe 
+        from matricula_estudiante 
+        where 
+        institucion_educativa_estudiante_id = ${ieeId}  and 
+        plan_estudio_carrera_id = ${dto.planEstudioCarreraTipoId} and 
+        gestion_tipo_id = ${dto.gestionTipoId} and 
+        periodo_tipo_id = ${dto.periodoTipoId}  
+        `);
+
+      /*if (parseInt(existe[0].existe) != 0) {
+            console.log('existe: ', existe);
+            return this._serviceResp.respuestaHttp404(
+            "0",
+            "registro ya existe !!",
+            ""
+            );
+        }*/
+      if (parseInt(existeMat[0].existe) == 0) {
+        //insert en  matricula estudiante
+        const resMat = await this.matriculaRepository
+          .createQueryBuilder()
+          .insert()
+          .into(MatriculaEstudiante)
+          .values([
+            {
+              docMatricula: dto.docMatricula,
+              usuarioId: 0,
+              gestionTipo: gestionTipo,
+              periodoTipo: periodoTipo,
+              planEstudioCarrera: planEstudioCarrera,
+              institucionEducativaEstudiante: institucionEducativaEstudiante,
+            },
+          ])
+          .returning("id")
+          .execute();
+      } else {
+        return this._serviceResp.respuestaHttp201(
+          ieeId,
+          "Matricula ya Existe en la misma Gestion, Periodo y U.E !!",
+          ""
+        );
+      }
 
       return this._serviceResp.respuestaHttp201(
         ieeId,
@@ -191,7 +221,7 @@ export class InscripcionService {
       throw new HttpException(
         {
           status: HttpStatus.CONFLICT,
-          error: `Error insertar inscripcion: ${error.message}`,
+          error: `Error insertar Matricula: ${error.message}`,
         },
         HttpStatus.ACCEPTED,
         {
@@ -201,5 +231,5 @@ export class InscripcionService {
     }
   }
 
-  
+  async createInscription(dto: CreateInscriptionDto) {}
 }

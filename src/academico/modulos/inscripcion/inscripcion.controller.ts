@@ -16,9 +16,16 @@ import { CreateInscriptionDto } from "./dto/createInscription.dto";
 export class InscripcionController {
   constructor(private readonly inscripcionService: InscripcionService) {}
 
+  @Post()
+  async createInscription(@Body() dto: CreateInscriptionDto) {
+    const res = await this.inscripcionService.createInscription(dto);   
+    return res;
+  }
+
   @Post('/matricula')
   async create(@Body() dto: CreateInscriptionDto) {
-    const res = await this.inscripcionService.createInscription(dto);   
+    
+    const res = await this.inscripcionService.createMatricula(dto);   
     return res;
   }
 
