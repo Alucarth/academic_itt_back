@@ -47,12 +47,12 @@ export class Aula {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
  
-  @Column({ type: 'integer', name: 'dia_tipo_id' })
+  /*@Column({ type: 'integer', name: 'dia_tipo_id' })
   diaTipoId: number;
 
   @ManyToOne(() => DiaTipo, (diaTipo) => diaTipo.aulasDetalles, { nullable: false, cascade: true })
   @JoinColumn({ name: 'dia_tipo_id', referencedColumnName: 'id'})
-  diaTipo: DiaTipo;
+  diaTipo: DiaTipo;*/
 
   @Column({ type: 'integer', name: 'oferta_curricular_id' })
   ofertaCurricularId: number;
