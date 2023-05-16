@@ -45,9 +45,7 @@ export class PlanEstudioResolucionService {
         
         // verificar la carrera ya existe
     const carreraAutorizada =await this.carreraAutorizadaRepository.getCarreraAutorizadaById(dto.carrera_autorizada_id);
-    console.log("carrera autorizada");
-    console.log(carreraAutorizada);
-    console.log(dto);
+    
         const op = async (transaction: EntityManager) => {
             const planResolucion = await this.planEstudioResolucionRepository.crearPlanEstudioResolucion(dto, transaction);
             if(planResolucion?.id){

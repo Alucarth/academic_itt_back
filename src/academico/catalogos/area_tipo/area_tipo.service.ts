@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AreaTipo } from "src/academico/entidades/areaTipo.entity";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 import { RespuestaSigedService } from "../../../shared/respuesta.service";
 
 @Injectable()
@@ -19,6 +19,17 @@ export class AreaTipoService {
       "Registro Encontrado !!"
     );
   }
+  async getListAreasCursos() {
+    const result = await this.areaTipoRepository.findBy({ 
+      id: In([1]),
+  });
+    return this._serviceResp.respuestaHttp200(
+      result,
+      "",
+      "Registro Encontrado !!"
+    );
+  }
+
 
   async getOneById(id: number) {
     const result = await this.areaTipoRepository.findOne({

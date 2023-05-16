@@ -10,9 +10,14 @@ export class NivelAcademicoTipoService {
         private nivelAcademicoTipoRepository: Repository<NivelAcademicoTipo>,
         
     ){}
-        async getAllItt(){
-            return  await this.nivelAcademicoTipoRepository.findBy({ 
-                id: In([1,2,3]),
-            });
-        }
+    async getAllItt(){
+        return  await this.nivelAcademicoTipoRepository.findBy({ 
+            id: In([1,2]),
+        });
+    }
+    async getAllCursosItt(){
+        return  await this.nivelAcademicoTipoRepository.findBy({ 
+            id: In([3]),
+        });
+    }
 }

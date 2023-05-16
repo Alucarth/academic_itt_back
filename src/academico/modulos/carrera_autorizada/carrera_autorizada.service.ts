@@ -27,7 +27,7 @@ export class CarreraAutorizadaService {
                 ""
               );    
         }
-        return this._serviceResp.respuestaHttp500(
+        return this._serviceResp.respuestaHttp404(
             "",
             'No se encontraron resultados !!',
             '',
@@ -42,7 +42,7 @@ export class CarreraAutorizadaService {
                 ""
               );    
         }
-        return this._serviceResp.respuestaHttp500(
+        return this._serviceResp.respuestaHttp404(
             "",
             'No se encontraron resultados !!',
             '',
@@ -57,7 +57,7 @@ export class CarreraAutorizadaService {
             ""
           );
         } 
-        return this._serviceResp.respuestaHttp500(
+        return this._serviceResp.respuestaHttp404(
             "",
             'No se encontraron resultados !!',
             '',

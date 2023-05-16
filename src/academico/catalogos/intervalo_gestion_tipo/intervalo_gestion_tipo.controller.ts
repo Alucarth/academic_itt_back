@@ -10,4 +10,9 @@ export class IntervaloGestionTipoController {
     async getAll(){
         return await this.intervaloGestionTipoService.getAllItt();
     }
+
+    @Get('cursos')
+    async getCursosAll(){
+        return await this.intervaloGestionTipoService.getAllCursosItt();
+    }
 }

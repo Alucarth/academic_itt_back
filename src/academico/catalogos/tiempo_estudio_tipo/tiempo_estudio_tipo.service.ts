@@ -20,6 +20,8 @@ export class TiempoEstudioTipoService {
                 tiempo = [1,2,3,4,5,6];
             if(regimen==1 && nivel==1)
                 tiempo = [1,2,3,4];
+            if(regimen==5 && nivel==3)
+                tiempo = [1,2,3,4,5,6,7,8,9];
             return tiempo;
         }
 }
