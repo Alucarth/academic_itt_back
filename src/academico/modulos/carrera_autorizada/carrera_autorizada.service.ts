@@ -28,10 +28,17 @@ export class CarreraAutorizadaService {
       }
       async getCarreraById(id: number) {
         const carrera = await this.carreraAutorizadaRepositorio.getCarreraAutorizadaById(id);
+        if(carrera){
         return this._serviceResp.respuestaHttp201(
             carrera,
             "Datos Encontrados !!",
             ""
           );
+        } 
+        return this._serviceResp.respuestaHttp500(
+            "",
+            'No se encontraron resultados !!',
+            '',
+        );
       }
 }

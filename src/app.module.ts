@@ -68,6 +68,7 @@ import { PlanEstudioAsignaturaModule } from './academico/modulos/plan_estudio_as
 import { CarreraAutorizadaModule } from './academico/modulos/carrera_autorizada/carrera_autorizada.module';
 import { InstitutoPlanEstudioCarreraModule } from './academico/modulos/instituto_plan_estudio_carrera/instituto_plan_estudio_carrera.module';
 import { InscripcionModule } from './academico/modulos/inscripcion/inscripcion.module';
+import { RegimenGradoTipoModule } from './academico/catalogos/regimen_grado_tipo/regimen_grado_tipo.module';
 
 
 
@@ -159,6 +160,8 @@ import { InscripcionModule } from './academico/modulos/inscripcion/inscripcion.m
     InstitutoPlanEstudioCarreraModule,
 
     InscripcionModule,
+
+    RegimenGradoTipoModule,
 
 
   ]

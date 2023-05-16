@@ -73,6 +73,9 @@ export class CarreraAutorizadaRepository {
     }
     async getCarreraAutorizadaById(id){
 
+        console.log("carrera datos");
+        console.log(id);
+
         return  await this.dataSource.getRepository(CarreraAutorizada)
         .createQueryBuilder("ca")
         .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
@@ -104,9 +107,10 @@ export class CarreraAutorizadaRepository {
             'rt.resolucion_tipo as tipo_tramite',
             'rt.id as resolucion_tipo_id',
         ])
-          .where("ca.id = :id ", { id })
-          .where("ca.activo = true ")
+          .where("ca.id = :id", { id })
+          .andWhere("ca.activo = true")
           .getRawOne();
+
     }
 
     async createAutorizada(
