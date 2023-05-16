@@ -13,6 +13,7 @@ import { EstadoCivilTipo } from './estadoCivilTipo.entity';
 import { EstudianteInscripcion } from './estudianteInscripcion.entity';
 import { GeneroTipo } from './generoTipo.entity';
 import { IdiomaTipo } from './idiomaTipo.entity';
+import { InstitucionEducativaEstudiante } from './InstitucionEducativaEstudiante.entity';
 import { MaestroInscripcion } from './maestroInscripcion.entity';
 import { PersonaDetalle } from './personaDetalle.entity';
 import { SangreTipo } from './sangreTipo.entity';
@@ -177,4 +178,7 @@ export class Persona {
   @OneToMany(() => EstudianteInscripcion, (estudianteInscripcion) => estudianteInscripcion.persona)
   estudiantesInscripciones: EstudianteInscripcion[];    
   
+  
+  @OneToMany(() => InstitucionEducativaEstudiante, (institucionEducativaEstudiante) => institucionEducativaEstudiante.persona)
+  institucionEducativaEstudiantes: InstitucionEducativaEstudiante[];
 }

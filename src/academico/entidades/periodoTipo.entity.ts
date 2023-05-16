@@ -8,13 +8,14 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { EducacionTipo } from './educacionTipo.entity';
 import { EstudianteInscripcionCalificacionGeneral } from './estudianteInscripcionCalificacionGeneral.entity';
 import { EstudianteOfertaAcademicaMaestroCalificacion } from './estudianteOfertaAcademicaMaestroCalificacion.entity';
-import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
 import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
 import { IntervaloGestionTipo } from './intervaloGestionTipo.entity';
 import { MaestroInscripcion } from './maestroInscripcion.entity';
+import { MatriculaEstudiante } from './matriculaEstudiante.entity';
+
+import { OfertaCurricular } from './ofertaCurricular.entity';
 import { Operativo } from './operativo.entity';
 import { OperativoEtapaEducativa } from './operativoEtapaEducativa.entity';
 
@@ -72,5 +73,11 @@ export class PeriodoTipo {
 
   @OneToMany(() => MaestroInscripcion, (maestroInscripcion) => maestroInscripcion.periodoTipo)
   maestrosInscripciones: MaestroInscripcion[];
+
+  @OneToMany(() => OfertaCurricular, (ofertaCurricular) => ofertaCurricular.periodoTipo)
+  ofertasCurriculares: OfertaCurricular[];
+
+  @OneToMany(() => MatriculaEstudiante, (matriculaEstudiante) => matriculaEstudiante.periodoTipo)
+  matriculaEstudiantes: MatriculaEstudiante[];
 
 }

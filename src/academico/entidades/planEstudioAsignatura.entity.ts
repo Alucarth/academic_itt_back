@@ -12,6 +12,7 @@ import { AsignaturaTipo } from './asignaturaTipo.entity';
 import { EducacionTipo } from './educacionTipo.entity';
 import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
 import { IntervaloGestionTipo } from './intervaloGestionTipo.entity';
+import { OfertaCurricular } from './ofertaCurricular.entity';
 import { PlanEstudioCarrera } from './planEstudioCarrera.entity';
 import { RegimenGradoTipo } from './regimenGradoTipo.entity';
 
@@ -62,4 +63,8 @@ export class PlanEstudioAsignatura {
   @ManyToOne(() => AsignaturaTipo, (asignaturaTipo) => asignaturaTipo.planesAsignaturas, { nullable: false, cascade: true })
   @JoinColumn({ name: 'asignatura_tipo_id', referencedColumnName: 'id'})
   asignaturaTipo: AsignaturaTipo;
+
+  @OneToMany(() => OfertaCurricular, (ofertaCurricular) => ofertaCurricular.planEstudioAsignatura)
+  ofertasCurriculares: OfertaCurricular[];
+
 }

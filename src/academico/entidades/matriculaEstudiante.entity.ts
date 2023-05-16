@@ -7,11 +7,11 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { InstitutoEstudianteInscripcion } from "./InstitutoEstudianteInscripcion";
-import { GestionTipo } from "./GestionTipo";
-import { InstitucionEducativaEstudiante } from "./InstitucionEducativaEstudiante";
-import { PeriodoTipo } from "./PeriodoTipo";
-import { PlanEstudioCarrera } from "./PlanEstudioCarrera";
+import { GestionTipo } from "./gestionTipo.entity";
+import { InstitucionEducativaEstudiante } from "./InstitucionEducativaEstudiante.entity";
+import { InstitutoEstudianteInscripcion } from "./InstitutoEstudianteInscripcion.entity";
+import { PeriodoTipo } from "./periodoTipo.entity";
+import { PlanEstudioCarrera } from "./planEstudioCarrera.entity";
 
 @Index("matricula_estudiante_pk", ["id"], { unique: true })
 @Entity("matricula_estudiante", { schema: "public" })

@@ -13,6 +13,7 @@ import { CarreraTipo } from './carrerraTipo.entity';
 import { InstitutoPlanEstudioCarrera } from './institutoPlanEstudioCarrera.entity';
 
 import { IntervaloGestionTipo } from './intervaloGestionTipo.entity';
+import { MatriculaEstudiante } from './matriculaEstudiante.entity';
 import { NivelAcademicoTipo } from './nivelAcademicoTipo.entity';
 import { PlanEstudioAsignatura } from './planEstudioAsignatura.entity';
 import { PlanEstudioResolucion } from './planEstudioResolucion.entity';
@@ -101,6 +102,9 @@ export class PlanEstudioCarrera {
 
   @OneToMany(() => InstitutoPlanEstudioCarrera, (institutoPlanEstudioCarrera) => institutoPlanEstudioCarrera.planEstudioCarrera)
   institutosPlanesCarreras: InstitutoPlanEstudioCarrera[];
+
+  @OneToMany(() => MatriculaEstudiante, (matriculaEstudiante) => matriculaEstudiante.planEstudioCarrera)
+  matriculaEstudiantes: MatriculaEstudiante[];
   
 
 }

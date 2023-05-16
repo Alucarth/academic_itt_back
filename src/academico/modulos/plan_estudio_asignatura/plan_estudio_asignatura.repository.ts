@@ -13,7 +13,21 @@ export class PlanEstudioAsignaturaRepository {
     async getAll(){
         return  await this.dataSource.getRepository(PlanEstudioAsignatura).find();
     }
-   
+    async crearPlanEstudioAsignatura(idUsuario, asignaturas, transaction) {
+
+        const planesAsignaturas: PlanEstudioAsignatura[] = asignaturas.map((item) => {
+          
+          const planAsignatura  = new PlanEstudioAsignatura()
+          planAsignatura.planEstudioCarreraId =item.plan_estudio_carrera_id;
+          planAsignatura.regimenGradoTipoId =item.regimen_grado_tipo_id;
+          planAsignatura.asignaturaTipoId =item.asignatura_tipo_id;
+          planAsignatura.horas =item.horas;
+          planAsignatura.usuarioId =idUsuario;
+          return planAsignatura;
+        });
+    
+        return await transaction.getRepository(PlanEstudioAsignatura).save(planesAsignaturas)
+    }
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
     }

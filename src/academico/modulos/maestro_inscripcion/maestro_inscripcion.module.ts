@@ -31,7 +31,9 @@ import { InstitucionEducativaSucursalRepository } from '../institucion_educativa
     TypeOrmModule.forFeature([PeriodoTipo]),
   ],
   controllers: [MaestroInscripcionController],
-  providers: [MaestroInscripcionService, RespuestaSigedService, InstitucionEducativaSucursalRepository],
+  providers: [MaestroInscripcionService, 
+    RespuestaSigedService, 
+    InstitucionEducativaSucursalRepository],
   exports: [MaestroInscripcionService],
 })
 export class MaestroInscripcionModule {}

@@ -16,6 +16,7 @@ import { GestionTipo } from './gestionTipo.entity';
 import { InstitucionEducativa } from './institucionEducativa.entity';
 import { InstitucionEducativaAcreditacionEspecialidad } from './institucionEducativaAcreditacionEspecialidad.entity';
 import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
+import { InstitucionEducativaEstudiante } from './InstitucionEducativaEstudiante.entity';
 import { JurisdiccionGeografica } from './jurisdiccionGeografica.entity';
 import { MaestroInscripcion } from './maestroInscripcion.entity';
 import { Operativo } from './operativo.entity';
@@ -110,5 +111,8 @@ export class InstitucionEducativaSucursal {
 
   @OneToMany(() => CarreraAutorizada, (carreraAutorizada) => carreraAutorizada.institucionEducativaSucursal)
   carreras: CarreraAutorizada[];
+
+  @OneToMany(() => InstitucionEducativaEstudiante, (institucionEducativaEstudiante) => institucionEducativaEstudiante.institucionEducativaSucursal)
+  institucionEducativaEstudiantes: InstitucionEducativaEstudiante[];
 
 }

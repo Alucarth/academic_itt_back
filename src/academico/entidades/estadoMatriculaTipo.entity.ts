@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { EstudianteInscripcion } from './estudianteInscripcion.entity';
+import { InstitutoEstudianteInscripcion } from './InstitutoEstudianteInscripcion.entity';
 import { Persona } from './persona.entity';
 
 @Entity({ name: 'estado_matricula_tipo', schema: 'public' })
@@ -45,4 +46,9 @@ export class EstadoMatriculaTipo {
   @OneToMany(() => EstudianteInscripcion, (estudianteInscripcion) => estudianteInscripcion.estadoMatriculaInicioTipo)
   estudiantesInscripcionesInicio: EstudianteInscripcion[]; 
 
+  @OneToMany(() => InstitutoEstudianteInscripcion, (institutoEstudianteInscripcion) => institutoEstudianteInscripcion.estadoMatriculaTipo)
+  institutoEstudianteInscripcions: InstitutoEstudianteInscripcion[];
+
+  @OneToMany(() => InstitutoEstudianteInscripcion, (institutoEstudianteInscripcion) => institutoEstudianteInscripcion.estadoMatriculaInicioTipo)
+  institutoEstudianteInscripcionsInicio: InstitutoEstudianteInscripcion[];
 }

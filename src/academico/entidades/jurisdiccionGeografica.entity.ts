@@ -115,11 +115,11 @@ jurisdiccionValidacionTipoId: number;
 @JoinColumn({ name: 'jurisdiccion_validacion_tipo_id', referencedColumnName: 'id'})
 jurisdiccionValidacionTipo: JurisdiccionValidacionTipo;
 
-
 @Column({ name: 'acreditacion_tipo_id', nullable:false })
 acreditacionTipoId: number;
 
 @ManyToOne(() => AcreditacionTipo, (acreditacionTipo) => acreditacionTipo.jurisdiccionesGeograficas, { nullable: false, cascade: true })
 @JoinColumn({ name: 'acreditacion_tipo_id', referencedColumnName: 'id'})
 acreditacionTipo: AcreditacionTipo;
+
 }

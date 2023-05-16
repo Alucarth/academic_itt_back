@@ -9,6 +9,8 @@ import {
 import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
 import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
 import { MaestroInscripcion } from './maestroInscripcion.entity';
+import { MatriculaEstudiante } from './matriculaEstudiante.entity';
+import { OfertaCurricular } from './ofertaCurricular.entity';
 import { Operativo } from './operativo.entity';
 import { OperativoEtapaEducativa } from './operativoEtapaEducativa.entity';
 import { Tramite } from './tramite.entity';
@@ -67,4 +69,12 @@ export class GestionTipo {
 
   @OneToMany(() => Tramite, (tramite) => tramite.gestionTipo)
   tramites: Tramite[];
+
+  @OneToMany(() => OfertaCurricular, (ofertaCurricular) => ofertaCurricular.gestionTipo)
+  ofertasCurriculares: OfertaCurricular[];
+
+  @OneToMany(() => MatriculaEstudiante, (matriculaEstudiante) => matriculaEstudiante.gestionTipo)
+  matriculaEstudiantes: MatriculaEstudiante[];
+
 }
+

@@ -4,10 +4,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { CarreraAutorizada } from './carreraAutorizada.entity';
+import { OfertaCurricular } from './ofertaCurricular.entity';
 import { PlanEstudioCarrera } from './planEstudioCarrera.entity';
 
 @Entity({ name: 'instituto_plan_estudio_carrera', schema: 'public' })
@@ -54,4 +56,6 @@ export class InstitutoPlanEstudioCarrera {
   @JoinColumn({ name: 'plan_estudio_carrera_id', referencedColumnName: 'id'})
   planEstudioCarrera: PlanEstudioCarrera;
   
+  @OneToMany(() => OfertaCurricular, (ofertaCurricular) => ofertaCurricular.institutoPlanEstudioCarrera)
+  ofertasCurriculares: OfertaCurricular[];
 }
