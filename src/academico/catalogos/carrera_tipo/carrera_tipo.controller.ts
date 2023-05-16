@@ -27,6 +27,7 @@ export class CarreraTipoController {
     console.log("lista carreras");
     return await this.carreraTipoService.getAllCarreras();
   }
+ 
 
   @Get("getById/:id")
   async getOneById(@Param("id") id: string) {

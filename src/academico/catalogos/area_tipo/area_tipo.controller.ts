@@ -12,6 +12,10 @@ export class AreaTipoController {
   async getAll() {
     return await this.areaTipoService.getAll();
   }
+  @Get('cursos')
+  async getAllCursosAreas() {
+    return await this.areaTipoService.getListAreasCursos();
+  }
 
   @Get("getById/:id")
   async getOneById(@Param("id") id: string) {

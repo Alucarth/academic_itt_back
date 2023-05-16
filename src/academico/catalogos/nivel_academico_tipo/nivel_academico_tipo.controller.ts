@@ -10,4 +10,8 @@ export class NivelAcademicoTipoController {
     async getAll(){
         return await this.nivelAcademicoTipoService.getAllItt();
     }
+    @Get('cursos')
+    async getAllCursos(){
+        return await this.nivelAcademicoTipoService.getAllCursosItt();
+    }
 }

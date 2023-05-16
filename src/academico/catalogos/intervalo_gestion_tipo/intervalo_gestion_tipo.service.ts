@@ -10,9 +10,14 @@ export class IntervaloGestionTipoService {
         private intervaloGestionTipoRepository: Repository<IntervaloGestionTipo>,
         
     ){}
-        async getAllItt(){
-            return  await this.intervaloGestionTipoRepository.findBy({ 
-                id: In([1,4,5]),
-            });
-        }
+    async getAllItt(){
+        return  await this.intervaloGestionTipoRepository.findBy({ 
+            id: In([1,4]),
+        });
+    }
+    async getAllCursosItt(){
+        return  await this.intervaloGestionTipoRepository.findBy({ 
+            id: In([5]),
+        });
+    }
 }
