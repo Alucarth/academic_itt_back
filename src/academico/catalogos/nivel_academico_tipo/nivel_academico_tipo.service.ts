@@ -12,7 +12,7 @@ export class NivelAcademicoTipoService {
     ){}
         async getAllItt(){
             return  await this.nivelAcademicoTipoRepository.findBy({ 
-                id: In([1, 2]),
+                id: In([1,2,3]),
             });
         }
 }

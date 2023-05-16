@@ -13,6 +13,11 @@ export class CarreraAutorizadaController {
     async getCarrerasByIeId(@Param("id", ParseIntPipe) id: number) {
       return await this.carreraAutorizadaService.getCarrerasByIeId(id);
     }
+    @Get("cursos/ie/:id")
+    async getCursosByIeId(@Param("id", ParseIntPipe) id: number) {
+      return await this.carreraAutorizadaService.getCursosByIeId(id);
+    }
+
     @Get(":id")
     async getCarreraById(@Param("id", ParseIntPipe) id: number) {
       return await this.carreraAutorizadaService.getCarreraById(id);

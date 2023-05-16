@@ -71,11 +71,36 @@ export class CarreraAutorizadaRepository {
           .where("s.institucionEducativaId = :id ", { id })
           .getRawMany();
     }
+    async getAllCursosByIeId(id){
+        return  await this.dataSource.getRepository(CarreraAutorizada)
+        .createQueryBuilder("ca")
+        .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
+        .innerJoinAndSelect("ca.carreraTipo", "ct")
+        .innerJoinAndSelect("ca.areaTipo", "at")
+        .innerJoinAndSelect("ca.resoluciones", "r")
+        .innerJoinAndSelect("r.resolucionTipo", "rt")
+        .innerJoinAndSelect("r.nivelAcademicoTipo", "na")
+        .innerJoinAndSelect("r.intervaloGestionTipo", "ig")
+        .select([
+            'ca.id as carrera_autorizada_id',
+            'ct.carrera as carrera',
+            'at.area as area',
+            'r.numero_resolucion as numero_resolucion',
+            'r.fecha_resolucion as fecha_resolucion',
+            'r.tiempo_estudio as tiempo_estudio',
+            'r.carga_horaria as carga_horaria',
+            'r.resuelve as resuelve',
+            'na.nivel_academico as nivel_academico',
+            'ig.intervalo_gestion as regimen_estudio',
+            'rt.resolucion_tipo as tipo_tramite',
+        ])
+          .where("s.institucionEducativaId = :id ", { id })
+          .andWhere("at.id = 1 ")
+          .getRawMany();
+    }
+
     async getCarreraAutorizadaById(id){
-
-        console.log("carrera datos");
-        console.log(id);
-
+        
         return  await this.dataSource.getRepository(CarreraAutorizada)
         .createQueryBuilder("ca")
         .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")

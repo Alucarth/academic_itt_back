@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { AulaDocente } from './aulaDocente.entity';
 import { CargoTipo } from './cargoTipo.entity';
 import { EspecialidadTipo } from './especialidadTipo.entity';
 import { FinanciamientoTipo } from './financiamientoTipo.entity';
@@ -111,5 +112,8 @@ export class MaestroInscripcion {
 
   @OneToMany(() => MaestroInscripcionIdioma , (maestroInscripcionIdioma) => maestroInscripcionIdioma.maestroInscripcion)
   maestrosInscripcionesIdiomas: MaestroInscripcionIdioma[];
+
+  @OneToMany(() => AulaDocente, (aulaDocente) => aulaDocente.maestroInscripcion)
+  aulasDocentes: AulaDocente[];
   
 }

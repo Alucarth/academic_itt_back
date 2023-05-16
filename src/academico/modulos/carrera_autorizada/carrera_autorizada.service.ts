@@ -20,11 +20,33 @@ export class CarreraAutorizadaService {
       }
       async getCarrerasByIeId(id: number) {
         const carreras = await this.carreraAutorizadaRepositorio.geAllCarrerasByIeId(id);
-        return this._serviceResp.respuestaHttp201(
-            carreras,
-            "Datos Encontrados !!",
-            ""
-          );
+        if(carreras.length>0){
+            return this._serviceResp.respuestaHttp201(
+                carreras,
+                "Datos Encontrados !!",
+                ""
+              );    
+        }
+        return this._serviceResp.respuestaHttp500(
+            "",
+            'No se encontraron resultados !!',
+            '',
+        );
+      }
+      async getCursosByIeId(id: number) {
+        const cursos = await this.carreraAutorizadaRepositorio.getAllCursosByIeId(id);
+        if(cursos.length>0){
+            return this._serviceResp.respuestaHttp201(
+                cursos,
+                "Datos Encontrados !!",
+                ""
+              );    
+        }
+        return this._serviceResp.respuestaHttp500(
+            "",
+            'No se encontraron resultados !!',
+            '',
+        );
       }
       async getCarreraById(id: number) {
         const carrera = await this.carreraAutorizadaRepositorio.getCarreraAutorizadaById(id);

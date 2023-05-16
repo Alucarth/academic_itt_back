@@ -8,27 +8,21 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Aula } from './aula.entity';
+import { BajaTipo } from './bajaTipo.entity';
 import { DiaTipo } from './diaTipo.entity';
-import { EtapaEducativa } from './etapaEducativa.entity';
-import { InstitucionEducativa } from './institucionEducativa.entity';
-import { Operativo } from './operativo.entity';
-import { OperativoEtapaEducativa } from './operativoEtapaEducativa.entity';
-import { PlanEstudio } from './planEstudio.entity';
-import { SistemaEducacionTipo } from './sistemaEducacionTipo.entity';
+import { MaestroInscripcion } from './maestroInscripcion.entity';
 
 @Entity({ name: 'aula_docente', schema: 'public' })
 export class AulaDocente {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'hora_inicio' })
-  horaInicio: string;
+  @Column({ type: 'date', name: 'asignacion_fecha_inicio' })
+  asignacionFechaInicio: string;
 
-  @Column({ type: 'varchar', name: 'hora_fin' })
-  horaFin: string;
-
-  @Column({ type: 'varchar', name: 'aula' })
-  aula: string;
+  @Column({ type: 'date', name: 'asignacion_fecha_fin' })
+  asignacionFechaFin: string;
 
   @Column({ type: 'varchar', name: 'observacion' })
   observacion: string;
@@ -52,10 +46,24 @@ export class AulaDocente {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
  
-  @Column({ type: 'integer', name: 'dia_tipo_id' })
-  diaTipoId: number;
+  @Column({ type: 'integer', name: 'aula_id' })
+  aulaId: number;
 
-  @ManyToOne(() => DiaTipo, (diaTipo) => diaTipo.aulasDetalles, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'dia_tipo_id', referencedColumnName: 'id'})
-  diaTipo: DiaTipo;
+  @ManyToOne(() => Aula, (aula) => aula.aulasDocentes, { nullable: false, cascade: true })
+  @JoinColumn({ name: 'aula_id', referencedColumnName: 'id'})
+  aula: Aula;
+
+  @Column({ type: 'integer', name: 'maestro_inscripcion_id' })
+  maestroInscripcionId: number;
+
+  @ManyToOne(() => MaestroInscripcion, (maestroInscripcion) => maestroInscripcion.aulasDocentes, { nullable: false, cascade: true })
+  @JoinColumn({ name: 'maestro_inscripcion_id', referencedColumnName: 'id'})
+  maestroInscripcion: MaestroInscripcion;
+
+  @Column({ type: 'integer', name: 'baja_tipo_id' })
+  bajaTipoId: number;
+
+  @ManyToOne(() => BajaTipo, (bajaTipo) => bajaTipo.aulasDocentes, { nullable: false, cascade: true })
+  @JoinColumn({ name: 'baja_tipo_id', referencedColumnName: 'id'})
+  bajaTipo: BajaTipo;
 }

@@ -8,6 +8,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { AulaDetalle } from './aulaDetalle.entity';
+import { AulaDocente } from './aulaDocente.entity';
 import { DiaTipo } from './diaTipo.entity';
 import { InstitutoEstudianteInscripcion } from './InstitutoEstudianteInscripcion.entity';
 import { OfertaCurricular } from './ofertaCurricular.entity';
@@ -17,17 +19,14 @@ export class Aula {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'hora_inicio' })
-  horaInicio: string;
+  @Column({ type: 'varchar', name: 'cupo' })
+  cupo: string;
 
-  @Column({ type: 'varchar', name: 'hora_fin' })
-  horaFin: string;
+  @Column({ type: 'varchar', name: 'paralelo' })
+  paralelo: string;
 
-  @Column({ type: 'varchar', name: 'aula' })
-  aula: string;
-
-  @Column({ type: 'varchar', name: 'observacion' })
-  observacion: string;
+  @Column({ type: 'boolean', name: 'activo' })
+  activo: boolean;
   
   @Exclude()
   @UpdateDateColumn({
@@ -64,4 +63,10 @@ export class Aula {
 
   @OneToMany(() => InstitutoEstudianteInscripcion, (institutoEstudianteInscripcion) => institutoEstudianteInscripcion.aula)
   institutoEstudianteInscripcions: InstitutoEstudianteInscripcion[];
+
+  @OneToMany(() => AulaDetalle, (aulaDetalle) => aulaDetalle.aula)
+  aulasDetalles: AulaDetalle[];
+
+  @OneToMany(() => AulaDocente, (aulaDocente) => aulaDocente.aula)
+  aulasDocentes: AulaDocente[];
 }

@@ -12,7 +12,7 @@ export class IntervaloGestionTipoService {
     ){}
         async getAllItt(){
             return  await this.intervaloGestionTipoRepository.findBy({ 
-                id: In([1, 4]),
+                id: In([1,4,5]),
             });
         }
 }

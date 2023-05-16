@@ -13,6 +13,10 @@ export class PlanEstudioAsignaturaRepository {
     async getAll(){
         return  await this.dataSource.getRepository(PlanEstudioAsignatura).find();
     }
+    /*
+    async getAsignaturasByPLanEstudioUId(){
+        return  await this.dataSource.getRepository(PlanEstudioAsignatura).find({planEstudioCarrera});
+    }*/
     async crearPlanEstudioAsignatura(idUsuario, asignaturas, transaction) {
 
         const planesAsignaturas: PlanEstudioAsignatura[] = asignaturas.map((item) => {

@@ -24,7 +24,14 @@ export class PlanEstudioAsignaturaService {
        
         console.log("lista array inicio");
         console.log(dto);
+        console.log(dto.length);
         console.log("lista array");
+       /* const planesAsignaturas = this.planEstudioAsignaturaRepository.getAsignaturasByPLanEstudioUId();
+
+        const  nuevos = this.verificarPlanAsignatura(
+            usuarioRoles,
+            roles
+          )*/
         
             const op = async (transaction: EntityManager) => {
 
