@@ -8,8 +8,26 @@ import { RespuestaSigedService } from "src/shared/respuesta.service";
 import { PersonaService } from "src/academico/modulos/persona/persona.service";
 import { PersonaModule } from '../persona/persona.module';
 
+import { MatriculaEstudiante } from "../../entidades/matriculaEstudiante.entity";
+import { InstitucionEducativaEstudiante } from "../../entidades/InstitucionEducativaEstudiante.entity";
+import { InstitutoEstudianteInscripcion } from "../../entidades/InstitutoEstudianteInscripcion.entity";
+import { InstitucionEducativaSucursal } from "../../entidades/institucionEducativaSucursal.entity";
+import { GestionTipo } from "../../entidades/gestionTipo.entity";
+import { PeriodoTipo } from "../../entidades/periodoTipo.entity";
+import { PlanEstudioCarrera } from "../../entidades/planEstudioCarrera.entity";
+
 @Module({
-  imports: [DatabaseModule, PersonaModule],
+  imports: [
+    DatabaseModule,
+    PersonaModule,
+    TypeOrmModule.forFeature([MatriculaEstudiante]),
+    TypeOrmModule.forFeature([InstitucionEducativaEstudiante]),
+    TypeOrmModule.forFeature([InstitutoEstudianteInscripcion]),
+    TypeOrmModule.forFeature([InstitucionEducativaSucursal]),
+    TypeOrmModule.forFeature([GestionTipo]),
+    TypeOrmModule.forFeature([PeriodoTipo]),
+    TypeOrmModule.forFeature([PlanEstudioCarrera]),
+  ],
   controllers: [InscripcionController],
   providers: [InscripcionService, RespuestaSigedService],
 })

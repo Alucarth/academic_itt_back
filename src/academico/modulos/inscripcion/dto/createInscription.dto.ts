@@ -8,7 +8,7 @@ export class CreateInscriptionDto {
   @IsString()
   @Transform(({ value }) => value?.trim())
   observacion: string;
-  
+
   @IsNotEmpty()
   @IsNumber()
   institucionEducativaSucursalId: number;
@@ -17,5 +17,23 @@ export class CreateInscriptionDto {
   @IsNumber()
   personaId: number;
 
-  
+  @IsNotEmpty({ message: "codigoEstudiante es requerido" })
+  @IsString()
+  codigoEstudiante: string;
+
+  @IsNotEmpty({ message: "docMatricula es requerido" })
+  @IsString()
+  docMatricula;
+
+  @IsNotEmpty()
+  @IsNumber()
+  gestionTipoId: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  periodoTipoId: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  planEstudioCarreraTipoId: number;
 }
