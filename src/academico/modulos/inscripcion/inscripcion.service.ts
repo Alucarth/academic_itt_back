@@ -259,7 +259,7 @@ export class InscripcionService {
     //2: existe aula ?
     const aula = await this.aulaRepository.findOne({
       where: {
-        id: dto.aulaId
+        id: dto.aulaId,
       },
     });
     if (!aula) {
@@ -273,7 +273,7 @@ export class InscripcionService {
     //3: existe estado matricula ?
     const estadoMatriculaTipo = await this.estadoMatriculaRepository.findOne({
       where: {
-        id: dto.estadoMatriculaTipoId
+        id: dto.estadoMatriculaTipoId,
       },
     });
     if (!estadoMatriculaTipo) {
@@ -281,15 +281,16 @@ export class InscripcionService {
         "0",
         "estadoMatriculaTipo No Encontrado !!",
         ""
-      );    
+      );
     }
 
     //4: existe estado matricula Inicio?
-    const estadoMatriculaTipoInicio = await this.estadoMatriculaRepository.findOne({
-      where: {
-        id: dto.estadoMatriculaInicioTipoId
-      },
-    });
+    const estadoMatriculaTipoInicio =
+      await this.estadoMatriculaRepository.findOne({
+        where: {
+          id: dto.estadoMatriculaInicioTipoId,
+        },
+      });
     if (!estadoMatriculaTipoInicio) {
       return this._serviceResp.respuestaHttp404(
         "0",
@@ -301,7 +302,7 @@ export class InscripcionService {
     //5: existe oferta curricular?
     const ofertaCurricular = await this.ofertaCurricularRepository.findOne({
       where: {
-        id: dto.ofertaCurricularId
+        id: dto.ofertaCurricularId,
       },
     });
     if (!ofertaCurricular) {
@@ -312,53 +313,109 @@ export class InscripcionService {
       );
     }
 
+    //6: ya existe el mismo registro ?
+    const existe = await this.inscripcionRepository.query(`
+        select count(*) as existe 
+        from instituto_estudiante_inscripcion 
+        where 
+        matricula_estudiante_id = ${dto.matriculaEstudianteId}  and 
+        aula_id = ${dto.aulaId} and 
+        estadomatricula_tipo_id = ${dto.estadoMatriculaTipoId} and 
+        estadomatricula_inicio_tipo_id = ${dto.estadoMatriculaInicioTipoId} and 
+        oferta_curricular_id = ${dto.ofertaCurricularId}  
+        `);
+
+    if (parseInt(existe[0].existe) != 0) {
+      return this._serviceResp.respuestaHttp404(
+        "0",
+        "registro de inscripcion ya existe !!",
+        ""
+      );
+    }
+
     //insert en instituto_estudiante_inscripcion
 
     try {
-
-        const res = await this.inscripcionRepository
-          .createQueryBuilder()
-          .insert()
-          .into(InstitutoEstudianteInscripcion)
-          .values([
-            {
-              observacion: dto.observacion,
-              usuarioId: 0,
-              estadoMatriculaInicioTipoId: dto.estadoMatriculaInicioTipoId,
-              aula: aula,
-              ofertaCurricular: ofertaCurricular,
-              estadoMatriculaTipo: estadoMatriculaTipo,
-              matriculaEstudiante: matriculaEstudiante,
-            },
-          ])
-          .returning("id")
-          .execute();
-
-        console.log("res:", res);
-        let inscripcionId = res.identifiers[0].id;
-
-        return this._serviceResp.respuestaHttp201(
-          inscripcionId,
-          "Registro Creado !!",
-          ""
-        );
-
-
-        
-    } catch (error) {
-
-        console.log("Error insertar inscripcion: ", error);
-        throw new HttpException(
+      const res = await this.inscripcionRepository
+        .createQueryBuilder()
+        .insert()
+        .into(InstitutoEstudianteInscripcion)
+        .values([
           {
-            status: HttpStatus.CONFLICT,
-            error: `Error insertar Matricula: ${error.message}`,
+            observacion: dto.observacion,
+            usuarioId: 0,
+            estadoMatriculaInicioTipoId: dto.estadoMatriculaInicioTipoId,
+            aula: aula,
+            ofertaCurricular: ofertaCurricular,
+            estadoMatriculaTipo: estadoMatriculaTipo,
+            matriculaEstudiante: matriculaEstudiante,
           },
-          HttpStatus.ACCEPTED,
-          {
-            cause: error,
-          }
-        );
-        
+        ])
+        .returning("id")
+        .execute();
+
+      console.log("res:", res);
+      let inscripcionId = res.identifiers[0].id;
+
+      return this._serviceResp.respuestaHttp201(
+        inscripcionId,
+        "Registro Creado !!",
+        ""
+      );
+    } catch (error) {
+      console.log("Error insertar inscripcion: ", error);
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: `Error insertar Matricula: ${error.message}`,
+        },
+        HttpStatus.ACCEPTED,
+        {
+          cause: error,
+        }
+      );
     }
+  }
+
+  async getAllMatriculadosByGestion(gestionId: number, periodoId: number, carreraId: number, ieId:number) {
+
+    const result = await this.inscripcionRepository.query(`
+    SELECT
+    institucion_educativa.ID,
+    institucion_educativa.institucion_educativa,
+    institucion_educativa_sucursal.ID AS ie_sucursal_id,
+    institucion_educativa_sucursal.sucursal_codigo,
+    institucion_educativa_sucursal.sucursal_nombre,
+    institucion_educativa_estudiante.persona_id,
+    persona.carnet_identidad,
+    persona.complemento,
+    concat ( persona.paterno, ' ', persona.materno, ' ', persona.nombre ) AS alumno,
+    matricula_estudiante.gestion_tipo_id,
+    matricula_estudiante.periodo_tipo_id,
+    matricula_estudiante.doc_matricula,
+    carrera_tipo.id AS carrera_id,
+    carrera_tipo.carrera 
+    FROM
+    institucion_educativa_estudiante
+    INNER JOIN matricula_estudiante ON institucion_educativa_estudiante.id = matricula_estudiante.institucion_educativa_estudiante_id
+    INNER JOIN plan_estudio_carrera ON matricula_estudiante.plan_estudio_carrera_id = plan_estudio_carrera.id
+    INNER JOIN carrera_tipo ON plan_estudio_carrera.carrera_tipo_id = carrera_tipo.id
+    INNER JOIN institucion_educativa_sucursal ON institucion_educativa_estudiante.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id
+    INNER JOIN institucion_educativa ON institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa.id
+    INNER JOIN persona ON institucion_educativa_estudiante.persona_id = persona.id
+    WHERE matricula_estudiante.gestion_tipo_id = 2023 and periodo_tipo_id = 1 and carrera_tipo.id = 4
+    order by persona.paterno, persona.materno, persona.nombre
+    `);
+    
+    console.log('result: ', result);
+
+    return this._serviceResp.respuestaHttp200(
+      result,
+      "Registro Encontrado !!",
+      ""
+    );
+
+
+
   }
 }

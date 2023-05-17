@@ -5,8 +5,7 @@ import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-v
 export class CreatePersonaoDto {
 
     @IsNotEmpty({ message: "el Numero de Carnet es requerido" })
-    @IsString()
-    @Transform(({ value }) => value?.trim())
+    @IsString()    
     carnetIdentidad: string;
 
     @IsString()
