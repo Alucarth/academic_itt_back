@@ -69,6 +69,7 @@ export class CarreraAutorizadaRepository {
             'rt.resolucion_tipo as tipo_tramite',
         ])
           .where("s.institucionEducativaId = :id ", { id })
+          .andWhere("ca.areaTipoId > 1 ")
           .getRawMany();
     }
     async getAllCursosByIeId(id){

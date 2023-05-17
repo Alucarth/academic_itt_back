@@ -18,4 +18,8 @@ export class PeriodoTipoController {
     async getById(@Param('id', ParseIntPipe) id: number):Promise<PeriodoTipo>{
         return await this.periodoTipoService.getById(id);
     }
+    @Get('regimen/:id')
+    async getPeridodByIntervalo(@Param('id', ParseIntPipe) id: number){
+       return await this.periodoTipoService.getPeriodoByIntervalo(id)
+    }
 }

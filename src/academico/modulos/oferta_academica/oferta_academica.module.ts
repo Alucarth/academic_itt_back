@@ -4,6 +4,7 @@ import { OfertaAcademicaRepository } from './oferta_academica.repository';
 import { OfertaAcademicaService } from './oferta_academica.service';
 
 @Module({
+  
   controllers: [OfertaAcademicaController],
   providers: [OfertaAcademicaService, OfertaAcademicaRepository]
 })

@@ -16,4 +16,8 @@ export class PeriodoTipoService {
         const periodo = await this.periodoTipoRepository.findOneBy({ id : id })
         return periodo
     }
+    async getPeriodoByIntervalo(id: number){
+        const periodo = await this.periodoTipoRepository.findBy({ intervaloGestionTipoId : id })
+        return periodo
+    }
 }

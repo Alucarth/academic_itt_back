@@ -52,6 +52,9 @@ export class PeriodoTipo {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
+  @Column({ type: 'integer', name: 'intervalo_gestion_tipo_id' })
+  intervaloGestionTipoId: number;
+
   @ManyToOne(() => IntervaloGestionTipo, (intervaloGestionTipo) => intervaloGestionTipo.periodos, { nullable: false, cascade: true })
   @JoinColumn({ name: 'intervalo_gestion_tipo_id', referencedColumnName: 'id'})
   intervaloGestionTipo: IntervaloGestionTipo;

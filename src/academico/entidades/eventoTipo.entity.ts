@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Operativo } from './operativo.entity';
+import { OperativoCarreraAutorizada } from './operativoCarreraAutorizada.entity';
 import { OperativoEtapaEducativa } from './operativoEtapaEducativa.entity';
 
 @Entity({ name: 'evento_tipo', schema: 'public' })
@@ -45,4 +46,7 @@ export class EventoTipo {
   @OneToMany(() => OperativoEtapaEducativa, (operativoEtapaEducativa) => operativoEtapaEducativa.eventoTipo)
   operativosEtapas: OperativoEtapaEducativa[];
 
+  @OneToMany(() => OperativoCarreraAutorizada, (operativoCarreraAutorizada) => operativoCarreraAutorizada.carreraAutorizada)
+  operativosCarreras: OperativoCarreraAutorizada[];
+  
 }
