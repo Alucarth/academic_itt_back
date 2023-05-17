@@ -21,9 +21,20 @@ export class OperativoCarreraAutorizadaRepository {
         .innerJoinAndSelect("a.gestionTipo", "g")
         .innerJoinAndSelect("a.periodoTipo", "p")
         .innerJoinAndSelect("a.eventoTipo", "e")
+        .select([
+            'g.gestion as gestion',
+            'g.id as gestion_tipo_id',
+            'p.periodo as periodo',
+            'p.id as periodo_tipo_id',
+            'a.fechaInicio as fecha_inicio',
+            'a.fechaFin as fecha_fin',
+            'a.observacion as observacion',
+            'a.activo as activo',
+            'a.id as id',
+        ])
         .where('a.carreraAutorizadaId = :id ', { id })
         .orderBy('a.id', 'ASC')
-        .getMany();
+        .getRawMany();
         console.log("ofertas desde backen");
         console.log(operativos);
         return operativos;
