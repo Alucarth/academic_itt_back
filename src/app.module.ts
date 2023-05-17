@@ -69,6 +69,9 @@ import { CarreraAutorizadaModule } from './academico/modulos/carrera_autorizada/
 import { InstitutoPlanEstudioCarreraModule } from './academico/modulos/instituto_plan_estudio_carrera/instituto_plan_estudio_carrera.module';
 import { InscripcionModule } from './academico/modulos/inscripcion/inscripcion.module';
 import { RegimenGradoTipoModule } from './academico/catalogos/regimen_grado_tipo/regimen_grado_tipo.module';
+import { OperativoCarreraAutorizadaModule } from './academico/modulos/operativo_carrera_autorizada/operativo_carrera_autorizada.module';
+import { OfertaCurricularModule } from './academico/modulos/oferta_curricular/oferta_curricular.module';
+import { AulaModule } from './academico/modulos/aula/aula.module';
 
 
 
@@ -162,6 +165,12 @@ import { RegimenGradoTipoModule } from './academico/catalogos/regimen_grado_tipo
     InscripcionModule,
 
     RegimenGradoTipoModule,
+
+    OperativoCarreraAutorizadaModule,
+
+    OfertaCurricularModule,
+
+    AulaModule,
 
 
   ]

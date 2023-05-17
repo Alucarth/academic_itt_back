@@ -28,8 +28,8 @@ export class InstitucionEducativaCursoRepository {
         .innerJoinAndSelect("a.ofertasAcademicas", "o")
         .innerJoinAndSelect("o.asignaturaTipo", "at")
         .where('a.periodoTipo = :periodo ', { periodo })
-        .where('a.gestionTipo = :gestion ', { gestion })
-        .where('s.institucionEducativa = :sie ', { sie })
+        .andWhere('a.gestionTipo = :gestion ', { gestion })
+        .andWhere('s.institucionEducativa = :sie ', { sie })
         .orderBy('a.id', 'ASC')
         .getMany();
         console.log("ofertas desde backen");
@@ -49,8 +49,8 @@ export class InstitucionEducativaCursoRepository {
                 .innerJoinAndSelect("o.asignaturaTipo", "at")
                 .innerJoinAndSelect("a.etapaEducativa", "e")
                 .where('a.periodoTipo = :periodo ', { periodo })
-                .where('a.gestionTipo = :gestion ', { gestion })
-                .where('e.etapaEducativaId = :id ', { id })
+                .andWhere('a.gestionTipo = :gestion ', { gestion })
+                .andWhere('e.etapaEducativaId = :id ', { id })
                 .orderBy('a.id', 'ASC')
                 .getMany();
                 console.log("ofertas desde backen");

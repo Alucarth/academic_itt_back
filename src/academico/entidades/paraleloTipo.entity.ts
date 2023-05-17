@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Aula } from './aula.entity';
 import { EtapaEducativaAsignaturaNivelAcademico } from './etapaEducativaAsignaturaNivelAcademico.entity';
 import { InstitucionEducativaAcreditacionEspecialidadNivelAcademico } from './institucionEducativaAcreditacionEspecialidadNivelAcademico.entity';
 import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
@@ -46,5 +47,8 @@ export class ParaleloTipo {
 
   @OneToMany(() => InstitucionEducativaCurso, (institucionEducativaCurso) => institucionEducativaCurso.paraleloTipo)
   cursos: InstitucionEducativaCurso[];
+
+  @OneToMany(() => Aula, (aula) => aula.paraleloTipo)
+  aulas: Aula[];
 
 }

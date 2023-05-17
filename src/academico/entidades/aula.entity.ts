@@ -13,6 +13,7 @@ import { AulaDocente } from './aulaDocente.entity';
 import { DiaTipo } from './diaTipo.entity';
 import { InstitutoEstudianteInscripcion } from './InstitutoEstudianteInscripcion.entity';
 import { OfertaCurricular } from './ofertaCurricular.entity';
+import { ParaleloTipo } from './paraleloTipo.entity';
 
 @Entity({ name: 'aula', schema: 'public' })
 export class Aula {
@@ -69,4 +70,12 @@ export class Aula {
 
   @OneToMany(() => AulaDocente, (aulaDocente) => aulaDocente.aula)
   aulasDocentes: AulaDocente[];
+
+  @Column({ type: 'integer', name: 'paralelo_tipo_id' })
+  paraleloTipoId: number;
+
+  @ManyToOne(() => ParaleloTipo, (paraleloTipo) => paraleloTipo.aulas, { nullable: false, cascade: true })
+  @JoinColumn({ name: 'paralelo_tipo_id', referencedColumnName: 'id'})
+  paraleloTipo: ParaleloTipo;
+
 }

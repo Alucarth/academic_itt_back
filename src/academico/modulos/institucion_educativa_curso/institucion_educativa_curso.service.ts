@@ -3,7 +3,6 @@ import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { EntityManager } from 'typeorm';
 import { EtapaEducativaAsignaturaRepository } from '../etapa_educativa_asignatura/etapa_educativa_asignatura.repository';
 import { InstitucionEducativaSucursalRepository } from '../institucion_educativa_sucursal/institucion_educativa_sucursal.repository';
-import { InstitucionEducativaSucursalService } from '../institucion_educativa_sucursal/institucion_educativa_sucursal.service';
 import { OfertaAcademicaRepository } from '../oferta_academica/oferta_academica.repository';
 import { CreateInstitucionEducativaCursoDto } from './dto/createInstitucionEducativaCurso.dto';
 import { UpdateInstitucionEducativaCursoDto } from './dto/updateInstitucionEducativaCurso';
