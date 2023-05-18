@@ -9,7 +9,7 @@ export class ParaleloTipoController {
         ){}
 
     @Get()
-    async getAll():Promise<ParaleloTipo[]>{
+    async getAll(){
         return await this.paraleloTipoService.getAll();
     }
     @Get(':id')

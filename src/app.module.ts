@@ -72,6 +72,7 @@ import { RegimenGradoTipoModule } from './academico/catalogos/regimen_grado_tipo
 import { OperativoCarreraAutorizadaModule } from './academico/modulos/operativo_carrera_autorizada/operativo_carrera_autorizada.module';
 import { OfertaCurricularModule } from './academico/modulos/oferta_curricular/oferta_curricular.module';
 import { AulaModule } from './academico/modulos/aula/aula.module';
+import { DiaTipoModule } from './academico/catalogos/dia_tipo/dia_tipo.module';
 
 
 
@@ -171,6 +172,8 @@ import { AulaModule } from './academico/modulos/aula/aula.module';
     OfertaCurricularModule,
 
     AulaModule,
+
+    DiaTipoModule,
 
 
   ]

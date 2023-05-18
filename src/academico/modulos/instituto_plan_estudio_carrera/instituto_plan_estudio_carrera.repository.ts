@@ -47,6 +47,36 @@ export class InstitutoPlanEstudioCarreraRepository {
         return itt;
     }
 
+    async findPlanAsignaturasById( id:number){
+        const itt = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera)
+        .createQueryBuilder("ip")
+        .innerJoinAndSelect("ip.planEstudioCarrera", "pe")       
+        .innerJoinAndSelect("pe.planEstudioResolucion", "pr")       
+        .leftJoinAndSelect("pe.planesAsignaturas", "pa")       
+        .leftJoinAndSelect("pa.regimenGradoTipo", "rg")     
+        .leftJoinAndSelect("pa.asignaturaTipo", "a")       
+          
+        .select([
+            'ip.id',
+            'ip.observacion',
+            'pe.id',
+            'pr.id',
+            'pr.numeroResolucion',
+            'pr.fechaResolucion',
+            'pr.descripcion',
+            'pr.activo',
+            'pa.horas',
+            'rg.id',
+            'rg.regimenGrado',
+            'a.asignatura',
+            'a.abreviacion',
+        ])
+        .where('ip.id = :id ', { id })
+        .orderBy('rg.id', 'ASC')
+        //.orderBy('a.id', 'ASC')
+        .getMany();
+        return itt;
+    }
 
     async createInstitutoPlanEstudioCarrera(idUsuario,dto:CreateInstitutoPlanEstudioCarreraDto, transaction) {
           

@@ -17,6 +17,10 @@ export class InstitutoPlanEstudioCarreraController {
     async getResolucionesCarreraAutorizadaById(@Param('id', ParseIntPipe) id: number){
         return await this.institutoPlanEstudioCarreraService.getResolucionesCarreraAutorizadaId(id);
     }
+    @Get(':id')
+    async getById(@Param('id', ParseIntPipe) id: number){
+        return await this.institutoPlanEstudioCarreraService.getPlanAsignaturaById(id);
+    }
     
     @Post()
     async createCurso(@Body() dto: CreateInstitutoPlanEstudioCarreraDto){

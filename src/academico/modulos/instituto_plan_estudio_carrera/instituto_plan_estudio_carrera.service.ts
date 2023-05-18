@@ -13,15 +13,18 @@ export class InstitutoPlanEstudioCarreraService {
     ){}
 
     async getAll(){
-        const sucursales = await this.institutoPlanEstudioCarreraRepository.getAll();
-        return sucursales;
+        const data = await this.institutoPlanEstudioCarreraRepository.getAll();
+        return data;
 
     }
     async getResolucionesCarreraAutorizadaId( id:number ){
-        const sucursal = await this.institutoPlanEstudioCarreraRepository.findResolucionesCarreraAutorizadaId(id);
-        return sucursal;
+       const result = await this.institutoPlanEstudioCarreraRepository.findResolucionesCarreraAutorizadaId(id);
+       return result;    
+    }
 
-        
+    async getPlanAsignaturaById( id:number ){
+        const result = await this.institutoPlanEstudioCarreraRepository.findPlanAsignaturasById(id);
+        return result;
     }
 
     async createInstitutoPlan (dto: CreateInstitutoPlanEstudioCarreraDto) {
