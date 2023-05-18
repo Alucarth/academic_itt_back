@@ -25,7 +25,23 @@ export class OperativoCarreraAutorizadaService {
                 '',
             );
         }
-        return this._serviceResp.respuestaHttp400(
+        return this._serviceResp.respuestaHttp404(
+            "",
+            'No se encontraron resultados!!',
+            '',
+        );
+
+    }
+    async findOperativoActivoCarrera(id:number){
+        const operativos = await this.operativoCarreraAutorizadaRepositorio.getOperativoVigenteCarrera(id);
+        if(operativos.length > 0){
+            return this._serviceResp.respuestaHttp201(
+                operativos,
+                'Existen resultados encontrados !!',
+                '',
+            );
+        }
+        return this._serviceResp.respuestaHttp404(
             "",
             'No se encontraron resultados!!',
             '',

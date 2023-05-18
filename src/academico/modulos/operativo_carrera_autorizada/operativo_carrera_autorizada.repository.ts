@@ -40,6 +40,33 @@ export class OperativoCarreraAutorizadaRepository {
         return operativos;
         
     }
+    async getOperativoVigenteCarrera(id:number ){
+        
+        const operativos = await this.dataSource.getRepository(OperativoCarreraAutorizada)
+        .createQueryBuilder("a")
+        .innerJoinAndSelect("a.gestionTipo", "g")
+        .innerJoinAndSelect("a.periodoTipo", "p")
+        .innerJoinAndSelect("a.eventoTipo", "e")
+        .select([
+            'g.gestion as gestion',
+            'g.id as gestion_tipo_id',
+            'p.periodo as periodo',
+            'p.id as periodo_tipo_id',
+            'a.fechaInicio as fecha_inicio',
+            'a.fechaFin as fecha_fin',
+            'a.observacion as observacion',
+            'a.activo as activo',
+            'a.id as id',
+        ])
+        .where('a.carreraAutorizadaId = :id ', { id })
+        .andWhere('a.activo = true')
+        .orderBy('a.id', 'ASC')
+        .getRawMany();
+        console.log("ofertas desde backen");
+        console.log(operativos);
+        return operativos;
+        
+    }
 
     async createOperativoCarrera(dto: CreateOperativoCarreraAutorizadaDto, transaction) {
        

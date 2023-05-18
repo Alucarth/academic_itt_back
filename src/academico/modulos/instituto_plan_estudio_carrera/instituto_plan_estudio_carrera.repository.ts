@@ -65,6 +65,7 @@ export class InstitutoPlanEstudioCarreraRepository {
             'pr.fechaResolucion',
             'pr.descripcion',
             'pr.activo',
+            'pa.id',
             'pa.horas',
             'rg.id',
             'rg.regimenGrado',

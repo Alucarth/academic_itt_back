@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { CreatePlanEstudioAsignaturaDto } from './dto/createPlanEstudioAsignatura.dto';
 import { PlanEstudioAsignaturaService } from './plan_estudio_asignatura.service';
 
@@ -11,6 +11,12 @@ export class PlanEstudioAsignaturaController {
     @Get()
     async getPlanesAsignaturas(){
        return await this.planEstudioAsignaturaService.getAll();
+    }
+    @Get('plan-regimen/:idplan/:idregimen')
+    async getAsignaturasByPlanRegimen(
+      @Param('idplan', ParseIntPipe) idplan: number, 
+      @Param('idregimen', ParseIntPipe) idregimen: number){
+       return await this.planEstudioAsignaturaService.getAsignaturasByPlanRegimen(idplan, idregimen);
     }
 
     @Post()

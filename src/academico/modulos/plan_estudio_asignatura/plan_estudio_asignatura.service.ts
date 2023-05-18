@@ -19,6 +19,22 @@ export class PlanEstudioAsignaturaService {
         const cursos = await this.planEstudioAsignaturaRepository.getAll()
         return cursos
     }
+    
+    async getAsignaturasByPlanRegimen(idplan:number, idregimen:number){
+        const cursos = await this.planEstudioAsignaturaRepository.findAsignaturasByPlanRegimen(idplan, idregimen);
+        if(cursos){
+            return this._serviceResp.respuestaHttp201(
+              cursos,
+              'Resultados encontrados !!',
+              '',
+          );
+        }
+        return this._serviceResp.respuestaHttp404(
+          "",
+          'No se encontraron resultados !!',
+          '',
+      );
+    }
 
     async crearPlanAsignatura (dto: CreatePlanEstudioAsignaturaDto[]) {
        

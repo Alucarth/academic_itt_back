@@ -23,9 +23,6 @@ export class Aula {
   @Column({ type: 'varchar', name: 'cupo' })
   cupo: string;
 
-  @Column({ type: 'varchar', name: 'paralelo' })
-  paralelo: string;
-
   @Column({ type: 'boolean', name: 'activo' })
   activo: boolean;
   

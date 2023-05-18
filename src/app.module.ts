@@ -73,6 +73,7 @@ import { OperativoCarreraAutorizadaModule } from './academico/modulos/operativo_
 import { OfertaCurricularModule } from './academico/modulos/oferta_curricular/oferta_curricular.module';
 import { AulaModule } from './academico/modulos/aula/aula.module';
 import { DiaTipoModule } from './academico/catalogos/dia_tipo/dia_tipo.module';
+import { AulaDetalleModule } from './academico/modulos/aula_detalle/aula_detalle.module';
 
 
 
@@ -174,6 +175,8 @@ import { DiaTipoModule } from './academico/catalogos/dia_tipo/dia_tipo.module';
     AulaModule,
 
     DiaTipoModule,
+
+    AulaDetalleModule,
 
 
   ]
