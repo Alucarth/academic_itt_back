@@ -377,45 +377,111 @@ export class InscripcionService {
     }
   }
 
-  async getAllMatriculadosByGestion(gestionId: number, periodoId: number, carreraId: number, ieId:number) {
+  async getAllMatriculadosByGestion(
+    gestionId: number,
+    periodoId: number,
+    carreraId: number,
+    ieId: number
+  ) {
+    //TODO: aumentar ueId
 
     const result = await this.inscripcionRepository.query(`
     SELECT
-    institucion_educativa.ID,
-    institucion_educativa.institucion_educativa,
-    institucion_educativa_sucursal.ID AS ie_sucursal_id,
-    institucion_educativa_sucursal.sucursal_codigo,
-    institucion_educativa_sucursal.sucursal_nombre,
-    institucion_educativa_estudiante.persona_id,
-    persona.carnet_identidad,
-    persona.complemento,
-    concat ( persona.paterno, ' ', persona.materno, ' ', persona.nombre ) AS alumno,
-    matricula_estudiante.gestion_tipo_id,
-    matricula_estudiante.periodo_tipo_id,
-    matricula_estudiante.doc_matricula,
-    carrera_tipo.id AS carrera_id,
-    carrera_tipo.carrera 
+        institucion_educativa.ID,
+        institucion_educativa.institucion_educativa,
+        institucion_educativa_sucursal.ID AS ie_sucursal_id,
+        institucion_educativa_sucursal.sucursal_codigo,
+        institucion_educativa_sucursal.sucursal_nombre,
+        institucion_educativa_estudiante.persona_id,
+        persona.carnet_identidad,
+        persona.complemento,
+        concat ( persona.paterno, ' ', persona.materno, ' ', persona.nombre ) AS alumno,
+        matricula_estudiante.gestion_tipo_id,
+        matricula_estudiante.periodo_tipo_id,
+        matricula_estudiante.doc_matricula,
+        carrera_tipo.id AS carrera_id,
+        carrera_tipo.carrera 
     FROM
-    institucion_educativa_estudiante
-    INNER JOIN matricula_estudiante ON institucion_educativa_estudiante.id = matricula_estudiante.institucion_educativa_estudiante_id
-    INNER JOIN plan_estudio_carrera ON matricula_estudiante.plan_estudio_carrera_id = plan_estudio_carrera.id
-    INNER JOIN carrera_tipo ON plan_estudio_carrera.carrera_tipo_id = carrera_tipo.id
-    INNER JOIN institucion_educativa_sucursal ON institucion_educativa_estudiante.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id
-    INNER JOIN institucion_educativa ON institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa.id
-    INNER JOIN persona ON institucion_educativa_estudiante.persona_id = persona.id
-    WHERE matricula_estudiante.gestion_tipo_id = 2023 and periodo_tipo_id = 1 and carrera_tipo.id = 4
+        institucion_educativa_estudiante
+        INNER JOIN matricula_estudiante ON institucion_educativa_estudiante.id = matricula_estudiante.institucion_educativa_estudiante_id
+        INNER JOIN plan_estudio_carrera ON matricula_estudiante.plan_estudio_carrera_id = plan_estudio_carrera.id
+        INNER JOIN carrera_tipo ON plan_estudio_carrera.carrera_tipo_id = carrera_tipo.id
+        INNER JOIN institucion_educativa_sucursal ON institucion_educativa_estudiante.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id
+        INNER JOIN institucion_educativa ON institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa.id
+        INNER JOIN persona ON institucion_educativa_estudiante.persona_id = persona.id
+    WHERE 
+        matricula_estudiante.gestion_tipo_id = ${gestionId} and 
+        periodo_tipo_id = ${periodoId} and 
+        carrera_tipo.id = ${carreraId}
     order by persona.paterno, persona.materno, persona.nombre
     `);
-    
-    console.log('result: ', result);
+
+    console.log("result: ", result);
 
     return this._serviceResp.respuestaHttp200(
       result,
       "Registro Encontrado !!",
       ""
     );
+  }
 
+  async getAllDetalleInscripcionPersona(
+    personaId: number,
+    gestionId: number,
+    periodoId: number,
+    carreraId: number,
+    ieId: number
+  ) {
+    //TODO: aumentar ueId
 
+    const result = await this.inscripcionRepository.query(`
+    SELECT
+        institucion_educativa.ID,
+        institucion_educativa.institucion_educativa,
+        institucion_educativa_sucursal.ID AS ie_sucursal_id,
+        institucion_educativa_sucursal.sucursal_codigo,
+        institucion_educativa_sucursal.sucursal_nombre,
+        institucion_educativa_estudiante.persona_id,
+        persona.carnet_identidad,
+        persona.complemento,
+        concat ( persona.paterno, ' ', persona.materno, ' ', persona.nombre ) AS alumno,
+        matricula_estudiante.gestion_tipo_id,
+        matricula_estudiante.periodo_tipo_id,
+        matricula_estudiante.doc_matricula,
+        carrera_tipo.id AS carrera_id,
+        carrera_tipo.carrera,
+				paralelo_tipo.paralelo,
+				asignatura_tipo.asignatura,
+				asignatura_tipo.abreviacion
+    FROM
+        institucion_educativa_estudiante
+        INNER JOIN matricula_estudiante ON institucion_educativa_estudiante.id = matricula_estudiante.institucion_educativa_estudiante_id
+				INNER JOIN instituto_estudiante_inscripcion on  instituto_estudiante_inscripcion.matricula_estudiante_id = matricula_estudiante.id
+        INNER JOIN plan_estudio_carrera ON matricula_estudiante.plan_estudio_carrera_id = plan_estudio_carrera.id
+        INNER JOIN carrera_tipo ON plan_estudio_carrera.carrera_tipo_id = carrera_tipo.id
+        INNER JOIN institucion_educativa_sucursal ON institucion_educativa_estudiante.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id
+        INNER JOIN institucion_educativa ON institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa.id
+        INNER JOIN persona ON institucion_educativa_estudiante.persona_id = persona.id
+				INNER JOIN aula  ON aula.id = instituto_estudiante_inscripcion.aula_id
+				INNER JOIN paralelo_tipo on paralelo_tipo.id = aula.paralelo_tipo_id
+				INNER JOIN oferta_curricular ON  oferta_curricular.id = instituto_estudiante_inscripcion.oferta_curricular_id
+				INNER JOIN plan_estudio_asignatura ON plan_estudio_asignatura.id = oferta_curricular.plan_estudio_asignatura_id
+				INNER JOIN asignatura_tipo on asignatura_tipo.id = plan_estudio_asignatura.asignatura_tipo_id
+				
+    WHERE 
+        matricula_estudiante.gestion_tipo_id = ${gestionId} and 
+        matricula_estudiante.periodo_tipo_id = ${periodoId} and 
+        carrera_tipo.id = ${carreraId} and
+		institucion_educativa_estudiante.persona_id = ${personaId}
+    order by persona.paterno, persona.materno, persona.nombre
+    `);
 
+    console.log("result: ", result);
+
+    return this._serviceResp.respuestaHttp200(
+      result,
+      "Registro Encontrado !!",
+      ""
+    );
   }
 }
