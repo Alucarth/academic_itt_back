@@ -13,7 +13,7 @@ class Aula {
 
     @ValidateNested({ each: true })
     @Type(() => Detalle)
-    detalles: Aula[];
+    detalles: Detalle[];
   }
 
   class Detalle {
@@ -44,17 +44,17 @@ class OfertaCurricular {
     @IsNumber()
     instituto_plan_estudio_carrera_id: number;
 
-    @IsNotEmpty({ message: " el regimen grado  es requerido" })
+    @IsNotEmpty({ message: " la gestion es requerido" })
     @IsNumber()
-    regimen_grado_tipo_id: number;
+    gestion_tipo_id: number;
 
-    @IsNotEmpty({ message: " id carrera autorizada es requerido" })
+    @IsNotEmpty({ message: " el periodo es requerido" })
     @IsNumber()
-    asignatura_tipo_id: number;
+    periodo_tipo_id: number;
 
-    @IsNotEmpty({ message: " id carrera autorizada es requerido" })
+    @IsNotEmpty({ message: " el plan de estudio asignatura" })
     @IsNumber()
-    horas: number;
+    plan_estudio_asignatura_id: number;
 
     @ValidateNested({ each: true })
     @Type(() => Aula)
@@ -62,6 +62,38 @@ class OfertaCurricular {
   }
 
 export class CreateOfertaCurricularDto {
+    aulas: any[];
+    /*
+    instituto_plan_estudio_carrera_id(instituto_plan_estudio_carrera_id: number) {
+        throw new Error('Method not implemented.');
+    }
+   
+    plan_estudio_asignatura_id(plan_estudio_asignatura_id: number) {
+        throw new Error('Method not implemented.');
+    }
+    periodo_tipo_id(periodo_tipo_id: number) {
+        throw new Error('Method not implemented.');
+    }
+    gestion_tipo_id(gestion_tipo_id: number) {
+        throw new Error('Method not implemented.');
+    }*/
+    @IsNotEmpty({ message: " el dato de identificacion es requerido" })
+    @IsNumber()
+    instituto_plan_estudio_carrera_id: number;
+
+    @IsNotEmpty({ message: " la gestion es requerido" })
+    @IsNumber()
+    gestion_tipo_id: number;
+
+    @IsNotEmpty({ message: " el periodo es requerido" })
+    @IsNumber()
+    periodo_tipo_id: number;
+
+    @IsNotEmpty({ message: " el plan de estudio asignatura" })
+    @IsNumber()
+    plan_estudio_asignatura_id: number;
+
+    
     @ValidateNested({ each: true })
     @Type(() => OfertaCurricular)
     items: OfertaCurricular[];

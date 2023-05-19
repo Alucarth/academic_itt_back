@@ -9,16 +9,52 @@ constructor(private dataSource: DataSource) {}
     async getAll(){
         return  await this.dataSource.getRepository(AulaDetalle).find();
     }
-   
-    async crearAulaDetalle(idUsuario, id, detalles, transaction) {
+    async getDatoAulaDetalle(id, cupo, paralelo){
 
+        return  await this.dataSource.getRepository(AulaDetalle).findOne({where:{
+            aulaId:id,
+            diaTipoId:id,
+            horaInicio:id,
+            horaFin:id,
+            
+            },
+        });
+    }
+    async getDetallesByAulaId(id){
+
+        return  await this.dataSource.getRepository(AulaDetalle).find({where:{
+            aulaId:id
+            },
+        });
+    }
+    verificarAulasDetalles(aulaDetalles, detalles) {
+        console.log("iniciooooo")
+     console.log(aulaDetalles);
+     console.log(detalles);
+     console.log("finnnnn")
+     if (aulaDetalles.length>0){
+        const nuevos = detalles.filter((d) =>
+        aulaDetalles.every((ad) => d.dia_tipo_id != ad.diaTipoId )
+        );
+        return  nuevos;
+     }
+     else{
+        return detalles;
+     }
+        
+    }
+    async createAulaDetalle(idUsuario, id, detalles) {
         const det: AulaDetalle[] = detalles.map((item) => {
           const det  = new AulaDetalle()
           det.aulaId =id;
+          det.diaTipoId =item.dia_tipo_id;
+          det.horaInicio =item.hora_inicio;
+          det.horaFin =item.hora_fin;
+          det.numeroAula =item.numero_aula;
+          det.usuarioId =idUsuario;
           return det;
         });
-    
-        return await transaction.getRepository(AulaDetalle).save(det);
+        return await this.dataSource.getRepository(AulaDetalle).save(det);
     }
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
