@@ -396,7 +396,7 @@ export class MaestroInscripcionService {
   async getMaestroInscripcionById(id: number) {
     console.log("ueId: ", id);
 
-    const result = await this.maeRepository.query(`
+    /*const result = await this.maeRepository.query(`
         SELECT
             maestro_inscripcion.id, 
             persona.paterno, 
@@ -408,6 +408,23 @@ export class MaestroInscripcionService {
             persona.genero_tipo_id, 
             persona.estado_civil_tipo_id, 
             persona.sangre_tipo_id, 
+            persona.materno_idioma_tipo_id,
+            persona.libreta_militar,
+            persona.pasaporte,
+            persona.telefono,
+            persona.carnet_ibc,
+            persona.nacimiento_folio,
+            persona.nacimiento_partida,
+            persona.nacimiento_libro,
+            persona.nacimiento_oficialia,
+            persona.codigo_rda,
+            persona.doble_nacionalidad,
+            persona.tiene_discapacidad,
+            persona.codigo_rude,
+            persona.email,
+            1 as ci_expedido_tipo_id,
+            persona.expedido_unidad_territorial_id,
+
             institucion_educativa_sucursal.institucion_educativa_id, 
             institucion_educativa_sucursal.sucursal_codigo, 
             institucion_educativa_sucursal.sucursal_nombre, 
@@ -454,7 +471,93 @@ export class MaestroInscripcionService {
             especialidad_tipo
             ON 
                 maestro_inscripcion.especialidad_tipo_id = especialidad_tipo.id
-            where maestro_inscripcion.id = ${id};`);
+            where maestro_inscripcion.id = ${id};`);*/
+
+      const result = await this.maeRepository.query(`
+        SELECT
+          data2.*,
+          ut.lugar AS comunidad,
+          muni.lugar AS municipio,
+          prov.lugar AS provincia,
+          dep.lugar AS departamento,
+          pais.lugar AS pais 
+        FROM
+          (
+          SELECT DATA
+            .*,
+            ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID = DATA.provincia_id ) AS depto_id,
+            ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID IN ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID = DATA.provincia_id ) ) AS pais_id 
+          FROM
+            (
+            SELECT
+              maestro_inscripcion.ID,
+              persona.paterno,
+              persona.materno,
+              persona.nombre,
+              persona.carnet_identidad,
+              persona.complemento,
+              persona.fecha_nacimiento,
+              persona.genero_tipo_id,
+              persona.estado_civil_tipo_id,
+              persona.sangre_tipo_id,
+              persona.materno_idioma_tipo_id,
+              persona.libreta_militar,
+              persona.pasaporte,
+              persona.telefono,
+              persona.carnet_ibc,
+              persona.nacimiento_folio,
+              persona.nacimiento_partida,
+              persona.nacimiento_libro,
+              persona.nacimiento_oficialia,
+              persona.codigo_rda,
+              persona.doble_nacionalidad,
+              persona.tiene_discapacidad,
+              persona.codigo_rude,
+              persona.email,
+              1 AS ci_expedido_tipo_id,
+              persona.expedido_unidad_territorial_id,
+              nacimiento_unidad_territorial_id AS comunidad_id,
+              ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID = nacimiento_unidad_territorial_id ) AS municipio_id,
+              ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID IN ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID = nacimiento_unidad_territorial_id ) ) AS provincia_id,
+              institucion_educativa_sucursal.institucion_educativa_id,
+              institucion_educativa_sucursal.sucursal_codigo,
+              institucion_educativa_sucursal.sucursal_nombre,
+              formacion_tipo.ID AS formacion_tipo_id,
+              formacion_tipo.formacion,
+              financiamiento_tipo.ID AS financiamiento_tipo_id,
+              financiamiento_tipo.financiamiento,
+              cargo_tipo.ID AS cargo_tipo_id,
+              cargo_tipo.cargo,
+              especialidad_tipo.ID AS especialidad_tipo_id,
+              especialidad_tipo.especialidad,
+              maestro_inscripcion.gestion_tipo_id,
+              maestro_inscripcion.normalista,
+              maestro_inscripcion.vigente,
+              maestro_inscripcion.formacion_descripcion,
+              maestro_inscripcion.braile,
+              maestro_inscripcion.asignacion_fecha_inicio,
+              maestro_inscripcion.asignacion_fecha_fin,
+              maestro_inscripcion.item,
+              maestro_inscripcion.periodo_tipo_id 
+            FROM
+              maestro_inscripcion
+              INNER JOIN persona ON maestro_inscripcion.persona_id = persona.
+              ID INNER JOIN institucion_educativa_sucursal ON maestro_inscripcion.institucion_educativa_sucursal_id = institucion_educativa_sucursal.
+              ID INNER JOIN formacion_tipo ON maestro_inscripcion.formacion_tipo_id = formacion_tipo.
+              ID INNER JOIN financiamiento_tipo ON maestro_inscripcion.financiamiento_tipo_id = financiamiento_tipo.
+              ID INNER JOIN cargo_tipo ON maestro_inscripcion.cargo_tipo_id = cargo_tipo.
+              ID INNER JOIN especialidad_tipo ON maestro_inscripcion.especialidad_tipo_id = especialidad_tipo.ID 
+            WHERE
+              maestro_inscripcion.ID = ${id} 
+            ) AS DATA 
+          ) AS data2
+          INNER JOIN unidad_territorial ut ON ut.ID = data2.comunidad_id
+          INNER JOIN unidad_territorial muni ON muni.ID = data2.municipio_id
+          INNER JOIN unidad_territorial prov ON prov.ID = data2.provincia_id
+          INNER JOIN unidad_territorial dep ON dep.ID = data2.depto_id
+          INNER JOIN unidad_territorial pais ON pais.ID = data2.pais_id
+      `);
+
 
     console.log("result: ", result);
     console.log("result size: ", result.length);
