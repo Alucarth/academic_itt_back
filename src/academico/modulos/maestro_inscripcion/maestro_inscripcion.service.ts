@@ -565,7 +565,7 @@ export class MaestroInscripcionService {
    
     result[0].genero = {
       id: result[0].genero_tipo_id,
-      genero: result[0].genero_tipo_id,
+      genero: result[0].genero,
     };
 
     console.log("result2: ", result);
