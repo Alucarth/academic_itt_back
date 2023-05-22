@@ -563,12 +563,12 @@ export class MaestroInscripcionService {
     console.log("result: ", result);
     console.log("result size: ", result.length);
    
-    result[0].genero = {
+    /*result[0].genero = {
       id: result[0].genero_tipo_id,
       genero: result[0].genero,
     };
-
     console.log("result2: ", result);
+    */
 
     if (result.length === 0) {
       //throw new NotFoundException('No se encontraron registros');
