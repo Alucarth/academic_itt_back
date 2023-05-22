@@ -1,18 +1,30 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Aula } from 'src/academico/entidades/aula.entity';
+import { OfertaCurricular } from 'src/academico/entidades/ofertaCurricular.entity';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
-import { EntityManager } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
+import { AulaRepository } from '../aula/aula.repository';
+import { AulaDetalleRepository } from '../aula_detalle/aula_detalle.repository';
 import { CreateOfertaCurricularDto } from './dto/createOfertaCurricular.dto';
 import { OfertaCurricularRepository } from './oferta_curricular.repository';
 
 @Injectable()
 export class OfertaCurricularService {
     constructor(
-        
+        @InjectRepository(OfertaCurricular)
+        private ocRepository: Repository<OfertaCurricular>,
+
         @Inject(OfertaCurricularRepository) 
         private ofertaCurricularRepository: OfertaCurricularRepository,
 
-       
-        private _serviceResp: RespuestaSigedService, 
+        @Inject(AulaRepository) 
+        private aulaRepository: AulaRepository,
+
+        @Inject(AulaDetalleRepository) 
+        private aulaDetalleRepository: AulaDetalleRepository,
+
+         private _serviceResp: RespuestaSigedService, 
         
     ){}
 
@@ -25,39 +37,81 @@ export class OfertaCurricularService {
         const cursos = await this.ofertaCurricularRepository.getAllByCarreraId(id)
         return cursos
     }
-/*
-    async createOfertaCurricular (dto: CreateOfertaCurricularDto) {
-       
-  
-            const op = async (transaction: EntityManager) => {
-              const nuevaOferta =  await this.ofertaCurricularRepository.createOfertaCurricular(
-                dto,
-                transaction
-              )
-  
-              if(nuevaOferta?.id){
-                  console.log(nuevaOferta.id);    
-                aulas
-      
-                  if(asignaturas.length > 0){
-                      //Crear la oferta academica 
-                      await this.ofertaAcademicaRepository.crearOfertaAcademica(
-                          1, 
-                          nuevoCurso.id, 
-                          asignaturas, 
-                          transaction
-                      );
-                  }
-              }
-              return nuevoCurso;
-            }
-  
-            const crearResult = await this.institucionEducativaCursoRepository.runTransaction(op)
-  
-            if(crearResult){
+
+    async getOfertaByPlanAsignaturaGestionPeriodo(instituto:number, gestion:number, periodo:number,asignatura:number){
+        const oferta = await this.ocRepository.findOneBy({
+            
+              institutoPlanEstudioCarreraId: instituto,
+              gestionTipoId: gestion,
+              periodoTipoId: periodo,
+              planEstudioAsignaturaId: asignatura,
+            
+          });
+            return oferta;
+          
+
+    }
+
+    async createOfertaCurricular (dto: CreateOfertaCurricularDto[]) {
+     
+         console.log("servicio");
+     
+       const resultado = [];
+         dto.forEach(async item => {
+
+                const op = async (transaction: EntityManager) => {
+             
+                    console.log("inicio");
+                      console.log(item);
+                      const datoOferta = {
+                        instituto_plan_estudio_carrera_id: item.instituto_plan_estudio_carrera_id,
+                        gestion_tipo_id: item.gestion_tipo_id,
+                        periodo_tipo_id: item.periodo_tipo_id,
+                        plan_estudio_asignatura_id: item.plan_estudio_asignatura_id,
+                        usuario_id: 1,
+                      };
+                        const nuevaOferta =  await this.ofertaCurricularRepository.createOfertaCurricular(
+                            datoOferta,
+                            transaction
+                        );
+                      
+                        if(nuevaOferta?.id){
+                            console.log("INSERTADO OFERTA");
+                            console.log(nuevaOferta.id);
+                            item.aulas.forEach(async aula => {
+                                const datoAula = {
+                                    oferta_curricular_id: nuevaOferta.id,
+                                    cupo: aula.cupo,
+                                    paralelo_tipo_id: aula.paralelo_tipo_id,
+                                    usuario_id: 1
+                                  };
+                                const nuevaAula =  await this.aulaRepository.createAula(
+                                    datoAula,
+                                    transaction
+                                );
+                                if(nuevaAula?.id){
+                                   /* await this.aulaDetalleRepository.createAulaDetalle(
+                                        1,
+                                        nuevaAula.id,
+                                        aula.detalles, 
+                                        transaction
+                                    );*/
+                                }
+                            });
+                        }
+                    return nuevaOferta;
+                }
+                const crearResult = await this.ofertaCurricularRepository.runTransaction(op);
+                if(crearResult){
+                    resultado.push(crearResult);
+                }
+        });
+        
+           // console.log("fin");
+            if(resultado.length>0){
               return this._serviceResp.respuestaHttp201(
-                  crearResult.id,
-                  'Registro de curso y oferta Creado !!',
+                  resultado,
+                  'Registro de curso y paralelos Creado !!',
                   '',
               );
             }
@@ -66,5 +120,106 @@ export class OfertaCurricularService {
               'No se pudo guardar la información !!',
               '',
           );
-      }*/
+        
+        
+    }
+
+    async crear (dto: CreateOfertaCurricularDto[]) {
+      
+      dto.forEach(async item => {
+            try {
+                //buscamos oferta
+                const oferta = await this.getOfertaByPlanAsignaturaGestionPeriodo(
+                    item.instituto_plan_estudio_carrera_id,
+                    item.gestion_tipo_id,
+                    item.periodo_tipo_id,
+                    item.plan_estudio_asignatura_id
+                );
+                console.log(oferta);
+
+                let ofertaId = 0;
+
+                if(!oferta){
+                   
+                    const res = await this.ocRepository
+                    .createQueryBuilder()
+                    .insert()
+                    .into(OfertaCurricular)
+                    .values([
+                        {
+                            institutoPlanEstudioCarreraId: item.instituto_plan_estudio_carrera_id,
+                            gestionTipoId: item.gestion_tipo_id,
+                            periodoTipoId: item.periodo_tipo_id,
+                            planEstudioAsignaturaId: item.plan_estudio_asignatura_id,
+                            usuarioId: 1,
+                        },
+                    ])
+                    .returning("id")
+                    .execute();
+                    console.log("res:", res);
+                    ofertaId = res.identifiers[0].id;
+                }else{
+                    ofertaId = oferta.id;
+                }
+
+                if(ofertaId>0){
+                    item.aulas.forEach(async aula => {
+                        const datoAula =  await this.aulaRepository.getDatoAula(
+                            ofertaId,
+                            aula.cupo,
+                            aula.paralelo_tipo_id,
+                            
+                        );
+                        let aulaId = 0;
+                        if(!datoAula){
+                          const resAula = await this.ocRepository
+                          .createQueryBuilder()
+                          .insert()
+                          .into(Aula)
+                          .values([
+                            {
+                                ofertaCurricularId: ofertaId,
+                                activo: true,
+                                cupo: aula.cupo,
+                                paraleloTipoId: aula.paralelo_tipo_id,
+                                usuarioId: 1,
+                            },
+                          ])
+                          .returning("id")
+                          .execute();
+                          aulaId = resAula.identifiers[0].id;
+                        }else{
+                            aulaId = datoAula.id;
+                        }
+                            if(aulaId>0){
+                                /*const detalles = await this.aulaDetalleRepository.getDetallesByAulaId(aulaId);
+
+                                const nuevos = await this.aulaDetalleRepository.verificarAulasDetalles(detalles, aula.detalles);
+                                console.log(nuevos);*/
+                                await this.aulaDetalleRepository.createAulaDetalle(
+                                    1,
+                                    aulaId,
+                                    aula.detalles
+                                );      
+                            }
+                    });
+                }
+
+                
+              } catch (error) {
+                console.log("Error insertar inscripcion: ", error);
+                throw new HttpException(
+                  {
+                    status: HttpStatus.CONFLICT,
+                    error: `Error insertar Matricula: ${error.message}`,
+                  },
+                  HttpStatus.ACCEPTED,
+                  {
+                    cause: error,
+                  }
+                );
+              }
+     });
+       
+   }
 }
