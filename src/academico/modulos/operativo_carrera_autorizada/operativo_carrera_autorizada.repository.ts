@@ -41,7 +41,7 @@ export class OperativoCarreraAutorizadaRepository {
         
     }
     async getOperativoVigenteCarrera(id:number ){
-        
+        console.log(id);
         const operativos = await this.dataSource.getRepository(OperativoCarreraAutorizada)
         .createQueryBuilder("a")
         .innerJoinAndSelect("a.gestionTipo", "g")
@@ -61,8 +61,8 @@ export class OperativoCarreraAutorizadaRepository {
         .where('a.carreraAutorizadaId = :id ', { id })
         .andWhere('a.activo = true')
         .orderBy('a.id', 'ASC')
-        .getRawMany();
-        console.log("ofertas desde backen");
+        .getRawOne();
+        console.log("operativo desde backen");
         console.log(operativos);
         return operativos;
         

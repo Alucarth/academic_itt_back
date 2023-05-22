@@ -33,10 +33,10 @@ export class OperativoCarreraAutorizadaService {
 
     }
     async findOperativoActivoCarrera(id:number){
-        const operativos = await this.operativoCarreraAutorizadaRepositorio.getOperativoVigenteCarrera(id);
-        if(operativos.length > 0){
+        const operativo = await this.operativoCarreraAutorizadaRepositorio.getOperativoVigenteCarrera(id);
+        if(operativo){
             return this._serviceResp.respuestaHttp201(
-                operativos,
+                operativo,
                 'Existen resultados encontrados !!',
                 '',
             );
