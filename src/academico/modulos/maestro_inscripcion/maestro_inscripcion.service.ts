@@ -498,6 +498,7 @@ export class MaestroInscripcionService {
               persona.complemento,
               persona.fecha_nacimiento,
               persona.genero_tipo_id,
+              (select genero from genero_tipo where id = persona.genero_tipo_id) as genero,
               persona.estado_civil_tipo_id,
               persona.sangre_tipo_id,
               persona.materno_idioma_tipo_id,
@@ -561,6 +562,13 @@ export class MaestroInscripcionService {
 
     console.log("result: ", result);
     console.log("result size: ", result.length);
+   
+    result[0].genero = {
+      id: result[0].genero_tipo_id,
+      genero: result[0].genero_tipo_id,
+    };
+
+    console.log("result2: ", result);
 
     if (result.length === 0) {
       //throw new NotFoundException('No se encontraron registros');
