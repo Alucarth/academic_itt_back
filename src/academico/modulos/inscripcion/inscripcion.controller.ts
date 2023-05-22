@@ -56,9 +56,28 @@ export class InscripcionController {
 
   @ApiOperation({
     summary:
+      "Devuelve todos los inscritos en una gestion, periodo, carrera e institucion educativa",
+  })
+  @Get("/listado/:gestionId/:periodoId/:carreraId/:ieId")
+  async getAllInscritosByGestion(
+    @Param("gestionId") gestionId: string,
+    @Param("periodoId") periodoId: string,
+    @Param("carreraId") carreraId: string,
+    @Param("ieId") ieId: string
+  ) {
+    return await this.inscripcionService.getAllInscritosByGestion(
+      parseInt(gestionId),
+      parseInt(periodoId),
+      parseInt(carreraId),
+      parseInt(ieId)
+    );
+  }
+
+  @ApiOperation({
+    summary:
       "Devuelve todos las materias de una persona inscrita en una gestion, periodo, carrera e institucion educativa",
   })
-  @Get("/detalle/:personaId/:gestionId/:periodoId/:carreraId/:ieId")
+  @Get("/detalleByPersonaId/:personaId/:gestionId/:periodoId/:carreraId/:ieId")
   async getAllDetalleInscripcionPersona(
     @Param("personaId") personaId: string,
     @Param("gestionId") gestionId: string,
