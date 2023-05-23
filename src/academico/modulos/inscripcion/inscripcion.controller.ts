@@ -97,12 +97,12 @@ export class InscripcionController {
   @ApiOperation({
     summary: "Devuelve todos las materias del primer trimestre",
   })
-  @Get("/materiasNuevoByCarreraId/:carreraId")
+  @Get("/materiasNuevoByCarreraAutorizadaId/:carreraAutorizadaId")
   async getMateriasNuevoByCarreraId(    
-    @Param("carreraId") carreraId: string    
+    @Param("carreraAutorizadaId") carreraAutorizadaId: string    
   ) {
     return await this.inscripcionService.getAllMateriasInscripcionNuevo(
-      parseInt(carreraId),      
+      parseInt(carreraAutorizadaId)
     );
   }
 }

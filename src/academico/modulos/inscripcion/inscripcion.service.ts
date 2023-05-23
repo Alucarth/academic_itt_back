@@ -549,7 +549,7 @@ export class InscripcionService {
     );
   }
 
-  async getAllMateriasInscripcionNuevo(carreraId: number) {
+  async getAllMateriasInscripcionNuevoOLD(carreraId: number) {
     const result = await this.inscripcionRepository.query(`
     SELECT
       plan_estudio_carrera.id as plan_estudio_carrera_id, 
@@ -588,6 +588,132 @@ export class InscripcionService {
     `);
 
     console.log("result: ", result);
+
+    return this._serviceResp.respuestaHttp200(
+      result,
+      "Registro Encontrado !!",
+      ""
+    );
+  }
+
+  async getAllMateriasInscripcionNuevo(carreraAutorizadaId: number) {
+    const result = await this.inscripcionRepository.query(`
+      SELECT
+        institucion_educativa.id AS institucion_educativa_id, 
+        institucion_educativa.institucion_educativa, 
+        institucion_educativa_sucursal.id AS institucion_educativa_sucursal_id, 
+        institucion_educativa_sucursal.sucursal_nombre, 
+        carrera_autorizada.id AS carrera_autorizada_id, 
+        carrera_autorizada.carrera_tipo_id, 
+        carrera_tipo.carrera, 
+        instituto_plan_estudio_carrera.id AS instituto_plan_estudio_carrera_id, 
+        instituto_plan_estudio_carrera.carrera_autorizada_id AS instituto_plan_estudio_carrera_autorizada_id, 
+        oferta_curricular.id AS oferta_curricular_id, 
+        oferta_curricular.gestion_tipo_id, 
+        oferta_curricular.periodo_tipo_id, 
+        oferta_curricular.plan_estudio_asignatura_id AS oferta_curricular_plan_estudio_asignatura_id, 
+        plan_estudio_asignatura.id AS plan_estudio_asignatura_id, 
+        plan_estudio_asignatura.asignatura_tipo_id AS plan_estudio_asignatura_tipo_id, 
+        asignatura_tipo.id AS asignatura_tipo_id, 
+        asignatura_tipo.asignatura, 
+        asignatura_tipo.abreviacion, 
+        regimen_grado_tipo.id as regimen_grado_tipo_id, 
+        regimen_grado_tipo.regimen_grado, 
+        regimen_grado_tipo.sigla
+      FROM
+        institucion_educativa_sucursal
+        INNER JOIN
+        institucion_educativa
+        ON 
+          institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa.id
+        INNER JOIN
+        carrera_autorizada
+        ON 
+          institucion_educativa_sucursal.id = carrera_autorizada.institucion_educativa_sucursal_id
+        INNER JOIN
+        carrera_tipo
+        ON 
+          carrera_autorizada.carrera_tipo_id = carrera_tipo.id
+        INNER JOIN
+        instituto_plan_estudio_carrera
+        ON 
+          carrera_autorizada.id = instituto_plan_estudio_carrera.carrera_autorizada_id
+        INNER JOIN
+        oferta_curricular
+        ON 
+          instituto_plan_estudio_carrera."id" = oferta_curricular.instituto_plan_estudio_carrera_id
+        INNER JOIN
+        plan_estudio_asignatura
+        ON 
+          oferta_curricular.plan_estudio_asignatura_id = plan_estudio_asignatura.id
+        INNER JOIN
+        asignatura_tipo
+        ON 
+          plan_estudio_asignatura.asignatura_tipo_id = asignatura_tipo.id
+        INNER JOIN
+        regimen_grado_tipo
+        ON 
+          plan_estudio_asignatura.regimen_grado_tipo_id = regimen_grado_tipo.id AND
+          plan_estudio_asignatura.regimen_grado_tipo_id = regimen_grado_tipo.id
+      WHERE
+        carrera_autorizada.id = 7 AND      
+        regimen_grado_tipo.id = 1
+    `);
+
+    for(let i=0; i< result.length; i++){
+      let res_paralelos = await this.inscripcionRepository.query(`
+        SELECT
+          oferta_curricular.id as oferta_curricular_id, 
+          aula.id as aula_id, 
+          paralelo_tipo.id as paralelo_tipo_id, 
+          paralelo_tipo.paralelo, 
+          aula.activo
+        FROM
+          oferta_curricular
+          INNER JOIN
+          aula
+          ON 
+            oferta_curricular.id = aula.oferta_curricular_id
+          INNER JOIN
+          paralelo_tipo
+          ON 
+            aula.paralelo_tipo_id = paralelo_tipo.id
+          where 
+          oferta_curricular.id = ${result[i].oferta_curricular_id}
+      `);
+
+      let array_paralelos = res_paralelos;
+      result[i].paralelos = array_paralelos;
+    }
+
+    /*result.forEach(async element => {
+     //console.log(element.oferta_curricular_id);
+      let res_paralelos = await this.inscripcionRepository.query(`
+        SELECT
+          oferta_curricular.id, 
+          aula.id, 
+          paralelo_tipo.id, 
+          paralelo_tipo.paralelo, 
+          aula.activo
+        FROM
+          oferta_curricular
+          INNER JOIN
+          aula
+          ON 
+            oferta_curricular.id = aula.oferta_curricular_id
+          INNER JOIN
+          paralelo_tipo
+          ON 
+            aula.paralelo_tipo_id = paralelo_tipo.id
+          where 
+          oferta_curricular.id = 32
+      `);
+
+     let array_paralelos = ['A', 'B'];
+     element.paralelos = array_paralelos
+    });*/
+
+    //console.log("result: ", result);
 
     return this._serviceResp.respuestaHttp200(
       result,
