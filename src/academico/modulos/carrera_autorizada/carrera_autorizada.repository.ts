@@ -46,28 +46,30 @@ export class CarreraAutorizadaRepository {
     }
 
     async geAllCarrerasByIeId(id){
-        return  await this.dataSource.getRepository(CarreraAutorizada)
-        .createQueryBuilder("ca")
-        .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
-        .innerJoinAndSelect("ca.carreraTipo", "ct")
-        .innerJoinAndSelect("ca.areaTipo", "at")
-        .innerJoinAndSelect("ca.resoluciones", "r")
-        .innerJoinAndSelect("r.resolucionTipo", "rt")
-        .innerJoinAndSelect("r.nivelAcademicoTipo", "na")
-        .innerJoinAndSelect("r.intervaloGestionTipo", "ig")
-        .select([
-            'ca.id as carrera_autorizada_id',
-            'ct.carrera as carrera',
-            'at.area as area',
-            'r.numero_resolucion as numero_resolucion',
-            'r.fecha_resolucion as fecha_resolucion',
-            'r.tiempo_estudio as tiempo_estudio',
-            'r.carga_horaria as carga_horaria',
-            'r.resuelve as resuelve',
-            'na.nivel_academico as nivel_academico',
-            'ig.intervalo_gestion as regimen_estudio',
-            'rt.resolucion_tipo as tipo_tramite',
-        ])
+        return await this.dataSource
+          .getRepository(CarreraAutorizada)
+          .createQueryBuilder("ca")
+          .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
+          .innerJoinAndSelect("ca.carreraTipo", "ct")
+          .innerJoinAndSelect("ca.areaTipo", "at")
+          .innerJoinAndSelect("ca.resoluciones", "r")
+          .innerJoinAndSelect("r.resolucionTipo", "rt")
+          .innerJoinAndSelect("r.nivelAcademicoTipo", "na")
+          .innerJoinAndSelect("r.intervaloGestionTipo", "ig")
+          .select([
+            "ca.id as carrera_autorizada_id",
+            "ct.carrera as carrera",
+            "ct.id as carrera_id",
+            "at.area as area",
+            "r.numero_resolucion as numero_resolucion",
+            "r.fecha_resolucion as fecha_resolucion",
+            "r.tiempo_estudio as tiempo_estudio",
+            "r.carga_horaria as carga_horaria",
+            "r.resuelve as resuelve",
+            "na.nivel_academico as nivel_academico",
+            "ig.intervalo_gestion as regimen_estudio",
+            "rt.resolucion_tipo as tipo_tramite",
+          ])
           .where("s.institucionEducativaId = :id ", { id })
           .andWhere("ca.areaTipoId > 1 ")
           .getRawMany();
@@ -82,8 +84,9 @@ export class CarreraAutorizadaRepository {
         .innerJoinAndSelect("r.resolucionTipo", "rt")
         .innerJoinAndSelect("r.nivelAcademicoTipo", "na")
         .innerJoinAndSelect("r.intervaloGestionTipo", "ig")
-        .select([
+        .select([            
             'ca.id as carrera_autorizada_id',
+            'ct.id as carrera_id',
             'ct.carrera as carrera',
             'at.area as area',
             'r.numero_resolucion as numero_resolucion',
