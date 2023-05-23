@@ -29,19 +29,14 @@ constructor(private dataSource: DataSource) {}
     }
     verificarAulasDetalles(aulaDetalles, detalles) {
         console.log("iniciooooo")
-     console.log(aulaDetalles);
-     console.log(detalles);
-     console.log("finnnnn")
-     if (aulaDetalles.length>0){
+        console.log(aulaDetalles);
+        console.log("medio")
+        console.log(detalles);
+        console.log("finnnnn")
         const nuevos = detalles.filter((d) =>
-        aulaDetalles.every((ad) => d.dia_tipo_id != ad.diaTipoId )
+            aulaDetalles.every((ad) => d.dia_tipo_id != ad.diaTipoId )
         );
         return  nuevos;
-     }
-     else{
-        return detalles;
-     }
-        
     }
     async createAulaDetalle(idUsuario, id, detalles) {
         const det: AulaDetalle[] = detalles.map((item) => {

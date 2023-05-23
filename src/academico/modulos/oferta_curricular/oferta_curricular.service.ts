@@ -126,8 +126,9 @@ export class OfertaCurricularService {
 
     async crear (dto: CreateOfertaCurricularDto[]) {
       
-      dto.forEach(async item => {
+      
             try {
+                dto.forEach(async item => {
                 //buscamos oferta
                 const oferta = await this.getOfertaByPlanAsignaturaGestionPeriodo(
                     item.instituto_plan_estudio_carrera_id,
@@ -136,11 +137,8 @@ export class OfertaCurricularService {
                     item.plan_estudio_asignatura_id
                 );
                 console.log(oferta);
-
                 let ofertaId = 0;
-
                 if(!oferta){
-                   
                     const res = await this.ocRepository
                     .createQueryBuilder()
                     .insert()
@@ -192,21 +190,26 @@ export class OfertaCurricularService {
                             aulaId = datoAula.id;
                         }
                             if(aulaId>0){
-                                /*const detalles = await this.aulaDetalleRepository.getDetallesByAulaId(aulaId);
-
+                                const detalles = await this.aulaDetalleRepository.getDetallesByAulaId(aulaId);
                                 const nuevos = await this.aulaDetalleRepository.verificarAulasDetalles(detalles, aula.detalles);
-                                console.log(nuevos);*/
+
+                                console.log(nuevos);
                                 await this.aulaDetalleRepository.createAulaDetalle(
                                     1,
                                     aulaId,
-                                    aula.detalles
-                                );      
+                                    nuevos//aula.detalles
+                                );    
                             }
                     });
                 }
-
                 
-              } catch (error) {
+                });
+                return this._serviceResp.respuestaHttp201(
+                    "",
+                    "Registro Creado !!",
+                    ""
+                  );
+            } catch (error) {
                 console.log("Error insertar inscripcion: ", error);
                 throw new HttpException(
                   {
@@ -218,8 +221,8 @@ export class OfertaCurricularService {
                     cause: error,
                   }
                 );
-              }
-     });
+            }
+     
        
    }
 }

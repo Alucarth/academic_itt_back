@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { CarreraAutorizadaResolucion } from './carreraAutorizadaResolucion.entity';
 import { InstitucionEducativaAcreditacionEspecialidadNivelIntervalo } from './institucionEducativaAcreditacionEspecialidadNivelIntervalo.entity';
+import { NotaTipo } from './notaTipo.entity';
 import { PeriodoTipo } from './periodoTipo.entity';
 
 import { PlanEstudio } from './planEstudio.entity';
@@ -60,5 +61,7 @@ export class IntervaloGestionTipo {
   @OneToMany(() => PlanEstudioCarrera, (planEstudioCarrera) => planEstudioCarrera.intervaloGestionTipo)
   planesCarreras: PlanEstudioCarrera[];
   
+  @OneToMany(() => NotaTipo, (notaTipo) => notaTipo.intervaloGestionTipo)
+  notasTipos: NotaTipo[];
   
 }

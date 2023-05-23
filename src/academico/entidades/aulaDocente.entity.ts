@@ -11,6 +11,7 @@ import {
 import { Aula } from './aula.entity';
 import { BajaTipo } from './bajaTipo.entity';
 import { DiaTipo } from './diaTipo.entity';
+import { InstitutoEstudianteInscripcionDocenteCalificacion } from './institutoEstudianteInscripcionDocenteCalificacion.entity';
 import { MaestroInscripcion } from './maestroInscripcion.entity';
 
 @Entity({ name: 'aula_docente', schema: 'public' })
@@ -66,4 +67,8 @@ export class AulaDocente {
   @ManyToOne(() => BajaTipo, (bajaTipo) => bajaTipo.aulasDocentes, { nullable: false, cascade: true })
   @JoinColumn({ name: 'baja_tipo_id', referencedColumnName: 'id'})
   bajaTipo: BajaTipo;
+
+  @OneToMany(() => InstitutoEstudianteInscripcionDocenteCalificacion, (institutoEstudianteInscripcionDocenteCalificacion) => institutoEstudianteInscripcionDocenteCalificacion.aulaDocente)
+  inscripcionesDocentesCalificaciones: InstitutoEstudianteInscripcionDocenteCalificacion[];  
+  
 }

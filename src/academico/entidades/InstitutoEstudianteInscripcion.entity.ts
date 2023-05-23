@@ -4,11 +4,13 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Aula } from "./aula.entity";
 
 import { EstadoMatriculaTipo } from "./estadoMatriculaTipo.entity";
+import { InstitutoEstudianteInscripcionDocenteCalificacion } from "./institutoEstudianteInscripcionDocenteCalificacion.entity";
 import { MatriculaEstudiante } from "./matriculaEstudiante.entity";
 import { OfertaCurricular } from "./ofertaCurricular.entity";
 
@@ -88,4 +90,8 @@ export class InstitutoEstudianteInscripcion {
   @JoinColumn([{ name: "matricula_estudiante_id", referencedColumnName: "id" }])
   matriculaEstudiante: MatriculaEstudiante;
  
+  @OneToMany(() => InstitutoEstudianteInscripcionDocenteCalificacion, (institutoEstudianteInscripcionDocenteCalificacion) => institutoEstudianteInscripcionDocenteCalificacion.institutoEstudianteInscripcion)
+  inscripcionesDocentesCalificaciones: InstitutoEstudianteInscripcionDocenteCalificacion[];  
+  
+
 }
