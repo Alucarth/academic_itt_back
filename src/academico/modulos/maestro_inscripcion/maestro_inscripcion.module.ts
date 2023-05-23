@@ -15,9 +15,11 @@ import { GestionTipo } from "../../entidades/gestionTipo.entity";
 import { IdiomaTipo } from "../../entidades/idiomaTipo.entity";
 import { PeriodoTipo } from "../../entidades/periodoTipo.entity";
 import { InstitucionEducativaSucursalRepository } from '../institucion_educativa_sucursal/institucion_educativa_sucursal.repository';
+import { UsersModule } from "../../../users/users.module";
 
 @Module({
   imports: [
+    UsersModule,
     DatabaseModule,
     TypeOrmModule.forFeature([MaestroInscripcion]),
     TypeOrmModule.forFeature([Persona]),
@@ -31,9 +33,11 @@ import { InstitucionEducativaSucursalRepository } from '../institucion_educativa
     TypeOrmModule.forFeature([PeriodoTipo]),
   ],
   controllers: [MaestroInscripcionController],
-  providers: [MaestroInscripcionService, 
+  providers: [
+    MaestroInscripcionService, 
     RespuestaSigedService, 
-    InstitucionEducativaSucursalRepository],
+    InstitucionEducativaSucursalRepository,    
+  ],
   exports: [MaestroInscripcionService],
 })
 export class MaestroInscripcionModule {}

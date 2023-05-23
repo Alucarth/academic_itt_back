@@ -168,6 +168,7 @@ export class InscripcionService {
             where persona_id = ${dto.personaId}  and institucion_educativa_sucursal_id = ${dto.institucionEducativaSucursalId}`);
 
         ieeId = iee[0].id;
+        console.log("ieeId = ", iee[0].id);
       }
 
       const institucionEducativaEstudiante = await this.ieeRepository.findOne({
@@ -175,6 +176,8 @@ export class InscripcionService {
           id: ieeId,
         },
       });
+
+      console.log()
 
       //ya existe un registro para la gestion, periodo, ue, plan ?
       const existeMat = await this.matriculaRepository.query(`
@@ -412,7 +415,8 @@ export class InscripcionService {
     WHERE 
         matricula_estudiante.gestion_tipo_id = ${gestionId} and 
         periodo_tipo_id = ${periodoId} and 
-        carrera_tipo.id = ${carreraId}
+        carrera_tipo.id = ${carreraId} and 
+        institucion_educativa.id = ${ieId}
     order by persona.paterno, persona.materno, persona.nombre
     `);
 
@@ -529,7 +533,8 @@ export class InscripcionService {
         matricula_estudiante.gestion_tipo_id = ${gestionId} and 
         matricula_estudiante.periodo_tipo_id = ${periodoId} and 
         carrera_tipo.id = ${carreraId} and
-		institucion_educativa_estudiante.persona_id = ${personaId}
+		    institucion_educativa_estudiante.persona_id = ${personaId}
+        
     order by persona.paterno, persona.materno, persona.nombre
     `);
 

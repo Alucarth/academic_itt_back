@@ -22,6 +22,7 @@ import { JwtService } from "@nestjs/jwt";
 
 import { AppTipo } from "../academico/entidades/appTipo.entity";
 import { SegipService } from "src/segip/segip.service";
+import { RolTipo } from 'src/academico/entidades/rolTipo.entity';
 
 @Injectable()
 export class UsersService {
@@ -1433,5 +1434,38 @@ export class UsersService {
       data: result,
       code: "",
     };
+  }
+
+  async createUserAndRol(persona : Persona, rol_tipo_id: number){
+
+    try {      
+      const hashPassword = await bcrypt.hash(persona.carnetIdentidad, 10);
+
+      //creamos el usuario
+      const newUser = await this.userRepository
+        .createQueryBuilder()
+        .insert()
+        .into(User)
+        .values([
+          {
+            personaId: persona.id,
+            username: persona.carnetIdentidad,
+            password: hashPassword,
+            activo: true,
+          },
+        ])
+        .returning("id")
+        .execute();
+
+      //se le asigna el rol recibido
+      const user_id = newUser.identifiers[0].id;
+
+      const res = this.insertNewRolUser(user_id,rol_tipo_id);
+      return res;
+
+    } catch (error) {
+      console.log("Error insertar maestro inscripcion: ", error.message);
+      return null;
+    }
   }
 }

@@ -18,6 +18,7 @@ import { PeriodoTipo } from "src/academico/entidades/periodoTipo.entity";
 import { UpdateMaestroInscripcionDto } from "./dto/updateMaestroInscripcion.dto";
 import { InstitucionEducativaSucursalRepository } from "../institucion_educativa_sucursal/institucion_educativa_sucursal.repository";
 import { UpdateMaestroInscripcionDatoDto } from "./dto/updateMaestroInscripcionDato.dto";
+import { UsersService } from '../../../users/users.service'
 
 @Injectable()
 export class MaestroInscripcionService {
@@ -48,7 +49,8 @@ export class MaestroInscripcionService {
     private idiomaRepository: Repository<IdiomaTipo>,
     @InjectRepository(PeriodoTipo)
     private periodoRepository: Repository<PeriodoTipo>,
-    private _serviceResp: RespuestaSigedService
+    private _serviceResp: RespuestaSigedService,
+    private readonly usersService: UsersService
   ) {}
 
   async getAllDocentesByUeGestionPeriodo(ueId, gestion, periodo) {
@@ -137,7 +139,11 @@ export class MaestroInscripcionService {
     );
   }
 
-  async getAllDocentesByUeGestion(ueId: number, gestionId: number, periodoId: number) {
+  async getAllDocentesByUeGestion(
+    ueId: number,
+    gestionId: number,
+    periodoId: number
+  ) {
     console.log("ueId: ", ueId);
 
     const result = await this.maeRepository.query(`
@@ -473,7 +479,7 @@ export class MaestroInscripcionService {
                 maestro_inscripcion.especialidad_tipo_id = especialidad_tipo.id
             where maestro_inscripcion.id = ${id};`);*/
 
-      const result = await this.maeRepository.query(`
+    const result = await this.maeRepository.query(`
         SELECT
           data2.*,
           ut.lugar AS comunidad,
@@ -559,10 +565,9 @@ export class MaestroInscripcionService {
           INNER JOIN unidad_territorial pais ON pais.ID = data2.pais_id
       `);
 
-
     console.log("result: ", result);
     console.log("result size: ", result.length);
-   
+
     /*result[0].genero = {
       id: result[0].genero_tipo_id,
       genero: result[0].genero,
@@ -674,7 +679,6 @@ export class MaestroInscripcionService {
   }
 
   async createUpdateMaestroInscripcion(dto: CreateMaestroInscripcionDto) {
-  
     const maestroInscripcion =
       await this.getMaestroInscripcionByPersonaGestionPeriodo(
         dto.personaId,
@@ -682,13 +686,11 @@ export class MaestroInscripcionService {
         dto.periodoTipoId,
         dto.institucionEducativaId
       );
-  
 
     if (maestroInscripcion.data.length === 0) {
       console.log("inserta");
       return await this.createNewMaestroInscripcion(dto);
-    }
-    else {
+    } else {
       /*let datos = {
         id: Number(maestroInscripcion.data[0].id),
         formacionTipoId: dto.formacionTipoId,
@@ -738,7 +740,7 @@ export class MaestroInscripcionService {
 
       if (sucursal) {
         dto.institucionEducativaSucursalId = sucursal.id;
-      }else{
+      } else {
         return this._serviceResp.respuestaHttp400(
           "",
           "institucionEducativaSucursalId, Registro No Encontrado !!",
@@ -775,7 +777,6 @@ export class MaestroInscripcionService {
         );
       }
 
-
       let especialidadTipo = await this.espeTipoRepository.findOne({
         where: { id: dto.especialidadTipoId ? dto.especialidadTipoId : 0 },
       });
@@ -804,7 +805,6 @@ export class MaestroInscripcionService {
           ""
         );
       }
-
 
       let periodoTipo = await this.periodoRepository.findOne({
         where: { id: dto.periodoTipoId },
@@ -844,10 +844,16 @@ export class MaestroInscripcionService {
             periodoTipo: periodoTipo,
           },
         ])
+        .returning("id")
         .execute();
 
+      //SE CREA EL USUARIO
+      // 6: ROL MAESTRO
+      const newusuario = this.usersService.createUserAndRol(persona,6)
+
+
       console.log("res:", res);
-      console.log("Maestro Inscripcion adicionado");
+      console.log("Docente adicionado, usuario creado!");
       return this._serviceResp.respuestaHttp201(
         res.identifiers,
         "Registro Creado !!",
