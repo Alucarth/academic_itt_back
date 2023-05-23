@@ -93,4 +93,16 @@ export class InscripcionController {
       parseInt(ieId)
     );
   }
+
+  @ApiOperation({
+    summary: "Devuelve todos las materias del primer trimestre",
+  })
+  @Get("/materiasNuevoByCarreraId/:carreraId")
+  async getMateriasNuevoByCarreraId(    
+    @Param("carreraId") carreraId: string    
+  ) {
+    return await this.inscripcionService.getAllMateriasInscripcionNuevo(
+      parseInt(carreraId),      
+    );
+  }
 }

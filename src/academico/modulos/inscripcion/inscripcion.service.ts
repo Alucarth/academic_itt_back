@@ -177,7 +177,7 @@ export class InscripcionService {
         },
       });
 
-      console.log()
+      console.log();
 
       //ya existe un registro para la gestion, periodo, ue, plan ?
       const existeMat = await this.matriculaRepository.query(`
@@ -539,10 +539,55 @@ export class InscripcionService {
     `);
 
     console.log("result: ", result);
-    
-    
+
     //result.gender =  'ddasda';
 
+    return this._serviceResp.respuestaHttp200(
+      result,
+      "Registro Encontrado !!",
+      ""
+    );
+  }
+
+  async getAllMateriasInscripcionNuevo(carreraId: number) {
+    const result = await this.inscripcionRepository.query(`
+    SELECT
+      plan_estudio_carrera.id as plan_estudio_carrera_id, 
+      plan_estudio_carrera.carrera_tipo_id, 
+      plan_estudio_carrera.nivel_academico_tipo_id, 
+      plan_estudio_carrera.denominacion,
+      regimen_grado_tipo.id as regimen_grado_tipo_id,  
+      regimen_grado_tipo.regimen_grado, 
+      regimen_grado_tipo.sigla, 
+      asignatura_tipo.id as asignatura_tipo_id, 
+      asignatura_tipo.asignatura, 
+      asignatura_tipo.abreviacion, 
+      carrera_tipo.carrera
+    FROM
+      plan_estudio_carrera
+      INNER JOIN
+      plan_estudio_asignatura
+      ON 
+        plan_estudio_carrera."id" = plan_estudio_asignatura.plan_estudio_carrera_id
+      INNER JOIN
+      asignatura_tipo
+      ON 
+        plan_estudio_asignatura.asignatura_tipo_id = asignatura_tipo.id
+      INNER JOIN
+      regimen_grado_tipo
+      ON 
+        plan_estudio_asignatura.regimen_grado_tipo_id = regimen_grado_tipo.id
+      INNER JOIN
+      carrera_tipo
+      ON 
+        plan_estudio_carrera.carrera_tipo_id = carrera_tipo.id
+      where 
+      plan_estudio_carrera.carrera_tipo_id = ${carreraId} and 
+      regimen_grado_tipo.id = 1 and 
+      plan_estudio_carrera.id = 11
+    `);
+
+    console.log("result: ", result);
 
     return this._serviceResp.respuestaHttp200(
       result,
