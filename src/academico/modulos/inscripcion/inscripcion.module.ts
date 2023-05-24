@@ -18,9 +18,11 @@ import { PlanEstudioCarrera } from "../../entidades/planEstudioCarrera.entity";
 import { Aula } from "../../entidades/aula.entity";
 import { EstadoMatriculaTipo } from "../../entidades/estadoMatriculaTipo.entity";
 import { OfertaCurricular } from "../../entidades/ofertaCurricular.entity";
+import { UsersModule } from "../../../users/users.module";
 
 @Module({
   imports: [
+    UsersModule,
     DatabaseModule,
     PersonaModule,
     TypeOrmModule.forFeature([MatriculaEstudiante]),

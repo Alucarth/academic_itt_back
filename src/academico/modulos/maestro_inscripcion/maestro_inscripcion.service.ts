@@ -849,7 +849,7 @@ export class MaestroInscripcionService {
 
       //SE CREA EL USUARIO
       // 6: ROL MAESTRO
-      const newusuario = this.usersService.createUserAndRol(persona,6)
+      const newusuario = await this.usersService.createUserAndRol(persona,6)
 
 
       console.log("res:", res);

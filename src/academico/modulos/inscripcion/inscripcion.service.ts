@@ -19,6 +19,7 @@ import { OfertaCurricular } from "../../entidades/ofertaCurricular.entity";
 import { CreatePersonaoDto } from "../persona/dto/createPersona.dto";
 import { CreateInscriptionDto } from "./dto/createInscription.dto";
 import { CreateMatriculaDto } from "./dto/createMatricula.dto";
+import { UsersService } from "../../../users/users.service";
 
 @Injectable()
 export class InscripcionService {
@@ -44,7 +45,8 @@ export class InscripcionService {
     @InjectRepository(OfertaCurricular)
     private ofertaCurricularRepository: Repository<OfertaCurricular>,
     private _serviceResp: RespuestaSigedService,
-    private _servicePersona: PersonaService
+    private _servicePersona: PersonaService,
+    private readonly usersService: UsersService
   ) {}
 
   async createMatricula(dto: CreateMatriculaDto) {
@@ -224,6 +226,10 @@ export class InscripcionService {
         );
       }
 
+      //SE CREA EL USUARIO
+      // 7: ROL MAESTRO
+      const newusuario = await this.usersService.createUserAndRol(personaAux, 7);
+      console.log('newusuario', newusuario);
       return this._serviceResp.respuestaHttp201(
         ieeId,
         "Registro Creado !!",
@@ -660,7 +666,7 @@ export class InscripcionService {
         regimen_grado_tipo.id = 1
     `);
 
-    for(let i=0; i< result.length; i++){
+    for (let i = 0; i < result.length; i++) {
       let res_paralelos = await this.inscripcionRepository.query(`
         SELECT
           oferta_curricular.id as oferta_curricular_id, 
