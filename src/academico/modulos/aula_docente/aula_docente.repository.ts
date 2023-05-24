@@ -41,5 +41,18 @@ export class AulaDocenteRepository {
           .getRawMany();
     }
 
-    
+    async crearDocenteAula(idUsuario, dto, transaction) {
+          const aulaDocente  = new AulaDocente()
+          aulaDocente.aulaId = dto.aula_id;
+          aulaDocente.maestroInscripcionId = dto.maestro_inscripcion_id;
+          aulaDocente.asignacionFechaInicio = dto.fecha_inicio;
+          aulaDocente.asignacionFechaFin = dto.fecha_fin;
+          aulaDocente.bajaTipoId = 0;
+          aulaDocente.usuarioId = idUsuario;
+          aulaDocente.observacion = "ASIGNACION";
+        return await transaction.getRepository(AulaDocente).save(aulaDocente);
+    }
+    async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
+        return this.dataSource.manager.transaction<T>(op)
+    }
 }

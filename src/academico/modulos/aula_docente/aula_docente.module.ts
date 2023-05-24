@@ -14,6 +14,7 @@ import { AulaDocenteService } from './aula_docente.service';
   controllers: [AulaDocenteController],
   providers: [AulaDocenteService, 
   RespuestaSigedService, 
+  AulaDocenteRepository, 
   AulaDocenteRepository]
 })
 export class AulaDocenteModule {}
