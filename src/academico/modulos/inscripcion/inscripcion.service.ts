@@ -744,6 +744,39 @@ export class InscripcionService {
   }
 
   async getAllMateriasInscripcionNuevo(carreraAutorizadaId: number) {
+
+    // semestral ? anual ?
+    const intervaloGestion = await this.inscripcionRepository.query(`
+      SELECT
+        carrera_autorizada.id as carrera_autorizada_id, 
+        carrera_autorizada_resolucion."id" as carrera_autorizada_resolucion_id, 
+        carrera_autorizada_resolucion.descripcion, 
+        carrera_autorizada_resolucion.numero_resolucion, 
+        intervalo_gestion_tipo.id as intervalo_gestion_tipo_id, 
+        intervalo_gestion_tipo.intervalo_gestion
+      FROM
+        carrera_autorizada
+        INNER JOIN
+        carrera_autorizada_resolucion
+        ON 
+          carrera_autorizada.id = carrera_autorizada_resolucion.carrera_autorizada_id
+        INNER JOIN
+        intervalo_gestion_tipo
+        ON 
+          carrera_autorizada_resolucion.intervalo_gestion_tipo_id = intervalo_gestion_tipo.id
+        where carrera_autorizada.id = ${carreraAutorizadaId}
+    `);
+
+    let regimen_grado_tipo_id = 0;
+    if (intervaloGestion[0].intervalo_gestion_tipo_id === 1) {
+      // es semestral, el primer semestre es 1
+      regimen_grado_tipo_id = 1;
+    }
+    if (intervaloGestion[0].intervalo_gestion_tipo_id === 4) {
+      // es anual, el primer año es 7
+      regimen_grado_tipo_id = 7;
+    }
+
     const result = await this.inscripcionRepository.query(`
       SELECT
         institucion_educativa.id AS institucion_educativa_id, 
@@ -803,8 +836,8 @@ export class InscripcionService {
           plan_estudio_asignatura.regimen_grado_tipo_id = regimen_grado_tipo.id AND
           plan_estudio_asignatura.regimen_grado_tipo_id = regimen_grado_tipo.id
       WHERE
-        carrera_autorizada.id = 7 AND      
-        regimen_grado_tipo.id = 1
+        carrera_autorizada.id = ${carreraAutorizadaId} AND      
+        regimen_grado_tipo.id = ${regimen_grado_tipo_id}
     `);
 
     for (let i = 0; i < result.length; i++) {
