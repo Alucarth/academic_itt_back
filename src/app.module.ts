@@ -77,6 +77,7 @@ import { AulaDetalleModule } from './academico/modulos/aula_detalle/aula_detalle
 import { NotaTipoModule } from './academico/catalogos/nota_tipo/nota_tipo.module';
 import { ValoracionTipoModule } from './academico/catalogos/valoracion_tipo/valoracion_tipo.module';
 import { InstitutoEstudianteInscripcionDocenteCalificacionModule } from './academico/modulos/instituto_estudiante_inscripcion_docente_calificacion/instituto_estudiante_inscripcion_docente_calificacion.module';
+import { AulaDocenteModule } from './academico/modulos/aula_docente/aula_docente.module';
 
 
 
@@ -186,6 +187,8 @@ import { InstitutoEstudianteInscripcionDocenteCalificacionModule } from './acade
     ValoracionTipoModule,
 
     InstitutoEstudianteInscripcionDocenteCalificacionModule,
+
+    AulaDocenteModule,
 
 
   ]

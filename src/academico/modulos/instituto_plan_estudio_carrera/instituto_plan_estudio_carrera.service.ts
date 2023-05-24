@@ -17,6 +17,11 @@ export class InstitutoPlanEstudioCarreraService {
         return data;
 
     }
+    async getOneById(id){
+        const data = await this.institutoPlanEstudioCarreraRepository.findOneById(id);
+        return data;
+
+    }
     async getResolucionesCarreraAutorizadaId( id:number ){
        const result = await this.institutoPlanEstudioCarreraRepository.findResolucionesCarreraAutorizadaId(id);
        return result;    

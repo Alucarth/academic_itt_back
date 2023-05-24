@@ -34,6 +34,47 @@ export class OfertaCurricularRepository {
         return cursos;
         
     }
+
+    async findOfertasByCarreraAutorizadaIdGestionPeriodo( id:number, gestion:number,periodo:number){
+      console.log("resultado");
+      console.log(id);
+      console.log(gestion);
+      console.log(periodo);
+      const ofertas = await this.dataSource.getRepository(OfertaCurricular)
+      .createQueryBuilder("o")
+      .innerJoinAndSelect("o.planEstudioAsignatura", "pa")       
+      .innerJoinAndSelect("pa.planEstudioCarrera", "pe")       
+      .innerJoinAndSelect("pa.regimenGradoTipo", "rg")     
+      .innerJoinAndSelect("pa.asignaturaTipo", "at")       
+      .innerJoinAndSelect("o.aulas", "a")       
+      .leftJoinAndSelect("a.paraleloTipo", "pt")       
+      .leftJoinAndSelect("a.aulasDetalles", "d")       
+      .leftJoinAndSelect("d.diaTipo", "dt")       
+      .select([
+          'o.id',
+          'o.instituto_plan_estudio_carrera_id',
+          'pa.id as plan_estudio_asignatura_id',
+          'pa.horas',
+          'at.asignatura',
+          'at.abreviacion',
+          'rg.id',
+          'rg.regimenGrado',
+          'a.cupo',
+          'pt.paralelo',
+          'd.horaInicio',
+          'd.horaFin',
+          'd.numeroAula',  
+      ])
+      .where('o.institutoPlanEstudioCarreraId = :id ', { id })
+      .andWhere('o.gestionTipoId = :gestion ', { gestion })
+      .andWhere('o.periodoTipoId = :periodo ', { periodo })
+      .orderBy('at.id', 'ASC')
+      //.orderBy('a.id', 'ASC')
+      //.getRawMany();
+      .getMany();
+      return ofertas;
+  }
+
     async createOfertaCurricular(dto, transaction) {
         const oc  = new OfertaCurricular();
         oc.institutoPlanEstudioCarreraId = dto.instituto_plan_estudio_carrera_id;
