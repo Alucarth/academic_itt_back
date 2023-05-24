@@ -19,7 +19,19 @@ export class InstitutoPlanEstudioCarreraService {
     }
     async getOneById(id){
         const data = await this.institutoPlanEstudioCarreraRepository.findOneById(id);
-        return data;
+        if (data){
+          return this._serviceResp.respuestaHttp201(
+            data,
+            "Registro econtrado !!",
+            ""
+          );
+        }
+        return this._serviceResp.respuestaHttp401(
+          "",
+          "No hay resultados !!",
+          ""
+        );
+        
 
     }
     async getResolucionesCarreraAutorizadaId( id:number ){
