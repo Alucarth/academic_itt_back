@@ -54,10 +54,21 @@ export class OfertaCurricularService {
 
     async getAllAsignaturasByCarreraGestionPeriodo(id:number, gestion:number, periodo:number){
         const oferta = await this.ofertaCurricularRepository.findOfertasByCarreraAutorizadaIdGestionPeriodo(id,gestion,periodo);
-            return oferta;
-          
 
+        if (oferta){
+            return this._serviceResp.respuestaHttp201(
+                oferta,
+              "resultados encontrados !!",
+              ""
+            );
+          }
+          return this._serviceResp.respuestaHttp404(
+            "",
+            "no existen resultados !!",
+            ""
+          );
     }
+    
 
     async createOfertaCurricular (dto: CreateOfertaCurricularDto[]) {
      

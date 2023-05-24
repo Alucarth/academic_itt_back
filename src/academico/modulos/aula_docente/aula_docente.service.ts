@@ -28,7 +28,7 @@ export class AulaDocenteService {
         }
         return this._serviceResp.respuestaHttp404(
           "",
-          "resultados encontrados !!",
+          "no existen resultados !!",
           ""
         );
       }
