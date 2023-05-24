@@ -11,6 +11,7 @@ import {
 import { EstudianteInscripcionCalificacionGeneral } from './estudianteInscripcionCalificacionGeneral.entity';
 import { EstudianteOfertaAcademicaMaestroCalificacion } from './estudianteOfertaAcademicaMaestroCalificacion.entity';
 import { InstitucionEducativaCurso } from './institucionEducativaCurso.entity';
+import { InstitutoEstudianteInscripcionDocenteCalificacion } from './institutoEstudianteInscripcionDocenteCalificacion.entity';
 import { IntervaloGestionTipo } from './intervaloGestionTipo.entity';
 import { MaestroInscripcion } from './maestroInscripcion.entity';
 import { MatriculaEstudiante } from './matriculaEstudiante.entity';
@@ -82,5 +83,9 @@ export class PeriodoTipo {
 
   @OneToMany(() => MatriculaEstudiante, (matriculaEstudiante) => matriculaEstudiante.periodoTipo)
   matriculaEstudiantes: MatriculaEstudiante[];
+
+  @OneToMany(() => InstitutoEstudianteInscripcionDocenteCalificacion, (institutoEstudianteInscripcionDocenteCalificacion) => institutoEstudianteInscripcionDocenteCalificacion.periodoTipo)
+  inscripcionesDocentesCalificaciones: InstitutoEstudianteInscripcionDocenteCalificacion[];  
+  
 
 }

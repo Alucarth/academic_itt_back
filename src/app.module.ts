@@ -74,6 +74,9 @@ import { OfertaCurricularModule } from './academico/modulos/oferta_curricular/of
 import { AulaModule } from './academico/modulos/aula/aula.module';
 import { DiaTipoModule } from './academico/catalogos/dia_tipo/dia_tipo.module';
 import { AulaDetalleModule } from './academico/modulos/aula_detalle/aula_detalle.module';
+import { NotaTipoModule } from './academico/catalogos/nota_tipo/nota_tipo.module';
+import { ValoracionTipoModule } from './academico/catalogos/valoracion_tipo/valoracion_tipo.module';
+import { InstitutoEstudianteInscripcionDocenteCalificacionModule } from './academico/modulos/instituto_estudiante_inscripcion_docente_calificacion/instituto_estudiante_inscripcion_docente_calificacion.module';
 
 
 
@@ -177,6 +180,12 @@ import { AulaDetalleModule } from './academico/modulos/aula_detalle/aula_detalle
     DiaTipoModule,
 
     AulaDetalleModule,
+
+    NotaTipoModule,
+
+    ValoracionTipoModule,
+
+    InstitutoEstudianteInscripcionDocenteCalificacionModule,
 
 
   ]
