@@ -18,8 +18,18 @@ export class AulaDocenteService {
         return aulas;
       }
       async getCarrerasByDocenteId(id:number){
-
         const aulas = await this.aulaDocenteRepositorio.findAllCarrerasByDocenteId(id);
-        return aulas;
+        if (aulas){
+          return this._serviceResp.respuestaHttp201(
+            aulas,
+            "resultados encontrados !!",
+            ""
+          );
+        }
+        return this._serviceResp.respuestaHttp404(
+          "",
+          "resultados encontrados !!",
+          ""
+        );
       }
 }
