@@ -20,6 +20,7 @@ import { CreatePersonaoDto } from "../persona/dto/createPersona.dto";
 import { CreateInscriptionDto } from "./dto/createInscription.dto";
 import { CreateMatriculaDto } from "./dto/createMatricula.dto";
 import { UsersService } from "../../../users/users.service";
+import { CreateInscriptionNuevoDto } from "./dto/createInscriptionNuevo.dto";
 
 @Injectable()
 export class InscripcionService {
@@ -228,8 +229,11 @@ export class InscripcionService {
 
       //SE CREA EL USUARIO
       // 7: ROL MAESTRO
-      const newusuario = await this.usersService.createUserAndRol(personaAux, 7);
-      console.log('newusuario', newusuario);
+      const newusuario = await this.usersService.createUserAndRol(
+        personaAux,
+        7
+      );
+      console.log("newusuario", newusuario);
       return this._serviceResp.respuestaHttp201(
         ieeId,
         "Registro Creado !!",
@@ -371,6 +375,143 @@ export class InscripcionService {
         "Registro Creado !!",
         ""
       );
+    } catch (error) {
+      console.log("Error insertar inscripcion: ", error);
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: `Error insertar Matricula: ${error.message}`,
+        },
+        HttpStatus.ACCEPTED,
+        {
+          cause: error,
+        }
+      );
+    }
+  }
+
+  async createInscriptionNuevo(dtos: CreateInscriptionNuevoDto[]) {
+    //valida los parametros
+    for (let index = 0; index < dtos.length; index++) {
+      let dto = dtos[index];
+
+      console.log("index: ", index);
+      console.log(dto);
+
+      //1: existe matricula ?
+      const matriculaEstudiante = await this.matriculaRepository.findOne({
+        where: {
+          id: dto.matriculaEstudianteId,
+        },
+      });
+      if (!matriculaEstudiante) {
+        return this._serviceResp.respuestaHttp404(
+          "0",
+          "Matricula No Encontrado !!",
+          ""
+        );
+      }
+
+      //2: existe aula ?
+      const aula = await this.aulaRepository.findOne({
+        where: {
+          id: dto.aulaId,
+        },
+      });
+      if (!aula) {
+        return this._serviceResp.respuestaHttp404(
+          dto.aulaId,
+          "aulaId No Encontrado !!",
+          ""
+        );
+      }
+
+      //: existe oferta curricular?
+      const ofertaCurricular = await this.ofertaCurricularRepository.findOne({
+        where: {
+          id: dto.ofertaCurricularId,
+        },
+      });
+      if (!ofertaCurricular) {
+        return this._serviceResp.respuestaHttp404(
+          dto.ofertaCurricularId,
+          "ofertaCurricular No Encontrado !!",
+          ""
+        );
+      }
+    }
+
+    //existe todo, se inserta uno a uno
+    let insertados = []
+    try {
+      for (let index = 0; index < dtos.length; index++) {
+        let dto = dtos[index];
+
+        const existe = await this.inscripcionRepository.query(`
+        select count(*) as existe 
+        from instituto_estudiante_inscripcion 
+        where 
+        matricula_estudiante_id = ${dto.matriculaEstudianteId}  and 
+        aula_id = ${dto.aulaId} and 
+        estadomatricula_tipo_id = 1 and 
+        estadomatricula_inicio_tipo_id = 0 and 
+        oferta_curricular_id = ${dto.ofertaCurricularId}  
+        `);
+
+        // inserta solo si es que NO existe
+        if (parseInt(existe[0].existe) == 0) {
+
+          const aula = await this.aulaRepository.findOne({
+            where: {
+              id: dto.aulaId,
+            },
+          });
+
+          const ofertaCurricular = await this.ofertaCurricularRepository.findOne({
+              where: {
+                id: dto.ofertaCurricularId,
+              },
+            });
+
+          const matriculaEstudiante = await this.matriculaRepository.findOne({
+            where: {
+              id: dto.matriculaEstudianteId,
+            },
+          });
+
+          const estadoMatriculaTipo =
+            await this.estadoMatriculaRepository.findOne({
+              where: {
+                id: 1,
+              },
+            });
+
+          const res = await this.inscripcionRepository
+            .createQueryBuilder()
+            .insert()
+            .into(InstitutoEstudianteInscripcion)
+            .values([
+              {
+                observacion: "Inscrito Nuevo - Gestion 2023",
+                usuarioId: 0,
+                estadoMatriculaInicioTipoId: 0,
+                aula: aula,
+                ofertaCurricular: ofertaCurricular,
+                estadoMatriculaTipo: estadoMatriculaTipo,
+                matriculaEstudiante: matriculaEstudiante,
+              },
+            ])
+            .returning("id")
+            .execute();
+
+          console.log("res:", res);
+          let inscripcionId = res.identifiers[0].id;
+          insertados.push(inscripcionId);
+        }
+      }
+      // ha insertado todos los que no existian
+      return this._serviceResp.respuestaHttp201(insertados, "Registro Creado !!", "");
+
     } catch (error) {
       console.log("Error insertar inscripcion: ", error);
       throw new HttpException(
@@ -603,6 +744,39 @@ export class InscripcionService {
   }
 
   async getAllMateriasInscripcionNuevo(carreraAutorizadaId: number) {
+
+    // semestral ? anual ?
+    const intervaloGestion = await this.inscripcionRepository.query(`
+      SELECT
+        carrera_autorizada.id as carrera_autorizada_id, 
+        carrera_autorizada_resolucion."id" as carrera_autorizada_resolucion_id, 
+        carrera_autorizada_resolucion.descripcion, 
+        carrera_autorizada_resolucion.numero_resolucion, 
+        intervalo_gestion_tipo.id as intervalo_gestion_tipo_id, 
+        intervalo_gestion_tipo.intervalo_gestion
+      FROM
+        carrera_autorizada
+        INNER JOIN
+        carrera_autorizada_resolucion
+        ON 
+          carrera_autorizada.id = carrera_autorizada_resolucion.carrera_autorizada_id
+        INNER JOIN
+        intervalo_gestion_tipo
+        ON 
+          carrera_autorizada_resolucion.intervalo_gestion_tipo_id = intervalo_gestion_tipo.id
+        where carrera_autorizada.id = ${carreraAutorizadaId}
+    `);
+
+    let regimen_grado_tipo_id = 0;
+    if (intervaloGestion[0].intervalo_gestion_tipo_id === 1) {
+      // es semestral, el primer semestre es 1
+      regimen_grado_tipo_id = 1;
+    }
+    if (intervaloGestion[0].intervalo_gestion_tipo_id === 4) {
+      // es anual, el primer año es 7
+      regimen_grado_tipo_id = 7;
+    }
+
     const result = await this.inscripcionRepository.query(`
       SELECT
         institucion_educativa.id AS institucion_educativa_id, 
@@ -662,8 +836,8 @@ export class InscripcionService {
           plan_estudio_asignatura.regimen_grado_tipo_id = regimen_grado_tipo.id AND
           plan_estudio_asignatura.regimen_grado_tipo_id = regimen_grado_tipo.id
       WHERE
-        carrera_autorizada.id = 7 AND      
-        regimen_grado_tipo.id = 1
+        carrera_autorizada.id = ${carreraAutorizadaId} AND      
+        regimen_grado_tipo.id = ${regimen_grado_tipo_id}
     `);
 
     for (let i = 0; i < result.length; i++) {
