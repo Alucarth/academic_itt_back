@@ -30,12 +30,12 @@ export class AulaDocenteRepository {
         .innerJoinAndSelect("ca.carreraTipo", "ct")
         .select([
             'ad.id',
-            'a.id',
-            'o.id',
-            'ip.id',
-            'ca.id',
-            'ct.id',
-            'ct.carrera',
+            'a.id as aula_id',
+            'o.id as oferta_curricular_id',
+            'ip.id as instituto_plan_estudio_carrera_id',
+            'ca.id as carrera_autorizada_id',
+            'ct.id as carrera_tipo_id',
+            'ct.carrera as carrera',
         ])
           .where("ad.maestroInscripcionId = :id ", { id })
           .getRawMany();

@@ -59,11 +59,14 @@ export class OfertaCurricularRepository {
           'at.abreviacion',
           'rg.id',
           'rg.regimenGrado',
+          'a.id',
           'a.cupo',
           'pt.paralelo',
           'd.horaInicio',
           'd.horaFin',
           'd.numeroAula',  
+          'dt.dia',  
+
       ])
       .where('o.institutoPlanEstudioCarreraId = :id ', { id })
       .andWhere('o.gestionTipoId = :gestion ', { gestion })
