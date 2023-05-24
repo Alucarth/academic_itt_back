@@ -11,6 +11,7 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { InscripcionService } from "./inscripcion.service";
 import { CreateInscriptionDto } from "./dto/createInscription.dto";
 import { CreateMatriculaDto } from "./dto/createMatricula.dto";
+import { CreateInscriptionNuevoDto } from "./dto/createInscriptionNuevo.dto";
 
 @ApiTags("Matriculacion e Inscripcion")
 @Controller("inscripcion")
@@ -20,9 +21,9 @@ export class InscripcionController {
   @ApiOperation({
     summary: "Crea Inscripcion",
   })
-  @Post()
-  async createInscription(@Body() dto: CreateInscriptionDto) {
-    const res = await this.inscripcionService.createInscription(dto);
+  @Post('/nuevo')
+  async createInscription(@Body() dto: CreateInscriptionNuevoDto[]) {
+    const res = await this.inscripcionService.createInscriptionNuevo(dto);
     return res;
   }
 
