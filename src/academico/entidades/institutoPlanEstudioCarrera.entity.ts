@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { CarreraAutorizada } from './carreraAutorizada.entity';
+import { MatriculaEstudiante } from './matriculaEstudiante.entity';
 import { OfertaCurricular } from './ofertaCurricular.entity';
 import { PlanEstudioCarrera } from './planEstudioCarrera.entity';
 
@@ -58,4 +59,8 @@ export class InstitutoPlanEstudioCarrera {
   
   @OneToMany(() => OfertaCurricular, (ofertaCurricular) => ofertaCurricular.institutoPlanEstudioCarrera)
   ofertasCurriculares: OfertaCurricular[];
+
+  @OneToMany(() => MatriculaEstudiante, (matriculaEstudiante) => matriculaEstudiante.institutoPlanEstudioCarrera)
+  matriculaEstudiantes: MatriculaEstudiante[];
+
 }

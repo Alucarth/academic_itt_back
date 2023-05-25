@@ -63,7 +63,7 @@ export class PlanEstudioAsignaturaService {
   
             if(crearResult.length>0){
               return this._serviceResp.respuestaHttp201(
-                  crearResult.id,
+                  crearResult,
                   'Registro de asignaturas Creado !!',
                   '',
               );

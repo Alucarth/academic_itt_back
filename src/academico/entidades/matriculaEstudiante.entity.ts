@@ -10,6 +10,7 @@ import {
 import { GestionTipo } from "./gestionTipo.entity";
 import { InstitucionEducativaEstudiante } from "./InstitucionEducativaEstudiante.entity";
 import { InstitutoEstudianteInscripcion } from "./InstitutoEstudianteInscripcion.entity";
+import { InstitutoPlanEstudioCarrera } from "./institutoPlanEstudioCarrera.entity";
 import { PeriodoTipo } from "./periodoTipo.entity";
 import { PlanEstudioCarrera } from "./planEstudioCarrera.entity";
 
@@ -75,4 +76,12 @@ export class MatriculaEstudiante {
   )
   @JoinColumn([{ name: "plan_estudio_carrera_id", referencedColumnName: "id" }])
   planEstudioCarrera: PlanEstudioCarrera;
+
+  @ManyToOne(
+    () => InstitutoPlanEstudioCarrera,
+    (institutoPlanEstudioCarrera) => institutoPlanEstudioCarrera.matriculaEstudiantes
+  )
+  @JoinColumn([{ name: "instituto_plan_estudio_carrera_id", referencedColumnName: "id" }])
+  institutoPlanEstudioCarrera: InstitutoPlanEstudioCarrera;
+  
 }
