@@ -578,6 +578,33 @@ export class InscripcionService {
     );
   }
 
+  async getAllInscritosByAulaId(id: number) {
+    
+
+    const result = await this.inscripcionRepository
+      .createQueryBuilder("i")
+      .innerJoinAndSelect("i.aula", "a")
+      .innerJoinAndSelect("i.matriculaEstudiante", "me")
+      .innerJoinAndSelect("me.institucionEducativaEstudiante", "ie")
+      .innerJoinAndSelect("ie.persona", "p")
+      .select([
+        'i.id as instituto_estudiante_inscripcion_id',
+        'a.id as aula_id',
+        'p.paterno as paterno',
+        'p.materno as materno',
+        'p.nombre as nombre',
+        'p.carnetIdentidad as carnet_identidad',
+    ])
+      .where("i.aulaId = :id ", { id })
+      .getRawMany();
+    console.log("result: ", result);
+
+    return this._serviceResp.respuestaHttp200(
+      result,
+      "Registro Encontrado !!",
+      ""
+    );
+  }
   async getAllInscritosByGestion(
     gestionId: number,
     periodoId: number,
