@@ -63,6 +63,12 @@ export class InscripcionController {
       parseInt(ieId)
     );
   }
+  @Get("byAulaId/:id")
+  async getAllInscritosByAulaId(
+    @Param("id") id: number
+  ) {
+    return await this.inscripcionService.getAllInscritosByAulaId(id);
+  }
 
   @ApiOperation({
     summary:
