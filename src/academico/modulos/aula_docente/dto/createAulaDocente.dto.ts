@@ -1,6 +1,7 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-export class CreateAulaDocenteDto {
+class AulaDocente {
 
   @IsNotEmpty({ message: "Debe ingresar el aula" })
   @IsNumber()
@@ -18,4 +19,10 @@ export class CreateAulaDocenteDto {
   @IsString()
   fecha_fin: string;
 
+}
+
+export class CreateAulaDocenteDto {
+    @ValidateNested({ each: true })
+    @Type(() => AulaDocente)
+    items: AulaDocente[];
 }

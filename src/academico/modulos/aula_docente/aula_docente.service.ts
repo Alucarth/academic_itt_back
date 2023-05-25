@@ -34,10 +34,14 @@ export class AulaDocenteService {
         );
       }
 
-      async crearDocenteAula (dto: CreateAulaDocenteDto) {
-        
+      async crearDocenteAula (dto: CreateAulaDocenteDto[]) {
+          console.log("lista array inicio");
+          console.log(dto);
+          console.log(dto.length);
+          console.log("lista array");
+
             const op = async (transaction: EntityManager) => {
-                const nuevo = await this.aulaDocenteRepositorio.crearDocenteAula(
+                const nuevo = await this.aulaDocenteRepositorio.crearDocentesAulas(
                     1, 
                     dto, 
                     transaction
@@ -47,9 +51,9 @@ export class AulaDocenteService {
   
             const crearResult = await this.aulaDocenteRepositorio.runTransaction(op)
   
-            if(crearResult){
+            if(crearResult.length>0){
               return this._serviceResp.respuestaHttp201(
-                  crearResult.id,
+                  crearResult,
                   'Registro Creado !!',
                   '',
               );

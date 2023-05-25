@@ -28,6 +28,7 @@ export class AulaDocenteRepository {
         .innerJoinAndSelect("o.institutoPlanEstudioCarrera", "ip")
         .innerJoinAndSelect("ip.carreraAutorizada", "ca")
         .innerJoinAndSelect("ca.carreraTipo", "ct")
+        //.groupBy("ct.id")
         .select([
             'ad.id',
             'a.id as aula_id',
@@ -41,7 +42,25 @@ export class AulaDocenteRepository {
           .getRawMany();
     }
 
+    async crearDocentesAulas(idUsuario, aulasDocentes, transaction) {
+
+        const planesAsignaturas: AulaDocente[] = aulasDocentes.map((item) => {
+          
+            const aulaDocente  = new AulaDocente()
+            aulaDocente.aulaId = item.aula_id;
+            aulaDocente.maestroInscripcionId = item.maestro_inscripcion_id;
+            aulaDocente.asignacionFechaInicio = item.fecha_inicio;
+            aulaDocente.asignacionFechaFin = item.fecha_fin;
+            aulaDocente.bajaTipoId = 0;
+            aulaDocente.usuarioId = idUsuario;
+            aulaDocente.observacion = "ASIGNACION";
+            return aulaDocente;
+          });
+        return await transaction.getRepository(AulaDocente).save(planesAsignaturas);
+    }
+
     async crearDocenteAula(idUsuario, dto, transaction) {
+
           const aulaDocente  = new AulaDocente()
           aulaDocente.aulaId = dto.aula_id;
           aulaDocente.maestroInscripcionId = dto.maestro_inscripcion_id;
