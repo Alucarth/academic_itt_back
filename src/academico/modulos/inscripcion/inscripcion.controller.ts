@@ -21,7 +21,7 @@ export class InscripcionController {
   @ApiOperation({
     summary: "Crea Inscripcion",
   })
-  @Post('/nuevo')
+  @Post("/nuevo")
   async createInscription(@Body() dto: CreateInscriptionNuevoDto[]) {
     const res = await this.inscripcionService.createInscriptionNuevo(dto);
     return res;
@@ -33,6 +33,15 @@ export class InscripcionController {
   @Post("/matricula")
   async create(@Body() dto: CreateMatriculaDto) {
     const res = await this.inscripcionService.createMatricula(dto);
+    return res;
+  }
+
+  @ApiOperation({
+    summary: "Crea Matriculas en Lote",
+  })
+  @Post("/matriculaLote")
+  async createMatriculaLote(@Body() dtos: CreateMatriculaDto[]) {
+    const res = await this.inscripcionService.createMatriculaLote(dtos);
     return res;
   }
 
@@ -99,8 +108,8 @@ export class InscripcionController {
     summary: "Devuelve todos las materias del primer trimestre",
   })
   @Get("/materiasNuevoByCarreraAutorizadaId/:carreraAutorizadaId")
-  async getMateriasNuevoByCarreraId(    
-    @Param("carreraAutorizadaId") carreraAutorizadaId: string    
+  async getMateriasNuevoByCarreraId(
+    @Param("carreraAutorizadaId") carreraAutorizadaId: string
   ) {
     return await this.inscripcionService.getAllMateriasInscripcionNuevo(
       parseInt(carreraAutorizadaId)
@@ -111,12 +120,11 @@ export class InscripcionController {
     summary: "Devuelve personas sin matricula",
   })
   @Get("/personasSinMatricula/:carreraAutorizadaId")
-  async getPersonasSinMatricula(    
-    @Param("carreraAutorizadaId") carreraAutorizadaId: string    
+  async getPersonasSinMatricula(
+    @Param("carreraAutorizadaId") carreraAutorizadaId: string
   ) {
     return await this.inscripcionService.getPersonasSinMatricula(
       parseInt(carreraAutorizadaId)
     );
   }
-
 }
