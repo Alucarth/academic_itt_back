@@ -15,6 +15,10 @@ export class InstitutoPlanEstudioCarreraRepository {
         const itt = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera).find();
         return itt;
     }
+    async findOneById(id){
+        const dato = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera).findOneBy({'id':id});
+        return dato;
+    }
 
     async findResolucionesCarreraAutorizadaId( id:number){
         const itt = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera)
@@ -24,7 +28,6 @@ export class InstitutoPlanEstudioCarreraRepository {
         .leftJoinAndSelect("pe.planesAsignaturas", "pa")       
         .leftJoinAndSelect("pa.regimenGradoTipo", "rg")     
         .leftJoinAndSelect("pa.asignaturaTipo", "a")       
-          
         .select([
             'ip.id',
             'ip.observacion',
@@ -79,7 +82,7 @@ export class InstitutoPlanEstudioCarreraRepository {
         return itt;
     }
 
-    async createInstitutoPlanEstudioCarrera(idUsuario,dto:CreateInstitutoPlanEstudioCarreraDto, transaction) {
+ async createInstitutoPlanEstudioCarrera(idUsuario,dto:CreateInstitutoPlanEstudioCarreraDto, transaction) {
           
         const institutoPlan  = new InstitutoPlanEstudioCarrera()
         institutoPlan.planEstudioCarreraId = dto.plan_estudio_carrera_id;

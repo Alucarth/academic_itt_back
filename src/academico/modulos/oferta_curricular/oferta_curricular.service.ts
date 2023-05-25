@@ -52,6 +52,24 @@ export class OfertaCurricularService {
 
     }
 
+    async getAllAsignaturasByCarreraGestionPeriodo(id:number, gestion:number, periodo:number){
+        const oferta = await this.ofertaCurricularRepository.findOfertasByCarreraAutorizadaIdGestionPeriodo(id,gestion,periodo);
+
+        if (oferta){
+            return this._serviceResp.respuestaHttp201(
+                oferta,
+              "resultados encontrados !!",
+              ""
+            );
+          }
+          return this._serviceResp.respuestaHttp404(
+            "",
+            "no existen resultados !!",
+            ""
+          );
+    }
+    
+
     async createOfertaCurricular (dto: CreateOfertaCurricularDto[]) {
      
          console.log("servicio");
@@ -136,9 +154,10 @@ export class OfertaCurricularService {
                     item.periodo_tipo_id,
                     item.plan_estudio_asignatura_id
                 );
-                console.log(oferta);
+
                 let ofertaId = 0;
                 if(!oferta){
+                    console.log("no existe ingresa");
                     const res = await this.ocRepository
                     .createQueryBuilder()
                     .insert()
@@ -154,6 +173,7 @@ export class OfertaCurricularService {
                     ])
                     .returning("id")
                     .execute();
+                    
                     console.log("res:", res);
                     ofertaId = res.identifiers[0].id;
                 }else{
@@ -169,7 +189,7 @@ export class OfertaCurricularService {
                             
                         );
                         let aulaId = 0;
-                        if(!datoAula){
+                        if(datoAula==null){
                           const resAula = await this.ocRepository
                           .createQueryBuilder()
                           .insert()
