@@ -52,9 +52,10 @@ export class OfertaCurricularRepository {
       .leftJoinAndSelect("d.diaTipo", "dt")       
       .select([
           'o.id',
-          'o.instituto_plan_estudio_carrera_id',
-          'pa.id as plan_estudio_asignatura_id',
+          //'o.institutoPlanEstudioCarreraId',
+          'pa.id',
           'pa.horas',
+          'at.id',
           'at.asignatura',
           'at.abreviacion',
           'rg.id',
