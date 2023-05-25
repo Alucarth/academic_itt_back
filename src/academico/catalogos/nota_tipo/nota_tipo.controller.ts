@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { NotaTipoService } from './nota_tipo.service';
 
 @Controller('nota-tipo')
@@ -10,5 +10,9 @@ export class NotaTipoController {
     @Get()
     async getAll(){
         return await this.notaTipoService.getAll();
+    }
+    @Get(':id')
+    async getById(@Param("id", ParseIntPipe) id: number){
+        return await this.notaTipoService.getById(id);
     }
 }

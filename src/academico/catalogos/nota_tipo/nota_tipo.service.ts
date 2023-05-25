@@ -16,4 +16,8 @@ export class NotaTipoService {
         const nota = await this.notaTipoRepository.find()
         return nota
     }
+    async getById(id:number){
+        const nota = await this.notaTipoRepository.findOneBy({'id':id})
+        return nota
+    }
 }

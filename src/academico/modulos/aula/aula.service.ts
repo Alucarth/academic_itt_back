@@ -16,4 +16,8 @@ export class AulaService {
         const s = await this.aulaRepository.getAll()
         return s
     }
+    async getById(id:number){
+        const aula = await this.aulaRepository.getByAulaId(id);
+        return aula;
+    }
 }

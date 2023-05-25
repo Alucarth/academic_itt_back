@@ -584,6 +584,7 @@ export class InscripcionService {
     const result = await this.inscripcionRepository
       .createQueryBuilder("i")
       .innerJoinAndSelect("i.aula", "a")
+      .innerJoinAndSelect("a.aulasDocentes", "d")
       .innerJoinAndSelect("i.matriculaEstudiante", "me")
       .innerJoinAndSelect("me.institucionEducativaEstudiante", "ie")
       .innerJoinAndSelect("ie.persona", "p")
@@ -594,8 +595,10 @@ export class InscripcionService {
         'p.materno as materno',
         'p.nombre as nombre',
         'p.carnetIdentidad as carnet_identidad',
+        'd.id as aula_docente_id'
     ])
-      .where("i.aulaId = :id ", { id })
+      .where("i.aulaId = :id", { id })
+      .andWhere("d.bajaTipoId = 0")
       .getRawMany();
     console.log("result: ", result);
 

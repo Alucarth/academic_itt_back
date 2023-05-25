@@ -29,11 +29,11 @@ export class NotaTipo {
   
   @Exclude()
   @UpdateDateColumn({
-    name: 'fecha_creacion',
+    name: 'fecha_registro',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  fechaCreacion: Date;
+  fechaRegistro: Date;
 
   @Exclude()
   @UpdateDateColumn({
@@ -45,10 +45,10 @@ export class NotaTipo {
   
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
-
+/*
   @Column({ type: 'integer', name: 'menu_tipo_id' })
   menuTipoId: number;
-
+*/
   @Column({ type: 'integer', name: 'intervalo_gestion_tipo_id' })
   intervaloGestionTipoId: number;
 

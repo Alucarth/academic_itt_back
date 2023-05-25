@@ -18,6 +18,33 @@ constructor(private dataSource: DataSource) {}
             },
         });
     }
+    async getByAulaId(id:number){
+
+        return  await this.dataSource.getRepository(Aula)
+        .createQueryBuilder('a')
+        .innerJoin('a.aulasDocentes', 'do')
+        .innerJoin('do.maestroInscripcion', 'ma')
+        .innerJoin('ma.persona', 'p')
+        .innerJoin('a.aulasDetalles', 'd')
+        .innerJoin('a.paraleloTipo', 'pt')
+        .innerJoin('d.diaTipo', 'dt')
+        .where('a.id = :id', {id})
+        .select([
+            'a.id as aula_id',
+            'a.cupo as cupo',
+            'pt.paralelo as paralelo',
+            'dt.dia as dia',
+            'd.hora_inicio as hora_inicio',
+            'd.hora_fin as hora_fin',
+            'd.numero_aula as numero_aula',
+            'do.id as aula_docente_id',
+            'p.paterno as paterno',
+            'p.materno as materno',
+            'p.nombre as nombre',
+        ])
+        .getRawOne();
+        
+    }
    
     async createAula(aula, transaction) {
           
