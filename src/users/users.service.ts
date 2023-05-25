@@ -1437,34 +1437,68 @@ export class UsersService {
   }
 
   async createUserAndRol(persona : Persona, rol_tipo_id: number){
-
+    //console.log('persona: ', persona);
+    //console.log('rol_tipo_id: ', rol_tipo_id);
+   
     try {      
-      const hashPassword = await bcrypt.hash(persona.carnetIdentidad, 10);
+      
+      const hashPassword = await bcrypt.hash(persona.carnetIdentidad + persona.complemento, 10);
+      //verificamos si existe el usuario
+      const resultp = await this.personaRepository.query(
+        `SELECT count(*) as existe FROM usuario where persona_id = ${persona.id}`
+      );
 
-      //creamos el usuario
-      const newUser = await this.userRepository
-        .createQueryBuilder()
-        .insert()
-        .into(User)
-        .values([
-          {
-            personaId: persona.id,
-            username: persona.carnetIdentidad,
-            password: hashPassword,
-            activo: true,
-          },
-        ])
-        .returning("id")
-        .execute();
+      console.log("resultp[0].existe: ", resultp[0].existe );
+      let user_id = 0;
+      if(resultp[0].existe == 0){
+        //creamos el usuario
+        console.log("creamos el usuario");
+        const newUser = await this.userRepository
+          .createQueryBuilder()
+          .insert()
+          .into(User)
+          .values([
+            {
+              personaId: persona.id,
+              username: persona.carnetIdentidad,
+              password: hashPassword,
+              activo: true,
+            },
+          ])
+          .returning("id")
+          .execute();
 
-      //se le asigna el rol recibido
-      const user_id = newUser.identifiers[0].id;
+          //se le asigna el rol recibido
+          user_id = newUser.identifiers[0].id;
+          console.log('new user_id: ', user_id);
+          
+          console.log('graba');
 
-      const res = this.insertNewRolUser(user_id,rol_tipo_id);
-      return res;
+      }else{
+        // NO deberia existir dos usuarios con la misma persona_id
+        const result = await this.personaRepository.query(
+          `SELECT id FROM usuario where persona_id = ${persona.id}`
+          );
+          
+          user_id = result[0].id;
+          console.log('existe user_id: ', user_id);
+        }        
+        
+        //ya existe el usuario, existe con ese rol ?
+        const resultrol = await this.personaRepository.query(
+          `SELECT count(*) as existe FROM usuario_rol where usuario_id = ${user_id} and rol_tipo_id = ${rol_tipo_id}`
+        );
+
+        if(resultrol[0].existe == 0){
+          // no existe ese rol para el usuario, se crea
+          const res = this.insertNewRolUser(user_id,rol_tipo_id);
+          return user_id;
+        }
+
+        return user_id;
 
     } catch (error) {
-      console.log("Error insertar maestro inscripcion: ", error.message);
+      console.log("Error creacion usuario y rol: ", error.message);
       return null;
     }
   }

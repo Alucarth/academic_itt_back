@@ -180,8 +180,6 @@ export class InscripcionService {
         },
       });
 
-      console.log();
-
       //ya existe un registro para la gestion, periodo, ue, plan ?
       const existeMat = await this.matriculaRepository.query(`
         select count(*) as existe 
@@ -233,6 +231,7 @@ export class InscripcionService {
         personaAux,
         7
       );
+
       console.log("newusuario", newusuario);
       return this._serviceResp.respuestaHttp201(
         ieeId,
@@ -442,7 +441,7 @@ export class InscripcionService {
     }
 
     //existe todo, se inserta uno a uno
-    let insertados = []
+    let insertados = [];
     try {
       for (let index = 0; index < dtos.length; index++) {
         let dto = dtos[index];
@@ -460,14 +459,14 @@ export class InscripcionService {
 
         // inserta solo si es que NO existe
         if (parseInt(existe[0].existe) == 0) {
-
           const aula = await this.aulaRepository.findOne({
             where: {
               id: dto.aulaId,
             },
           });
 
-          const ofertaCurricular = await this.ofertaCurricularRepository.findOne({
+          const ofertaCurricular =
+            await this.ofertaCurricularRepository.findOne({
               where: {
                 id: dto.ofertaCurricularId,
               },
@@ -510,8 +509,11 @@ export class InscripcionService {
         }
       }
       // ha insertado todos los que no existian
-      return this._serviceResp.respuestaHttp201(insertados, "Registro Creado !!", "");
-
+      return this._serviceResp.respuestaHttp201(
+        insertados,
+        "Registro Creado !!",
+        ""
+      );
     } catch (error) {
       console.log("Error insertar inscripcion: ", error);
       throw new HttpException(
@@ -744,7 +746,6 @@ export class InscripcionService {
   }
 
   async getAllMateriasInscripcionNuevo(carreraAutorizadaId: number) {
-
     // semestral ? anual ?
     const intervaloGestion = await this.inscripcionRepository.query(`
       SELECT
@@ -900,5 +901,24 @@ export class InscripcionService {
       "Registro Encontrado !!",
       ""
     );
+  }
+
+  //TODO: esto hay que repensar, debe ir por gestion
+  // ESTO ES TEMPORAL
+  async getPersonasSinMatricula(carreraAutorizadaId: number) {
+
+    const personas = await this.inscripcionRepository.query(`
+      SELECT
+        id,carnet_identidad,complemento,concat(paterno, ' ', materno, ' ', nombre) as nombre
+      FROM
+        persona limit 20
+    `);
+
+    return this._serviceResp.respuestaHttp200(
+      personas,
+      "Registro Encontrado !!",
+      ""
+    );
+
   }
 }

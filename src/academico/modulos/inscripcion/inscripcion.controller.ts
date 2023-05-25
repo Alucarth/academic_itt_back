@@ -106,4 +106,17 @@ export class InscripcionController {
       parseInt(carreraAutorizadaId)
     );
   }
+
+  @ApiOperation({
+    summary: "Devuelve personas sin matricula",
+  })
+  @Get("/personasSinMatricula/:carreraAutorizadaId")
+  async getPersonasSinMatricula(    
+    @Param("carreraAutorizadaId") carreraAutorizadaId: string    
+  ) {
+    return await this.inscripcionService.getPersonasSinMatricula(
+      parseInt(carreraAutorizadaId)
+    );
+  }
+
 }
