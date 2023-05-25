@@ -47,9 +47,9 @@ export class OfertaCurricularRepository {
       .innerJoinAndSelect("pa.regimenGradoTipo", "rg")     
       .innerJoinAndSelect("pa.asignaturaTipo", "at")       
       .innerJoinAndSelect("o.aulas", "a")       
-      .leftJoinAndSelect("a.paraleloTipo", "pt")       
-      .leftJoinAndSelect("a.aulasDetalles", "d")       
-      .leftJoinAndSelect("d.diaTipo", "dt")       
+      .innerJoinAndSelect("a.paraleloTipo", "pt")       
+      .innerJoinAndSelect("a.aulasDetalles", "d")       
+      .innerJoinAndSelect("d.diaTipo", "dt")       
       .select([
           'o.id',
           //'o.institutoPlanEstudioCarreraId',
@@ -67,6 +67,59 @@ export class OfertaCurricularRepository {
           'd.horaFin',
           'd.numeroAula',  
           'dt.dia',  
+
+      ])
+      .where('o.institutoPlanEstudioCarreraId = :id ', { id })
+      .andWhere('o.gestionTipoId = :gestion ', { gestion })
+      .andWhere('o.periodoTipoId = :periodo ', { periodo })
+      .orderBy('at.id', 'ASC')
+      //.orderBy('a.id', 'ASC')
+      //.getRawMany();
+      .getMany();
+      return ofertas;
+  }
+    async findOfertasByCarreraAutorizadaIdGestionPeriodoDocente( id:number, gestion:number,periodo:number){
+      console.log("resultado");
+      console.log(id);
+      console.log(gestion);
+      console.log(periodo);
+      const ofertas = await this.dataSource.getRepository(OfertaCurricular)
+      .createQueryBuilder("o")
+      .innerJoinAndSelect("o.planEstudioAsignatura", "pa")       
+      .innerJoinAndSelect("pa.planEstudioCarrera", "pe")       
+      .innerJoinAndSelect("pa.regimenGradoTipo", "rg")     
+      .innerJoinAndSelect("pa.asignaturaTipo", "at")       
+      .innerJoinAndSelect("o.aulas", "a")       
+      .innerJoinAndSelect("a.paraleloTipo", "pt")       
+      .innerJoinAndSelect("a.aulasDetalles", "d")       
+      .innerJoinAndSelect("d.diaTipo", "dt")       
+      .innerJoinAndSelect("a.aulasDocentes", "do")       
+      .innerJoinAndSelect("do.maestroInscripcion", "m")       
+      .innerJoinAndSelect("m.persona", "p")       
+      .select([
+          'o.id',
+          //'o.institutoPlanEstudioCarreraId',
+          'pa.id',
+          'pa.horas',
+          'at.id',
+          'at.asignatura',
+          'at.abreviacion',
+          'rg.id',
+          'rg.regimenGrado',
+          'a.id',
+          'a.cupo',
+          'pt.paralelo',
+          'd.horaInicio',
+          'd.horaFin',
+          'd.numeroAula',  
+          'dt.dia',  
+          'do.id',  
+          'm.id',  
+          'p.paterno',  
+          'p.materno',  
+          'p.nombre',  
+          'p.carnetIdentidad',  
+
 
       ])
       .where('o.institutoPlanEstudioCarreraId = :id ', { id })

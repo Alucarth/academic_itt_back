@@ -27,6 +27,13 @@ export class OfertaCurricularController {
         @Param('periodo') periodo: number){
         return await this.ofertaCurricularService.getAllAsignaturasByCarreraGestionPeriodo(id,gestion,periodo);
     }
+    @Get('byCarreraGestionPeriodoDocente/:id/:gestion/:periodo')
+    async getAllAsignaturasByCarreraGestionPeriodoDocente(
+        @Param('id') id: number,
+        @Param('gestion') gestion: number,
+        @Param('periodo') periodo: number){
+        return await this.ofertaCurricularService.getAllAsignaturasByCarreraGestionPeriodoDocente(id,gestion,periodo);
+    }
     
     @Post()
     async createOfertaCurricular(@Body() dto: CreateOfertaCurricularDto[]){

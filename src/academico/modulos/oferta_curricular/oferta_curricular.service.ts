@@ -68,6 +68,22 @@ export class OfertaCurricularService {
             ""
           );
     }
+    async getAllAsignaturasByCarreraGestionPeriodoDocente(id:number, gestion:number, periodo:number){
+        const oferta = await this.ofertaCurricularRepository.findOfertasByCarreraAutorizadaIdGestionPeriodoDocente(id,gestion,periodo);
+
+        if (oferta){
+            return this._serviceResp.respuestaHttp201(
+                oferta,
+              "resultados encontrados !!",
+              ""
+            );
+          }
+          return this._serviceResp.respuestaHttp404(
+            "",
+            "no existen resultados !!",
+            ""
+          );
+    }
     
 
     async createOfertaCurricular (dto: CreateOfertaCurricularDto[]) {
