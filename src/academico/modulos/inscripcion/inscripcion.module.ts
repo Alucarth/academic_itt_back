@@ -19,6 +19,7 @@ import { Aula } from "../../entidades/aula.entity";
 import { EstadoMatriculaTipo } from "../../entidades/estadoMatriculaTipo.entity";
 import { OfertaCurricular } from "../../entidades/ofertaCurricular.entity";
 import { UsersModule } from "../../../users/users.module";
+import { InstitutoPlanEstudioCarrera } from "../../entidades/institutoPlanEstudioCarrera.entity";
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { UsersModule } from "../../../users/users.module";
     TypeOrmModule.forFeature([EstadoMatriculaTipo]),
     TypeOrmModule.forFeature([Aula]),
     TypeOrmModule.forFeature([OfertaCurricular]),
+    TypeOrmModule.forFeature([InstitutoPlanEstudioCarrera]),
   ],
   controllers: [InscripcionController],
   providers: [InscripcionService, RespuestaSigedService],

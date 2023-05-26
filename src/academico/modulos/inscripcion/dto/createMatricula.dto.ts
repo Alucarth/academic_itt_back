@@ -35,5 +35,5 @@ export class CreateMatriculaDto {
 
   @IsNotEmpty()
   @IsNumber()
-  planEstudioCarreraTipoId: number;
+  institutoPlanEstudioCarreraId: number;
 }
