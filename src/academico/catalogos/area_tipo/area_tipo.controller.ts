@@ -1,12 +1,17 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
-  Param,
   Post,
   Put,
+  Query,
+  Param,
   UseGuards,
+  Request,
+  UsePipes,
+  ValidationPipe,
+  Delete,
+  Req,
 } from "@nestjs/common";
 import { AreaTipoService } from "./area_tipo.service";
 import { ApiTags } from "@nestjs/swagger";
@@ -34,9 +39,10 @@ export class AreaTipoController {
     return await this.areaTipoService.getOneById(parseInt(id));
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  async addAreaTipo(@Body() body) {
-    return await this.areaTipoService.insertRecord(body);
+  async addAreaTipo(@Body() body, @Req() request: Request) {
+    return await this.areaTipoService.insertRecord(body, request);
   }
 
   @Put()
