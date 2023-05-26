@@ -232,8 +232,8 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get("/checkToken")
-  async checkToken(@Req() request: Request) {
-    return await this.usersService.checkToken(request);
+  @Get("/checkToken/:rolId")
+  async checkToken(@Param("rolId") rolId: string, @Req() request: Request) {
+    return await this.usersService.checkToken(parseInt(rolId), request);
   }
 }
