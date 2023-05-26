@@ -11,6 +11,7 @@ import { AppTipo } from "../academico/entidades/appTipo.entity";
 import { UsuarioUniTerrRol } from "./entity/usuarioUniTerrRol.entity";
 import { JwtService } from "@nestjs/jwt";
 import { SegipModule } from "src/segip/segip.module";
+import { RolTipo } from "src/academico/entidades/rolTipo.entity";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SegipModule } from "src/segip/segip.module";
     TypeOrmModule.forFeature([Persona]),
     TypeOrmModule.forFeature([AppTipo]),
     TypeOrmModule.forFeature([UsuarioUniTerrRol]),
+    TypeOrmModule.forFeature([RolTipo]),
     SegipModule,
   ],
   controllers: [UsersController],

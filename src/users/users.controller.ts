@@ -213,15 +213,17 @@ export class UsersController {
     return await this.usersService.changePasswordUser(body);
   }
 
-  @Get('/getAllMenuByUserRolId/:userRolId')
-  getAllMenuByUserRolId(@Param('userRolId') urid:string){
+  @Get("/getAllMenuByUserRolId/:userRolId")
+  getAllMenuByUserRolId(@Param("userRolId") urid: string) {
     return this.usersService.getAllMenuByUserRolId(parseInt(urid));
   }
 
   @Put("/changeStatusMenuByUserRolUtAppId")
   async changeStatusUserRolUtAppMenu(@Body() body) {
     console.log("userId", body.userRolUtAppMenuId);
-    return this.usersService.changeStatusUserRolUtAppMenu(body.userRolUtAppMenuId);
+    return this.usersService.changeStatusUserRolUtAppMenu(
+      body.userRolUtAppMenuId
+    );
   }
 
   @Get("/getAllAppTipo")
@@ -229,4 +231,9 @@ export class UsersController {
     return this.usersService.getAllAppTipo();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get("/checkToken")
+  async checkToken(@Req() request: Request) {
+    return await this.usersService.checkToken(request);
+  }
 }

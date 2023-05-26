@@ -24,23 +24,24 @@ import { AppTipo } from "../academico/entidades/appTipo.entity";
 import { SegipService } from "src/segip/segip.service";
 import { RolTipo } from 'src/academico/entidades/rolTipo.entity';
 
+
+
 @Injectable()
 export class UsersService {
-
-  logger: Logger;  
+  logger: Logger;
 
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Persona) private personaRepository: Repository<Persona>,
     @InjectRepository(AppTipo) private appRepository: Repository<AppTipo>,
+    @InjectRepository(RolTipo) private rolTipoRepository: Repository<RolTipo>,
     @InjectRepository(UsuarioUniTerrRol)
     private uturRepository: Repository<UsuarioUniTerrRol>,
     private _serviceResp: RespuestaSigedService,
     private _servicePersona: PersonaService,
     private jwtService: JwtService,
-    private readonly segipService: SegipService    
-  ) 
-  {
+    private readonly segipService: SegipService
+  ) {
     this.logger = new Logger();
   }
 
@@ -507,7 +508,7 @@ export class UsersService {
               nacimientoUnidadTerritorialId: dto.nacimientoUnidadTerritorialId,
               dobleNacionalidad: dto.dobleNacionalidad,
               tieneDiscapacidad: dto.tieneDiscapacidad,
-              segipTipoId: 1,  //verificado segip
+              segipTipoId: 1, //verificado segip
             },
           ])
           .returning("id")
@@ -588,7 +589,7 @@ export class UsersService {
         ""
       );
     } catch (error) {
-      console.log("Error insertar persona/usuario: ", error);      
+      console.log("Error insertar persona/usuario: ", error);
       throw new HttpException(
         {
           status: HttpStatus.CONFLICT,
@@ -1436,21 +1437,23 @@ export class UsersService {
     };
   }
 
-  async createUserAndRol(persona : Persona, rol_tipo_id: number){
+  async createUserAndRol(persona: Persona, rol_tipo_id: number) {
     //console.log('persona: ', persona);
     //console.log('rol_tipo_id: ', rol_tipo_id);
-   
-    try {      
-      
-      const hashPassword = await bcrypt.hash(persona.carnetIdentidad + persona.complemento, 10);
+
+    try {
+      const hashPassword = await bcrypt.hash(
+        persona.carnetIdentidad + persona.complemento,
+        10
+      );
       //verificamos si existe el usuario
       const resultp = await this.personaRepository.query(
         `SELECT count(*) as existe FROM usuario where persona_id = ${persona.id}`
       );
 
-      console.log("resultp[0].existe: ", resultp[0].existe );
+      console.log("resultp[0].existe: ", resultp[0].existe);
       let user_id = 0;
-      if(resultp[0].existe == 0){
+      if (resultp[0].existe == 0) {
         //creamos el usuario
         console.log("creamos el usuario");
         const newUser = await this.userRepository
@@ -1468,38 +1471,66 @@ export class UsersService {
           .returning("id")
           .execute();
 
-          //se le asigna el rol recibido
-          user_id = newUser.identifiers[0].id;
-          console.log('new user_id: ', user_id);
-          
-          console.log('graba');
+        //se le asigna el rol recibido
+        user_id = newUser.identifiers[0].id;
+        console.log("new user_id: ", user_id);
 
-      }else{
+        console.log("graba");
+      } else {
         // NO deberia existir dos usuarios con la misma persona_id
         const result = await this.personaRepository.query(
           `SELECT id FROM usuario where persona_id = ${persona.id}`
-          );
-          
-          user_id = result[0].id;
-          console.log('existe user_id: ', user_id);
-        }        
-        
-        //ya existe el usuario, existe con ese rol ?
-        const resultrol = await this.personaRepository.query(
-          `SELECT count(*) as existe FROM usuario_rol where usuario_id = ${user_id} and rol_tipo_id = ${rol_tipo_id}`
         );
 
-        if(resultrol[0].existe == 0){
-          // no existe ese rol para el usuario, se crea
-          const res = this.insertNewRolUser(user_id,rol_tipo_id);
-          return user_id;
-        }
+        user_id = result[0].id;
+        console.log("existe user_id: ", user_id);
+      }
 
+      //ya existe el usuario, existe con ese rol ?
+      const resultrol = await this.personaRepository.query(
+        `SELECT count(*) as existe FROM usuario_rol where usuario_id = ${user_id} and rol_tipo_id = ${rol_tipo_id}`
+      );
+
+      if (resultrol[0].existe == 0) {
+        // no existe ese rol para el usuario, se crea
+        const res = this.insertNewRolUser(user_id, rol_tipo_id);
         return user_id;
+      }
 
+      return user_id;
     } catch (error) {
       console.log("Error creacion usuario y rol: ", error.message);
       return null;
     }
+  }
+
+  async checkToken(request: Request) {
+    //0: validar token
+    let user_id = 0;
+    //console.log("updateUser:", request.headers["token"]);
+    try {
+      const payload = await this.jwtService.decode(request.headers["token"]);
+      console.log("payload:", payload["id"]);
+      if (!payload) {
+        throw new UnauthorizedException();
+      }
+      user_id = parseInt(payload["id"]) + 0;
+    } catch {
+      throw new UnauthorizedException();
+    }
+    console.log("checkToken:", user_id);
+
+    const rolTipoDirector = await this.rolTipoRepository.findBy(
+      {id: 5}
+    );
+
+    return this._serviceResp.respuestaHttp200(
+      rolTipoDirector,
+      "Registro Encontrado !!",
+      ""
+    );
+
+
+
   }
 }
