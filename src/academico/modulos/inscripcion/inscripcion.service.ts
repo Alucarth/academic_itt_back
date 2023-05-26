@@ -15,6 +15,7 @@ import { PlanEstudioCarrera } from "../../entidades/planEstudioCarrera.entity";
 import { Aula } from "../../entidades/aula.entity";
 import { EstadoMatriculaTipo } from "../../entidades/estadoMatriculaTipo.entity";
 import { OfertaCurricular } from "../../entidades/ofertaCurricular.entity";
+import { InstitutoPlanEstudioCarrera } from "../../entidades/institutoPlanEstudioCarrera.entity";
 
 import { CreatePersonaoDto } from "../persona/dto/createPersona.dto";
 import { CreateInscriptionDto } from "./dto/createInscription.dto";
@@ -45,6 +46,8 @@ export class InscripcionService {
     private estadoMatriculaRepository: Repository<EstadoMatriculaTipo>,
     @InjectRepository(OfertaCurricular)
     private ofertaCurricularRepository: Repository<OfertaCurricular>,
+    @InjectRepository(InstitutoPlanEstudioCarrera)
+    private ipecRepository: Repository<InstitutoPlanEstudioCarrera>,
     private _serviceResp: RespuestaSigedService,
     private _servicePersona: PersonaService,
     private readonly usersService: UsersService
@@ -126,20 +129,23 @@ export class InscripcionService {
       );
     }
 
-    //6: esxiste planEstudioCarrera ?
-    const planEstudioCarrera = await this.planEstudioRepository.findOne({
+    //6: esxiste planEstudioCarrera ?  se acmbio esto en la base aqui el error
+    const institutoPlanEstudioCarrera = await this.ipecRepository.findOne({
       where: {
-        id: dto.planEstudioCarreraTipoId,
+        id: dto.institutoPlanEstudioCarreraId,
       },
     });
 
-    if (!planEstudioCarrera) {
+    //revisar
+
+    if (!institutoPlanEstudioCarrera) {
       return this._serviceResp.respuestaHttp404(
         "0",
-        "planEstudioCarrera No Encontrado !!",
+        "institutoPlanEstudioCarrera No Encontrado !!",
         ""
       );
     }
+    
 
     try {
       let ieeId = 0;
@@ -186,7 +192,7 @@ export class InscripcionService {
         from matricula_estudiante 
         where 
         institucion_educativa_estudiante_id = ${ieeId}  and 
-        plan_estudio_carrera_id = ${dto.planEstudioCarreraTipoId} and 
+        plan_estudio_carrera_id = ${dto.institutoPlanEstudioCarreraId} and 
         gestion_tipo_id = ${dto.gestionTipoId} and 
         periodo_tipo_id = ${dto.periodoTipoId}  
         `);
@@ -211,7 +217,7 @@ export class InscripcionService {
               usuarioId: 0,
               gestionTipo: gestionTipo,
               periodoTipo: periodoTipo,
-              planEstudioCarrera: planEstudioCarrera,
+              institutoPlanEstudioCarrera: institutoPlanEstudioCarrera,
               institucionEducativaEstudiante: institucionEducativaEstudiante,
             },
           ])
@@ -536,7 +542,6 @@ export class InscripcionService {
     ieId: number
   ) {
     //TODO: aumentar ueId
-  
 
     const result = await this.inscripcionRepository.query(`
    
@@ -607,8 +612,6 @@ export class InscripcionService {
   }
 
   async getAllInscritosByAulaId(id: number) {
-    
-
     const result = await this.inscripcionRepository
       .createQueryBuilder("i")
       .innerJoinAndSelect("i.aula", "a")
@@ -980,20 +983,11 @@ export class InscripcionService {
 
   //crea matricula de un array
   async createMatriculaLote(dtos: CreateMatriculaDto[]) {
-    
     for (let index = 0; index < dtos.length; index++) {
       let dto = dtos[index];
 
       console.log("index: ", index);
       console.log(dto);
-
-
-
-
-
     }
-
-
   }
-
 }
