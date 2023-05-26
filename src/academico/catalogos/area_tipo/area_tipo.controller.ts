@@ -1,18 +1,29 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from "@nestjs/common";
 import { AreaTipoService } from "./area_tipo.service";
 import { ApiTags } from "@nestjs/swagger";
 import { ApiOperation } from "@nestjs/swagger";
+import { AuthGuard } from "@nestjs/passport";
 
 @ApiTags("Crud Catalogo Area Tipo")
 @Controller("area-tipo")
 export class AreaTipoController {
   constructor(private readonly areaTipoService: AreaTipoService) {}
 
+  @UseGuards(AuthGuard("jwt"))
   @Get()
   async getAll() {
     return await this.areaTipoService.getAll();
   }
-  @Get('cursos')
+  @Get("cursos")
   async getAllCursosAreas() {
     return await this.areaTipoService.getListAreasCursos();
   }

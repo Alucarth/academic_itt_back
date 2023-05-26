@@ -54,159 +54,53 @@ export class InscripcionService {
   ) {}
 
   async createMatricula(dto: CreateMatriculaDto) {
-    //1: existe la persona ?
+
     const persona = await this._servicePersona.findPersona(dto.personaId);
-    //console.log('persona: ', persona);
+    const personaAux = persona[0];
 
-    if (persona.length == 0) {
-      return this._serviceResp.respuestaHttp404(
-        "0",
-        "Persona No Encontrado !!",
-        ""
-      );
-    }
-
-    //2: existe la UE ?
     const institucionEducativaSucursal =
       await this.ieSucursalRepository.findOne({
         where: {
           id: dto.institucionEducativaSucursalId,
         },
       });
-    //console.log("institucionEducativaSucursal: ", institucionEducativaSucursal);
 
-    if (!institucionEducativaSucursal) {
-      return this._serviceResp.respuestaHttp404(
-        "0",
-        "institucionEducativaSucursal No Encontrado !!",
-        ""
-      );
-    }
-
-    const personaAux = persona[0];
-
-    //3: ya existeun registro de esa persona en esa ue ?
-    const existe = await this.ieeRepository.query(`
-        select count(*) as existe from institucion_educativa_estudiante 
-        where persona_id = ${dto.personaId}  and institucion_educativa_sucursal_id = ${dto.institucionEducativaSucursalId}`);
-
-    /*if (parseInt(existe[0].existe) != 0) {
-        console.log('existe: ', existe);
-        return this._serviceResp.respuestaHttp404(
-          "0",
-          "registro ya existe !!",
-          ""
-        );
-    }*/
-
-    //4: esxiste gstionTipo ?
     const gestionTipo = await this.gestionTipoRepository.findOne({
       where: {
         id: dto.gestionTipoId,
       },
     });
 
-    if (!gestionTipo) {
-      return this._serviceResp.respuestaHttp404(
-        "0",
-        "gestionTipo No Encontrado !!",
-        ""
-      );
-    }
-
-    //5: esxiste periodoTipo ?
     const periodoTipo = await this.periodoTipoRepository.findOne({
       where: {
         id: dto.periodoTipoId,
       },
     });
 
-    if (!periodoTipo) {
-      return this._serviceResp.respuestaHttp404(
-        "0",
-        "periodoTipo No Encontrado !!",
-        ""
-      );
-    }
-
-    //6: esxiste planEstudioCarrera ?  se acmbio esto en la base aqui el error
-    const institutoPlanEstudioCarrera = await this.ipecRepository.findOne({
-      where: {
-        id: dto.institutoPlanEstudioCarreraId,
-      },
-    });
-
-    //revisar
-
-    if (!institutoPlanEstudioCarrera) {
-      return this._serviceResp.respuestaHttp404(
-        "0",
-        "institutoPlanEstudioCarrera No Encontrado !!",
-        ""
-      );
-    }
-    
+     const institutoPlanEstudioCarrera = await this.ipecRepository.findOne({
+       where: {
+         id: dto.institutoPlanEstudioCarreraId,
+       },
+     });
 
     try {
-      let ieeId = 0;
-      if (parseInt(existe[0].existe) === 0) {
-        //no existe, se inserta
-        const res = await this.ieeRepository
-          .createQueryBuilder()
-          .insert()
-          .into(InstitucionEducativaEstudiante)
-          .values([
-            {
-              observacion: dto.observacion,
-              persona: personaAux,
-              institucionEducativaSucursal: institucionEducativaSucursal,
-              codigoEstudiante: dto.codigoEstudiante,
-              usuarioId: 0,
-            },
-          ])
-          .returning("id")
-          .execute();
 
-        console.log("res:", res);
-        let ieeId = res.identifiers[0].id;
-      } else {
-        //ya existe, necesitmos el id de institucion_educativa_estudiante
+        console.log("insertar institucionEducativaEstudiante");
 
-        const iee = await this.ieeRepository.query(`
-            select id from institucion_educativa_estudiante 
-            where persona_id = ${dto.personaId}  and institucion_educativa_sucursal_id = ${dto.institucionEducativaSucursalId}`);
+        let institucionEducativaEstudiante = this.ieeRepository.create({
+          observacion: dto.observacion,
+          persona: personaAux,
+          institucionEducativaSucursal: institucionEducativaSucursal,
+          codigoEstudiante: dto.codigoEstudiante,
+          usuarioId: 0,
+        });
+        await this.ieeRepository.save(institucionEducativaEstudiante);
 
-        ieeId = iee[0].id;
-        console.log("ieeId = ", iee[0].id);
-      }
+        console.log(
+          "insertado institucionEducativaEstudiante: ",
+          institucionEducativaEstudiante
+        );
 
-      const institucionEducativaEstudiante = await this.ieeRepository.findOne({
-        where: {
-          id: ieeId,
-        },
-      });
-
-      //ya existe un registro para la gestion, periodo, ue, plan ?
-      const existeMat = await this.matriculaRepository.query(`
-        select count(*) as existe 
-        from matricula_estudiante 
-        where 
-        institucion_educativa_estudiante_id = ${ieeId}  and 
-        plan_estudio_carrera_id = ${dto.institutoPlanEstudioCarreraId} and 
-        gestion_tipo_id = ${dto.gestionTipoId} and 
-        periodo_tipo_id = ${dto.periodoTipoId}  
-        `);
-
-      /*if (parseInt(existe[0].existe) != 0) {
-            console.log('existe: ', existe);
-            return this._serviceResp.respuestaHttp404(
-            "0",
-            "registro ya existe !!",
-            ""
-            );
-        }*/
-      if (parseInt(existeMat[0].existe) == 0) {
-        //insert en  matricula estudiante
         const resMat = await this.matriculaRepository
           .createQueryBuilder()
           .insert()
@@ -223,27 +117,19 @@ export class InscripcionService {
           ])
           .returning("id")
           .execute();
-      } else {
+
+        
+
+        //console.log("newusuario", newusuario);
         return this._serviceResp.respuestaHttp201(
-          ieeId,
-          "Matricula ya Existe en la misma Gestion, Periodo y U.E !!",
+          resMat,
+          "Registro MAT + USER Creado !!",
           ""
         );
-      }
 
-      //SE CREA EL USUARIO
-      // 7: ROL MAESTRO
-      const newusuario = await this.usersService.createUserAndRol(
-        personaAux,
-        7
-      );
 
-      console.log("newusuario", newusuario);
-      return this._serviceResp.respuestaHttp201(
-        ieeId,
-        "Registro Creado !!",
-        ""
-      );
+
+
     } catch (error) {
       console.log("Error insertar inscripcion: ", error);
       throw new HttpException(
@@ -257,6 +143,7 @@ export class InscripcionService {
         }
       );
     }
+    
   }
 
   async createInscription(dto: CreateInscriptionDto) {

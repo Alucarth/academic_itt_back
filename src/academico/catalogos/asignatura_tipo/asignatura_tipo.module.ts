@@ -5,6 +5,7 @@ import { AsignaturaTipo } from "../../entidades/asignaturaTipo.entity";
 import { AsignaturaTipoController } from './asignatura_tipo.controller';
 import { AsignaturaTipoService } from './asignatura_tipo.service';
 import { RespuestaSigedService } from "../../../shared/respuesta.service";
+import { JwtAuthGuard } from "../../../auth/guards/jwt-auth.guard";
 
 @Module({
   imports: [DatabaseModule, TypeOrmModule.forFeature([AsignaturaTipo])],

@@ -6,17 +6,22 @@ import {
   Put,
   Param,
   Delete,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../../../auth/guards/jwt-auth.guard";
 import { AsignaturaTipoService } from "./asignatura_tipo.service";
 import { CreateAsignaturaTipoDto } from "./dto/createAsignaturaTipo.dto";
+import { AuthGuard } from "@nestjs/passport";
 
 @ApiTags("Crud Catalogo Asignatura Tipo")
 @Controller("asignatura-tipo")
 export class AsignaturaTipoController {
   constructor(private readonly asignaturaTipoService: AsignaturaTipoService) {}
 
+  // @Roles(Role.ADMIN)
+  //@UseGuards(JwtAuthGuard)
+  //@UseGuards(AuthGuard("jwt"))
   @Get()
   @ApiOperation({
     summary: "Devuelve todas las Asignaturas",
