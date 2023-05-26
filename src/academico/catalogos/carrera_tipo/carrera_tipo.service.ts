@@ -59,7 +59,7 @@ export class CarreraTipoService {
           "d.id",
           "d.grupo",
         ])
-      .where('d.id in (1)')
+      //.where('d.id in (1)')
       .getMany();
 
     console.log(result);
