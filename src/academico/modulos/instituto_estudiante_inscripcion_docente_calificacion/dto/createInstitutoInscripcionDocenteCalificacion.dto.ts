@@ -15,17 +15,21 @@ class InstitutoInscripcionDocenteCalificacion {
   @IsNumber()
   periodo_tipo_id: number;
 
-  @IsNotEmpty({ message: "Debe ingresar la nota teorica" })
+  @IsNotEmpty({ message: "Debe ingresar la nota cuantitativa" })
   @IsNumber()
-  teoria: number;
+  cuantitativa: number;
 
-  @IsNotEmpty({ message: "Debe ingresar la nota teorica" })
+  @IsNotEmpty({ message: "Debe ingresar la nota cualitativa" })
   @IsNumber()
-  practica: number;
+  cualitativa: string;
 
   @IsNotEmpty({ message: "Debe ingresar el tipo_nota" })
   @IsNumber()
   nota_tipo_id: number;
+
+  @IsNotEmpty({ message: "Debe ingresar el tipo_nota" })
+  @IsNumber()
+  modalidad_evaluacion_tipo_id: number;
 
 }
 

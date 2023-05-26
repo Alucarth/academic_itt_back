@@ -8,9 +8,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { EducacionTipo } from './educacionTipo.entity';
-import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
-import { IntervaloGestionTipo } from './intervaloGestionTipo.entity';
 import { PlanEstudioCarrera } from './planEstudioCarrera.entity';
 
 @Entity({ name: 'plan_estudio_resolucion', schema: 'public' })

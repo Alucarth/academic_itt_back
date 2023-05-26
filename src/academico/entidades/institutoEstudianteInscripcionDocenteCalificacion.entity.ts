@@ -11,6 +11,7 @@ import { AulaDocente } from './aulaDocente.entity';
 import { EtapaEducativa } from './etapaEducativa.entity';
 import { InstitucionEducativaAcreditacion } from './institucionEducativaAcreditacion.entity';
 import { InstitutoEstudianteInscripcion } from './InstitutoEstudianteInscripcion.entity';
+import { ModalidadEvaluacionTipo } from './modalidadEvaluacionTipo.entity';
 import { NotaTipo } from './notaTipo.entity';
 import { PeriodoTipo } from './periodoTipo.entity';
 import { ValoracionTipo } from './valoracionTipo.entity';
@@ -21,11 +22,11 @@ export class InstitutoEstudianteInscripcionDocenteCalificacion {
   @PrimaryGeneratedColumn()
   id: number;
   
-  @Column({ type: 'integer', name: 'teoria' })
-  teoria: number;
+  @Column({ type: 'integer', name: 'cuantitativa' })
+  cuantitativa: number;
 
-  @Column({ type: 'integer', name: 'practica' })
-  practica: number;
+  @Column({ type: 'varchar', name: 'cualitativa' })
+  cualitativa: string;
 
   @Exclude()
   @UpdateDateColumn({
@@ -74,11 +75,18 @@ export class InstitutoEstudianteInscripcionDocenteCalificacion {
   @JoinColumn({ name: 'valoracion_tipo_id', referencedColumnName: 'id'})
   valoracionTipo: ValoracionTipo;
 
-  @Column({ type: 'integer', name: 'valoracion_tipo_id' })
+  @Column({ type: 'integer', name: 'nota_tipo_id' })
   notaTipoId: number;
 
   @ManyToOne(() => NotaTipo, (notaTipo) => notaTipo.inscripcionesDocentesCalificaciones, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'valoracion_tipo_id', referencedColumnName: 'id'})
+  @JoinColumn({ name: 'nota_tipo_id', referencedColumnName: 'id'})
   notaTipo: NotaTipo;
+
+  @Column({ type: 'integer', name: 'modalidad_evaluacion_tipo_id' })
+  modalidadEvaluacionTipoId: number;
+
+  @ManyToOne(() => ModalidadEvaluacionTipo, (modalidadEvaluacionTipo) => modalidadEvaluacionTipo.inscripcionesDocentesCalificaciones, { nullable: false, cascade: true })
+  @JoinColumn({ name: 'modalidad_evaluacion_tipo_id', referencedColumnName: 'id'})
+  modalidadEvaluacionTipo: ModalidadEvaluacionTipo;
   
 }
