@@ -51,10 +51,11 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
             calificacion.institutoEstudianteInscripcionId = item.instituto_estudiante_inscripcion_id;
             calificacion.aulaDocenteId = item.docente_aula_id;
             calificacion.periodoTipoId = item.periodo_tipo_id;
-            calificacion.teoria = item.teoria;
-            calificacion.practica = item.practica;
+            calificacion.cuantitativa = item.cuantitativa;
+            calificacion.cualitativa = item.cualitativa;
             calificacion.valoracionTipoId = 1;
             calificacion.notaTipoId = item.nota_tipo_id;
+            calificacion.modalidadEvaluacionTipoId = item.modalidad_evaluacion_tipo_id;
             calificacion.usuarioId = idUsuario;
             return calificacion;
           });

@@ -5,6 +5,7 @@ import { CarreraAutorizadaRepository } from '../carrera_autorizada/carrera_autor
 import { InstitutoPlanEstudioCarreraRepository } from '../instituto_plan_estudio_carrera/instituto_plan_estudio_carrera.repository';
 import { PlanEstudioCarreraRepository } from '../plan_estudio_carrera/plan_estudio_carrera.repository';
 import { CreatePlanEstudioResolucionDto } from './dto/createPlanEstudioResolucion.dto';
+import { CreateResolucionDto } from './dto/createResolucion.dto';
 import { PlanEstudioResolucionRepository } from './plan_estudio_resolucion.repository';
 
 @Injectable()
@@ -27,8 +28,18 @@ export class PlanEstudioResolucionService {
         
     ){}
 
+    async getOnlyResoluciones(){
+        const result = await this.planEstudioResolucionRepository.findResoluciones()
+        return this._serviceResp.respuestaHttp200(
+            result,
+            "",
+            "Registros Encontrados !!"
+          );
+        
+    }
+    
     async getResolucionesAll(){
-        const result = await this.planEstudioResolucionRepository.getResolucionesAll()
+        const result = await this.planEstudioResolucionRepository.findResolucionesAll()
         return this._serviceResp.respuestaHttp200(
             result,
             "",
@@ -105,6 +116,44 @@ export class PlanEstudioResolucionService {
           '',
       );
 
+    }
+
+    async createNewResolucion(dto: CreateResolucionDto) {
+        //1:BUSCAR resolucion
+        let datoResolucion = await this.planEstudioResolucionRepository.getByDato(dto);
+          console.log("resolucion : ", datoResolucion);
+          if (datoResolucion) {
+            return this._serviceResp.respuestaHttp409(
+                datoResolucion,
+                  'Registro ya existe !!',
+                  '',
+              );
+        }
+
+        const op = async (transaction: EntityManager) => {
+            return await this.planEstudioResolucionRepository.crearNuevaResolucion(
+                1,
+                dto,
+                transaction
+              )
+        }
+        const crearResult = await this.planEstudioResolucionRepository.runTransaction(op);
+        
+        console.log(crearResult);
+
+        if(crearResult){
+          return this._serviceResp.respuestaHttp201(
+            crearResult,
+              'Registro  Creado !!',
+              '',
+          );
+        }
+        return this._serviceResp.respuestaHttp500(
+          "",
+          'No se pudo guardar la información !!',
+          '',
+      );
       }
+
 
 }

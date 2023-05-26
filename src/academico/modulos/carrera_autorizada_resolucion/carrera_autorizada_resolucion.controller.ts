@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { CarreraAutorizadaResolucionService } from './carrera_autorizada_resolucion.service';
 import { CreateCarreraAutorizadaResolucionDto } from './dto/createCarreraAutorizadaResolucion.dto';
+import { UpdateCarreraAutorizadaResolucionDto } from './dto/updateCarreraAutorizadaResolucion.dto';
 
 @Controller('carrera-autorizada-resolucion')
 
@@ -22,6 +23,12 @@ export class CarreraAutorizadaResolucionController {
         return await this.carreraAutorizadaResolucionService.crear(dto);
        
     }
+    /*
+    @Put(':id')
+    async editar( @Body() dto: UpdateCarreraAutorizadaResolucionDto) {
+       console.log("update" + dto);
+        return await this.carreraAutorizadaResolucionService.update(dto);
+    }*/
 
 }
 

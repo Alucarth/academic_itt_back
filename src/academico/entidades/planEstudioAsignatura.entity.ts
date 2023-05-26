@@ -13,6 +13,7 @@ import { EducacionTipo } from './educacionTipo.entity';
 import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
 import { IntervaloGestionTipo } from './intervaloGestionTipo.entity';
 import { OfertaCurricular } from './ofertaCurricular.entity';
+import { PlanEstudioAsignaturaRegla } from './planEstudioAsignaturaRegla.entity';
 import { PlanEstudioCarrera } from './planEstudioCarrera.entity';
 import { RegimenGradoTipo } from './regimenGradoTipo.entity';
 
@@ -66,5 +67,8 @@ export class PlanEstudioAsignatura {
 
   @OneToMany(() => OfertaCurricular, (ofertaCurricular) => ofertaCurricular.planEstudioAsignatura)
   ofertasCurriculares: OfertaCurricular[];
+
+  @OneToMany(() => PlanEstudioAsignaturaRegla, (planEstudioAsignaturaRegla) => planEstudioAsignaturaRegla.planEstudioAsignatura)
+  planesAsignaturasReglas: PlanEstudioAsignaturaRegla[];
 
 }

@@ -23,6 +23,11 @@ constructor(private dataSource: DataSource) {}
         return  await this.dataSource.getRepository(Aula)
         .createQueryBuilder('a')
         .innerJoin('a.aulasDocentes', 'do')
+        .innerJoin('a.ofertaCurricular', 'o')
+        .innerJoin('o.institutoPlanEstudioCarrera', 'ip')
+        .innerJoin('ip.carreraAutorizada', 'ca')
+        .innerJoin('ca.carreraTipo', 'ct')
+        .innerJoin('ca.resoluciones', 'r')
         .innerJoin('do.maestroInscripcion', 'ma')
         .innerJoin('ma.persona', 'p')
         .innerJoin('a.aulasDetalles', 'd')
@@ -41,6 +46,11 @@ constructor(private dataSource: DataSource) {}
             'p.paterno as paterno',
             'p.materno as materno',
             'p.nombre as nombre',
+            'o.id as oferta_id',
+            'ip.id as instituto_plan_estudio_carrera_id',
+            'ca.id as carrera_autorizada_id',
+            'ct.carrera as carrera',
+            'r.numero_resolucion as numero_resolucion',
         ])
         .getRawOne();
         
