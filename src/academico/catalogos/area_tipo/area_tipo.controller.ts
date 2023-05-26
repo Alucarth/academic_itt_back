@@ -12,13 +12,14 @@ import { AreaTipoService } from "./area_tipo.service";
 import { ApiTags } from "@nestjs/swagger";
 import { ApiOperation } from "@nestjs/swagger";
 import { AuthGuard } from "@nestjs/passport";
+import { JwtAuthGuard } from "../../../auth/guards/jwt-auth.guard";
 
 @ApiTags("Crud Catalogo Area Tipo")
 @Controller("area-tipo")
 export class AreaTipoController {
   constructor(private readonly areaTipoService: AreaTipoService) {}
 
-  @UseGuards(AuthGuard("jwt"))
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAll() {
     return await this.areaTipoService.getAll();

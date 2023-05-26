@@ -61,7 +61,7 @@ export class AreaTipoService {
         .into(AreaTipo)
         .values([
           {
-            area: body.areaFormacion,
+            area: body.areaFormacion,            
           },
         ])
         .returning("id")

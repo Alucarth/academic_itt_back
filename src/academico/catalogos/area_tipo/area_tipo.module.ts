@@ -5,10 +5,11 @@ import { DatabaseModule } from 'src/database/database.module';
 import { AreaTipoController } from './area_tipo.controller';
 import { AreaTipoService } from './area_tipo.service';
 import { RespuestaSigedService } from "../../../shared/respuesta.service";
+import { JwtService } from "@nestjs/jwt";
 
 @Module({
   imports: [DatabaseModule, TypeOrmModule.forFeature([AreaTipo])],
   controllers: [AreaTipoController],
-  providers: [AreaTipoService, RespuestaSigedService],
+  providers: [AreaTipoService, RespuestaSigedService, JwtService],
 })
 export class AreaTipoModule {}

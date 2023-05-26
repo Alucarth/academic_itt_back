@@ -56,7 +56,7 @@ export class UsersController {
     return this.usersService.getAllBySearch(ci, fechanac, complemento);
   }
 
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get("/getAllGeneroTipo")
   getAllGeneroTipo() {
     return this.usersService.getAllGeneroTipo();
