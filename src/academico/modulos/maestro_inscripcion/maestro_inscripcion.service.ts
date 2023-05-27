@@ -497,6 +497,7 @@ export class MaestroInscripcionService {
             (
             SELECT
               maestro_inscripcion.ID,
+              persona.id as persona_id,
               persona.paterno,
               persona.materno,
               persona.nombre,
@@ -508,6 +509,7 @@ export class MaestroInscripcionService {
               persona.estado_civil_tipo_id,
               persona.sangre_tipo_id,
               persona.materno_idioma_tipo_id,
+              (select idioma from idioma_tipo where id =  persona.materno_idioma_tipo_id) as materno_idioma_tipo,
               persona.libreta_militar,
               persona.pasaporte,
               persona.telefono,
@@ -519,6 +521,7 @@ export class MaestroInscripcionService {
               persona.codigo_rda,
               persona.doble_nacionalidad,
               persona.tiene_discapacidad,
+              persona.nacimiento_localidad,
               persona.codigo_rude,
               persona.email,
               1 AS ci_expedido_tipo_id,
