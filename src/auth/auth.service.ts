@@ -112,6 +112,9 @@ export class AuthService {
         username: result[0].username,
         persona: result[0].paterno + ' ' +  result[0].materno + ' ' + result[0].nombre,
         roles: result_roles,
+        ie_id:80730841,
+        ie_nombre: "INSTITUTO TECNOLÓGICO - ESCUELA INDUSTRIAL SUPERIOR PEDRO DOMINGO MURILLO",
+        ie_tipo: "FISCAL",
         token: this.jwtService.sign(payload),
       }
 
