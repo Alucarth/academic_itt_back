@@ -548,7 +548,8 @@ export class MaestroInscripcionService {
               maestro_inscripcion.asignacion_fecha_inicio,
               maestro_inscripcion.asignacion_fecha_fin,
               maestro_inscripcion.item,
-              maestro_inscripcion.periodo_tipo_id 
+              maestro_inscripcion.periodo_tipo_id,
+              maestro_inscripcion.institucion_educativa_sucursal_id
             FROM
               maestro_inscripcion
               INNER JOIN persona ON maestro_inscripcion.persona_id = persona.
