@@ -803,8 +803,7 @@ export class MaestroInscripcionService {
       const sucursal =
         await this.institucionEducativaSucursalRepository.findSucursalBySieGestion(
           dto.institucionEducativaId,
-          //dto.gestionTipoId
-          2023
+          dto.gestionTipoId          
         );
 
       if (sucursal) {
@@ -852,8 +851,7 @@ export class MaestroInscripcionService {
       //console.log("especialidadTipo : ", especialidadTipo);
 
       let gestionTipo = await this.gestionTipoRepository.findOne({
-        //where: { id: dto.gestionTipoId },
-        where: { id: 2023 },
+        where: { id: dto.gestionTipoId },        
       });
       //console.log("gestionTipo : ", gestionTipo);
       if (!gestionTipo) {
