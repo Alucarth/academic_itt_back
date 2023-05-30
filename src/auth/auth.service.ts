@@ -88,7 +88,7 @@ export class AuthService {
 
       
 
-      const payload = { id:result[0].user_id , rolid:100, appid: 2, expiresIn: 60};
+      //const payload = { id:result[0].user_id , rolid:100, appid: 2, expiresIn: 60};
 
       //los roles del usuario
       const result_roles = await this.userRepository.query(`
@@ -105,6 +105,80 @@ export class AuthService {
 					ON 
 						usuario_rol.rol_tipo_id = rol_tipo.id					
 					where usuario.id = ${ result[0].user_id }`);
+
+      // datos de la ue
+      let es_director = false;
+      for(let i=0; i< result_roles.length; i++ ){
+        if(result_roles[i].rol_tipo_id == 5 ){
+          es_director = true;
+        }
+      }
+
+      if(es_director === true) {        
+        console.log('es_director: ', es_director);
+        console.log('persona', result[0].persona_id);
+        //TODO: aumentar gestion ?
+        const instituto = await this.userRepository.query(`
+            SELECT
+              maestro_inscripcion.id, 
+              maestro_inscripcion.persona_id, 
+              maestro_inscripcion.institucion_educativa_sucursal_id, 
+              institucion_educativa.id as institucion_educativa_id, 
+              institucion_educativa.institucion_educativa
+            FROM
+              maestro_inscripcion
+              INNER JOIN
+              institucion_educativa_sucursal
+              ON 
+                maestro_inscripcion.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id
+              INNER JOIN
+              institucion_educativa
+              ON 
+                institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa.id
+              where maestro_inscripcion.persona_id = ${result[0].persona_id}
+          `);
+        console.log('instituto: ', instituto);
+        if(instituto.length == 1){
+
+          const payload = {
+            id: result[0].user_id,
+            rolid: 5,
+            ie_id: instituto[0].institucion_educativa_sucursal_id,
+            ie_sid: instituto[0].institucion_educativa_id,
+            appid: 2,
+            expiresIn: 60,
+          };
+
+          return {
+            statusCode: 200,
+            user_id: result[0].user_id,
+            username: result[0].username,
+            persona:
+              result[0].paterno +
+              " " +
+              result[0].materno +
+              " " +
+              result[0].nombre,
+            roles: result_roles,
+            ie_id: instituto[0].institucion_educativa_sucursal_id,
+            ie_sid: instituto[0].institucion_educativa_id,
+            ie_nombre: instituto[0].institucion_educativa,
+            ie_tipo: "FISCAL",
+            token: this.jwtService.sign(payload),
+          };
+
+        }
+
+
+
+      }
+
+      const payload = {
+        id: result[0].user_id,
+        rolid: 100,
+        appid: 2,
+        expiresIn: 60,
+      };
 
       return{
         statusCode: 200,
