@@ -91,6 +91,7 @@ export class AuthService {
       //const payload = { id:result[0].user_id , rolid:100, appid: 2, expiresIn: 60};
 
       //los roles del usuario
+      //OJO:  UN ROL UN USUARIO POR AHORA
       const result_roles = await this.userRepository.query(`
       SELECT	
 					usuario_rol.rol_tipo_id, rol_tipo.rol
@@ -108,16 +109,24 @@ export class AuthService {
 
       // datos de la ue
       let es_director = false;
+      let es_maestro = false;
       for(let i=0; i< result_roles.length; i++ ){
         if(result_roles[i].rol_tipo_id == 5 ){
           es_director = true;
         }
+        if(result_roles[i].rol_tipo_id == 6 ){
+          es_maestro = true;
+        }
       }
 
-      if(es_director === true) {        
-        console.log('es_director: ', es_director);
+      if(es_director === true || es_maestro == true) {        
+        console.log('es_director o maestro: ', es_director);
         console.log('persona', result[0].persona_id);
         //TODO: aumentar gestion ?
+        let rol = 0
+        if (es_director === true) { rol = 5; }
+        if (es_maestro === true) { rol = 6; }
+
         const instituto = await this.userRepository.query(`
             SELECT
               maestro_inscripcion.id, 
@@ -142,7 +151,7 @@ export class AuthService {
 
           const payload = {
             id: result[0].user_id,
-            rolid: 5,
+            rolid: rol, //5,
             ie_id: instituto[0].institucion_educativa_sucursal_id,
             ie_sid: instituto[0].institucion_educativa_id,
             appid: 2,
