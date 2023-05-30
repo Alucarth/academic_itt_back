@@ -153,7 +153,7 @@ export class AuthService {
             id: result[0].user_id,
             rolid: rol, //5,
             ie_id: instituto[0].institucion_educativa_sucursal_id,
-            ie_sid: instituto[0].institucion_educativa_id,
+            ie_sid: instituto[0].institucion_educativa_id,            
             appid: 2,
             expiresIn: 60,
           };
@@ -172,6 +172,7 @@ export class AuthService {
             ie_id: instituto[0].institucion_educativa_sucursal_id,
             ie_sid: instituto[0].institucion_educativa_id,
             ie_nombre: instituto[0].institucion_educativa,
+            gestion_tipo_id : 2023,
             ie_tipo: "FISCAL",
             token: this.jwtService.sign(payload),
           };
@@ -189,17 +190,21 @@ export class AuthService {
         expiresIn: 60,
       };
 
-      return{
+      return {
         statusCode: 200,
-        user_id :result[0].user_id,        
+        user_id: result[0].user_id,
         username: result[0].username,
-        persona: result[0].paterno + ' ' +  result[0].materno + ' ' + result[0].nombre,
+        persona:
+          result[0].paterno + " " + result[0].materno + " " + result[0].nombre,
         roles: result_roles,
-        ie_id:80730841,
-        ie_nombre: "INSTITUTO TECNOLÓGICO - ESCUELA INDUSTRIAL SUPERIOR PEDRO DOMINGO MURILLO",
+        ie_id: 80730841,
+        ie_sid: 1542750,
+        gestion_tipo_id: 2023,
+        ie_nombre:
+          "INSTITUTO TECNOLÓGICO - ESCUELA INDUSTRIAL SUPERIOR PEDRO DOMINGO MURILLO",
         ie_tipo: "FISCAL",
         token: this.jwtService.sign(payload),
-      }
+      };
 
 
     /*} catch (error) {
