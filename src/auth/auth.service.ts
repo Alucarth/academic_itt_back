@@ -169,10 +169,10 @@ export class AuthService {
               " " +
               result[0].nombre,
             roles: result_roles,
-            ie_id: instituto[0].institucion_educativa_sucursal_id,
-            ie_sid: instituto[0].institucion_educativa_id,
+            ie_id: instituto[0].institucion_educativa_id,
+            ie_sid: instituto[0].institucion_educativa_sucursal_id,
             ie_nombre: instituto[0].institucion_educativa,
-            gestion_tipo_id : 2023,
+            gestion_tipo_id: 2023,
             ie_tipo: "FISCAL",
             token: this.jwtService.sign(payload),
           };
