@@ -13,9 +13,12 @@ export class PersonaRepository {
     return await this.dataSource.getRepository(Persona).findBy({ id: id });
   }
   async getPersonaByDato(dto: SearchDatoDto) {
+    console.log('HERE---');
+    console.log('dto:', dto);
+
     const result0 = await this.dataSource.getRepository(Persona).findOneBy({
       carnetIdentidad: dto.carnetIdentidad,
-      complemento: dto.complemento,
+      //complemento: dto.complemento,
     });
 
     console.log("result0: ", result0);
@@ -57,11 +60,11 @@ export class PersonaRepository {
         persona.ID = ${result0.id}
       ) AS DATA 
     ) AS data2
-    INNER JOIN unidad_territorial ut ON ut.ID = data2.comunidad_id
-    INNER JOIN unidad_territorial muni ON muni.ID = data2.municipio_id
-    INNER JOIN unidad_territorial prov ON prov.ID = data2.provincia_id
-    INNER JOIN unidad_territorial dep ON dep.ID = data2.depto_id
-    INNER JOIN unidad_territorial pais ON pais.ID = data2.pais_id
+    left JOIN unidad_territorial ut ON ut.ID = data2.comunidad_id
+    left JOIN unidad_territorial muni ON muni.ID = data2.municipio_id
+    left JOIN unidad_territorial prov ON prov.ID = data2.provincia_id
+    left JOIN unidad_territorial dep ON dep.ID = data2.depto_id
+    left JOIN unidad_territorial pais ON pais.ID = data2.pais_id
 
     `);
 
@@ -77,7 +80,7 @@ export class PersonaRepository {
     persona.paterno = dto.paterno;
     persona.materno = dto.materno;
     persona.nombre = dto.nombre;
-    persona.fechaNacimiento = dto.fechaNacimiento;
+    persona.fechaNacimiento = new Date(dto.fechaNacimiento);
     persona.generoTipoId = dto.generoTipoId;
     persona.estadoCivilTipoId = dto.estadoCivilTipoId;
     persona.sangreTipoId = dto.sangreTipoId;
