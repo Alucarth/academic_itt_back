@@ -13,10 +13,64 @@ export class PersonaRepository {
     return await this.dataSource.getRepository(Persona).findBy({ id: id });
   }
   async getPersonaByDato(dto: SearchDatoDto) {
-    return await this.dataSource.getRepository(Persona).findOneBy({
+    console.log('HERE---');
+    console.log('dto:', dto);
+
+    const result0 = await this.dataSource.getRepository(Persona).findOneBy({
       carnetIdentidad: dto.carnetIdentidad,
-      complemento: dto?.complemento,
+      //complemento: dto.complemento,
     });
+
+    console.log("result0: ", result0);
+
+    if (!result0) {
+      return false;
+    }
+
+    console.log("result0.id", result0.id);
+
+    const result = await this.dataSource.query(`
+
+    SELECT
+    data2.*,
+    ut.lugar AS comunidad,
+    muni.lugar AS municipio,
+    prov.lugar AS provincia,
+    dep.lugar AS departamento,
+    pais.lugar AS pais 
+  FROM
+    (
+    SELECT DATA
+      .*,
+      ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID = DATA.provincia_id ) AS depto_id,
+      ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID IN ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID = DATA.provincia_id ) ) AS pais_id 
+    FROM
+      (
+      SELECT		
+        persona.*,
+        ( SELECT genero FROM genero_tipo WHERE ID = persona.genero_tipo_id ) AS genero,			
+        ( SELECT idioma FROM idioma_tipo WHERE ID = persona.materno_idioma_tipo_id ) AS materno_idioma_tipo,	
+        nacimiento_unidad_territorial_id AS comunidad_id,
+        ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID = nacimiento_unidad_territorial_id ) AS municipio_id,
+        ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID IN ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID = nacimiento_unidad_territorial_id ) ) AS provincia_id
+        
+      FROM
+        persona
+      WHERE
+        persona.ID = ${result0.id}
+      ) AS DATA 
+    ) AS data2
+    left JOIN unidad_territorial ut ON ut.ID = data2.comunidad_id
+    left JOIN unidad_territorial muni ON muni.ID = data2.municipio_id
+    left JOIN unidad_territorial prov ON prov.ID = data2.provincia_id
+    left JOIN unidad_territorial dep ON dep.ID = data2.depto_id
+    left JOIN unidad_territorial pais ON pais.ID = data2.pais_id
+
+    `);
+
+    console.log("result: ", result);
+
+    return result;
   }
 
   async crearPersona(dto: CreatePersonaoDto) {
@@ -26,7 +80,7 @@ export class PersonaRepository {
     persona.paterno = dto.paterno;
     persona.materno = dto.materno;
     persona.nombre = dto.nombre;
-    persona.fechaNacimiento = dto.fechaNacimiento;
+    persona.fechaNacimiento = new Date(dto.fechaNacimiento);
     persona.generoTipoId = dto.generoTipoId;
     persona.estadoCivilTipoId = dto.estadoCivilTipoId;
     persona.sangreTipoId = dto.sangreTipoId;

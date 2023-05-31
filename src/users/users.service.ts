@@ -1504,7 +1504,7 @@ export class UsersService {
     }
   }
 
-  async checkToken(request: Request) {
+  async checkToken(rolId: number, request: Request) {
     //0: validar token
     let user_id = 0;
     //console.log("updateUser:", request.headers["token"]);
@@ -1520,9 +1520,7 @@ export class UsersService {
     }
     console.log("checkToken:", user_id);
 
-    const rolTipoDirector = await this.rolTipoRepository.findBy(
-      {id: 5}
-    );
+    const rolTipoDirector = await this.rolTipoRepository.findBy({ id: rolId });
 
     return this._serviceResp.respuestaHttp200(
       rolTipoDirector,

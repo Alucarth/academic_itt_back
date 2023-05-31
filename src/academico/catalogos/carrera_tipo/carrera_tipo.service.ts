@@ -45,6 +45,7 @@ export class CarreraTipoService {
   }
 
   async getAllCarreras() {
+    // revisado
     //const result = await this.carreraTipoRepository.find();
    // const solocursoscortos = 2
     const result = await this.dataSource

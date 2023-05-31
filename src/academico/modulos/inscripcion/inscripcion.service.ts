@@ -54,8 +54,15 @@ export class InscripcionService {
   ) {}
 
   async createMatricula(dto: CreateMatriculaDto) {
-
     const persona = await this._servicePersona.findPersona(dto.personaId);
+    if (persona.length == 0) {
+      //no existe la,persona
+      return this._serviceResp.respuestaHttp404(
+        dto.personaId,
+        "Persona No Encontrado !!",
+        ""
+      );
+    }
     const personaAux = persona[0];
 
     const institucionEducativaSucursal =
@@ -64,29 +71,67 @@ export class InscripcionService {
           id: dto.institucionEducativaSucursalId,
         },
       });
+    if (!institucionEducativaSucursal) {
+      return this._serviceResp.respuestaHttp404(
+        dto.institucionEducativaSucursalId,
+        "institucionEducativaSucursalId No Encontrado !!",
+        ""
+      );
+    }
 
     const gestionTipo = await this.gestionTipoRepository.findOne({
       where: {
         id: dto.gestionTipoId,
       },
     });
+    if (!gestionTipo) {
+      return this._serviceResp.respuestaHttp404(
+        dto.gestionTipoId,
+        "gestionTipoId No Encontrado !!",
+        ""
+      );
+    }
 
     const periodoTipo = await this.periodoTipoRepository.findOne({
       where: {
         id: dto.periodoTipoId,
       },
     });
+    if (!periodoTipo) {
+      return this._serviceResp.respuestaHttp404(
+        dto.periodoTipoId,
+        "periodoTipo No Encontrado !!",
+        ""
+      );
+    }
 
-     const institutoPlanEstudioCarrera = await this.ipecRepository.findOne({
-       where: {
-         id: dto.institutoPlanEstudioCarreraId,
-       },
-     });
+    const institutoPlanEstudioCarrera = await this.ipecRepository.findOne({
+      where: {
+        id: dto.institutoPlanEstudioCarreraId,
+      },
+    });
+    if (!institutoPlanEstudioCarrera) {
+      return this._serviceResp.respuestaHttp404(
+        dto.institutoPlanEstudioCarreraId,
+        "periodoTipo No Encontrado !!",
+        ""
+      );
+    }
 
     try {
+      const existe = await this.inscripcionRepository.query(`
+        select count(*) as existe 
+        from 
+        institucion_educativa_estudiante
+        where
+          institucion_educativa_sucursal_id = ${dto.institucionEducativaSucursalId} and 
+          persona_id = ${dto.personaId}
+      
+        `);
 
+      if (parseInt(existe[0].existe) == 0) {
+        //si no existe, es nuevo nuevo, se crean ambos
         console.log("insertar institucionEducativaEstudiante");
-
         let institucionEducativaEstudiante = this.ieeRepository.create({
           observacion: dto.observacion,
           persona: personaAux,
@@ -118,18 +163,77 @@ export class InscripcionService {
           .returning("id")
           .execute();
 
-        
-
         //console.log("newusuario", newusuario);
         return this._serviceResp.respuestaHttp201(
           resMat,
           "Registro MAT + USER Creado !!",
           ""
         );
+      } else {
+        // existe un registro de ese estudiante en esa institucion, se verifica si ya existe matricula
 
+        const iee = await this.inscripcionRepository.query(`
+          select id
+          from 
+          institucion_educativa_estudiante
+          where
+            institucion_educativa_sucursal_id = ${dto.institucionEducativaSucursalId} and 
+            persona_id = ${dto.personaId}
+        
+          `);
 
+        //buscamos si existe la matricula
+        const existeMat = await this.inscripcionRepository.query(`
+          select count(*) as existe 
+          from 
+          matricula_estudiante
+          where
+            instituto_plan_estudio_carrera_id = ${dto.institutoPlanEstudioCarreraId} and 
+            institucion_educativa_estudiante_id = ${iee[0].id} and
+            gestion_tipo_id = ${dto.gestionTipoId} and
+            periodo_tipo_id = ${dto.periodoTipoId}
+        
+          `);
 
+        const institucionEducativaEstudiante = await this.ieeRepository.findBy(
+          iee[0].id
+        );
 
+        if (parseInt(existeMat[0].existe) == 0) {
+          const resMat = await this.matriculaRepository
+            .createQueryBuilder()
+            .insert()
+            .into(MatriculaEstudiante)
+            .values([
+              {
+                docMatricula: dto.docMatricula,
+                usuarioId: 0,
+                gestionTipo: gestionTipo,
+                periodoTipo: periodoTipo,
+                institutoPlanEstudioCarrera: institutoPlanEstudioCarrera,
+                institucionEducativaEstudiante:
+                  institucionEducativaEstudiante[0],
+              },
+            ])
+            .returning("id")
+            .execute();
+
+          //console.log("newusuario", newusuario);
+          return this._serviceResp.respuestaHttp201(
+            resMat,
+            "Registro MAT + USER Creado !!",
+            ""
+          );
+        } else {
+          // la matricula ya exuste, no se hace nada
+
+          return this._serviceResp.respuestaHttp201(
+            0,
+            "MATRICULA YA EXISTE EN ESTA GESTION Y PERIODO !!",
+            ""
+          );
+        }
+      }
     } catch (error) {
       console.log("Error insertar inscripcion: ", error);
       throw new HttpException(
@@ -143,7 +247,6 @@ export class InscripcionService {
         }
       );
     }
-    
   }
 
   async createInscription(dto: CreateInscriptionDto) {
@@ -507,14 +610,14 @@ export class InscripcionService {
       .innerJoinAndSelect("me.institucionEducativaEstudiante", "ie")
       .innerJoinAndSelect("ie.persona", "p")
       .select([
-        'i.id as instituto_estudiante_inscripcion_id',
-        'a.id as aula_id',
-        'p.paterno as paterno',
-        'p.materno as materno',
-        'p.nombre as nombre',
-        'p.carnetIdentidad as carnet_identidad',
-        'd.id as aula_docente_id'
-    ])
+        "i.id as instituto_estudiante_inscripcion_id",
+        "a.id as aula_id",
+        "p.paterno as paterno",
+        "p.materno as materno",
+        "p.nombre as nombre",
+        "p.carnetIdentidad as carnet_identidad",
+        "d.id as aula_docente_id",
+      ])
       .where("i.aulaId = :id", { id })
       .andWhere("d.bajaTipoId = 0")
       .getRawMany();
@@ -693,8 +796,10 @@ export class InscripcionService {
     );
   }
 
-  async getAllMateriasInscripcionNuevo(carreraAutorizadaId: number) {
+  async getAllMateriasInscripcionNuevo(carreraAutorizadaId: number, matriculaEstudianteId:number) {
     // semestral ? anual ?
+    const matricula_estudiante = matriculaEstudianteId; //62;
+
     const intervaloGestion = await this.inscripcionRepository.query(`
       SELECT
         carrera_autorizada.id as carrera_autorizada_id, 
@@ -789,14 +894,22 @@ export class InscripcionService {
         regimen_grado_tipo.id = ${regimen_grado_tipo_id}
     `);
 
+
     for (let i = 0; i < result.length; i++) {
       let res_paralelos = await this.inscripcionRepository.query(`
         SELECT
+          
+          case trim(concat(persona.paterno, ' ', persona.materno, ' ', persona.nombre))
+          when '' then 'Sin Asignacion'
+          else trim(concat(persona.paterno, ' ', persona.materno, ' ', persona.nombre))
+          end
+          as maestro,
           oferta_curricular.id as oferta_curricular_id, 
           aula.id as aula_id, 
           paralelo_tipo.id as paralelo_tipo_id, 
           paralelo_tipo.paralelo, 
-          aula.activo
+          aula.activo,
+          0 as inscrito
         FROM
           oferta_curricular
           INNER JOIN
@@ -807,9 +920,44 @@ export class InscripcionService {
           paralelo_tipo
           ON 
             aula.paralelo_tipo_id = paralelo_tipo.id
+          left JOIN
+          aula_docente
+          ON 
+            aula.id = aula_docente.aula_id
+          left JOIN
+          maestro_inscripcion
+          ON 
+            aula_docente.maestro_inscripcion_id = maestro_inscripcion.id
+          left JOIN
+          persona
+          ON 
+            maestro_inscripcion.persona_id = persona.id
           where 
           oferta_curricular.id = ${result[i].oferta_curricular_id}
       `);
+
+      //vemos los que ya esta inscrito
+
+      for (let index=0; index < res_paralelos.length; index++){
+        //por cada paralelo vemos si esta incrito
+
+        const existe = await this.inscripcionRepository.query(`
+        select count(*) as existe 
+        from 
+        instituto_estudiante_inscripcion
+        where
+          matricula_estudiante_id = ${matricula_estudiante} and
+          aula_id = ${res_paralelos[index].aula_id} and 
+          oferta_curricular_id = ${res_paralelos[index].oferta_curricular_id}      
+        `);
+
+        if (parseInt(existe[0].existe) != 0) {
+          res_paralelos[index].inscrito = 1;
+        }
+
+      }
+
+
 
       let array_paralelos = res_paralelos;
       result[i].paralelos = array_paralelos;

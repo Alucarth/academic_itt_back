@@ -52,6 +52,7 @@ export class CarreraAutorizadaRepository {
           .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
           .innerJoinAndSelect("ca.carreraTipo", "ct")
           .innerJoinAndSelect("ca.areaTipo", "at")
+          .innerJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
           .innerJoinAndSelect("ca.resoluciones", "r")
           .innerJoinAndSelect("r.resolucionTipo", "rt")
           .innerJoinAndSelect("r.nivelAcademicoTipo", "na")
@@ -69,6 +70,7 @@ export class CarreraAutorizadaRepository {
             "na.nivel_academico as nivel_academico",
             "ig.intervalo_gestion as regimen_estudio",
             "rt.resolucion_tipo as tipo_tramite",
+            "ipec.id as instituto_plan_estudio_carrera_id",
           ])
           .where("s.institucionEducativaId = :id ", { id })
           .andWhere("ca.areaTipoId > 1 ")
