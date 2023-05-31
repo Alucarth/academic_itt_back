@@ -1056,10 +1056,10 @@ export class MaestroInscripcionService {
     }
 
     /** idiomaTipo */
-    let idiomaTipo = await this.idiomaRepository.findOne({
-      where: { id: dto.estudioIdiomaTipoId },
+    let idiomaTipo = await this.idiomaRepository.findOneBy({
+    id: dto.estudioIdiomaTipoId ,
     });
-    console.log("idiomaTipo : ", idiomaTipo);
+    console.log("idiomaTipoxxx : ", idiomaTipo);
     if (!idiomaTipo) {
       return this._serviceResp.respuestaHttp404(
         dto.estudioIdiomaTipoId,
@@ -1079,36 +1079,72 @@ export class MaestroInscripcionService {
       /*const res =  await this.maestroRepository
         .update({ id: dto.id }, dto)*/
 
-      const res = await this.maestroRepository
-        .createQueryBuilder()
-        .update(MaestroInscripcion)
-        .set({
-          persona: persona,
-          //institucionEducativaSucursal: institucionEducativaSucursal,
-          formacionTipo: formacionTipo,
-          financiamientoTipo: financiamientoTipo,
-          cargoTipo: cargoTipo,
-          especialidadTipo: especialidadTipo,
-          gestionTipo: gestionTipo,
-          normalista: dto.normalista,
-          formacionDescripcion: dto.formacionDescripcion,
-          braile: dto.braile,
-          estudioIdiomaTipo: idiomaTipo,
-          asignacionFechaInicio: dto.asignacionFechaInicio,
-          asignacionFechaFin: dto.asignacionFechaFin,
-          item: dto.item,
-          //maestroInscripcionIdAm: dto.maestroInscripcionIdAm,
-        })
-        .where("id = :id", { id: dto.id })
-        .execute();
+      if (dto.estudioIdiomaTipoId == 0){
+        const res = await this.maestroRepository
+          .createQueryBuilder()
+          .update(MaestroInscripcion)
+          .set({
+            persona: persona,
+            //institucionEducativaSucursal: institucionEducativaSucursal,
+            formacionTipo: formacionTipo,
+            financiamientoTipo: financiamientoTipo,
+            cargoTipo: cargoTipo,
+            especialidadTipo: especialidadTipo,
+            gestionTipo: gestionTipo,
+            normalista: dto.normalista,
+            formacionDescripcion: dto.formacionDescripcion,
+            braile: dto.braile,          
+            asignacionFechaInicio: dto.asignacionFechaInicio,
+            asignacionFechaFin: dto.asignacionFechaFin,
+            item: dto.item,
+            //maestroInscripcionIdAm: dto.maestroInscripcionIdAm,
+          })
+          .where("id = :id", { id: dto.id })
+          .execute();
 
-      console.log("res:", res);
-      console.log("Maestro Inscripcion actualizado");
-      return this._serviceResp.respuestaHttp202(
-        null,
-        "Registro Actualizado !!",
-        ""
-      );
+           console.log("res:", res);
+           console.log("Maestro Inscripcion actualizado");
+           return this._serviceResp.respuestaHttp202(
+             null,
+             "Registro Actualizado !!",
+             ""
+           );
+
+      }else{
+        const res = await this.maestroRepository
+          .createQueryBuilder()
+          .update(MaestroInscripcion)
+          .set({
+            persona: persona,
+            //institucionEducativaSucursal: institucionEducativaSucursal,
+            formacionTipo: formacionTipo,
+            financiamientoTipo: financiamientoTipo,
+            cargoTipo: cargoTipo,
+            especialidadTipo: especialidadTipo,
+            gestionTipo: gestionTipo,
+            normalista: dto.normalista,
+            formacionDescripcion: dto.formacionDescripcion,
+            braile: dto.braile,
+            estudioIdiomaTipo: idiomaTipo,
+            asignacionFechaInicio: dto.asignacionFechaInicio,
+            asignacionFechaFin: dto.asignacionFechaFin,
+            item: dto.item,
+            //maestroInscripcionIdAm: dto.maestroInscripcionIdAm,
+          })
+          .where("id = :id", { id: dto.id })
+          .execute();
+
+           console.log("res:", res);
+           console.log("Maestro Inscripcion actualizado");
+           return this._serviceResp.respuestaHttp202(
+             null,
+             "Registro Actualizado !!",
+             ""
+           );
+      }
+        
+
+     
     } catch (error) {
       console.log("Error update maestro inscripcion: ", error);
       throw new HttpException(
@@ -1183,7 +1219,7 @@ export class MaestroInscripcionService {
     let idiomaTipo = await this.idiomaRepository.findOne({
       where: { id: dto.estudioIdiomaTipoId },
     });
-    console.log("idiomaTipo : ", idiomaTipo);
+    console.log("idiomaTipoxxx : ", idiomaTipo);
     if (!idiomaTipo) {
       return this._serviceResp.respuestaHttp404(
         dto.estudioIdiomaTipoId,
@@ -1191,6 +1227,7 @@ export class MaestroInscripcionService {
         ""
       );
     }
+    console.log('here---');
 
     try {
       console.log(dto);
