@@ -652,11 +652,7 @@ export class InscripcionService {
                 institucion_educativa_estudiante.persona_id,
                 persona.carnet_identidad,
                 persona.complemento,
-                case trim(concat( persona.paterno, ' ', persona.materno, ' ', persona.nombre )) 
-                when '' then 'Sin Asignacion'
-                else trim(concat ( persona.paterno, ' ', persona.materno, ' ', persona.nombre ))
-                end             
-                AS alumno,
+                concat ( persona.paterno, ' ', persona.materno, ' ', persona.nombre ) AS alumno,
                 matricula_estudiante.gestion_tipo_id,
                 matricula_estudiante.periodo_tipo_id,
                 matricula_estudiante.doc_matricula,
@@ -902,7 +898,12 @@ export class InscripcionService {
     for (let i = 0; i < result.length; i++) {
       let res_paralelos = await this.inscripcionRepository.query(`
         SELECT
-          concat(persona.paterno, ' ', persona.materno, ' ', persona.nombre) as maestro,
+          
+          case trim(concat(persona.paterno, ' ', persona.materno, ' ', persona.nombre))
+          when '' then 'Sin Asignacion'
+          else trim(concat(persona.paterno, ' ', persona.materno, ' ', persona.nombre))
+          end
+          as maestro,
           oferta_curricular.id as oferta_curricular_id, 
           aula.id as aula_id, 
           paralelo_tipo.id as paralelo_tipo_id, 
