@@ -270,9 +270,10 @@ export class MaestroInscripcionService {
             ON 
                 maestro_inscripcion.especialidad_tipo_id = especialidad_tipo.id
             where institucion_educativa_id = ${ueId} 
-            and maestro_inscripcion.gestion_tipo_id = ${gestionId} 
-            and cargo_tipo_id in (1)            
+            and maestro_inscripcion.gestion_tipo_id = ${gestionId}                       
             order by 2,3,4;`);
+
+    //and cargo_tipo_id in (1)
 
     console.log("result: ", result);
     console.log("result size: ", result.length);
