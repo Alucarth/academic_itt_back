@@ -898,6 +898,7 @@ export class InscripcionService {
     for (let i = 0; i < result.length; i++) {
       let res_paralelos = await this.inscripcionRepository.query(`
         SELECT
+          concat(persona.paterno, ' ', persona.materno, ' ', persona.nombre) as maestro,
           oferta_curricular.id as oferta_curricular_id, 
           aula.id as aula_id, 
           paralelo_tipo.id as paralelo_tipo_id, 
@@ -914,6 +915,18 @@ export class InscripcionService {
           paralelo_tipo
           ON 
             aula.paralelo_tipo_id = paralelo_tipo.id
+          left JOIN
+          aula_docente
+          ON 
+            aula.id = aula_docente.aula_id
+          left JOIN
+          maestro_inscripcion
+          ON 
+            aula_docente.maestro_inscripcion_id = maestro_inscripcion.id
+          left JOIN
+          persona
+          ON 
+            maestro_inscripcion.persona_id = persona.id
           where 
           oferta_curricular.id = ${result[i].oferta_curricular_id}
       `);
