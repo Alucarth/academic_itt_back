@@ -52,7 +52,7 @@ export class CarreraAutorizadaRepository {
           .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
           .innerJoinAndSelect("ca.carreraTipo", "ct")
           .innerJoinAndSelect("ca.areaTipo", "at")
-          .innerJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
+          .leftJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
           .innerJoinAndSelect("ca.resoluciones", "r")
           .innerJoinAndSelect("r.resolucionTipo", "rt")
           .innerJoinAndSelect("r.nivelAcademicoTipo", "na")
