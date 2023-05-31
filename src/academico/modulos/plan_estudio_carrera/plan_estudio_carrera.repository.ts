@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { PlanEstudioCarrera } from 'src/academico/entidades/planEstudioCarrera.entity';
 import { DataSource, EntityManager } from 'typeorm'
 import { CreatePlanEstudioResolucionDto } from '../plan_estudio_resolucion/dto/createPlanEstudioResolucion.dto';
+import { CreatePlanEstudioCarreraDto } from './dto/createPlanEstudioCarrera.dto';
 
 @Injectable()
 export class PlanEstudioCarreraRepository {
@@ -65,31 +66,61 @@ export class PlanEstudioCarreraRepository {
             'r.activo as activo',
         ])
           .where("pc.carreraTipoId = :carrera_id ", { carrera_id })
-          //.where("pc.areaTipoId = :area_id ", { area_id })
-          //.where("pc.nivelAcademicoTipoId = :nivel_id ", { nivel_id })
-          //.where("pc.intervaloGestionTipoId = :intervalo_id ", { intervalo_id })
-          //.where("pc.tiempoEstudio = :tiempo ", { tiempo })
+          .andWhere("pc.areaTipoId = :area_id ", { area_id })
+          .andWhere("pc.nivelAcademicoTipoId = :nivel_id ", { nivel_id })
+          .andWhere("pc.intervaloGestionTipoId = :intervalo_id ", { intervalo_id })
+          .andWhere("pc.tiempoEstudio = :tiempo ", { tiempo })
           .getRawMany();
+
+    }
+    async findOneResolucionByData(
+        resolucion_id:number,
+        carrera_id:number,
+        nivel_id:number,
+        area_id:number,
+        intervalo_id:number,
+        tiempo:number,
+        ){
+            console.log("carrera es");
+            console.log(carrera_id);
+        return  await this.dataSource.getRepository(PlanEstudioCarrera)
+        .createQueryBuilder("pc")
+        .innerJoinAndSelect("pc.planEstudioResolucion", "r")
+        .select([
+            'pc.id',
+            'r.id as plan_estudio_resolucion_id',
+            'r.numero_resolucion as numero_resolucion',
+            'r.fecha_resolucion as fecha_resolucion',
+            'r.activo as activo',
+        ])
+          .where("pc.carreraTipoId = :carrera_id", { carrera_id })
+          .andWhere("pc.areaTipoId = :area_id", { area_id })
+          .andWhere("pc.nivelAcademicoTipoId = :nivel_id", { nivel_id })
+          .andWhere("pc.intervaloGestionTipoId = :intervalo_id", { intervalo_id })
+          .andWhere("pc.tiempoEstudio = :tiempo", { tiempo })
+          .andWhere("pc.planEstudioResolucionId = :resolucion_id", { resolucion_id })
+          .andWhere("pc.activo = true")
+          .getRawOne();
 
     }
 
     async crearPlanCarrera(
-        id:number,
-        dto: CreatePlanEstudioResolucionDto,
-        datos: any,
+        idUsuario:number,
+       // dto: CreatePlanEstudioResolucionDto,
+        datos: CreatePlanEstudioCarreraDto,
         transaction: EntityManager,
         ) {
             const pc = new PlanEstudioCarrera();
-            pc.planEstudioResolucionId = id;
-            pc.carreraTipoId = datos.carrera_id;
+            pc.planEstudioResolucionId = datos.plan_estudio_resolucion_id;
+            pc.carreraTipoId = datos.carrera_tipo_id;
             pc.nivelAcademicoTipoId = datos.nivel_academico_tipo_id;
-            pc.areaTipoId = datos.area_id;
+            pc.areaTipoId = datos.area_tipo_id;
             pc.intervaloGestionTipoId = datos.intervalo_gestion_tipo_id;
             pc.tiempoEstudio = datos.tiempo_estudio;
             pc.cargaHoraria = datos.carga_horaria;
-            pc.denominacion = dto.denominacion;
+            pc.denominacion = datos.denominacion;
             pc.activo = true;
-            pc.usuarioId = 1;
+            pc.usuarioId = idUsuario;
             const result = await transaction.getRepository(PlanEstudioCarrera).save(pc);
        
         return result;

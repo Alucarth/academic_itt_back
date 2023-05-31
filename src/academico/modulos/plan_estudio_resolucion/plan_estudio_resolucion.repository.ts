@@ -69,20 +69,7 @@ export class PlanEstudioResolucionRepository {
           .getMany()
   
       }
-    async crearPlanEstudioResolucion(
-        dto: CreatePlanEstudioResolucionDto,
-        transaction: EntityManager,
-        ) {
-            const per = new PlanEstudioResolucion();
-            per.numeroResolucion = dto.numero_resolucion;
-            per.fechaResolucion = dto.fecha_resolucion;
-            per.descripcion = dto.descripcion;
-            per.activo = true;
-            per.usuarioId = 1;
-            const result = await transaction.getRepository(PlanEstudioResolucion).save(per);
-       
-        return result;
-    }
+   
     async crearNuevaResolucion(
         idUsuario,
         dto: CreateResolucionDto,

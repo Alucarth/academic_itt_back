@@ -14,6 +14,28 @@ export class PlanEstudioAsignaturaRepository {
         return  await this.dataSource.getRepository(PlanEstudioAsignatura).find();
     }
 
+    async findAsignaturasPrerequisitosByPlan( id:number){
+        const asignaturas = await this.dataSource.getRepository(PlanEstudioAsignatura)
+        .createQueryBuilder("p")
+        .innerJoinAndSelect("p.asignaturaTipo", "a")       
+        .innerJoinAndSelect("p.regimenGradoTipo", "rg")     
+        .leftJoinAndSelect("p.planesAsignaturasReglas", "r")     
+        .innerJoinAndSelect("r.anterior_plan_estudio", "r")     
+        .select([
+            'p.id as plan_estudio_asignatura_id',
+            'p.horas as horas',
+            'a.asignatura as asignatura',
+            'a.abreviacion as abreviacion',
+            'r.id',            
+            'r.anteriorPlanEstudioAsignatura',
+        ])
+        .where('p.planEstudioCarreraId = :id ', { id })
+        
+        .orderBy('a.id', 'ASC')
+        .getRawMany();
+        return asignaturas;
+    }
+
     async findAsignaturasByPlanRegimen( id:number, regimen:number){
         const asignaturas = await this.dataSource.getRepository(PlanEstudioAsignatura)
         .createQueryBuilder("p")

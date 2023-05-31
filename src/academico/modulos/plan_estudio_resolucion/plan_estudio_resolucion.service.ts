@@ -3,7 +3,9 @@ import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { EntityManager } from 'typeorm';
 import { CarreraAutorizadaRepository } from '../carrera_autorizada/carrera_autorizada.repository';
 import { InstitutoPlanEstudioCarreraRepository } from '../instituto_plan_estudio_carrera/instituto_plan_estudio_carrera.repository';
+import { InstitutoPlanEstudioCarreraService } from '../instituto_plan_estudio_carrera/instituto_plan_estudio_carrera.service';
 import { PlanEstudioCarreraRepository } from '../plan_estudio_carrera/plan_estudio_carrera.repository';
+import { PlanEstudioCarreraService } from '../plan_estudio_carrera/plan_estudio_carrera.service';
 import { CreatePlanEstudioResolucionDto } from './dto/createPlanEstudioResolucion.dto';
 import { CreateResolucionDto } from './dto/createResolucion.dto';
 import { PlanEstudioResolucionRepository } from './plan_estudio_resolucion.repository';
@@ -24,6 +26,9 @@ export class PlanEstudioResolucionService {
         @Inject(InstitutoPlanEstudioCarreraRepository) 
         private institutoPlanEstudioCarreraRepository: InstitutoPlanEstudioCarreraRepository,
        
+        private servicePlanEstudioCarrera: PlanEstudioCarreraService,
+        private serviceInstitutoPlanEstudioCarrera: InstitutoPlanEstudioCarreraService,
+
         private _serviceResp: RespuestaSigedService, 
         
     ){}
@@ -51,6 +56,43 @@ export class PlanEstudioResolucionService {
         const cursos = await this.planEstudioResolucionRepository.getAll()
         return cursos
     }
+    async createNewResolucion(dto: CreateResolucionDto) {
+        //1:BUSCAR resolucion
+        let datoResolucion = await this.planEstudioResolucionRepository.getByDato(dto);
+          console.log("resolucion : ", datoResolucion);
+          if (datoResolucion) {
+            return this._serviceResp.respuestaHttp409(
+                datoResolucion,
+                  'Registro de resol ya existe !!',
+                  '',
+              );
+        }
+
+        const op = async (transaction: EntityManager) => {
+            return await this.planEstudioResolucionRepository.crearNuevaResolucion(
+                1,
+                dto,
+                transaction
+              )
+        }
+        const crearResult = await this.planEstudioResolucionRepository.runTransaction(op);
+        
+        console.log(crearResult);
+
+        if(crearResult){
+          return this._serviceResp.respuestaHttp201(
+            crearResult,
+              'Registro de resol es Creado !!',
+              '',
+          );
+        }
+        return this._serviceResp.respuestaHttp500(
+          "",
+          'No se pudo guardar la información !!',
+          '',
+      );
+    }
+
 
     async crear(dto: CreatePlanEstudioResolucionDto) {
         
@@ -58,40 +100,41 @@ export class PlanEstudioResolucionService {
     const carreraAutorizada =await this.carreraAutorizadaRepository.getCarreraAutorizadaById(dto.carrera_autorizada_id);
     
         const op = async (transaction: EntityManager) => {
-            const planResolucion = await this.planEstudioResolucionRepository.crearPlanEstudioResolucion(dto, transaction);
-            if(planResolucion?.id){
+
+            const planResolucion = await this.createNewResolucion(dto);
+            if(planResolucion.data?.id){ 
+                console.log("creoResol");
                 //crear plan estudio carrera
                 let datos = {
-                    carrera_autorizada_id: carreraAutorizada.carrera_autorizada_id,
-                    carrera_id: carreraAutorizada.carrera_id,                   
-                    area_id: carreraAutorizada.area_id,
+                    plan_estudio_resolucion_id: planResolucion.data?.id,
+                    carrera_tipo_id: carreraAutorizada.carrera_id,                   
+                    area_tipo_id: carreraAutorizada.area_id,
                     tiempo_estudio: carreraAutorizada.tiempo_estudio,
                     carga_horaria: carreraAutorizada.carga_horaria,
                     nivel_academico_tipo_id: carreraAutorizada.nivel_academico_tipo_id,
                     intervalo_gestion_tipo_id: carreraAutorizada.intervalo_gestion_tipo_id,
+                    denominacion: dto.denominacion,
                 }   
-                console.log(datos);
-                const planCarrera = await this.planEstudioCarreraRepository.crearPlanCarrera(planResolucion?.id, dto, datos, transaction);
+                const planCarrera = await this.servicePlanEstudioCarrera.crearPlanEstudioCarrera(datos);
                 
-                if(planCarrera?.id){
+                if(planCarrera?.data.id ){
+                    console.log("creoPlanCarrera");
                     let datopc = {
-                        plan_estudio_carrera_id:planCarrera.id,
+                        plan_estudio_carrera_id:planCarrera.data.id,
                         carrera_autorizada_id:carreraAutorizada.carrera_autorizada_id
                     }
-                    await this.institutoPlanEstudioCarreraRepository.createInstitutoPlanEstudioCarrera(1,datopc, transaction);
+                    await this.serviceInstitutoPlanEstudioCarrera.createInstitutoPlan(datopc);
                 }
 
               return planResolucion;
             }
         }
         const crearResult = await this.planEstudioResolucionRepository.runTransaction(op);
-        console.log("ssssss result");
-        console.log(crearResult);
-
+        
         if(crearResult){
             //mandamos datos de carrera_autorizada
             let datos = {
-                plan_estudio_resolucion_id: crearResult.id,
+                plan_estudio_resolucion_id: crearResult.data.id,
                 carrera_autorizada_id: carreraAutorizada.carrera_autorizada_id,
                 carrera_id: carreraAutorizada.carrera_id,
                 carrera: carreraAutorizada.carrera,
@@ -117,43 +160,5 @@ export class PlanEstudioResolucionService {
       );
 
     }
-
-    async createNewResolucion(dto: CreateResolucionDto) {
-        //1:BUSCAR resolucion
-        let datoResolucion = await this.planEstudioResolucionRepository.getByDato(dto);
-          console.log("resolucion : ", datoResolucion);
-          if (datoResolucion) {
-            return this._serviceResp.respuestaHttp409(
-                datoResolucion,
-                  'Registro ya existe !!',
-                  '',
-              );
-        }
-
-        const op = async (transaction: EntityManager) => {
-            return await this.planEstudioResolucionRepository.crearNuevaResolucion(
-                1,
-                dto,
-                transaction
-              )
-        }
-        const crearResult = await this.planEstudioResolucionRepository.runTransaction(op);
-        
-        console.log(crearResult);
-
-        if(crearResult){
-          return this._serviceResp.respuestaHttp201(
-            crearResult,
-              'Registro  Creado !!',
-              '',
-          );
-        }
-        return this._serviceResp.respuestaHttp500(
-          "",
-          'No se pudo guardar la información !!',
-          '',
-      );
-      }
-
 
 }

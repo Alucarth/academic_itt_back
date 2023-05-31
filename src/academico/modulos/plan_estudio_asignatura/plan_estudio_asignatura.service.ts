@@ -36,6 +36,22 @@ export class PlanEstudioAsignaturaService {
       );
     }
 
+    async getAsignaturasPrerequisitosByPlan(id:number){
+      const cursos = await this.planEstudioAsignaturaRepository.findAsignaturasPrerequisitosByPlan(id);
+      if(cursos){
+          return this._serviceResp.respuestaHttp201(
+            cursos,
+            'Resultados encontrados !!',
+            '',
+        );
+      }
+      return this._serviceResp.respuestaHttp404(
+        "",
+        'No se encontraron resultados !!',
+        '',
+    );
+  }
+
     async crearPlanAsignatura (dto: CreatePlanEstudioAsignaturaDto[]) {
        
         console.log("lista array inicio");

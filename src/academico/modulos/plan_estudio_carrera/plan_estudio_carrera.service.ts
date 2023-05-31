@@ -1,6 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
+import { EntityManager } from 'typeorm';
 import { CarreraAutorizadaRepository } from '../carrera_autorizada/carrera_autorizada.repository';
+import { CreatePlanEstudioCarreraDto } from './dto/createPlanEstudioCarrera.dto';
 import { PlanEstudioCarreraRepository } from './plan_estudio_carrera.repository';
 
 @Injectable()
@@ -46,6 +48,23 @@ export class PlanEstudioCarreraService {
             tiempo)
         return carrera
     }
+    async getByResolucionData(
+        resolucion_id:number,
+        carrera_id:number,
+        nivel_id:number,
+        area_id:number,
+        intervalo_id:number,
+        tiempo:number){
+        
+        const carrera = await this.planEstudioCarreraRepository.findOneResolucionByData(
+            resolucion_id,
+            carrera_id,
+            nivel_id,
+            area_id,
+            intervalo_id,
+            tiempo)
+        return carrera
+    }
 
     async getResolucionesByCarreraAutorizadaId(id:number){
         
@@ -80,5 +99,49 @@ export class PlanEstudioCarreraService {
             "Se produjo un error !!",
             ""
           );
+    }
+
+    async crearPlanEstudioCarrera(dto: CreatePlanEstudioCarreraDto) {
+        //1:BUSCAR resolucion
+        const dato = await this.getByResolucionData( 
+            dto.plan_estudio_resolucion_id,
+            dto.carrera_tipo_id,
+            dto.nivel_academico_tipo_id,
+            dto.area_tipo_id,
+            dto.intervalo_gestion_tipo_id,
+            dto.tiempo_estudio);
+       
+          console.log("plan de carrera : ", dato);
+          if (dato) {
+            return this._serviceResp.respuestaHttp409(
+                dato,
+                'Registro ya existe !!',
+                '',
+              );
+          }
+
+        const op = async (transaction: EntityManager) => {
+            return await this.planEstudioCarreraRepository.crearPlanCarrera(
+                1,
+                dto,
+                transaction
+              )
+        }
+        const crearResult = await this.planEstudioCarreraRepository.runTransaction(op);
+        
+        console.log(crearResult);
+
+        if(crearResult){
+          return this._serviceResp.respuestaHttp201(
+            crearResult,
+              'Registro  Creado !!',
+              '',
+          );
+        }
+        return this._serviceResp.respuestaHttp500(
+          "",
+          'No se pudo guardar la información !!',
+          '',
+      );
     }
 }

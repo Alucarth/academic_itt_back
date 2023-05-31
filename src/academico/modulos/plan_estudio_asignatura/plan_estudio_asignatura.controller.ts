@@ -19,6 +19,13 @@ export class PlanEstudioAsignaturaController {
        return await this.planEstudioAsignaturaService.getAsignaturasByPlanRegimen(idplan, idregimen);
     }
 
+    @Get('plan-estudio-carrera/:id')
+    async getAsignaturasPrerequisitosByPlan(
+      @Param('id', ParseIntPipe) id: number, 
+      ){
+       return await this.planEstudioAsignaturaService.getAsignaturasPrerequisitosByPlan(id);
+    }
+
     @Post()
     async addOfertaAcademicaMaestroInscripcion(@Body() dto: CreatePlanEstudioAsignaturaDto[]) {
       console.log("-*************-");

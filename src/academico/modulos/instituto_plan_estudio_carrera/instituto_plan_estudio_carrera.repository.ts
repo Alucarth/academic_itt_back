@@ -19,6 +19,14 @@ export class InstitutoPlanEstudioCarreraRepository {
         const dato = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera).findOneBy({'id':id});
         return dato;
     }
+    async findOneByPlanCarrera(plan_id, carrera_id){
+        const dato = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera).findOneBy(
+            {
+                'planEstudioCarreraId':plan_id,
+                'carreraAutorizadaId':carrera_id,
+        });
+        return dato;
+    }
 
     async findResolucionesCarreraAutorizadaId( id:number){
         const itt = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera)

@@ -31,8 +31,21 @@ export class InstitutoPlanEstudioCarreraService {
           "No hay resultados !!",
           ""
         );
-        
-
+    }
+    async getOneByPlanCarrera(plan_id:number, carrera_id:number){
+        const data = await this.institutoPlanEstudioCarreraRepository.findOneByPlanCarrera(plan_id, carrera_id);
+        if (data){
+          return this._serviceResp.respuestaHttp201(
+            data,
+            "Registro econtrado !!",
+            ""
+          );
+        }
+        return this._serviceResp.respuestaHttp401(
+          "",
+          "No hay resultados !!",
+          ""
+        );
     }
     async getResolucionesCarreraAutorizadaId( id:number ){
        const result = await this.institutoPlanEstudioCarreraRepository.findResolucionesCarreraAutorizadaId(id);
@@ -45,7 +58,15 @@ export class InstitutoPlanEstudioCarreraService {
     }
 
     async createInstitutoPlan (dto: CreateInstitutoPlanEstudioCarreraDto) {
-  
+      const institutoPlanCarrera = await this.getOneByPlanCarrera(dto.plan_estudio_carrera_id, dto.carrera_autorizada_id);
+        if(institutoPlanCarrera.data?.id){
+          return this._serviceResp.respuestaHttp201(
+            institutoPlanCarrera,
+            "El registro de instituto plan ya existe!!",
+            ""
+          );
+        }
+
   
             const op = async (transaction: EntityManager) => {
               const nuevoInstitutoPlan =  await this.institutoPlanEstudioCarreraRepository.createInstitutoPlanEstudioCarrera(
@@ -61,7 +82,7 @@ export class InstitutoPlanEstudioCarreraService {
             if(crearResult){
               return this._serviceResp.respuestaHttp201(
                   crearResult.id,
-                  'Registro de curso y oferta Creado !!',
+                  'Registro de instituo_plan Creado !!',
                   '',
               );
             }

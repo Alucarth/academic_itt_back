@@ -8,7 +8,9 @@ import { DatabaseModule } from 'src/database/database.module';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { CarreraAutorizadaRepository } from '../carrera_autorizada/carrera_autorizada.repository';
 import { InstitutoPlanEstudioCarreraRepository } from '../instituto_plan_estudio_carrera/instituto_plan_estudio_carrera.repository';
+import { InstitutoPlanEstudioCarreraService } from '../instituto_plan_estudio_carrera/instituto_plan_estudio_carrera.service';
 import { PlanEstudioCarreraRepository } from '../plan_estudio_carrera/plan_estudio_carrera.repository';
+import { PlanEstudioCarreraService } from '../plan_estudio_carrera/plan_estudio_carrera.service';
 import { PlanEstudioResolucionController } from './plan_estudio_resolucion.controller';
 import { PlanEstudioResolucionRepository } from './plan_estudio_resolucion.repository';
 import { PlanEstudioResolucionService } from './plan_estudio_resolucion.service';
@@ -28,6 +30,9 @@ import { PlanEstudioResolucionService } from './plan_estudio_resolucion.service'
     CarreraAutorizadaRepository,
     PlanEstudioCarreraRepository,
     InstitutoPlanEstudioCarreraRepository,
-  RespuestaSigedService]
+    RespuestaSigedService,
+    PlanEstudioCarreraService,
+    InstitutoPlanEstudioCarreraService,
+]
 })
 export class PlanEstudioResolucionModule {}
