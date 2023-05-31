@@ -626,11 +626,11 @@ export class MaestroInscripcionService {
               maestro_inscripcion.ID = ${id} 
             ) AS DATA 
           ) AS data2
-          INNER JOIN unidad_territorial ut ON ut.ID = data2.comunidad_id
-          INNER JOIN unidad_territorial muni ON muni.ID = data2.municipio_id
-          INNER JOIN unidad_territorial prov ON prov.ID = data2.provincia_id
-          INNER JOIN unidad_territorial dep ON dep.ID = data2.depto_id
-          INNER JOIN unidad_territorial pais ON pais.ID = data2.pais_id
+          LEFT JOIN unidad_territorial ut ON ut.ID = data2.comunidad_id
+          LEFT JOIN unidad_territorial muni ON muni.ID = data2.municipio_id
+          LEFT JOIN unidad_territorial prov ON prov.ID = data2.provincia_id
+          LEFT JOIN unidad_territorial dep ON dep.ID = data2.depto_id
+          LEFT JOIN unidad_territorial pais ON pais.ID = data2.pais_id
       `);
 
     console.log("result: ", result);
