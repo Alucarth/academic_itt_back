@@ -1084,7 +1084,7 @@ export class MaestroInscripcionService {
         .update(MaestroInscripcion)
         .set({
           persona: persona,
-          institucionEducativaSucursal: institucionEducativaSucursal,
+          //institucionEducativaSucursal: institucionEducativaSucursal,
           formacionTipo: formacionTipo,
           financiamientoTipo: financiamientoTipo,
           cargoTipo: cargoTipo,
@@ -1097,7 +1097,7 @@ export class MaestroInscripcionService {
           asignacionFechaInicio: dto.asignacionFechaInicio,
           asignacionFechaFin: dto.asignacionFechaFin,
           item: dto.item,
-          maestroInscripcionIdAm: dto.maestroInscripcionIdAm,
+          //maestroInscripcionIdAm: dto.maestroInscripcionIdAm,
         })
         .where("id = :id", { id: dto.id })
         .execute();
