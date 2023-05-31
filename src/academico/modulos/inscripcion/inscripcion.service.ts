@@ -652,7 +652,11 @@ export class InscripcionService {
                 institucion_educativa_estudiante.persona_id,
                 persona.carnet_identidad,
                 persona.complemento,
-                concat ( persona.paterno, ' ', persona.materno, ' ', persona.nombre ) AS alumno,
+                case trim(concat( persona.paterno, ' ', persona.materno, ' ', persona.nombre )) 
+                when '' then 'Sin Asignacion'
+                else trim(concat ( persona.paterno, ' ', persona.materno, ' ', persona.nombre ))
+                end             
+                AS alumno,
                 matricula_estudiante.gestion_tipo_id,
                 matricula_estudiante.periodo_tipo_id,
                 matricula_estudiante.doc_matricula,
