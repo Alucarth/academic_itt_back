@@ -796,8 +796,10 @@ export class InscripcionService {
     );
   }
 
-  async getAllMateriasInscripcionNuevo(carreraAutorizadaId: number) {
+  async getAllMateriasInscripcionNuevo(carreraAutorizadaId: number, matriculaEstudianteId:number) {
     // semestral ? anual ?
+    const matricula_estudiante = matriculaEstudianteId; //62;
+
     const intervaloGestion = await this.inscripcionRepository.query(`
       SELECT
         carrera_autorizada.id as carrera_autorizada_id, 
@@ -892,6 +894,7 @@ export class InscripcionService {
         regimen_grado_tipo.id = ${regimen_grado_tipo_id}
     `);
 
+
     for (let i = 0; i < result.length; i++) {
       let res_paralelos = await this.inscripcionRepository.query(`
         SELECT
@@ -899,7 +902,8 @@ export class InscripcionService {
           aula.id as aula_id, 
           paralelo_tipo.id as paralelo_tipo_id, 
           paralelo_tipo.paralelo, 
-          aula.activo
+          aula.activo,
+          0 as inscrito
         FROM
           oferta_curricular
           INNER JOIN
@@ -913,6 +917,29 @@ export class InscripcionService {
           where 
           oferta_curricular.id = ${result[i].oferta_curricular_id}
       `);
+
+      //vemos los que ya esta inscrito
+
+      for (let index=0; index < res_paralelos.length; index++){
+        //por cada paralelo vemos si esta incrito
+
+        const existe = await this.inscripcionRepository.query(`
+        select count(*) as existe 
+        from 
+        instituto_estudiante_inscripcion
+        where
+          matricula_estudiante_id = ${matricula_estudiante} and
+          aula_id = ${res_paralelos[index].aula_id} and 
+          oferta_curricular_id = ${res_paralelos[index].oferta_curricular_id}      
+        `);
+
+        if (parseInt(existe[0].existe) != 0) {
+          res_paralelos[index].inscrito = 1;
+        }
+
+      }
+
+
 
       let array_paralelos = res_paralelos;
       result[i].paralelos = array_paralelos;
