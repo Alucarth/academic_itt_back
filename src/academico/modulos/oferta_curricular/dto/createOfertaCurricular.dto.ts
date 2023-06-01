@@ -63,20 +63,7 @@ class OfertaCurricular {
 
 export class CreateOfertaCurricularDto {
     aulas: any[];
-    /*
-    instituto_plan_estudio_carrera_id(instituto_plan_estudio_carrera_id: number) {
-        throw new Error('Method not implemented.');
-    }
    
-    plan_estudio_asignatura_id(plan_estudio_asignatura_id: number) {
-        throw new Error('Method not implemented.');
-    }
-    periodo_tipo_id(periodo_tipo_id: number) {
-        throw new Error('Method not implemented.');
-    }
-    gestion_tipo_id(gestion_tipo_id: number) {
-        throw new Error('Method not implemented.');
-    }*/
     @IsNotEmpty({ message: " el dato de identificacion es requerido" })
     @IsNumber()
     instituto_plan_estudio_carrera_id: number;

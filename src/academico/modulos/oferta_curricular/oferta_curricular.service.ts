@@ -160,7 +160,6 @@ export class OfertaCurricularService {
 
     async crear (dto: CreateOfertaCurricularDto[]) {
       
-      
             try {
                 dto.forEach(async item => {
                 //buscamos oferta
@@ -258,7 +257,6 @@ export class OfertaCurricularService {
                   }
                 );
             }
-     
        
-   }
+    }
 }

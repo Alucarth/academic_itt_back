@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { CreatePlanEstudioAsignaturaDto } from './dto/createPlanEstudioAsignatura.dto';
+import { CreatePlanAsignaturaPrerequisitoDto } from './dto/createPlanAsignaturaPrerequisito.dto';
 import { PlanEstudioAsignaturaService } from './plan_estudio_asignatura.service';
 
 @Controller('plan-estudio-asignatura')
@@ -27,8 +28,14 @@ export class PlanEstudioAsignaturaController {
     }
 
     @Post()
-    async addOfertaAcademicaMaestroInscripcion(@Body() dto: CreatePlanEstudioAsignaturaDto[]) {
+    async addPlanAsignatura(@Body() dto: CreatePlanEstudioAsignaturaDto[]) {
       console.log("-*************-");
       return await this.planEstudioAsignaturaService.crearPlanAsignatura(dto);
+    }
+
+    @Post('prerequisito')
+    async addPlanEstudioAsignaturaPrerequisito(@Body() dto: CreatePlanAsignaturaPrerequisitoDto[]) {
+      console.log("-*************-");
+      return await this.planEstudioAsignaturaService.crearPlanAsignaturaPrerequisito(dto);
     }
 }
