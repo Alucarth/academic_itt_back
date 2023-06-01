@@ -6,9 +6,10 @@ import { Persona } from 'src/users/entity/persona.entity';
 import { PersonaController } from './persona.controller';
 import { PersonaRepository } from './persona.repository';
 import { PersonaService } from './persona.service';
+import { SegipModule } from "src/segip/segip.module";
 
 @Module({
-  imports: [DatabaseModule, TypeOrmModule.forFeature([Persona])],
+  imports: [DatabaseModule, TypeOrmModule.forFeature([Persona]), SegipModule],
   controllers: [PersonaController],
   providers: [PersonaService, PersonaRepository, RespuestaSigedService],
   exports: [PersonaService],

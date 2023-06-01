@@ -455,7 +455,7 @@ export class UsersService {
           //TODO: fechaNacimiento: dto.fechaNacimiento
         },
       });
-
+     
       //dto.tipoCarnet = 1 NACIONAL, 2 EXTRANJERO;
 
       // SI LA PERSONA YA EXISTE, PASA SIN VALIDACION, SE ENTIENDE QUE

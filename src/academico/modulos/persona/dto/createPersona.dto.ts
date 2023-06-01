@@ -3,98 +3,97 @@ import { Transform } from 'class-transformer';
 import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreatePersonaoDto {
+  @IsNotEmpty({ message: "el Numero de Carnet es requerido" })
+  @IsString()
+  carnetIdentidad: string;
 
-    @IsNotEmpty({ message: "el Numero de Carnet es requerido" })
-    @IsString()    
-    carnetIdentidad: string;
+  @IsString()
+  complemento: string;
 
-    @IsString()
-    complemento: string;
-    
-    @IsString()
-    paterno: string;
+  @IsString()
+  paterno: string;
 
-    @IsNotEmpty({ message: "el Ap. Materno es requerido" })
-    @IsString()
-    materno: string;
+  @IsNotEmpty({ message: "el Ap. Materno es requerido" })
+  @IsString()
+  materno: string;
 
-    @IsNotEmpty({ message: "el Nombre es requerido" })
-    @IsString()
-    nombre: string;
+  @IsNotEmpty({ message: "el Nombre es requerido" })
+  @IsString()
+  nombre: string;
 
-    @IsDateString()
-    fechaNacimiento?: Date | null
-    
-    @IsNotEmpty({ message: "Genero es requerido" })
-    @IsNumber()
-    generoTipoId: number;
-    
-    @IsNotEmpty({ message: "Estado Civil es requerido" })
-    @IsNumber()
-    estadoCivilTipoId: number;
+  @IsDateString()
+  fechaNacimiento?: Date | null
+  //@IsString()
+  //fechaNacimiento: String;
 
-    @IsNotEmpty({ message: "Sangre tipo es requerido" })
-    @IsNumber()
-    sangreTipoId: number;
+  @IsNotEmpty({ message: "Genero es requerido" })
+  @IsNumber()
+  generoTipoId: number;
 
-    @IsNotEmpty({ message: "Idioma materno es requerido" })
-    @IsNumber()
-    maternoIdiomaTipoId: number;
+  @IsNotEmpty({ message: "Estado Civil es requerido" })
+  @IsNumber()
+  estadoCivilTipoId: number;
 
-    @IsNotEmpty({ message: "Segip  tipo es requerido" })
-    @IsNumber()
-    segipTipoId: number;
+  @IsNotEmpty({ message: "Sangre tipo es requerido" })
+  @IsNumber()
+  sangreTipoId: number;
 
-    @IsNotEmpty({ message: "Lugar de expedicion es requerido" })
-    @IsNumber()
-    expedidoUnidadTerritorialId: number;
+  @IsNotEmpty({ message: "Idioma materno es requerido" })
+  @IsNumber()
+  maternoIdiomaTipoId: number;
 
-    @IsNotEmpty({ message: "Lugar de nacimiento es requerido" })
-    @IsNumber()
-    nacimientoUnidadTerritorialId: number;
+  @IsNotEmpty({ message: "Segip  tipo es requerido" })
+  @IsNumber()
+  segipTipoId: number;
 
-    @IsString()
-    nacimientoOficialia: string;
+  @IsNotEmpty({ message: "Lugar de expedicion es requerido" })
+  @IsNumber()
+  expedidoUnidadTerritorialId: number;
 
-    @IsString()
-    nacimientoLibro: string;
+  @IsNotEmpty({ message: "Lugar de nacimiento es requerido" })
+  @IsNumber()
+  nacimientoUnidadTerritorialId: number;
 
-    @IsString()
-    nacimientoPartida: string;
+  @IsString()
+  nacimientoOficialia: string;
 
-    @IsString()
-    nacimientoFolio: string;
+  @IsString()
+  nacimientoLibro: string;
 
-    @IsString()
-    carnetIbc: string;
+  @IsString()
+  nacimientoPartida: string;
 
-    @IsString()
-    pasaporte: string;
+  @IsString()
+  nacimientoFolio: string;
 
-    @IsString()
-    libretaMilitar: string;
+  @IsString()
+  carnetIbc: string;
 
-    @IsBoolean()
-    dobleNacionalidad: boolean;
+  @IsString()
+  pasaporte: string;
 
-    @IsString()
-    codigoRda: string;
+  @IsString()
+  libretaMilitar: string;
 
-    @IsString()
-    nacimientoLocalidad: string;
+  @IsBoolean()
+  dobleNacionalidad: boolean;
 
-    @IsBoolean()
-    tieneDiscapacidad: boolean;
-   
-    @IsString()
-    telefono: string;
+  @IsString()
+  codigoRda: string;
 
-    @IsString()
-    email: string;
-   
-    @IsNotEmpty()
-    @IsNumber()
-    ciExpedidoTipoId: number;
+  @IsString()
+  nacimientoLocalidad: string;
 
+  @IsBoolean()
+  tieneDiscapacidad: boolean;
 
+  @IsString()
+  telefono: string;
+
+  @IsString()
+  email: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  ciExpedidoTipoId: number;
 }
