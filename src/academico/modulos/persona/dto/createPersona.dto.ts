@@ -1,6 +1,6 @@
 import { Optional } from '@nestjs/common';
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreatePersonaoDto {
   @IsNotEmpty({ message: "el Numero de Carnet es requerido" })
@@ -97,6 +97,7 @@ export class CreatePersonaoDto {
   @IsNumber()
   ciExpedidoTipoId: number;
 
+  @IsOptional()
   @IsNumber()
   cedulaTipoId: number;
 }
