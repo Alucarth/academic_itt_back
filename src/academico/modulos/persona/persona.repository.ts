@@ -12,6 +12,7 @@ export class PersonaRepository {
   async getById(id: number) {
     return await this.dataSource.getRepository(Persona).findBy({ id: id });
   }
+
   async getPersonaByDato(dto: SearchDatoDto) {
     console.log('HERE---');
     console.log('dto:', dto);
@@ -74,6 +75,10 @@ export class PersonaRepository {
   }
 
   async crearPersona(dto: CreatePersonaoDto) {
+    
+    console.log('----------------------------');
+    console.log(dto);
+
     const persona = new Persona();
     persona.carnetIdentidad = dto.carnetIdentidad;
     persona.complemento = dto.complemento;
@@ -101,7 +106,10 @@ export class PersonaRepository {
     persona.tieneDiscapacidad = dto.tieneDiscapacidad;
     persona.telefono = dto.telefono;
     persona.email = dto.email;
+    persona.cedulaTipoId = dto.cedulaTipoId;
 
+
+    console.log("----------------------------x");
     return await this.dataSource.getRepository(Persona).save(persona);
   }
 

@@ -22,7 +22,7 @@ export class CreatePersonaoDto {
   nombre: string;
 
   @IsDateString()
-  fechaNacimiento?: Date | null
+  fechaNacimiento?: Date | null;
   //@IsString()
   //fechaNacimiento: String;
 
@@ -96,4 +96,7 @@ export class CreatePersonaoDto {
   @IsNotEmpty()
   @IsNumber()
   ciExpedidoTipoId: number;
+
+  @IsNumber()
+  cedulaTipoId: number;
 }
