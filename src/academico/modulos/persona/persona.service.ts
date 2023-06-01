@@ -69,9 +69,15 @@ export class PersonaService {
       const segipdata = await this.segipService.contrastar(personasegip, 1);
       //console.log("segipdata", segipdata);
       if (segipdata["finalizado"] === false) {
-        return { message: "Datos SEGIP no corresponden", segipdata };
+        //return { message: "Datos SEGIP no corresponden", segipdata };
+        return this._serviceResp.respuestaHttp404(
+          404,
+          "Datos SEGIP no corresponden !!",
+          ""
+        );
+
       }
-      console.log("CONSTRASTACION VALIDA");
+      console.log("CONSTRASTACION VALIDAx");
 
       const dato = await this.personaRepositorio.crearPersona(dto);
       return this._serviceResp.respuestaHttp201(
