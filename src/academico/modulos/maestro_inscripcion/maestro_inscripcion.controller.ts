@@ -12,12 +12,15 @@ import {
   UsePipes,
   ValidationPipe,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { MaestroInscripcionService } from '../maestro_inscripcion/maestro_inscripcion.service';
 import { CreateMaestroInscripcionDto } from './dto/createMaestroInscripcion.dto';
 import { UpdateMaestroInscripcionDto } from './dto/updateMaestroInscripcion.dto';
+import { JwtAuthGuard } from "../../../auth/guards/jwt-auth.guard";
+
 @ApiTags("maestro-inscripcion")
 @Controller("maestro-inscripcion")
 export class MaestroInscripcionController {
@@ -27,21 +30,31 @@ export class MaestroInscripcionController {
   getAllDocentesByUeGestion(
     @Param("ueId") ueId: number,
     @Param("gestionId") gestionId: number,
-    @Param("periodoId") periodoId: number,
+    @Param("periodoId") periodoId: number
   ) {
-    return this.usersService.getAllDocentesByUeGestion(ueId, gestionId, periodoId);
+    return this.usersService.getAllDocentesByUeGestion(
+      ueId,
+      gestionId,
+      periodoId
+    );
   }
 
-  @Get("/getAllDocentesByUeGestionPeriodo/:personaId/:gestionId/:periodoId/:ueId")
+  @Get(
+    "/getAllDocentesByUeGestionPeriodo/:personaId/:gestionId/:periodoId/:ueId"
+  )
   getAllDocentesByUeGestionDocente(
     @Param("personaId") personaId: number,
     @Param("gestionId") gestionId: number,
     @Param("periodoId") periodoId: number,
-    @Param("ueId") ueId: number,
+    @Param("ueId") ueId: number
   ) {
-    return this.usersService.getMaestroInscripcionByPersonaGestionPeriodo(personaId, gestionId, periodoId, ueId);
+    return this.usersService.getMaestroInscripcionByPersonaGestionPeriodo(
+      personaId,
+      gestionId,
+      periodoId,
+      ueId
+    );
   }
-
 
   @Get("/getMaestroInscripcionById/:maestroInscripcionId")
   getMaestroInscripcionById(
@@ -58,9 +71,12 @@ export class MaestroInscripcionController {
     @Param("gestionId") gestionId: number,
     @Param("periodoId") periodoId: number
   ) {
-    return this.usersService.getAllDocentesByUeGestionPeriodo(ueId, gestionId, periodoId);
+    return this.usersService.getAllDocentesByUeGestionPeriodo(
+      ueId,
+      gestionId,
+      periodoId
+    );
   }
-
 
   @Get("/getAllDirectivosByUeGestion/:ueId/:gestionId")
   getAllDirectivosByUeGestion(
@@ -78,13 +94,16 @@ export class MaestroInscripcionController {
     return this.usersService.getAllAdministrativosByUeGestion(ueId);
   }
 
-  @Post("/")  
-  async addMaestroInscripciom(@Body() body: CreateMaestroInscripcionDto) {
-    console.log("POST addMaestroInscripciom", body);
-    
-    return await this.usersService.createUpdateMaestroInscripcion(body);
+  @UseGuards(JwtAuthGuard)
+  @Post("/")
+  async addMaestroInscripciom(
+    @Body() body: CreateMaestroInscripcionDto,
+    @Req() request: Request
+  ) {
+    //console.log("POST addMaestroInscripciom", body);
+
+    return await this.usersService.createUpdateMaestroInscripcion(body, request);
   }
-  
 
   @Put("/")
   async UpdateMaestroInscripcion(@Body() body: UpdateMaestroInscripcionDto) {
@@ -98,8 +117,4 @@ export class MaestroInscripcionController {
     console.log("maestroInscripcionId", body.maestroInscripcionId);
     return await this.usersService.changeStatusById(body);
   }
-
- 
-
-
 }

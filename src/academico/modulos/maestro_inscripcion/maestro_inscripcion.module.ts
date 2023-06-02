@@ -16,6 +16,7 @@ import { IdiomaTipo } from "../../entidades/idiomaTipo.entity";
 import { PeriodoTipo } from "../../entidades/periodoTipo.entity";
 import { InstitucionEducativaSucursalRepository } from '../institucion_educativa_sucursal/institucion_educativa_sucursal.repository';
 import { UsersModule } from "../../../users/users.module";
+import { JwtService } from "@nestjs/jwt";
 
 @Module({
   imports: [
@@ -34,9 +35,10 @@ import { UsersModule } from "../../../users/users.module";
   ],
   controllers: [MaestroInscripcionController],
   providers: [
-    MaestroInscripcionService, 
-    RespuestaSigedService, 
-    InstitucionEducativaSucursalRepository,    
+    MaestroInscripcionService,
+    RespuestaSigedService,
+    InstitucionEducativaSucursalRepository,
+    JwtService
   ],
   exports: [MaestroInscripcionService],
 })

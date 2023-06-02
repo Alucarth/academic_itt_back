@@ -1,4 +1,4 @@
-import { Injectable, HttpStatus, Inject } from "@nestjs/common";
+import { Injectable, HttpStatus, Inject, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { MaestroInscripcion } from "src/academico/entidades/maestroInscripcion.entity";
 import { Repository } from "typeorm";
@@ -19,6 +19,7 @@ import { UpdateMaestroInscripcionDto } from "./dto/updateMaestroInscripcion.dto"
 import { InstitucionEducativaSucursalRepository } from "../institucion_educativa_sucursal/institucion_educativa_sucursal.repository";
 import { UpdateMaestroInscripcionDatoDto } from "./dto/updateMaestroInscripcionDato.dto";
 import { UsersService } from '../../../users/users.service'
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class MaestroInscripcionService {
@@ -50,7 +51,8 @@ export class MaestroInscripcionService {
     @InjectRepository(PeriodoTipo)
     private periodoRepository: Repository<PeriodoTipo>,
     private _serviceResp: RespuestaSigedService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private jwtService: JwtService
   ) {}
 
   async getAllDocentesByUeGestionPeriodo(ueId, gestion, periodo) {
@@ -747,7 +749,25 @@ export class MaestroInscripcionService {
     );
   }
 
-  async createUpdateMaestroInscripcion(dto: CreateMaestroInscripcionDto) {
+  async createUpdateMaestroInscripcion(
+    dto: CreateMaestroInscripcionDto,
+    request
+  ) {
+    //0: validar token
+    let user_id = 0;
+    console.log("updateUser:", request.headers["token"]);
+    try {
+      const payload = await this.jwtService.decode(request.headers["token"]);
+      console.log("payload:", payload["id"]);
+      if (!payload) {
+        throw new UnauthorizedException();
+      }
+      user_id = parseInt(payload["id"]) + 0;
+    } catch {
+      throw new UnauthorizedException();
+    }
+    console.log("postUserId:", user_id);
+
     const maestroInscripcion =
       await this.getMaestroInscripcionByPersonaGestionPeriodo(
         dto.personaId,
@@ -758,7 +778,7 @@ export class MaestroInscripcionService {
 
     if (maestroInscripcion.data.length === 0) {
       console.log("inserta");
-      return await this.createNewMaestroInscripcion(dto);
+      return await this.createNewMaestroInscripcion(dto,user_id);
     } else {
       /*let datos = {
         id: Number(maestroInscripcion.data[0].id),
@@ -785,7 +805,7 @@ export class MaestroInscripcionService {
     }
   }
 
-  async createNewMaestroInscripcion(dto: CreateMaestroInscripcionDto) {
+  async createNewMaestroInscripcion(dto: CreateMaestroInscripcionDto, user_id:number) {
     //1:BUSCAR LA PERSONA
     const persona = await this.personaRepository.findOne({
       where: { id: dto.personaId },
@@ -804,7 +824,7 @@ export class MaestroInscripcionService {
       const sucursal =
         await this.institucionEducativaSucursalRepository.findSucursalBySieGestion(
           dto.institucionEducativaId,
-          dto.gestionTipoId          
+          dto.gestionTipoId
         );
 
       if (sucursal) {
@@ -852,7 +872,7 @@ export class MaestroInscripcionService {
       //console.log("especialidadTipo : ", especialidadTipo);
 
       let gestionTipo = await this.gestionTipoRepository.findOne({
-        where: { id: dto.gestionTipoId },        
+        where: { id: dto.gestionTipoId },
       });
       //console.log("gestionTipo : ", gestionTipo);
       if (!gestionTipo) {
@@ -912,6 +932,7 @@ export class MaestroInscripcionService {
             item: dto.item,
             maestroInscripcionIdAm: dto.maestroInscripcionIdAm,
             periodoTipo: periodoTipo,
+            usuarioId: user_id
           },
         ])
         .returning("id")
@@ -919,8 +940,7 @@ export class MaestroInscripcionService {
 
       //SE CREA EL USUARIO
       // 6: ROL MAESTRO
-      const newusuario = await this.usersService.createUserAndRol(persona,6)
-
+      const newusuario = await this.usersService.createUserAndRol(persona, 6);
 
       console.log("res:", res);
       console.log("Docente adicionado, usuario creado!");
@@ -1057,7 +1077,7 @@ export class MaestroInscripcionService {
 
     /** idiomaTipo */
     let idiomaTipo = await this.idiomaRepository.findOneBy({
-    id: dto.estudioIdiomaTipoId ,
+      id: dto.estudioIdiomaTipoId,
     });
     console.log("idiomaTipoxxx : ", idiomaTipo);
     if (!idiomaTipo) {
@@ -1079,7 +1099,7 @@ export class MaestroInscripcionService {
       /*const res =  await this.maestroRepository
         .update({ id: dto.id }, dto)*/
 
-      if (dto.estudioIdiomaTipoId == 0){
+      if (dto.estudioIdiomaTipoId == 0) {
         const res = await this.maestroRepository
           .createQueryBuilder()
           .update(MaestroInscripcion)
@@ -1093,7 +1113,7 @@ export class MaestroInscripcionService {
             gestionTipo: gestionTipo,
             normalista: dto.normalista,
             formacionDescripcion: dto.formacionDescripcion,
-            braile: dto.braile,          
+            braile: dto.braile,
             asignacionFechaInicio: dto.asignacionFechaInicio,
             asignacionFechaFin: dto.asignacionFechaFin,
             item: dto.item,
@@ -1102,15 +1122,14 @@ export class MaestroInscripcionService {
           .where("id = :id", { id: dto.id })
           .execute();
 
-           console.log("res:", res);
-           console.log("Maestro Inscripcion actualizado");
-           return this._serviceResp.respuestaHttp202(
-             null,
-             "Registro Actualizado !!",
-             ""
-           );
-
-      }else{
+        console.log("res:", res);
+        console.log("Maestro Inscripcion actualizado");
+        return this._serviceResp.respuestaHttp202(
+          null,
+          "Registro Actualizado !!",
+          ""
+        );
+      } else {
         const res = await this.maestroRepository
           .createQueryBuilder()
           .update(MaestroInscripcion)
@@ -1134,17 +1153,14 @@ export class MaestroInscripcionService {
           .where("id = :id", { id: dto.id })
           .execute();
 
-           console.log("res:", res);
-           console.log("Maestro Inscripcion actualizado");
-           return this._serviceResp.respuestaHttp202(
-             null,
-             "Registro Actualizado !!",
-             ""
-           );
+        console.log("res:", res);
+        console.log("Maestro Inscripcion actualizado");
+        return this._serviceResp.respuestaHttp202(
+          null,
+          "Registro Actualizado !!",
+          ""
+        );
       }
-        
-
-     
     } catch (error) {
       console.log("Error update maestro inscripcion: ", error);
       throw new HttpException(
@@ -1227,7 +1243,7 @@ export class MaestroInscripcionService {
         ""
       );
     }
-    console.log('here---');
+    console.log("here---");
 
     try {
       console.log(dto);
