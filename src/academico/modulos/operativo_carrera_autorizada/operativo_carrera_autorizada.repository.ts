@@ -14,6 +14,11 @@ export class OperativoCarreraAutorizadaRepository {
     async getAll(){
         return  await this.dataSource.getRepository(OperativoCarreraAutorizada).find();
     }
+    async getOneById(id:number){
+        return  await this.dataSource.getRepository(OperativoCarreraAutorizada).findOneBy({
+            'id':id
+        });
+    }
     async getAllOperativosCarrera(id:number ){
         
         const operativos = await this.dataSource.getRepository(OperativoCarreraAutorizada)
@@ -83,6 +88,32 @@ export class OperativoCarreraAutorizadaRepository {
        
         return await transaction.getRepository(OperativoCarreraAutorizada).save(operativo);
     
+      }
+
+      async actualizarEstado(id: number,carrera,gestion,estado:boolean) {
+        
+        await this.dataSource
+        .createQueryBuilder()
+        .update(OperativoCarreraAutorizada)
+        .set({
+          activo:false
+        })
+        .where({ 
+            carreraAutorizadaId: carrera,
+            gestionTipoId:gestion
+         })
+        .execute();
+
+
+        return await this.dataSource
+          .createQueryBuilder()
+          .update(OperativoCarreraAutorizada)
+          .set({
+            activo:estado
+          })
+          .where({ id: id })
+          .execute();
+
       }
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)

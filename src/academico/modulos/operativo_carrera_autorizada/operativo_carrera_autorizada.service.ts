@@ -13,6 +13,8 @@ export class OperativoCarreraAutorizadaService {
         private _serviceResp: RespuestaSigedService,
     ){}
     
+    
+
     async findAllOperativos(){
         return await this.operativoCarreraAutorizadaRepositorio.getAll();
     }
@@ -74,5 +76,54 @@ export class OperativoCarreraAutorizadaService {
               'No se pudo guardar la información !!',
               '',
           );
+    }
+    /*
+    async editOne(id: number, dto: CreatePersonaDto){
+        const persona = await this.getById(id);
+        persona.nroDocumento = dto.nroDocumento;
+        persona.nombres = dto.nombres;
+        persona.paterno = dto.paterno;
+        persona.materno = dto.materno;
+        persona.telefono = dto.telefono;
+        persona.direccion = dto.direccion;
+        persona.generoId = dto.generoId;
+        persona.nacionalidadId = dto.nacionalidadId;
+        persona.tipoDocumentoId = dto.tipoDocumentoId;
+        return await this.personaRepository.save(persona);
+
+    }*/
+    async getById(id: number){
+        const operativo = await this.operativoCarreraAutorizadaRepositorio.getOneById(id);
+            return operativo;
+        
+        
+    }
+    async editEstado(id: number)
+    {
+        const dato = await this.getById(id);
+        let status = false;
+        if(dato.activo == false){
+            status = true;
+        }
+        const res = await this.operativoCarreraAutorizadaRepositorio.actualizarEstado(
+            id,
+            dato.carreraAutorizadaId, 
+            dato.gestionTipoId, 
+            status)
+        if(res){
+            console.log("res:", res);
+            console.log("Maestro Inscripcion actualizado");
+            return this._serviceResp.respuestaHttp202(
+            res,
+            "Registro Actualizado !!",
+            ""
+            );
+        }
+        
+        return this._serviceResp.respuestaHttp500(
+        "",
+        "Error Registro  !!",
+        ""
+        );
     }
 }
