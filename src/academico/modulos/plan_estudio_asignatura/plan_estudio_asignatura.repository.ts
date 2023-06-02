@@ -5,6 +5,7 @@ import { PlanEstudioCarrera } from 'src/academico/entidades/planEstudioCarrera.e
 import { PlanEstudioResolucion } from 'src/academico/entidades/planEstudioResolucion.entity';
 import { DataSource, EntityManager } from 'typeorm'
 
+
 @Injectable()
 export class PlanEstudioAsignaturaRepository {
     
@@ -53,6 +54,15 @@ export class PlanEstudioAsignaturaRepository {
         .getRawMany();
         return asignaturas;
     }
+    async findOneByPlanAsignatura( id:number, asignatura:number){
+        const pea = await this.dataSource.getRepository(PlanEstudioAsignatura)
+        .createQueryBuilder("p")
+        .select(['p.id'])
+        .where('p.planEstudioCarreraId = :id ', { id })
+        .andWhere('p.asignaturaTipoId = :asignatura ', { asignatura })
+        .getOne();
+        return pea;
+    }
 
     /*
     async getAsignaturasByPLanEstudioUId(){
@@ -73,6 +83,9 @@ export class PlanEstudioAsignaturaRepository {
     
         return await transaction.getRepository(PlanEstudioAsignatura).save(planesAsignaturas)
     }
+
+    
+  
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
     }

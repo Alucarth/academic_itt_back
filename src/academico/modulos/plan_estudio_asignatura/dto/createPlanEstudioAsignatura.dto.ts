@@ -20,6 +20,7 @@ class PlanAsignatura {
   }
 
 export class CreatePlanEstudioAsignaturaDto {
+    
     @ValidateNested({ each: true })
     @Type(() => PlanAsignatura)
     items: PlanAsignatura[];

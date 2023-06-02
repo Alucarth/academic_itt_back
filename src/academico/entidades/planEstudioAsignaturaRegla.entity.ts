@@ -22,8 +22,8 @@ export class PlanEstudioAsignaturaRegla {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'integer', name: 'horas' })
-  horas: number;
+  @Column({ type: 'boolean', name: 'activo' })
+  activo: boolean;
   
   @Exclude()
   @UpdateDateColumn({
@@ -51,11 +51,11 @@ export class PlanEstudioAsignaturaRegla {
   @JoinColumn({ name: 'plan_estudio_asignatura_id', referencedColumnName: 'id'})
   planEstudioAsignatura: PlanEstudioAsignatura;
 
-  @Column({ name: 'plan_estudio_asignatura_id', nullable:false })
+  @Column({ name: 'anterior_plan_estudio_asignatura_id', nullable:false })
   anteriorPlanEstudioAsignaturaId: number;
 
   @ManyToOne(() => PlanEstudioAsignatura, (planEstudioAsignatura) => planEstudioAsignatura.planesAsignaturasReglas, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'plan_estudio_asignatura_id', referencedColumnName: 'id'})
+  @JoinColumn({ name: 'anterior_plan_estudio_asignatura_id', referencedColumnName: 'id'})
   anteriorPlanEstudioAsignatura: PlanEstudioAsignatura;
 
 }

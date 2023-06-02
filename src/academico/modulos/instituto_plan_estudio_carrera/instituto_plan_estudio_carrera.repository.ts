@@ -36,6 +36,9 @@ export class InstitutoPlanEstudioCarreraRepository {
         .leftJoinAndSelect("pe.planesAsignaturas", "pa")       
         .leftJoinAndSelect("pa.regimenGradoTipo", "rg")     
         .leftJoinAndSelect("pa.asignaturaTipo", "a")       
+        .leftJoinAndSelect("pa.planesAsignaturasReglas", "r")       
+        .leftJoinAndSelect("r.anteriorPlanEstudioAsignatura", "an")       
+        .leftJoinAndSelect("an.asignaturaTipo", "a2")       
         .select([
             'ip.id',
             'ip.observacion',
@@ -50,6 +53,9 @@ export class InstitutoPlanEstudioCarreraRepository {
             'rg.regimenGrado',
             'a.asignatura',
             'a.abreviacion',
+            'r.id',
+            'an.id',
+            'a2.abreviacion',
         ])
         .where('ip.carreraAutorizadaId = :id ', { id })
         .orderBy('rg.id', 'ASC')

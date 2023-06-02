@@ -1,0 +1,17 @@
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PlanEstudioAsignaturaRegla } from 'src/academico/entidades/planEstudioAsignaturaRegla.entity';
+import { DatabaseModule } from 'src/database/database.module';
+import { PlanEstudioAsignaturaReglaController } from './plan_estudio_asignatura_regla.controller';
+import { PlanEstudioAsignaturaReglaService } from './plan_estudio_asignatura_regla.service';
+
+@Module({
+  imports:[
+    DatabaseModule, TypeOrmModule.forFeature([
+        PlanEstudioAsignaturaRegla
+        ]),
+    ],
+  controllers: [PlanEstudioAsignaturaReglaController],
+  providers: [PlanEstudioAsignaturaReglaService]
+})
+export class PlanEstudioAsignaturaReglaModule {}
