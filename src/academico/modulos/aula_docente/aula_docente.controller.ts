@@ -17,6 +17,15 @@ export class AulaDocenteController {
     async getAllCarrerasByDocente(@Param("id", ParseIntPipe) id: number){
         return await this.aulaDocenteService.getCarrerasByDocenteId(id);
     }
+    @Get('carreras-persona/:id')
+    async getAllCarrerasByPersona(@Param("id", ParseIntPipe) id: number){
+        return await this.aulaDocenteService.getCarrerasByPersonaId(id);
+    }
+    
+    @Get('carreras-aulas-persona/:id')
+    async getAllCarrerasAulasByPersona(@Param("id", ParseIntPipe) id: number){
+        return await this.aulaDocenteService.getCarrerasDocentesAulasByPersonaId(id);
+    }
     @Post()
     async createOfertaCurricular(@Body() dto: CreateAulaDocenteDto[]){
           

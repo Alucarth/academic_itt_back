@@ -41,6 +41,63 @@ export class AulaDocenteRepository {
           .where("ad.maestroInscripcionId = :id ", { id })
           .getRawMany();
     }
+    async findAllCarrerasByPersonaId(id){
+        return  await this.dataSource.getRepository(AulaDocente)
+        .createQueryBuilder("ad")
+        .innerJoinAndSelect("ad.aula", "a")
+        .innerJoinAndSelect("ad.maestroInscripcion", "m")
+        .innerJoinAndSelect("a.ofertaCurricular", "o")
+        .innerJoinAndSelect("o.institutoPlanEstudioCarrera", "ip")
+        .innerJoinAndSelect("ip.carreraAutorizada", "ca")
+        .innerJoinAndSelect("ca.carreraTipo", "ct")
+        //.groupBy("ct.id")
+        .select([
+            'ad.id as id',
+            'a.id as aula_id',
+            'o.id as oferta_curricular_id',
+            'ip.id as instituto_plan_estudio_carrera_id',
+            'ca.id as carrera_autorizada_id',
+            'ct.id as carrera_tipo_id',
+            'ct.carrera as carrera',
+            'm.id as maestro_inscripcion_id',
+        ])
+          .where("m.personaId = :id ", { id })
+          .getRawMany();
+    }
+    async findAllCarrerasDocentesAulasByPersonaId(id){
+        return  await this.dataSource.getRepository(AulaDocente)
+        .createQueryBuilder("ad")
+        .innerJoinAndSelect("ad.aula", "a")
+        .innerJoinAndSelect("a.paraleloTipo", "p")
+        .innerJoinAndSelect("ad.maestroInscripcion", "m")
+        .innerJoinAndSelect("a.ofertaCurricular", "o")
+        .innerJoinAndSelect("o.institutoPlanEstudioCarrera", "ip")
+        .innerJoinAndSelect("ip.carreraAutorizada", "ca")
+        .innerJoinAndSelect("ca.carreraTipo", "ct")
+        .innerJoinAndSelect("o.planEstudioAsignatura", "pea")
+        .innerJoinAndSelect("pea.asignaturaTipo", "as")
+        .innerJoinAndSelect("pea.regimenGradoTipo", "rg")
+        //.groupBy("ct.id")
+        .select([
+            'ad.id as id',
+            'a.id as aula_id',
+           
+            'o.id as oferta_curricular_id',
+            'ip.id as instituto_plan_estudio_carrera_id',
+            'ca.id as carrera_autorizada_id',
+            'ct.id as carrera_tipo_id',
+            'ct.carrera as carrera',
+            'm.id as maestro_inscripcion_id',
+            'pea.id as plan_estudio_asignatura_id',
+            'as.asignatura as asignatura',
+            'as.abreviacion as abreviacion',
+            'a.cupo as cupo',
+            'p.paralelo as paralelo',
+            'rg.regimenGrado as regimenGrado',
+        ])
+          .where("m.personaId = :id ", { id })
+          .getRawMany();
+    }
 
     async crearDocentesAulas(idUsuario, aulasDocentes, transaction) {
 

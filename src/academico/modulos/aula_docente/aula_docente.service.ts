@@ -33,6 +33,36 @@ export class AulaDocenteService {
           ""
         );
       }
+      async getCarrerasByPersonaId(id:number){
+        const aulas = await this.aulaDocenteRepositorio.findAllCarrerasByPersonaId(id);
+        if (aulas){
+          return this._serviceResp.respuestaHttp201(
+            aulas,
+            "resultados encontrados !!",
+            ""
+          );
+        }
+        return this._serviceResp.respuestaHttp404(
+          "",
+          "no existen resultados !!",
+          ""
+        );
+      }
+      async getCarrerasDocentesAulasByPersonaId(id:number){
+        const aulas = await this.aulaDocenteRepositorio.findAllCarrerasDocentesAulasByPersonaId(id);
+        if (aulas){
+          return this._serviceResp.respuestaHttp201(
+            aulas,
+            "resultados encontrados !!",
+            ""
+          );
+        }
+        return this._serviceResp.respuestaHttp404(
+          "",
+          "no existen resultados !!",
+          ""
+        );
+      }
 
       async crearDocenteAula (dto: CreateAulaDocenteDto[]) {
           console.log("lista array inicio");
