@@ -64,7 +64,7 @@ export class InscripcionService {
       );
     }
     const personaAux = persona[0];
-
+   
     const institucionEducativaSucursal =
       await this.ieSucursalRepository.findOne({
         where: {
@@ -129,6 +129,7 @@ export class InscripcionService {
       
         `);
 
+    
       if (parseInt(existe[0].existe) == 0) {
         //si no existe, es nuevo nuevo, se crean ambos
         console.log("insertar institucionEducativaEstudiante");
@@ -182,6 +183,8 @@ export class InscripcionService {
         
           `);
 
+       
+
         //buscamos si existe la matricula
         const existeMat = await this.inscripcionRepository.query(`
           select count(*) as existe 
@@ -195,9 +198,16 @@ export class InscripcionService {
         
           `);
 
-        const institucionEducativaEstudiante = await this.ieeRepository.findBy(
-          iee[0].id
+        const institucionEducativaEstudiante = await this.ieeRepository.findOne({
+          where: {
+            id: iee[0].id
+          }
+        }
         );
+
+        console.log('iee[0].id: ', iee[0].id);
+        console.log('institucionEducativaEstudiante: ', institucionEducativaEstudiante);
+        //return;
 
         if (parseInt(existeMat[0].existe) == 0) {
           const resMat = await this.matriculaRepository
@@ -212,7 +222,7 @@ export class InscripcionService {
                 periodoTipo: periodoTipo,
                 institutoPlanEstudioCarrera: institutoPlanEstudioCarrera,
                 institucionEducativaEstudiante:
-                  institucionEducativaEstudiante[0],
+                  institucionEducativaEstudiante,
               },
             ])
             .returning("id")
