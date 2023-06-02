@@ -70,7 +70,8 @@ export class MaestroInscripcion {
   @Column({ type: 'integer', name: 'maestro_inscripcion_id_am' })
   maestroInscripcionIdAm: number;
 
-
+  @Column({ type: 'integer', name: 'persona_id' })
+  personaId: number;
   @ManyToOne(() => Persona, (persona) => persona.maestrosInscripciones, { nullable: false, cascade: true })
   @JoinColumn({ name: 'persona_id', referencedColumnName: 'id'})
   persona: Persona;
