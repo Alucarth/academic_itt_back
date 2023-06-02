@@ -113,7 +113,7 @@ export class InscripcionService {
     if (!institutoPlanEstudioCarrera) {
       return this._serviceResp.respuestaHttp404(
         dto.institutoPlanEstudioCarreraId,
-        "periodoTipo No Encontrado !!",
+        "institutoPlanEstudioCarreraId No Encontrado !!",
         ""
       );
     }
@@ -227,7 +227,7 @@ export class InscripcionService {
         } else {
           // la matricula ya exuste, no se hace nada
 
-          return this._serviceResp.respuestaHttp201(
+          return this._serviceResp.respuestaHttp400(
             0,
             "MATRICULA YA EXISTE EN ESTA GESTION Y PERIODO !!",
             ""
