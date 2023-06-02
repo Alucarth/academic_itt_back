@@ -152,6 +152,7 @@ export class AuthService {
           const payload = {
             id: result[0].user_id,
             rolid: rol, //5,
+            p_id: result[0].persona_id,
             ie_id: instituto[0].institucion_educativa_sucursal_id,
             ie_sid: instituto[0].institucion_educativa_id,            
             appid: 2,
@@ -193,6 +194,7 @@ export class AuthService {
       return {
         statusCode: 200,
         user_id: result[0].user_id,
+        p_id: result[0].persona_id,
         username: result[0].username,
         persona:
           result[0].paterno + " " + result[0].materno + " " + result[0].nombre,
