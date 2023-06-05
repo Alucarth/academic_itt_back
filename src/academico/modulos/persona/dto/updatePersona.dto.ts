@@ -1,6 +1,6 @@
 import { Optional } from '@nestjs/common';
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdatePersonaoDto {
   
@@ -104,4 +104,8 @@ export class UpdatePersonaoDto {
   @IsNotEmpty()
   @IsNumber()
   ciExpedidoTipoId: number;
+
+  @IsOptional()
+  @IsNumber()
+  cedulaTipoId: number;
 }

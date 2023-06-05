@@ -755,10 +755,10 @@ export class MaestroInscripcionService {
   ) {
     //0: validar token
     let user_id = 0;
-    console.log("updateUser:", request.headers["token"]);
+    //console.log("updateUser:", request.headers["token"]);
     try {
       const payload = await this.jwtService.decode(request.headers["token"]);
-      console.log("payload:", payload["id"]);
+      //console.log("payload:", payload["id"]);
       if (!payload) {
         throw new UnauthorizedException();
       }
@@ -768,13 +768,22 @@ export class MaestroInscripcionService {
     }
     console.log("postUserId:", user_id);
 
+    /*console.log("dto.personaId -> ",dto.personaId);
+    console.log("dto.gestionTipoId ->", dto.gestionTipoId);
+    console.log("dto.periodoTipoId -> ",dto.periodoTipoId);
+    console.log("dto.institucionEducativaId -> ", dto.institucionEducativaId);*/
+
+
     const maestroInscripcion =
       await this.getMaestroInscripcionByPersonaGestionPeriodo(
         dto.personaId,
         dto.gestionTipoId,
-        dto.periodoTipoId,
-        dto.institucionEducativaId
+        55, //TODO: esto hay que modificar, segun periodo dto.periodoTipoId,
+        dto.institucionEducativaId 
       );
+
+    console.log('maestroInscripcion -> ', maestroInscripcion);
+    //return;
 
     if (maestroInscripcion.data.length === 0) {
       console.log("inserta");

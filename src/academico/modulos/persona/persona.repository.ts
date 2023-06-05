@@ -114,7 +114,7 @@ export class PersonaRepository {
   }
 
   async updatePersona(dto: UpdatePersonaoDto) {
-
+    console.log('dto.id--> ', dto.id);
     try {
 
         const res = await this.dataSource.getRepository(Persona)
@@ -140,13 +140,14 @@ export class PersonaRepository {
            tieneDiscapacidad : dto.tieneDiscapacidad,
            telefono : dto.telefono,
            email : dto.email,
+           cedulaTipoId: dto.cedulaTipoId
             
           })
           .where("id = :id", { id: dto.id })
           .execute();
 
         console.log("res:", res);
-        console.log("Maestro Inscripcion actualizado");
+        console.log("perosna Inscripcion actualizado");
         return res;
     } catch (error) {
 

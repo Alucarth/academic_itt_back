@@ -14,7 +14,7 @@ export class PersonaService {
     private personaRepositorio: PersonaRepository,
     private _serviceResp: RespuestaSigedService,
     private readonly segipService: SegipService
-  ) {}
+  ) { }
 
   async findPersona(id: number) {
     return await this.personaRepositorio.getById(id);
@@ -44,6 +44,7 @@ export class PersonaService {
       datoBusqueda
     );
     console.log(existePersona);
+
     if (!existePersona) {
       console.log("POST PERSONA");
       // NO EXSISTE, VALIDMOS SEGIP
@@ -85,10 +86,38 @@ export class PersonaService {
         "Registro Creado !!",
         ""
       );
+
     } else {
-      return this._serviceResp.respuestaHttp400(
-        existePersona,
-        "Persona ya existe !!",
+
+      let dto2 = new UpdatePersonaoDto();      
+      console.log('existePersona -->', existePersona);
+      dto2.id = existePersona[0].id
+      dto2.generoTipoId  =  dto.generoTipoId
+      dto2.estadoCivilTipoId = dto.estadoCivilTipoId
+      dto2.maternoIdiomaTipoId =  dto.maternoIdiomaTipoId
+      dto2.expedidoUnidadTerritorialId = dto.expedidoUnidadTerritorialId
+      dto2.nacimientoUnidadTerritorialId = dto.nacimientoUnidadTerritorialId
+      dto2.nacimientoOficialia = dto.nacimientoOficialia
+      dto2.nacimientoLibro = dto.nacimientoLibro
+      dto2.nacimientoPartida = dto.nacimientoPartida
+      dto2.nacimientoFolio = dto.nacimientoFolio
+      dto2.carnetIbc = dto.carnetIbc
+      dto2.pasaporte = dto.pasaporte
+      dto2.libretaMilitar = dto.libretaMilitar
+      dto2.dobleNacionalidad = dto.dobleNacionalidad
+      dto2.codigoRda = dto.codigoRda
+      dto2.nacimientoLocalidad = dto.nacimientoLocalidad
+      dto2.tieneDiscapacidad = dto.tieneDiscapacidad
+      dto2.telefono = dto.telefono
+      dto2.email = dto.email
+      dto2.ciExpedidoTipoId = dto.ciExpedidoTipoId
+      dto2.cedulaTipoId = dto.cedulaTipoId
+
+      const dato = await this.personaRepositorio.updatePersona(dto2);
+
+      return this._serviceResp.respuestaHttp202(
+        dato,
+        "Persona actualizada !!",
         ""
       );
     }
