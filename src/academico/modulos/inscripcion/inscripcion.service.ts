@@ -562,7 +562,8 @@ export class InscripcionService {
         persona.nombre, 
         institucion_educativa_sucursal.id as institucion_educativa_sucursal_id, 
         institucion_educativa.id as institucion_educativa_id, 
-        institucion_educativa.institucion_educativa
+        institucion_educativa.institucion_educativa,
+        (select count(matricula_estudiante_id) from instituto_estudiante_inscripcion where matricula_estudiante_id =  matricula_estudiante.id) as inscrito_en_la_gestion 
       FROM
         carrera_autorizada
         INNER JOIN
