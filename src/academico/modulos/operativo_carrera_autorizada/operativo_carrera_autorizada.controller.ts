@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { OperativoCarreraAutorizada } from 'src/academico/entidades/operativoCarreraAutorizada.entity';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { CreateOperativoCarreraAutorizadaDto } from './dto/createOperativoCarreraAutorizada.dto';
@@ -28,5 +28,10 @@ export class OperativoCarreraAutorizadaController {
     async createOperativoCarrera(@Body() dto: CreateOperativoCarreraAutorizadaDto){
         console.log('controller insert',dto);
         return  await this.operativoCarreraAutorizadaService.createOperativoCarrera(dto);        
+    }
+    @Put('estado/:id')
+    async editEstadoOperativoCarrera(@Param('id') id: number){
+        const data = await this.operativoCarreraAutorizadaService.editEstado(id);
+        return data;
     }
 }

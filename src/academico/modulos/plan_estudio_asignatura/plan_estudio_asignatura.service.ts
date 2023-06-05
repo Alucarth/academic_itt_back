@@ -4,6 +4,7 @@ import { PlanEstudioAsignatura } from 'src/academico/entidades/planEstudioAsigna
 import { PlanEstudioAsignaturaRegla } from 'src/academico/entidades/planEstudioAsignaturaRegla.entity';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { EntityManager, Repository } from 'typeorm';
+import { PlanEstudioAsignaturaReglaRepository } from '../plan_estudio_asignatura_regla/plan_estudio_asignatura_regla.repository';
 import { CreatePlanAsignaturaPrerequisitoDto } from './dto/createPlanAsignaturaPrerequisito.dto';
 import { CreatePlanEstudioAsignaturaDto } from './dto/createPlanEstudioAsignatura.dto';
 import { PlanEstudioAsignaturaRepository } from './plan_estudio_asignatura.repository';
@@ -19,6 +20,9 @@ export class PlanEstudioAsignaturaService {
 
         @Inject(PlanEstudioAsignaturaRepository) 
         private planEstudioAsignaturaRepository: PlanEstudioAsignaturaRepository,
+
+        @Inject(PlanEstudioAsignaturaReglaRepository) 
+        private planEstudioAsignaturaReglaRepository: PlanEstudioAsignaturaReglaRepository,
        
         private _serviceResp: RespuestaSigedService, 
         
@@ -46,7 +50,8 @@ export class PlanEstudioAsignaturaService {
     }
     async getOneByPlanAsignatura(idPlan:number, idAsignatura:number){
         const pea = await this.planEstudioAsignaturaRepository.findOneByPlanAsignatura(idPlan, idAsignatura);
-        if(pea){
+        return pea;
+       /* if(pea){
             return this._serviceResp.respuestaHttp201(
               pea,
               'Resultados encontrados !!',
@@ -57,7 +62,7 @@ export class PlanEstudioAsignaturaService {
           "",
           'No se encontraron resultados !!',
           '',
-      );
+      );*/
     }
 
     async getOfertaPlanEstudioAsignatura(idPlan:number, idRegimen:number, idAsignatura:number){
@@ -97,111 +102,72 @@ export class PlanEstudioAsignaturaService {
         '',
     );
   }
-
-    async crearPlanAsignatura (dto: CreatePlanEstudioAsignaturaDto[]) {
+  verificaPlanAsignatura(planes, dto) {
+  
+    const nuevos = dto.filter((d) =>
+            planes.every((p) =>  p.asignaturTipoId == d.asignatura_tipo_id )
+     );
+    return  nuevos;
+  }
+    async crearPlanAsignatura (dto: CreatePlanAsignaturaPrerequisitoDto[]) {
        
-        console.log("lista array inicio");
-        console.log(dto);
-        console.log(dto.length);
-        console.log("lista array");
-       /* const planesAsignaturas = this.planEstudioAsignaturaRepository.getAsignaturasByPLanEstudioUId();
+        const planesAsignaturas = await this.planEstudioAsignaturaRepository.getAsignaturasByPLanEstudioId(dto[0].plan_estudio_carrera_id);
 
-        const  nuevos = this.verificarPlanAsignatura(
-            usuarioRoles,
-            roles
-          )*/
+        const  nuevos = await this.verificaPlanAsignatura(
+            planesAsignaturas,
+            dto
+          )
+          console.log("los nuevos");
+          console.log(nuevos);
+          
             const op = async (transaction: EntityManager) => {
 
                 const nuevoArray = await this.planEstudioAsignaturaRepository.crearPlanEstudioAsignatura(
                     1, 
-                    dto, 
+                    nuevos, 
                     transaction
                 );
               return nuevoArray;
             }
   
-            const crearResult = await this.planEstudioAsignaturaRepository.runTransaction(op)
+            const crearResult = await this.planEstudioAsignaturaRepository.runTransaction(op);
   
             if(crearResult.length>0){
-              return this._serviceResp.respuestaHttp201(
-                  crearResult,
-                  'Registro de asignaturas Creado !!',
-                  '',
-              );
+              return crearResult;
+                 
             }
             return this._serviceResp.respuestaHttp500(
-              "",
+              nuevos,
               'No se pudo guardar la información !!',
               '',
           );
       }
     
-
-      async crearPlanAsignaturaPrerequisito(dto:CreatePlanAsignaturaPrerequisitoDto[]) {
-      console.log(dto);
-      
-        try {
-          const resultado = [];
+      async crearPlanAsignaturaPrerequisito(dto: CreatePlanAsignaturaPrerequisitoDto[]) {
+             
+             //creamos los planes estudio asignatura
+              const planes = await this.crearPlanAsignatura(dto);
+              //insertamos las reglas
               dto.forEach(async item => {
-                
-                const planAsignatura = await this.getOfertaPlanEstudioAsignatura(
-                  item.plan_estudio_carrera_id,
-                  item.regimen_grado_tipo_id,
-                  item.asignatura_tipo_id
-                );
-                //await resultado.push(item);
-                let planAsignaturaId = 0;
-               
-
-                if(!planAsignatura.data){
-                    console.log("no existe ingresa");
-                    const res = await this.peaRepository
-                    .createQueryBuilder()
-                    .insert()
-                    .into(PlanEstudioAsignatura)
-                    .values([
-                        {
-                            planEstudioCarreraId: item.plan_estudio_carrera_id,
-                            regimenGradoTipoId: item.regimen_grado_tipo_id,
-                            asignaturaTipoId: item.asignatura_tipo_id,
-                            horas: item.horas,
-                            usuarioId: 1,
-                        },
-                    ])
-                    .returning("id")
-                    .execute();
-                    
-                    console.log("res:", res);
-                   // resultado.push(item);
-                    
-                    planAsignaturaId = res.identifiers[0].id;
-                    
-                }else{
-                  planAsignaturaId = planAsignatura.data.id;
-                }
-        
-                
-                if(planAsignaturaId>0 && item.prerequisito_id>0){
-                  console.log("existe un prerequisito" + item.prerequisito_id);
-                  //buscamos el registro de la carrera anterior
-                  const anterior = await this.getOneByPlanAsignatura( item.plan_estudio_carrera_id, item.prerequisito_id);
-                  console.log(anterior);
-                  if(anterior.data.id){
-                    //buscamos si ya existe regla
+                  if(item.prerequisito_id>0){
+                    const plan = await this.getOneByPlanAsignatura( item.plan_estudio_carrera_id, item.asignatura_tipo_id);
+                    const anterior = await this.getOneByPlanAsignatura( item.plan_estudio_carrera_id, item.prerequisito_id);
+                   
                     const regla = await this.pearRepository.findOneBy({
-                      'planEstudioAsignaturaId':planAsignaturaId,
-                      'anteriorPlanEstudioAsignaturaId':anterior.data.id,
+                      'planEstudioAsignaturaId':plan.id,
+                      'anteriorPlanEstudioAsignaturaId':anterior.id,
                     });
                     
                     if (!regla) {
-                       await this.pearRepository
+                      console.log(anterior.id);
+                      const res1 = await this.pearRepository
                       .createQueryBuilder()
                       .insert()
                       .into(PlanEstudioAsignaturaRegla)
                       .values([
                         {
-                            planEstudioAsignaturaId: planAsignaturaId,
-                            anteriorPlanEstudioAsignaturaId: anterior.data.id,
+                            planEstudioAsignaturaId: plan.id,
+                            anteriorPlanEstudioAsignaturaId: anterior.id,
                             activo:true,
                             usuarioId: 1,
                         },
@@ -210,29 +176,18 @@ export class PlanEstudioAsignaturaService {
                       .execute();
                     }
                   }
-                }
-
-              });
-             
-                return this._serviceResp.respuestaHttp201(
-                    resultado,
-                    'Registro de plan y prerequisito Creado !!',
-                    '',
-                );
-              
-        } catch (error) {
-            console.log("Error insertar plan y prerequisitos: ", error);
-            throw new HttpException(
-              {
-                status: HttpStatus.CONFLICT,
-                error: `Error insertar Matricula: ${error.message}`,
-              },
-              HttpStatus.ACCEPTED,
-              {
-                cause: error,
-              }
-            );
-        }
-   
+                });
+            if(planes.length>0){
+              return this._serviceResp.respuestaHttp201(
+                  planes,
+                  'Registro de planes y requisitos Creado !!',
+                  '',
+              );
+            }
+            return this._serviceResp.respuestaHttp500(
+              "",
+              'No se pudo guardar la información !!',
+              '',
+          );
       }
 }

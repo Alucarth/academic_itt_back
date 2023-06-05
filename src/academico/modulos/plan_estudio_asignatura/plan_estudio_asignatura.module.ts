@@ -5,6 +5,7 @@ import { PlanEstudioAsignaturaRegla } from 'src/academico/entidades/planEstudioA
 import { DatabaseModule } from 'src/database/database.module';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { CarreraAutorizadaRepository } from '../carrera_autorizada/carrera_autorizada.repository';
+import { PlanEstudioAsignaturaReglaRepository } from '../plan_estudio_asignatura_regla/plan_estudio_asignatura_regla.repository';
 import { PlanEstudioAsignaturaReglaService } from '../plan_estudio_asignatura_regla/plan_estudio_asignatura_regla.service';
 import { PlanEstudioAsignaturaController } from './plan_estudio_asignatura.controller';
 import { PlanEstudioAsignaturaRepository } from './plan_estudio_asignatura.repository';
@@ -21,6 +22,7 @@ import { PlanEstudioAsignaturaService } from './plan_estudio_asignatura.service'
   providers: [PlanEstudioAsignaturaService,
     PlanEstudioAsignaturaRepository,
     PlanEstudioAsignaturaReglaService,
+    PlanEstudioAsignaturaReglaRepository,
     CarreraAutorizadaRepository,
   RespuestaSigedService]
 })

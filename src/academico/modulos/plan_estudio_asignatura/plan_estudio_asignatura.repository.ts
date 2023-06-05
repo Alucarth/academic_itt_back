@@ -64,10 +64,10 @@ export class PlanEstudioAsignaturaRepository {
         return pea;
     }
 
-    /*
-    async getAsignaturasByPLanEstudioUId(){
-        return  await this.dataSource.getRepository(PlanEstudioAsignatura).find({planEstudioCarrera});
-    }*/
+    
+    async getAsignaturasByPLanEstudioId(id){
+        return  await this.dataSource.getRepository(PlanEstudioAsignatura).findBy({'planEstudioCarreraId':id});
+    }
     async crearPlanEstudioAsignatura(idUsuario, asignaturas, transaction) {
 
         const planesAsignaturas: PlanEstudioAsignatura[] = asignaturas.map((item) => {
@@ -82,6 +82,21 @@ export class PlanEstudioAsignaturaRepository {
         });
     
         return await transaction.getRepository(PlanEstudioAsignatura).save(planesAsignaturas)
+    }
+    async crearOnePlanEstudioAsignatura(idUsuario, asignaturas, transaction) {
+
+       // const planesAsignaturas: PlanEstudioAsignatura[] = asignaturas.map((item) => {
+          
+          const planAsignatura  = new PlanEstudioAsignatura()
+          planAsignatura.planEstudioCarreraId =asignaturas.plan_estudio_carrera_id;
+          planAsignatura.regimenGradoTipoId =asignaturas.regimen_grado_tipo_id;
+          planAsignatura.asignaturaTipoId =asignaturas.asignatura_tipo_id;
+          planAsignatura.horas =asignaturas.horas;
+          planAsignatura.usuarioId =idUsuario;
+        //  return planAsignatura;
+//});
+    
+        return await transaction.getRepository(PlanEstudioAsignatura).save(planAsignatura)
     }
 
     
