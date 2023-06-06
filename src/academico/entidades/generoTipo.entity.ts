@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { OperativoCarreraAutorizada } from './operativoCarreraAutorizada.entity';
 import { Persona } from './persona.entity';
 
 @Entity({ name: 'genero_tipo', schema: 'public' })
@@ -40,5 +41,10 @@ export class GeneroTipo {
 
   @OneToMany(() => Persona, (persona) => persona.generoTipo)
   personas: Persona[];
+  
+
+  @OneToMany(() => OperativoCarreraAutorizada, (operativoCarreraAutorizada) => operativoCarreraAutorizada.carreraAutorizada)
+  operativosCarreras: OperativoCarreraAutorizada[];
+
   
 }

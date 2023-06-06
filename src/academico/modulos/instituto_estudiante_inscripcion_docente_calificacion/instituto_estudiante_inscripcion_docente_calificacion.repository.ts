@@ -53,7 +53,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
             calificacion.periodoTipoId = item.periodo_tipo_id;
             calificacion.cuantitativa = item.cuantitativa;
             calificacion.cualitativa = item.cualitativa;
-            calificacion.valoracionTipoId = 1;
+            calificacion.valoracionTipoId = 1; //nota normal
             calificacion.notaTipoId = item.nota_tipo_id;
             calificacion.modalidadEvaluacionTipoId = item.modalidad_evaluacion_tipo_id;
             calificacion.usuarioId = idUsuario;
@@ -61,7 +61,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
           });
         return await transaction.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion).save(calificaciones);
     }
-
+/*
     async crearDocenteAula(idUsuario, dto, transaction) {
 
           const aulaDocente  = new AulaDocente()
@@ -73,7 +73,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
           aulaDocente.usuarioId = idUsuario;
           aulaDocente.observacion = "ASIGNACION";
         return await transaction.getRepository(AulaDocente).save(aulaDocente);
-    }
+    }*/
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
     }

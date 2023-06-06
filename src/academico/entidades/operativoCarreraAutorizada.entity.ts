@@ -13,6 +13,8 @@ import { EtapaEducativa } from './etapaEducativa.entity';
 import { EventoTipo } from './eventoTipo.entity';
 import { GestionTipo } from './gestionTipo.entity';
 import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
+import { ModalidadEvaluacionTipo } from './modalidadEvaluacionTipo.entity';
+import { NotaTipo } from './notaTipo.entity';
 import { PeriodoTipo } from './periodoTipo.entity';
 
 @Entity({ name: 'operativo_carrera_autorizada', schema: 'public' })
@@ -80,5 +82,12 @@ export class OperativoCarreraAutorizada {
   @JoinColumn({ name: 'carrera_autorizada_id', referencedColumnName: 'id'})
   carreraAutorizada: CarreraAutorizada;
 
-  
+  @Column({ name: 'modalidad_evaluacion_tipo_id', nullable:false })
+  modalidadEvaluacionTipoId: number;
+
+  @ManyToOne(() => ModalidadEvaluacionTipo, (modalidadEvaluacionTipo) => modalidadEvaluacionTipo.operativosCarreras, { nullable: false, cascade: true })
+  @JoinColumn({ name: 'modalidad_evaluacion_tipo_id', referencedColumnName: 'id'})
+  modalidadEvaluacionTipo: ModalidadEvaluacionTipo;
+
+ 
 }

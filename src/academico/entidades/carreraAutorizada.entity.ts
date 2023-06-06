@@ -74,4 +74,5 @@ export class CarreraAutorizada {
   @OneToMany(() => OperativoCarreraAutorizada, (operativoCarreraAutorizada) => operativoCarreraAutorizada.carreraAutorizada)
   operativosCarreras: OperativoCarreraAutorizada[];
 
+
 }

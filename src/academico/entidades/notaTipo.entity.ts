@@ -12,6 +12,7 @@ import { InstitutoEstudianteInscripcionDocenteCalificacion } from './institutoEs
 import { IntervaloGestionTipo } from './intervaloGestionTipo.entity';
 import { MenuNivelTipo } from './menuNivelTipo.entity';
 import { MenuSistema } from './menuSistema.entity';
+import { OperativoCarreraAutorizada } from './operativoCarreraAutorizada.entity';
 
 @Entity({ name: 'nota_tipo', schema: 'public' })
 export class NotaTipo {

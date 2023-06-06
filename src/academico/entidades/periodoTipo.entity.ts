@@ -18,6 +18,7 @@ import { MatriculaEstudiante } from './matriculaEstudiante.entity';
 
 import { OfertaCurricular } from './ofertaCurricular.entity';
 import { Operativo } from './operativo.entity';
+import { OperativoCarreraAutorizada } from './operativoCarreraAutorizada.entity';
 import { OperativoEtapaEducativa } from './operativoEtapaEducativa.entity';
 
 @Entity({ name: 'periodo_tipo', schema: 'public' })
@@ -87,5 +88,7 @@ export class PeriodoTipo {
   @OneToMany(() => InstitutoEstudianteInscripcionDocenteCalificacion, (institutoEstudianteInscripcionDocenteCalificacion) => institutoEstudianteInscripcionDocenteCalificacion.periodoTipo)
   inscripcionesDocentesCalificaciones: InstitutoEstudianteInscripcionDocenteCalificacion[];  
   
+  @OneToMany(() => OperativoCarreraAutorizada, (operativoCarreraAutorizada) => operativoCarreraAutorizada.carreraAutorizada)
+  operativosCarreras: OperativoCarreraAutorizada[];
 
 }

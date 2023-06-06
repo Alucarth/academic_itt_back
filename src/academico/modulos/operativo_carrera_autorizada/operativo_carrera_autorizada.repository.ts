@@ -79,7 +79,8 @@ export class OperativoCarreraAutorizadaRepository {
         operativo.gestionTipoId = dto.gestion_tipo_id;
         operativo.periodoTipoId = dto.periodo_tipo_id;
         operativo.carreraAutorizadaId = dto.carrera_autorizada_id;
-        operativo.eventoTipoId = 1;
+        operativo.eventoTipoId = dto.evento_tipo_id;
+        operativo.modalidadEvaluacionTipoId = dto.modalidad_evaluacion_tipo_id;
         operativo.fechaInicio = dto.fecha_inicio;
         operativo.fechaFin = dto.fecha_fin;
         operativo.activo = true;
@@ -91,7 +92,7 @@ export class OperativoCarreraAutorizadaRepository {
       }
 
       async actualizarEstado(id: number,carrera,gestion,estado:boolean) {
-        
+
         await this.dataSource
         .createQueryBuilder()
         .update(OperativoCarreraAutorizada)

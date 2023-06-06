@@ -12,6 +12,7 @@ import { InstitutoEstudianteInscripcionDocenteCalificacion } from './institutoEs
 import { IntervaloGestionTipo } from './intervaloGestionTipo.entity';
 import { MenuNivelTipo } from './menuNivelTipo.entity';
 import { MenuSistema } from './menuSistema.entity';
+import { OperativoCarreraAutorizada } from './operativoCarreraAutorizada.entity';
 
 @Entity({ name: 'modalidad_evaluacion_tipo', schema: 'public' })
 export class ModalidadEvaluacionTipo {
@@ -58,4 +59,7 @@ export class ModalidadEvaluacionTipo {
 
   @OneToMany(() => InstitutoEstudianteInscripcionDocenteCalificacion, (institutoEstudianteInscripcionDocenteCalificacion) => institutoEstudianteInscripcionDocenteCalificacion.modalidadEvaluacionTipo)
   inscripcionesDocentesCalificaciones: InstitutoEstudianteInscripcionDocenteCalificacion[];  
+
+  @OneToMany(() => OperativoCarreraAutorizada, (operativoCarreraAutorizada) => operativoCarreraAutorizada.modalidadEvaluacionTipo)
+  operativosCarreras: OperativoCarreraAutorizada[]; 
 }

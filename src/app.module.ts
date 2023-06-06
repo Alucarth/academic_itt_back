@@ -79,6 +79,8 @@ import { ValoracionTipoModule } from './academico/catalogos/valoracion_tipo/valo
 import { InstitutoEstudianteInscripcionDocenteCalificacionModule } from './academico/modulos/instituto_estudiante_inscripcion_docente_calificacion/instituto_estudiante_inscripcion_docente_calificacion.module';
 import { AulaDocenteModule } from './academico/modulos/aula_docente/aula_docente.module';
 import { PlanEstudioAsignaturaReglaModule } from './academico/modulos/plan_estudio_asignatura_regla/plan_estudio_asignatura_regla.module';
+import { EventoTipoModule } from './academico/catalogos/evento_tipo/evento_tipo.module';
+import { ModalidadEvaluacionTipoModule } from './academico/catalogos/modalidad_evaluacion_tipo/modalidad_evaluacion_tipo.module';
 
 
 
@@ -192,6 +194,10 @@ import { PlanEstudioAsignaturaReglaModule } from './academico/modulos/plan_estud
     AulaDocenteModule,
 
     PlanEstudioAsignaturaReglaModule,
+
+    EventoTipoModule,
+
+    ModalidadEvaluacionTipoModule,
 
 
   ]
