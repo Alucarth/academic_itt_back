@@ -18,8 +18,10 @@ export class ModalidadEvaluacionTipoService {
     }
     async getAllByRegimen(id:number){
         const modalidad = await this.modalidadEvaluacionTipoRepository.findBy({
-            intervaloGestionTipoId:id
-        })
+            intervaloGestionTipoId:id,
+            
+            }
+        )
         return modalidad
     }
 }

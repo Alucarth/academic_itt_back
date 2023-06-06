@@ -52,6 +52,7 @@ export class OperativoCarreraAutorizadaRepository {
         .innerJoinAndSelect("a.gestionTipo", "g")
         .innerJoinAndSelect("a.periodoTipo", "p")
         .innerJoinAndSelect("a.eventoTipo", "e")
+        .leftJoinAndSelect("a.modalidadEvaluacionTipo", "m")
         .select([
             'g.gestion as gestion',
             'g.id as gestion_tipo_id',
@@ -62,6 +63,10 @@ export class OperativoCarreraAutorizadaRepository {
             'a.observacion as observacion',
             'a.activo as activo',
             'a.id as id',
+            'e.evento as evento',
+            'm.modalidadEvaluacion as modalidad',
+            'm.abreviacion as abreviacion',
+            
         ])
         .where('a.carreraAutorizadaId = :id ', { id })
         .andWhere('a.activo = true')
@@ -90,8 +95,7 @@ export class OperativoCarreraAutorizadaRepository {
         return await transaction.getRepository(OperativoCarreraAutorizada).save(operativo);
     
       }
-
-      async actualizarEstado(id: number,carrera,gestion,estado:boolean) {
+      async actualizarEstado(carrera,gestion) {
 
         await this.dataSource
         .createQueryBuilder()
@@ -105,12 +109,15 @@ export class OperativoCarreraAutorizadaRepository {
          })
         .execute();
 
+      }
 
+      async actualizarEstadoById(id: number) {
+       
         return await this.dataSource
           .createQueryBuilder()
           .update(OperativoCarreraAutorizada)
           .set({
-            activo:estado
+            activo:true
           })
           .where({ id: id })
           .execute();

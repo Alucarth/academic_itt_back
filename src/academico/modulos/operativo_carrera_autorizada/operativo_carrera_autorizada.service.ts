@@ -51,7 +51,24 @@ export class OperativoCarreraAutorizadaService {
 
     }
     
+    async getById(id: number){
+        const operativo = await this.operativoCarreraAutorizadaRepositorio.getOneById(id);
+            return operativo;
+        
+        
+    }
+    async editEstado(carreraId: number, gestionId:number)
+    {
+        const operativo = await this.operativoCarreraAutorizadaRepositorio.actualizarEstado(
+            carreraId,
+            gestionId
+        );
+            return operativo;
+
+    }
+
     async createOperativoCarrera (dto: CreateOperativoCarreraAutorizadaDto) {
+        const estado = await this.editEstado(dto.carrera_autorizada_id, dto.gestion_tipo_id);
        
             const op = async (transaction: EntityManager) => {
               
@@ -92,24 +109,16 @@ export class OperativoCarreraAutorizadaService {
         return await this.personaRepository.save(persona);
 
     }*/
-    async getById(id: number){
-        const operativo = await this.operativoCarreraAutorizadaRepositorio.getOneById(id);
-            return operativo;
-        
-        
-    }
-    async editEstado(id: number)
+   
+    async editEstadoById(id: number)
     {
         const dato = await this.getById(id);
-        let status = false;
-        if(dato.activo == false){
-            status = true;
-        }
-        const res = await this.operativoCarreraAutorizadaRepositorio.actualizarEstado(
-            id,
+
+        const actualiza = await this.editEstado( 
             dato.carreraAutorizadaId, 
-            dato.gestionTipoId, 
-            status)
+            dato.gestionTipoId, );
+        const res = await this.operativoCarreraAutorizadaRepositorio.actualizarEstadoById(id);
+
         if(res){
             console.log("res:", res);
             console.log("Maestro Inscripcion actualizado");

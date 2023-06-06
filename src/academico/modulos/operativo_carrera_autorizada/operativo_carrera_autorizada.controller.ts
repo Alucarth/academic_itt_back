@@ -31,7 +31,7 @@ export class OperativoCarreraAutorizadaController {
     }
     @Put('estado/:id')
     async editEstadoOperativoCarrera(@Param('id') id: number){
-        const data = await this.operativoCarreraAutorizadaService.editEstado(id);
+        const data = await this.operativoCarreraAutorizadaService.editEstadoById(id);
         return data;
     }
 }

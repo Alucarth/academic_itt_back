@@ -18,7 +18,7 @@ export class CreateOperativoCarreraAutorizadaDto extends UpdateOperativoCarreraA
   @IsNumber()
   evento_tipo_id: number;
 
-  @IsOptional({ message: "la modalidad de evaluacion es opcional" })
+  @IsNotEmpty({ message: "la modalidad de evaluacion es opcional" })
   @IsNumber()
   modalidad_evaluacion_tipo_id: number;
  
