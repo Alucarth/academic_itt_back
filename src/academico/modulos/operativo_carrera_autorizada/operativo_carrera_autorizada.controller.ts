@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { OperativoCarreraAutorizada } from 'src/academico/entidades/operativoCarreraAutorizada.entity';
+import { User } from 'src/users/entity/users.entity';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { CreateOperativoCarreraAutorizadaDto } from './dto/createOperativoCarreraAutorizada.dto';
 import { UpdateOperativoCarreraAutorizadaDto } from './dto/updateOperativoCarreraAutorizada.dto';
@@ -20,6 +21,7 @@ export class OperativoCarreraAutorizadaController {
     async getAllOperativosCarrera(@Param('id') id: number){
         return await this.operativoCarreraAutorizadaService.findAllOperativosCarrera(id);
     }
+    
     @Get('vigente/carrera/:id')
     async getOperativoVigenteCarrera(@Param('id') id: number,){
         return await this.operativoCarreraAutorizadaService.findOperativoActivoCarrera(id);
@@ -31,6 +33,7 @@ export class OperativoCarreraAutorizadaController {
         return  await this.operativoCarreraAutorizadaService.createOperativoCarrera(dto);        
     }
 
+   // @Autenticacion()
     @Put('estado/:id')
     async editEstadoOperativoCarrera(@Param('id') id: number){
         const data = await this.operativoCarreraAutorizadaService.editEstadoById(id);
