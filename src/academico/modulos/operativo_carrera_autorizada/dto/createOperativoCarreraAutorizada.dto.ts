@@ -14,12 +14,5 @@ export class CreateOperativoCarreraAutorizadaDto extends UpdateOperativoCarreraA
   @IsNumber()
   periodo_tipo_id: number;
 
-  @IsNotEmpty({ message: "el evento es obligatoria" })
-  @IsNumber()
-  evento_tipo_id: number;
-
-  @IsNotEmpty({ message: "la modalidad de evaluacion es opcional" })
-  @IsNumber()
-  modalidad_evaluacion_tipo_id: number;
  
 }

@@ -5,10 +5,11 @@ import { OfertaAcademica } from 'src/academico/entidades/ofertaAcademica.entity'
 import { OperativoCarreraAutorizada } from 'src/academico/entidades/operativoCarreraAutorizada.entity';
 import { DataSource, EntityManager } from 'typeorm'
 import { CreateOperativoCarreraAutorizadaDto } from './dto/createOperativoCarreraAutorizada.dto';
+import { UpdateOperativoCarreraAutorizadaDto } from './dto/updateOperativoCarreraAutorizada.dto';
 
 @Injectable()
 export class OperativoCarreraAutorizadaRepository {
-   
+    
     constructor(private dataSource: DataSource) {}
 
     async getAll(){
@@ -17,6 +18,15 @@ export class OperativoCarreraAutorizadaRepository {
     async getOneById(id:number){
         return  await this.dataSource.getRepository(OperativoCarreraAutorizada).findOneBy({
             'id':id
+        });
+    }
+    async getOneByDato(dto:CreateOperativoCarreraAutorizadaDto){
+        return  await this.dataSource.getRepository(OperativoCarreraAutorizada).findOneBy({
+            'carreraAutorizadaId':dto.carrera_autorizada_id,
+            'gestionTipoId':dto.gestion_tipo_id,
+            'periodoTipoId':dto.periodo_tipo_id,
+            'eventoTipoId':dto.evento_tipo_id,
+            'modalidadEvaluacionTipoId':dto.modalidad_evaluacion_tipo_id,
         });
     }
     async getAllOperativosCarrera(id:number ){
@@ -94,10 +104,27 @@ export class OperativoCarreraAutorizadaRepository {
        
         return await transaction.getRepository(OperativoCarreraAutorizada).save(operativo);
     
-      }
+    }
+    async updateOperativoCarreraById(id:number,dto: UpdateOperativoCarreraAutorizadaDto) {
+       
+        return await this.dataSource
+        .createQueryBuilder()
+        .update(OperativoCarreraAutorizada)
+        .set({
+            eventoTipoId : dto.evento_tipo_id,
+            fechaInicio : dto.fecha_inicio,
+            fechaFin : dto.fecha_fin,
+            modalidadEvaluacionTipoId : dto.modalidad_evaluacion_tipo_id,
+            activo:true,
+            observacion:dto.observacion
+        })
+        .where({ id: id })
+        .execute(); 
+    }
+
       async actualizarEstado(carrera,gestion) {
 
-        await this.dataSource
+       return  await this.dataSource
         .createQueryBuilder()
         .update(OperativoCarreraAutorizada)
         .set({
@@ -122,7 +149,17 @@ export class OperativoCarreraAutorizadaRepository {
           .where({ id: id })
           .execute();
 
+    }
+    async deleteCarreraOperativo(id: number) {
+        return await this.dataSource
+        .createQueryBuilder()
+        .delete()
+        .from(OperativoCarreraAutorizada)
+        .where({ id: id })
+        .execute();
+        
       }
+
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
     }

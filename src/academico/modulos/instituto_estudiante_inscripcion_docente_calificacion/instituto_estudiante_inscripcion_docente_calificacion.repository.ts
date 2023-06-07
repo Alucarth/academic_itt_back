@@ -43,13 +43,38 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
           .getRawMany();
     }
 
+    async findAllCalificacionesByAulaId(id){
+        return  await this.dataSource.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
+        .createQueryBuilder("ad")
+        .innerJoinAndSelect("ad.institutoEstudianteInscripcion", "i")
+        .innerJoinAndSelect("ad.notaTipo", "n")
+        .innerJoinAndSelect("ad.modalidadEvaluacionTipo", "me")
+        .innerJoinAndSelect("i.matriculaEstudiante", "m")
+        .innerJoinAndSelect("m.institucion_educativa_estudiante", "ie")
+        .innerJoinAndSelect("ie.persona", "p")
+        .select([
+            'ad.id',
+            'ad.cuantitativa',
+            'n.notaTipo',
+            'me.modalidadEvaluacion',
+            'm.id as matricula_id',
+            'ie.id as institucion_educativa_estudiante_id',
+            'p.id as persona_id',
+            'p.nombre as nombre',
+            'p.paterno as paterno',
+            'p.materno as materno',
+        ])
+          .where("ad.aulaId = :id ", { id })
+          .getRawMany();
+    }
+
     async crearInscripcionDocenteCalificacion(idUsuario, notas, transaction) {
 
         const calificaciones: InstitutoEstudianteInscripcionDocenteCalificacion[] = notas.map((item) => {
           
             const calificacion  = new InstitutoEstudianteInscripcionDocenteCalificacion()
             calificacion.institutoEstudianteInscripcionId = item.instituto_estudiante_inscripcion_id;
-            calificacion.aulaDocenteId = item.docente_aula_id;
+            calificacion.aulaDocenteId = item.aula_docente_id;
             calificacion.periodoTipoId = item.periodo_tipo_id;
             calificacion.cuantitativa = item.cuantitativa;
             calificacion.cualitativa = item.cualitativa;
@@ -61,19 +86,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
           });
         return await transaction.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion).save(calificaciones);
     }
-/*
-    async crearDocenteAula(idUsuario, dto, transaction) {
 
-          const aulaDocente  = new AulaDocente()
-          aulaDocente.aulaId = dto.aula_id;
-          aulaDocente.maestroInscripcionId = dto.maestro_inscripcion_id;
-          aulaDocente.asignacionFechaInicio = dto.fecha_inicio;
-          aulaDocente.asignacionFechaFin = dto.fecha_fin;
-          aulaDocente.bajaTipoId = 0;
-          aulaDocente.usuarioId = idUsuario;
-          aulaDocente.observacion = "ASIGNACION";
-        return await transaction.getRepository(AulaDocente).save(aulaDocente);
-    }*/
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
     }
