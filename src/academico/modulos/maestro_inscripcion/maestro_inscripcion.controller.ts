@@ -1,4 +1,3 @@
-
 import {
   Body,
   Controller,
@@ -94,7 +93,7 @@ export class MaestroInscripcionController {
     return this.usersService.getAllAdministrativosByUeGestion(ueId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   @Post("/")
   async addMaestroInscripciom(
     @Body() body: CreateMaestroInscripcionDto,
