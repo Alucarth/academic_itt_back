@@ -1100,17 +1100,49 @@ export class InscripcionService {
         });
 
         for (let index = 0; index < obj2.length; index++) {   
-          obj2[index].paralelos = [
-            {
-              maestro: "BUSTILLOS GONZALES JHONATAN",
-              oferta_curricular_id: 140,
-              aula_id: 108,
-              paralelo_tipo_id: 1,
-              paralelo: "A",
-              activo: true,
-              inscrito: 0
-            }
-          ];
+
+          let res_paralelos = await this.inscripcionRepository.query(`
+            SELECT
+              
+              case trim(concat(persona.paterno, ' ', persona.materno, ' ', persona.nombre))
+              when '' then 'Sin Asignacion'
+              else trim(concat(persona.paterno, ' ', persona.materno, ' ', persona.nombre))
+              end
+              as maestro,
+              oferta_curricular.id as oferta_curricular_id, 
+              aula.id as aula_id, 
+              paralelo_tipo.id as paralelo_tipo_id, 
+              paralelo_tipo.paralelo, 
+              aula.activo,
+              0 as inscrito
+            FROM
+              oferta_curricular
+              INNER JOIN
+              aula
+              ON 
+                oferta_curricular.id = aula.oferta_curricular_id
+              INNER JOIN
+              paralelo_tipo
+              ON 
+                aula.paralelo_tipo_id = paralelo_tipo.id
+              left JOIN
+              aula_docente
+              ON 
+                aula.id = aula_docente.aula_id
+              left JOIN
+              maestro_inscripcion
+              ON 
+                aula_docente.maestro_inscripcion_id = maestro_inscripcion.id
+              left JOIN
+              persona
+              ON 
+                maestro_inscripcion.persona_id = persona.id
+              where 
+              oferta_curricular.id = ${obj2[index].oferta_curricular_id}
+          `);
+
+          obj2[index].paralelos = res_paralelos;
+          
         }
 
         obj1.asignaturas.push(obj2);
