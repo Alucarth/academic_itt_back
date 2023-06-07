@@ -4,6 +4,7 @@ import { PlanEstudioAsignatura } from 'src/academico/entidades/planEstudioAsigna
 import { PlanEstudioCarrera } from 'src/academico/entidades/planEstudioCarrera.entity';
 import { PlanEstudioResolucion } from 'src/academico/entidades/planEstudioResolucion.entity';
 import { DataSource, EntityManager } from 'typeorm'
+import { UpdatePlanEstudioAsignaturaDto } from './dto/updatePlanEstudioAsignatura.dto';
 
 
 @Injectable()
@@ -13,6 +14,11 @@ export class PlanEstudioAsignaturaRepository {
 
     async getAll(){
         return  await this.dataSource.getRepository(PlanEstudioAsignatura).find();
+    }
+    async getOneById(id:number){
+        return  await this.dataSource.getRepository(PlanEstudioAsignatura).findOneBy({
+            'id':id
+        });
     }
 
     async findAsignaturasPrerequisitosByPlan( id:number){
@@ -99,7 +105,18 @@ export class PlanEstudioAsignaturaRepository {
         return await transaction.getRepository(PlanEstudioAsignatura).save(planAsignatura)
     }
 
-    
+    async updatePlanAsignaturaById(id:number,dto: UpdatePlanEstudioAsignaturaDto) {
+       
+        return await this.dataSource
+        .createQueryBuilder()
+        .update(PlanEstudioAsignatura)
+        .set({
+            horas : dto.horas,
+           // fechaModificacion:Date(),
+        })
+        .where({ id: id })
+        .execute(); 
+    }
   
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)

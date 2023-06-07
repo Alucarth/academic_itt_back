@@ -20,4 +20,9 @@ export class NotaTipoService {
         const nota = await this.notaTipoRepository.findOneBy({'id':id})
         return nota
     }
+    async getNotasTipos(){
+        //const nota = await this.notaTipoRepository.find()
+        const nota = await this.notaTipoRepository.findBy({'abreviacion':'ITT'});
+        return nota
+    }
 }
