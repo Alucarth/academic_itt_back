@@ -3,6 +3,7 @@ import { AsignaturaTipo } from 'src/academico/entidades/asignaturaTipo.entity';
 import { InstitucionEducativaCurso } from 'src/academico/entidades/institucionEducativaCurso.entity';
 import { OfertaAcademica } from 'src/academico/entidades/ofertaAcademica.entity';
 import { OperativoCarreraAutorizada } from 'src/academico/entidades/operativoCarreraAutorizada.entity';
+import { User } from 'src/users/entity/users.entity';
 import { DataSource, EntityManager } from 'typeorm'
 import { CreateOperativoCarreraAutorizadaDto } from './dto/createOperativoCarreraAutorizada.dto';
 import { UpdateOperativoCarreraAutorizadaDto } from './dto/updateOperativoCarreraAutorizada.dto';
@@ -74,6 +75,7 @@ export class OperativoCarreraAutorizadaRepository {
             'a.activo as activo',
             'a.id as id',
             'e.evento as evento',
+            'm.id as modalidad_id',
             'm.modalidadEvaluacion as modalidad',
             'm.abreviacion as abreviacion',
             

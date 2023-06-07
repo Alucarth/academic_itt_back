@@ -1,5 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
+import { User } from 'src/users/entity/users.entity';
 import { EntityManager } from 'typeorm';
 import { CreateOperativoCarreraAutorizadaDto } from './dto/createOperativoCarreraAutorizada.dto';
 import { UpdateOperativoCarreraAutorizadaDto } from './dto/updateOperativoCarreraAutorizada.dto';
