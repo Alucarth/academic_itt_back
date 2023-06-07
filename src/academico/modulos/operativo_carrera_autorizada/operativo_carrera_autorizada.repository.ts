@@ -37,6 +37,7 @@ export class OperativoCarreraAutorizadaRepository {
         .innerJoinAndSelect("a.gestionTipo", "g")
         .innerJoinAndSelect("a.periodoTipo", "p")
         .innerJoinAndSelect("a.eventoTipo", "e")
+        .leftJoinAndSelect("a.modalidadEvaluacionTipo", "m")
         .select([
             'g.gestion as gestion',
             'g.id as gestion_tipo_id',
@@ -47,6 +48,10 @@ export class OperativoCarreraAutorizadaRepository {
             'a.observacion as observacion',
             'a.activo as activo',
             'a.id as id',
+            'e.evento as evento',
+            'm.id as modalidad_id',
+            'm.modalidadEvaluacion as modalidad',
+            'm.abreviacion as abreviacion',
         ])
         .where('a.carreraAutorizadaId = :id ', { id })
         .orderBy('a.id', 'ASC')
