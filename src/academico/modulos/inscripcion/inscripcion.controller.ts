@@ -126,6 +126,21 @@ export class InscripcionController {
   }
 
   @ApiOperation({
+    summary: "Devuelve todos las materias alumnos antiguos",
+  })
+  @Get("/materiasAntiguoByCarreraAutorizadaId/:carreraAutorizadaId/:matriculaEstudianteId")
+  async getMateriasAntiguoByCarreraId(
+    @Param("carreraAutorizadaId") carreraAutorizadaId: string,
+    @Param("matriculaEstudianteId") matriculaEstudianteId: string
+
+  ) {
+    return await this.inscripcionService.getAllMateriasInscripcionAntiguo(
+      parseInt(carreraAutorizadaId),
+      parseInt(matriculaEstudianteId)
+    );
+  }
+
+  @ApiOperation({
     summary: "Devuelve personas sin matricula",
   })
   @Get("/personasSinMatricula/:carreraAutorizadaId")

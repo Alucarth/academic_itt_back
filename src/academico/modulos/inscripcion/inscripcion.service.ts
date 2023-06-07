@@ -1010,6 +1010,123 @@ export class InscripcionService {
     );
   }
 
+
+  async getAllMateriasInscripcionAntiguo(carreraAutorizadaId: number, matriculaEstudianteId:number) {
+    
+    //con carrera autorizada, obtenemos el pla_estudio_carrera_id, OJO SOLO  DEBERIA HABER UNO ?
+
+
+    const planEstudioCarreraAux = await this.inscripcionRepository.query(`
+        select plan_estudio_carrera_id from instituto_plan_estudio_carrera 
+        where carrera_autorizada_id = ${carreraAutorizadaId}
+    `);
+
+    if(planEstudioCarreraAux.length == 0){
+      return this._serviceResp.respuestaHttp200(
+        carreraAutorizadaId,
+        "No existe plan de estudio para esta carrera !!",
+        ""
+      );
+    }
+
+    const plan_estudio_carrera_id = planEstudioCarreraAux[0]['plan_estudio_carrera_id'];
+    console.log(plan_estudio_carrera_id);
+    
+    const result = await this.inscripcionRepository.query(`
+      SELECT
+        plan_estudio_asignatura.id, 
+        plan_estudio_asignatura.plan_estudio_carrera_id, 
+        plan_estudio_asignatura.regimen_grado_tipo_id, 
+        plan_estudio_asignatura.asignatura_tipo_id, 
+        plan_estudio_asignatura_regla.anterior_plan_estudio_asignatura_id, 
+        plan_estudio_asignatura_regla.activo, 
+        concat(asignatura_tipo.abreviacion, ' ', asignatura_tipo.asignatura) AS materia, 
+        (select concat(abreviacion, ' ',asignatura) from asignatura_tipo where id in (select asignatura_tipo_id from plan_estudio_asignatura where id = anterior_plan_estudio_asignatura_id)) AS prerequisito, 
+        instituto_plan_estudio_carrera.carrera_autorizada_id, 
+        regimen_grado_tipo.intervalo_gestion_tipo_id, 
+        regimen_grado_tipo.regimen_grado, 
+        regimen_grado_tipo.sigla, 
+        oferta_curricular.id as oferta_curricular_id, 
+        oferta_curricular.gestion_tipo_id, 
+        oferta_curricular.periodo_tipo_id
+      FROM
+        plan_estudio_asignatura
+        LEFT JOIN
+        plan_estudio_asignatura_regla
+        ON 
+          plan_estudio_asignatura.id = plan_estudio_asignatura_regla.plan_estudio_asignatura_id
+        INNER JOIN
+        asignatura_tipo
+        ON 
+          plan_estudio_asignatura.asignatura_tipo_id = asignatura_tipo.id
+        INNER JOIN
+        plan_estudio_carrera
+        ON 
+          plan_estudio_asignatura.plan_estudio_carrera_id = plan_estudio_carrera.id
+        INNER JOIN
+        instituto_plan_estudio_carrera
+        ON 
+          plan_estudio_carrera.id = instituto_plan_estudio_carrera.plan_estudio_carrera_id
+        INNER JOIN
+        regimen_grado_tipo
+        ON 
+          plan_estudio_asignatura.regimen_grado_tipo_id = regimen_grado_tipo.id
+        INNER JOIN
+        oferta_curricular
+        ON 
+          plan_estudio_asignatura.id = oferta_curricular.plan_estudio_asignatura_id
+      WHERE
+        plan_estudio_asignatura.plan_estudio_carrera_id = ${plan_estudio_carrera_id}
+      ORDER BY
+        3 ASC, 
+        7 ASC
+    `);
+
+    //un distinct de las etapas o grados 
+    const etapas = result.map(item => item.regimen_grado)
+    .filter((value, index, self) => self.indexOf(value) === index)
+
+    console.log(etapas);
+    
+    let dataResult = [];
+   
+    for (let i = 0; i < etapas.length; i++) {   
+      
+        let obj1 = { regimen_grado : etapas[i], asignaturas:[] };        
+        //filtramos todo lo que sea de la etapa
+
+        let obj2 = result.filter(obj => {
+          return obj.regimen_grado === etapas[i];
+        });
+
+        for (let index = 0; index < obj2.length; index++) {   
+          obj2[index].paralelos = [
+            {
+              maestro: "BUSTILLOS GONZALES JHONATAN",
+              oferta_curricular_id: 140,
+              aula_id: 108,
+              paralelo_tipo_id: 1,
+              paralelo: "A",
+              activo: true,
+              inscrito: 0
+            }
+          ];
+        }
+
+        obj1.asignaturas.push(obj2);
+        dataResult.push(obj1);
+    }
+    //console.log('dataResult --> ', dataResult);
+
+    
+
+    return this._serviceResp.respuestaHttp200(
+      dataResult,
+      "Registro Encontrado !!",
+      ""
+    );
+  }
+
   //TODO: esto hay que repensar, debe ir por gestion ?
   // ESTO ES TEMPORAL
   async getPersonasSinMatricula(carreraAutorizadaId: number) {
