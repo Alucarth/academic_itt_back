@@ -1092,12 +1092,16 @@ export class InscripcionService {
    
     for (let i = 0; i < etapas.length; i++) {   
       
-        let obj1 = { regimen_grado : etapas[i], asignaturas:[] };        
+     
+        let obj1 = { regimen_grado : etapas[i], asignaturas: [] };        
         //filtramos todo lo que sea de la etapa
 
         let obj2 = result.filter(obj => {
           return obj.regimen_grado === etapas[i];
         });
+
+        console.log('obj2 --> ', obj2);
+        //return;
 
         for (let index = 0; index < obj2.length; index++) {   
 
@@ -1141,11 +1145,31 @@ export class InscripcionService {
               oferta_curricular.id = ${obj2[index].oferta_curricular_id}
           `);
 
+            for (let j=0; j < res_paralelos.length; j++){
+              //por cada paralelo vemos si esta incrito
+      
+              const existe = await this.inscripcionRepository.query(`
+              select count(*) as existe 
+              from 
+              instituto_estudiante_inscripcion
+              where
+                matricula_estudiante_id = ${matriculaEstudianteId} and
+                aula_id = ${res_paralelos[j].aula_id} and 
+                oferta_curricular_id = ${res_paralelos[j].oferta_curricular_id}      
+              `);
+      
+              if (parseInt(existe[0].existe) != 0) {
+                res_paralelos[j].inscrito = 1;
+              }
+      
+            }
+
           obj2[index].paralelos = res_paralelos;
-          
+
         }
 
-        obj1.asignaturas.push(obj2);
+        //obj1.asignaturas.push(obj2);
+        obj1.asignaturas = obj2;
         dataResult.push(obj1);
     }
     //console.log('dataResult --> ', dataResult);
