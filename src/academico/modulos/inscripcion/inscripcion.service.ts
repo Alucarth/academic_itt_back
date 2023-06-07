@@ -640,6 +640,45 @@ export class InscripcionService {
       ""
     );
   }
+  async getAllInscritosCalificacionByAulaId(id: number) {
+    console.log("calificaciones", id);
+    const result = await this.inscripcionRepository
+      .createQueryBuilder("i")
+      .innerJoinAndSelect("i.aula", "a")
+      .innerJoinAndSelect("a.aulasDocentes", "d")
+      .innerJoinAndSelect("i.matriculaEstudiante", "me")
+      .innerJoinAndSelect("me.institucionEducativaEstudiante", "ie")
+      .innerJoinAndSelect("ie.persona", "p")
+      .leftJoinAndSelect("i.inscripcionesDocentesCalificaciones", "dc")
+      .leftJoinAndSelect("dc.notaTipo", "n")
+      .leftJoinAndSelect("dc.modalidadEvaluacionTipo", "m")
+      .select([
+        "i.id",
+        "d.id",
+        "me.id",
+        "ie.id",
+        "p.id",
+        "p.paterno",
+        "p.materno",
+        "p.nombre",
+        "p.carnetIdentidad",
+        "dc.id",
+        "dc.cuantitativa",
+        "n.id",
+        "n.nota",
+        "m.id",
+        "m.modalidadEvaluacion"
+      ])
+      .where("i.aulaId = :id", { id })
+      .getMany();
+    console.log("result: ", result);
+
+    return this._serviceResp.respuestaHttp200(
+      result,
+      "Registro Encontrado !!",
+      ""
+    );
+  }
   async getAllInscritosByGestion(
     gestionId: number,
     periodoId: number,

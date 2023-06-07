@@ -55,6 +55,36 @@ constructor(private dataSource: DataSource) {}
         .getRawOne();
         
     }
+    async getCalificacionesByAulaId(id:number){
+        
+        return  await this.dataSource.getRepository(Aula)
+        .createQueryBuilder('a')
+        .innerJoinAndSelect('a.institutoEstudianteInscripcions', 'i')
+        .leftJoinAndSelect('i.inscripcionesDocentesCalificaciones', 'c')
+        .leftJoinAndSelect('c.notaTipo', 'n')
+        .leftJoinAndSelect('c.modalidadEvaluacionTipo', 'm')
+        .innerJoinAndSelect('i.matriculaEstudiante', 'me')
+        .innerJoinAndSelect('me.institucionEducativaEstudiante', 'ie')
+        .innerJoinAndSelect('ie.persona', 'p')
+        .where('a.id = :id', {id})
+        .select([
+            'a.id',
+            'i.id',
+            'me.id',
+            'ie.id',
+            'p.id',
+            'c.id',
+            'c.cuantitativa',
+            'n.nota',
+            'm.modalidadEvaluacion',
+            'p.carnetIdentidad',
+            'p.nombre',
+            'p.paterno',
+            'p.materno',
+        ])
+        .getMany();
+        
+    }
    
     async createAula(aula, transaction) {
           

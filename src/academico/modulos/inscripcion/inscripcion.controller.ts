@@ -70,6 +70,13 @@ export class InscripcionController {
     return await this.inscripcionService.getAllInscritosByAulaId(id);
   }
 
+  @Get("calificaciones/aula/:id")
+  async getAllInscritosCalificacionByAulaId(
+    @Param("id") id: number
+  ) {
+    return await this.inscripcionService.getAllInscritosCalificacionByAulaId(id);
+  }
+
   @ApiOperation({
     summary:
       "Devuelve todos los inscritos en una gestion, periodo, carrera e institucion educativa",

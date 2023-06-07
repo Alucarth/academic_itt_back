@@ -59,6 +59,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
             'me.modalidadEvaluacion',
             'm.id as matricula_id',
             'ie.id as institucion_educativa_estudiante_id',
+            'i.id as instituto_estudiante_inscripcion_id',
             'p.id as persona_id',
             'p.nombre as nombre',
             'p.paterno as paterno',
