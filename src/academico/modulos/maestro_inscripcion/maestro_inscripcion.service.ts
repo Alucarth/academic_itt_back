@@ -756,7 +756,7 @@ export class MaestroInscripcionService {
     //0: validar token
     let user_id = 0;
     //console.log("updateUser:", request.headers["token"]);
-    try {
+    /*try {
       const payload = await this.jwtService.decode(request.headers["token"]);
       //console.log("payload:", payload["id"]);
       if (!payload) {
@@ -766,7 +766,7 @@ export class MaestroInscripcionService {
     } catch {
       throw new UnauthorizedException();
     }
-    console.log("postUserId:", user_id);
+    console.log("postUserId:", user_id);*/
 
     /*console.log("dto.personaId -> ",dto.personaId);
     console.log("dto.gestionTipoId ->", dto.gestionTipoId);
