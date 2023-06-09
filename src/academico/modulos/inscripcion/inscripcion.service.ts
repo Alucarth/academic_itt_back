@@ -948,7 +948,6 @@ export class InscripcionService {
     for (let i = 0; i < result.length; i++) {
       let res_paralelos = await this.inscripcionRepository.query(`
         SELECT
-          
           case trim(concat(persona.paterno, ' ', persona.materno, ' ', persona.nombre))
           when '' then 'Sin Asignacion'
           else trim(concat(persona.paterno, ' ', persona.materno, ' ', persona.nombre))
@@ -957,7 +956,8 @@ export class InscripcionService {
           oferta_curricular.id as oferta_curricular_id, 
           aula.id as aula_id, 
           paralelo_tipo.id as paralelo_tipo_id, 
-          paralelo_tipo.paralelo, 
+          paralelo_tipo.paralelo,           
+          concat((select substring(to_char(hora_inicio,'HH24:MI'),1,5) from aula_detalle where aula_id = aula.id), '-',(select substring(to_char(hora_fin,'HH24:MI'),1,5) from aula_detalle where aula_id = aula.id)) as horario,
           aula.activo,
           0 as inscrito
         FROM
@@ -1061,7 +1061,7 @@ export class InscripcionService {
     `);
 
     if(planEstudioCarreraAux.length == 0){
-      return this._serviceResp.respuestaHttp200(
+      return this._serviceResp.respuestaHttp404(
         carreraAutorizadaId,
         "No existe plan de estudio para esta carrera !!",
         ""
@@ -1189,13 +1189,13 @@ export class InscripcionService {
       
               const existe = await this.inscripcionRepository.query(`
               select count(*) as existe 
-              from 
-              instituto_estudiante_inscripcion
-              where
-                matricula_estudiante_id = ${matriculaEstudianteId} and
-                aula_id = ${res_paralelos[j].aula_id} and 
-                oferta_curricular_id = ${res_paralelos[j].oferta_curricular_id}      
-              `);
+                from 
+                instituto_estudiante_inscripcion
+                where
+                  matricula_estudiante_id = ${matriculaEstudianteId} and
+                  aula_id = ${res_paralelos[j].aula_id} and 
+                  oferta_curricular_id = ${res_paralelos[j].oferta_curricular_id}      
+                `);
       
               if (parseInt(existe[0].existe) != 0) {
                 res_paralelos[j].inscrito = 1;
