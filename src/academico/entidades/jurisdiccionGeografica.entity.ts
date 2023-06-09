@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -62,7 +63,7 @@ export class JurisdiccionGeografica {
   usuarioId: number;
 
   @Exclude()
-  @UpdateDateColumn({
+  @CreateDateColumn({
     name: 'fecha_modificacion_localizacion',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',

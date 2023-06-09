@@ -199,9 +199,7 @@ export class OfertaCurricularService {
                     item.aulas.forEach(async aula => {
                         const datoAula =  await this.aulaRepository.getDatoAula(
                             ofertaId,
-                            aula.cupo,
-                            aula.paralelo_tipo_id,
-                            
+                            aula.paralelo_tipo_id
                         );
                         let aulaId = 0;
                         if(datoAula==null){

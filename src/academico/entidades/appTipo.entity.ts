@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -22,7 +23,7 @@ export class AppTipo {
   urlSistema: string;
 
   @Exclude()
-  @UpdateDateColumn({
+  @CreateDateColumn({
     name: 'fecha_inicio',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',

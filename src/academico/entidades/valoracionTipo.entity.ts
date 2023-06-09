@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -25,7 +26,7 @@ export class ValoracionTipo {
   comentario: string;
   
   @Exclude()
-  @UpdateDateColumn({
+  @CreateDateColumn({
     name: 'fecha_creacion',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',

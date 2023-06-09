@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -18,7 +19,7 @@ export class AreaGeograficaTipo {
   comentario: string;
   
   @Exclude()
-  @UpdateDateColumn({
+  @CreateDateColumn({
     name: 'fecha_registro',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',

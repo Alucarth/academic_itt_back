@@ -9,11 +9,10 @@ constructor(private dataSource: DataSource) {}
     async getAll(){
         return  await this.dataSource.getRepository(Aula).find();
     }
-    async getDatoAula(id, cupo, paralelo){
+    async getDatoAula(id, paralelo){
 
         return  await this.dataSource.getRepository(Aula).findOne({where:{
             ofertaCurricularId:id,
-            cupo:cupo,
             paraleloTipoId:paralelo,
             },
         });

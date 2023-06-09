@@ -10,9 +10,6 @@ import {
 } from 'typeorm';
 import { InstitutoEstudianteInscripcionDocenteCalificacion } from './institutoEstudianteInscripcionDocenteCalificacion.entity';
 import { IntervaloGestionTipo } from './intervaloGestionTipo.entity';
-import { MenuNivelTipo } from './menuNivelTipo.entity';
-import { MenuSistema } from './menuSistema.entity';
-import { OperativoCarreraAutorizada } from './operativoCarreraAutorizada.entity';
 
 @Entity({ name: 'nota_tipo', schema: 'public' })
 export class NotaTipo {
@@ -46,6 +43,9 @@ export class NotaTipo {
   
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
+
+  @Column({ type: 'integer', name: 'ponderacion' })
+  ponderacion: number;
 /*
   @Column({ type: 'integer', name: 'menu_tipo_id' })
   menuTipoId: number;

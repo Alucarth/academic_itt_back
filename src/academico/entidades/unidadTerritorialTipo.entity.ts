@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -23,7 +24,7 @@ export class UnidadTerritorialTipo {
   orden: number;
   
   @Exclude()
-  @UpdateDateColumn({
+  @CreateDateColumn({
     name: 'fecha_registro',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',

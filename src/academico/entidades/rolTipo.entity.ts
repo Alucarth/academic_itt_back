@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -30,7 +31,7 @@ export class RolTipo {
   activo: boolean;
   
   @Exclude()
-  @UpdateDateColumn({
+  @CreateDateColumn({
     name: 'fecha_registro',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',

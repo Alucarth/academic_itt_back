@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -51,7 +52,7 @@ export class InstitucionEducativaSucursal {
   vigente: boolean;
 
   @Exclude()
-  @UpdateDateColumn({
+  @CreateDateColumn({
     name: 'fecha_registro',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',

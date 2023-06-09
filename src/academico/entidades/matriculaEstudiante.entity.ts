@@ -1,11 +1,14 @@
+import { Exclude } from "class-transformer";
 import {
   Column,
+  CreateDateColumn,
   Entity,
   Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { GestionTipo } from "./gestionTipo.entity";
 import { InstitucionEducativaEstudiante } from "./InstitucionEducativaEstudiante.entity";
@@ -27,14 +30,21 @@ export class MatriculaEstudiante {
   })
   docMatricula: string | null;
 
-  @Column("timestamp without time zone", { name: "fecha_registro" })
+  @Exclude()
+  @CreateDateColumn({
+    name: 'fecha_registro',
+    type: 'timestamptz',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   fechaRegistro: Date;
 
-  @Column("timestamp without time zone", {
-    name: "fecha_modificacion",
-    nullable: true,
+  @Exclude()
+  @UpdateDateColumn({
+    name: 'fecha_modificacion',
+    type: 'timestamptz',
+    default: () => 'CURRENT_TIMESTAMP',
   })
-  fechaModificacion: Date | null;
+  fechaModificacion: Date;
 
   @Column("integer", { name: "usuario_id" })
   usuarioId: number;
