@@ -32,6 +32,22 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
         );
 
     }
+      async getAllCalificacionesByInscripcionId(id:number){
+        const aulas = await this.inscDocenteCalificacionRepositorio.findAllCalificacionesByInscripcionId(id);
+        if(aulas.length > 0){
+            return this._serviceResp.respuestaHttp201(
+                aulas,
+                'Existen resultados encontrados !!',
+                '',
+            );
+        }
+        return this._serviceResp.respuestaHttp404(
+            "",
+            'No se encontraron resultados!!',
+            '',
+        );
+
+    }
       async crearInscripcionDocenteCalificacion (dto: CreateInstitutoInscripcionDocenteCalificacionDto[]) {
         console.log("lista array inicio");
         console.log(dto);
