@@ -55,7 +55,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         .select([
             'ad.id',
             'ad.cuantitativa',
-            'n.notaTipo',
+            'n.nota',
             'me.modalidadEvaluacion',
             'm.id as matricula_id',
             'ie.id as institucion_educativa_estudiante_id',
@@ -66,6 +66,22 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
             'p.materno as materno',
         ])
           .where("ad.aulaId = :id ", { id })
+          .getRawMany();
+    }
+    async findAllCalificacionesByInscripcionId(id){
+        return  await this.dataSource.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
+        .createQueryBuilder("ad")
+        .innerJoinAndSelect("ad.notaTipo", "n")
+        .innerJoinAndSelect("ad.modalidadEvaluacionTipo", "me")
+        .select([
+            'ad.id as id',
+            'ad.cuantitativa as cuantitativa',
+            'n.nota as nota_tipo',
+            'me.modalidadEvaluacion as modalidad_evaluacion',
+            'me.id as modalidad_id',
+            'n.id as nota_tipo_id',
+        ])
+          .where("ad.institutoEstudianteInscripcionId = :id ", { id })
           .getRawMany();
     }
 

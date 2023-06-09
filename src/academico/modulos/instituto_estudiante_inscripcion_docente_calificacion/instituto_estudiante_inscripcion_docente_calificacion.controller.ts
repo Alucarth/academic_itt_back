@@ -16,6 +16,10 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionController {
     async getAllCalificacionesByAulaId(@Param('id') id: number,){
         return await this.inscripcionDocenteCalificacionService.getAllCalificacionesByAulaId(id);
     }
+    @Get('inscripcion/:id')
+    async getAllCalificacionesByInscripcionId(@Param('id') id: number,){
+        return await this.inscripcionDocenteCalificacionService.getAllCalificacionesByInscripcionId(id);
+    }
     @Post()
     async createOfertaCurricular(@Body() dto: CreateInstitutoInscripcionDocenteCalificacionDto[]){
         return  await this.inscripcionDocenteCalificacionService.crearInscripcionDocenteCalificacion(dto);        
