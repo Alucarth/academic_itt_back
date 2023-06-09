@@ -1156,6 +1156,7 @@ export class InscripcionService {
               aula.id as aula_id, 
               paralelo_tipo.id as paralelo_tipo_id, 
               paralelo_tipo.paralelo, 
+              concat((select substring(to_char(hora_inicio,'HH24:MI'),1,5) from aula_detalle where aula_id = aula.id), '-',(select substring(to_char(hora_fin,'HH24:MI'),1,5) from aula_detalle where aula_id = aula.id)) as horario,
               aula.activo,
               0 as inscrito
             FROM
