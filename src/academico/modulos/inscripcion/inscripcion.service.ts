@@ -1248,4 +1248,78 @@ export class InscripcionService {
       console.log(dto);
     }
   }
+
+  async getCarrerasAutorizadas(ieSucursalId: number) {
+
+    const result = await this.inscripcionRepository.query(`
+    SELECT
+      institucion_educativa_sucursal.id as institucion_educativa_sucursal_id, 
+      institucion_educativa_sucursal.institucion_educativa_id, 
+      carrera_autorizada.id as carrera_autorizada_id, 
+      carrera_tipo.carrera, 
+      carrera_autorizada_resolucion.descripcion as carrera_autorizada_resolucion_descripcion, 
+      carrera_autorizada_resolucion.numero_resolucion as carrera_autorizada_resolucion_numero_resolucion, 
+      carrera_autorizada_resolucion.fecha_resolucion as carrera_autorizada_resolucion_fecha_resolucion, 
+      nivel_academico_tipo.nivel_academico, 
+      nivel_academico_tipo.abreviacion, 
+      intervalo_gestion_tipo.intervalo_gestion as regimen_estudio, 
+      instituto_plan_estudio_carrera.plan_estudio_carrera_id, 
+      instituto_plan_estudio_carrera.carrera_autorizada_id as instituto_plan_estudio_carrera_carrera_autorizada_id, 
+      plan_estudio_resolucion.id as plan_estudio_resolucion_id, 
+      plan_estudio_resolucion.descripcion as plan_estudio_resolucion_descripcion, 
+      plan_estudio_resolucion.numero_resolucion as plan_estudio_resolucion_numero_resolucion, 
+      plan_estudio_resolucion.fecha_resolucion as plan_estudio_resolucion_fecha_resolucion, 
+      plan_estudio_resolucion.activo
+    FROM
+      carrera_autorizada
+      INNER JOIN
+      institucion_educativa_sucursal
+      ON 
+        carrera_autorizada.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id
+      INNER JOIN
+      carrera_tipo
+      ON 
+        carrera_autorizada.carrera_tipo_id = carrera_tipo.id
+      INNER JOIN
+      carrera_autorizada_resolucion
+      ON 
+        carrera_autorizada.id = carrera_autorizada_resolucion.carrera_autorizada_id
+      INNER JOIN
+      nivel_academico_tipo
+      ON 
+        carrera_autorizada_resolucion.nivel_academico_tipo_id = nivel_academico_tipo.id
+      INNER JOIN
+      intervalo_gestion_tipo
+      ON 
+        carrera_autorizada_resolucion.intervalo_gestion_tipo_id = intervalo_gestion_tipo.id
+      INNER JOIN
+      instituto_plan_estudio_carrera
+      ON 
+        carrera_autorizada.id = instituto_plan_estudio_carrera.carrera_autorizada_id
+      INNER JOIN
+      plan_estudio_carrera
+      ON 
+        carrera_tipo.id = plan_estudio_carrera.carrera_tipo_id AND
+        instituto_plan_estudio_carrera.plan_estudio_carrera_id = plan_estudio_carrera.id AND
+        intervalo_gestion_tipo.id = plan_estudio_carrera.intervalo_gestion_tipo_id AND
+        nivel_academico_tipo.id = plan_estudio_carrera.nivel_academico_tipo_id
+      INNER JOIN
+      plan_estudio_resolucion
+      ON 
+        plan_estudio_carrera.plan_estudio_resolucion_id = plan_estudio_resolucion.id
+    WHERE
+      institucion_educativa_sucursal.id = ${ieSucursalId} 
+    order by 4
+
+  `);
+
+  return this._serviceResp.respuestaHttp200(
+    result,
+    "Registro Encontrado !!",
+    ""
+  );
+
+  }
+
+
 }

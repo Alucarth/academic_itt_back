@@ -158,4 +158,18 @@ export class InscripcionController {
       parseInt(carreraAutorizadaId)
     );
   }
+
+  @ApiOperation({
+    summary: "Devuelve las carreras que tengan resoluciones",
+  })
+  @Get("/carreras-autorizadas/ie/:ieSucursalId")
+  async getCarrerasAutizadas(
+    @Param("ieSucursalId") ieSucursalId: string
+  ) {
+    return await this.inscripcionService.getCarrerasAutorizadas(
+      parseInt(ieSucursalId)
+    );
+  }
+
+
 }
