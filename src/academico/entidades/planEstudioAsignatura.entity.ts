@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -25,18 +26,17 @@ export class PlanEstudioAsignatura {
   @Column({ type: 'integer', name: 'horas' })
   horas: number;
   
-  @Exclude()
-  @UpdateDateColumn({
+  @CreateDateColumn({
     name: 'fecha_registro',
-    type: 'timestamptz',
+    type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
   fechaRegistro: Date;
 
-  @Exclude()
+  
   @UpdateDateColumn({
     name: 'fecha_modificacion',
-    type: 'timestamptz',
+    type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
   fechaModificacion: Date;
@@ -72,3 +72,7 @@ export class PlanEstudioAsignatura {
   planesAsignaturasReglas: PlanEstudioAsignaturaRegla[];
 
 }
+function CreatedDateColumn(arg0: { name: string; type: string; default: () => string; }) {
+  throw new Error('Function not implemented.');
+}
+

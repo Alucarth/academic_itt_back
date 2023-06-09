@@ -7,6 +7,7 @@ import { EntityManager, Repository } from 'typeorm';
 import { PlanEstudioAsignaturaReglaRepository } from '../plan_estudio_asignatura_regla/plan_estudio_asignatura_regla.repository';
 import { CreatePlanAsignaturaPrerequisitoDto } from './dto/createPlanAsignaturaPrerequisito.dto';
 import { CreatePlanEstudioAsignaturaDto } from './dto/createPlanEstudioAsignatura.dto';
+import { UpdatePlanEstudioAsignaturaDto } from './dto/updatePlanEstudioAsignatura.dto';
 import { PlanEstudioAsignaturaRepository } from './plan_estudio_asignatura.repository';
 
 @Injectable()
@@ -33,6 +34,11 @@ export class PlanEstudioAsignaturaService {
         return cursos
     }
     
+    async getById(id: number){
+      const planAsignatura = await this.planEstudioAsignaturaRepository.getOneById(id);
+          return planAsignatura;
+    }
+
     async getAsignaturasByPlanRegimen(idplan:number, idregimen:number){
         const cursos = await this.planEstudioAsignaturaRepository.findAsignaturasByPlanRegimen(idplan, idregimen);
         if(cursos){
@@ -190,4 +196,77 @@ export class PlanEstudioAsignaturaService {
               '',
           );
       }
+
+      async editPlanEstudioAsignaturaById(id: number, dto:UpdatePlanEstudioAsignaturaDto)
+      {
+          const dato = await this.getById(id);
+        if(dato){
+          const res = await this.planEstudioAsignaturaRepository.updatePlanAsignaturaById(id,dto);
+        
+          const regla = await this.pearRepository.findOneBy({
+            'planEstudioAsignaturaId':id,
+          });
+          const anterior = await this.getOneByPlanAsignatura(dato.planEstudioCarreraId, dto.prerequisito_id);
+
+          if(regla){ 
+              if(dto.prerequisito_id>0 && dto.prerequisito_id!=regla.anteriorPlanEstudioAsignaturaId){
+              //actualizamos el nuevo prerequisito
+              if(anterior){
+                    await this.pearRepository
+                        .createQueryBuilder()
+                        .update(PlanEstudioAsignaturaRegla)
+                        .set(
+                          {
+                              anteriorPlanEstudioAsignaturaId: anterior.id,
+                          },
+                        )
+                        .where({id:regla.id})
+                        .execute();
+                }
+            }
+            //se eliminara el prerequsito si ya es 0 y existe
+            if(dto.prerequisito_id==0 && regla){
+              await this.pearRepository
+              .createQueryBuilder()
+              .delete()
+              .from(PlanEstudioAsignaturaRegla)
+              .where({id:regla.id})
+              .execute();
+            }
+          }
+          if(dto.prerequisito_id>0 && !regla){
+            await this.pearRepository
+            .createQueryBuilder()
+            .insert()
+            .into(PlanEstudioAsignaturaRegla)
+            .values([
+              {
+                  planEstudioAsignaturaId: dato.id,
+                  anteriorPlanEstudioAsignaturaId: anterior.id,
+                  activo:true,
+                  usuarioId: 1,
+              },
+            ])
+            .returning("id")
+            .execute();
+          }
+
+          if(res){
+              console.log("res:", res);
+              console.log("Asignatura actualizado");
+              return this._serviceResp.respuestaHttp202(
+              res,
+              "Registro Actualizado !!",
+              ""
+              );
+          }
+          //si se desea actualizar el prerequsiito
+        }else{
+          return this._serviceResp.respuestaHttp500(
+          "",
+          "Error, el registro no existe  !!",
+          ""
+          );
+      }
+    }
 }

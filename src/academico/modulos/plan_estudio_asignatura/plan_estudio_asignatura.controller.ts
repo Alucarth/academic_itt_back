@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { CreatePlanEstudioAsignaturaDto } from './dto/createPlanEstudioAsignatura.dto';
 import { CreatePlanAsignaturaPrerequisitoDto } from './dto/createPlanAsignaturaPrerequisito.dto';
 import { PlanEstudioAsignaturaService } from './plan_estudio_asignatura.service';
+import { UpdatePlanEstudioAsignaturaDto } from './dto/updatePlanEstudioAsignatura.dto';
 
 @Controller('plan-estudio-asignatura')
 export class PlanEstudioAsignaturaController {
@@ -44,5 +45,11 @@ export class PlanEstudioAsignaturaController {
       console.log("-*************-");
       return await this.planEstudioAsignaturaService.crearPlanAsignaturaPrerequisito(dto);
       //return await this.planEstudioAsignaturaService.createPlanAsignaturaPre(dto);
+    }
+
+    @Put(':id')
+    async editOperativoCarrera(@Param('id') id: number, @Body() dto: UpdatePlanEstudioAsignaturaDto){
+        const data = await this.planEstudioAsignaturaService.editPlanEstudioAsignaturaById(id,dto);
+        return data;
     }
 }

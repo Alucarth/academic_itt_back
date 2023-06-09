@@ -20,4 +20,8 @@ export class AulaService {
         const aula = await this.aulaRepository.getByAulaId(id);
         return aula;
     }
+    async getCalificacionesById(id:number){
+        const aula = await this.aulaRepository.getCalificacionesByAulaId(id);
+        return aula;
+    }
 }

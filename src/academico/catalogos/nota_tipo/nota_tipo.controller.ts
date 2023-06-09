@@ -11,8 +11,14 @@ export class NotaTipoController {
     async getAll(){
         return await this.notaTipoService.getAll();
     }
+    @Get('lista-itt')
+    async getNotasTiposItt(){
+        console.log("notasTipos");
+        return await this.notaTipoService.getNotasTipos();
+    }
     @Get(':id')
     async getById(@Param("id", ParseIntPipe) id: number){
         return await this.notaTipoService.getById(id);
     }
+    
 }

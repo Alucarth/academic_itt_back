@@ -15,4 +15,8 @@ export class AulaController {
     async getById(@Param("id", ParseIntPipe) id: number){
         return await this.aulaService.getById(id);
     }
+    @Get('calificaciones/:id')
+    async getCalificacionesById(@Param("id", ParseIntPipe) id: number){
+        return await this.aulaService.getCalificacionesById(id);
+    }
 }
