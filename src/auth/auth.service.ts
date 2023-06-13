@@ -141,7 +141,7 @@ export class AuthService {
           arrayRoles.push({rol_tipo_id: rol_tipo, rol: rol_txt})
         }
 
-        arrayInstitutos.push(
+        arrayData.push(
           {
             ie_id:  institutos[index]['institucion_educativa_id'],
 	          ie_sid:  institutos[index]['institucion_educativa_sucursal_id'],
@@ -152,7 +152,10 @@ export class AuthService {
         
       }
       
-      arrayData.push(arrayInstitutos);
+      //arrayData.push(arrayInstitutos);
+      
+
+
       //vemos si es DGESTTLA
       //TODO: habra superadmin ?
 
