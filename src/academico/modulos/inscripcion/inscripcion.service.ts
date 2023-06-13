@@ -1506,6 +1506,7 @@ export class InscripcionService {
       nivel_academico_tipo.nivel_academico, 
       nivel_academico_tipo.abreviacion, 
       intervalo_gestion_tipo.intervalo_gestion as regimen_estudio, 
+      instituto_plan_estudio_carrera.id as instituto_plan_estudio_carrera_id, 
       instituto_plan_estudio_carrera.plan_estudio_carrera_id, 
       instituto_plan_estudio_carrera.carrera_autorizada_id as instituto_plan_estudio_carrera_carrera_autorizada_id, 
       plan_estudio_resolucion.id as plan_estudio_resolucion_id, 
