@@ -1050,7 +1050,13 @@ export class InscripcionService {
   }
 
 
-  async getAllMateriasInscripcionAntiguo(carreraAutorizadaId: number, matriculaEstudianteId:number) {
+  /**
+   * esta version es SIN NOTAS, solo muestra las materias segun corresponda semestre o anual
+   * @param carreraAutorizadaId 
+   * @param matriculaEstudianteId 
+   * @returns 
+   */
+  async getAllMateriasInscripcionAntiguoSINNOTAS(carreraAutorizadaId: number, matriculaEstudianteId:number) {
     
     //con carrera autorizada, obtenemos el pla_estudio_carrera_id, OJO SOLO  DEBERIA HABER UNO ?
 
@@ -1067,6 +1073,242 @@ export class InscripcionService {
         ""
       );
     }
+
+    const plan_estudio_carrera_id = planEstudioCarreraAux[0]['plan_estudio_carrera_id'];
+    console.log(plan_estudio_carrera_id);
+    
+    const result = await this.inscripcionRepository.query(`
+      SELECT
+        plan_estudio_asignatura.id, 
+        plan_estudio_asignatura.plan_estudio_carrera_id, 
+        plan_estudio_asignatura.regimen_grado_tipo_id, 
+        plan_estudio_asignatura.asignatura_tipo_id, 
+        plan_estudio_asignatura_regla.anterior_plan_estudio_asignatura_id, 
+        plan_estudio_asignatura_regla.activo, 
+        concat(asignatura_tipo.abreviacion, ' ', asignatura_tipo.asignatura) AS materia, 
+        (select concat(abreviacion, ' ',asignatura) from asignatura_tipo where id in (select asignatura_tipo_id from plan_estudio_asignatura where id = anterior_plan_estudio_asignatura_id)) AS prerequisito, 
+        instituto_plan_estudio_carrera.carrera_autorizada_id, 
+        regimen_grado_tipo.intervalo_gestion_tipo_id, 
+        regimen_grado_tipo.regimen_grado, 
+        regimen_grado_tipo.sigla, 
+        oferta_curricular.id as oferta_curricular_id, 
+        oferta_curricular.gestion_tipo_id, 
+        oferta_curricular.periodo_tipo_id
+      FROM
+        plan_estudio_asignatura
+        LEFT JOIN
+        plan_estudio_asignatura_regla
+        ON 
+          plan_estudio_asignatura.id = plan_estudio_asignatura_regla.plan_estudio_asignatura_id
+        INNER JOIN
+        asignatura_tipo
+        ON 
+          plan_estudio_asignatura.asignatura_tipo_id = asignatura_tipo.id
+        INNER JOIN
+        plan_estudio_carrera
+        ON 
+          plan_estudio_asignatura.plan_estudio_carrera_id = plan_estudio_carrera.id
+        INNER JOIN
+        instituto_plan_estudio_carrera
+        ON 
+          plan_estudio_carrera.id = instituto_plan_estudio_carrera.plan_estudio_carrera_id
+        INNER JOIN
+        regimen_grado_tipo
+        ON 
+          plan_estudio_asignatura.regimen_grado_tipo_id = regimen_grado_tipo.id
+        INNER JOIN
+        oferta_curricular
+        ON 
+          plan_estudio_asignatura.id = oferta_curricular.plan_estudio_asignatura_id
+      WHERE
+        plan_estudio_asignatura.plan_estudio_carrera_id = ${plan_estudio_carrera_id}
+      ORDER BY
+        3 ASC, 
+        7 ASC
+    `);
+
+    //un distinct de las etapas o grados 
+    const etapas = result.map(item => item.regimen_grado)
+    .filter((value, index, self) => self.indexOf(value) === index)
+
+    console.log(etapas);
+    
+    let dataResult = [];
+   
+    for (let i = 0; i < etapas.length; i++) {   
+      
+     
+        let obj1 = { regimen_grado : etapas[i], asignaturas: [] };        
+        //filtramos todo lo que sea de la etapa
+
+        let obj2 = result.filter(obj => {
+          return obj.regimen_grado === etapas[i];
+        });
+
+        console.log('obj2 --> ', obj2);
+        //return;
+
+        for (let index = 0; index < obj2.length; index++) {   
+
+          let res_paralelos = await this.inscripcionRepository.query(`
+            SELECT
+              
+              case trim(concat(persona.paterno, ' ', persona.materno, ' ', persona.nombre))
+              when '' then 'Sin Asignacion'
+              else trim(concat(persona.paterno, ' ', persona.materno, ' ', persona.nombre))
+              end
+              as maestro,
+              oferta_curricular.id as oferta_curricular_id, 
+              aula.id as aula_id, 
+              paralelo_tipo.id as paralelo_tipo_id, 
+              paralelo_tipo.paralelo, 
+              concat((select substring(to_char(hora_inicio,'HH24:MI'),1,5) from aula_detalle where aula_id = aula.id), '-',(select substring(to_char(hora_fin,'HH24:MI'),1,5) from aula_detalle where aula_id = aula.id)) as horario,
+              aula.activo,
+              0 as inscrito
+            FROM
+              oferta_curricular
+              INNER JOIN
+              aula
+              ON 
+                oferta_curricular.id = aula.oferta_curricular_id
+              INNER JOIN
+              paralelo_tipo
+              ON 
+                aula.paralelo_tipo_id = paralelo_tipo.id
+              left JOIN
+              aula_docente
+              ON 
+                aula.id = aula_docente.aula_id
+              left JOIN
+              maestro_inscripcion
+              ON 
+                aula_docente.maestro_inscripcion_id = maestro_inscripcion.id
+              left JOIN
+              persona
+              ON 
+                maestro_inscripcion.persona_id = persona.id
+              where 
+              oferta_curricular.id = ${obj2[index].oferta_curricular_id}
+          `);
+
+            for (let j=0; j < res_paralelos.length; j++){
+              //por cada paralelo vemos si esta incrito
+      
+              const existe = await this.inscripcionRepository.query(`
+              select count(*) as existe 
+                from 
+                instituto_estudiante_inscripcion
+                where
+                  matricula_estudiante_id = ${matriculaEstudianteId} and
+                  aula_id = ${res_paralelos[j].aula_id} and 
+                  oferta_curricular_id = ${res_paralelos[j].oferta_curricular_id}      
+                `);
+      
+              if (parseInt(existe[0].existe) != 0) {
+                res_paralelos[j].inscrito = 1;
+              }
+      
+            }
+
+          obj2[index].paralelos = res_paralelos;
+
+        }
+
+        //obj1.asignaturas.push(obj2);
+        obj1.asignaturas = obj2;
+        dataResult.push(obj1);
+    }
+    //console.log('dataResult --> ', dataResult);
+
+    
+
+    return this._serviceResp.respuestaHttp200(
+      dataResult,
+      "Registro Encontrado !!",
+      ""
+    );
+  }
+
+  async getAllMateriasInscripcionAntiguo(carreraAutorizadaId: number, matriculaEstudianteId:number) {
+    
+    //con carrera autorizada, obtenemos el pla_estudio_carrera_id, OJO SOLO  DEBERIA HABER UNO ?
+
+    //SE TOMA EN COSIDERACION LAS NOTAS DE APROBACION
+    //REQUISITO QUE EN LA TABLA instituto_estudiante_inscripcion_docente_calificacion
+    //DEBE HABER LA INSERCION DE UN REGISTRO CON EL ULTIMO ESTADO 7 NOTA FINAL SEMESTRAL, 8 NOTA FINAL ANUAL
+
+    const planEstudioCarreraAux = await this.inscripcionRepository.query(`
+        select plan_estudio_carrera_id from instituto_plan_estudio_carrera 
+        where carrera_autorizada_id = ${carreraAutorizadaId}
+    `);
+
+    if(planEstudioCarreraAux.length == 0){
+      return this._serviceResp.respuestaHttp404(
+        carreraAutorizadaId,
+        "No existe plan de estudio para esta carrera !!",
+        ""
+      );
+    }
+
+    //OBTENEMOS LA PERSONA ID PARA VER SUS NOTAS
+    const personaAux = await this.inscripcionRepository.query(`
+    SELECT
+      persona.id as persona_id, 
+      persona.carnet_identidad, 
+      matricula_estudiante.id as matricula_estudiante_id
+    FROM
+      matricula_estudiante
+      INNER JOIN
+      institucion_educativa_estudiante
+      ON 
+        matricula_estudiante.institucion_educativa_estudiante_id = institucion_educativa_estudiante.id
+      INNER JOIN
+      persona
+      ON 
+        institucion_educativa_estudiante.persona_id = persona.id
+      where 
+      matricula_estudiante.id = ${matriculaEstudianteId}
+    `);
+    const persona_id = personaAux[0]['persona_id'];
+
+    // OJO: DEBE HABER SOLO UNO...el caso para 2 no esta definido.
+    //si fuera semestral
+    let estado_final = '7';
+    const intervalo_carrera = await this.inscripcionRepository.query(`
+      select intervalo_gestion_tipo_id from carrera_autorizada_resolucion where carrera_autorizada_id = ${carreraAutorizadaId}  order by id desc limit 1
+    `);
+
+    if(intervalo_carrera.length == 0) {
+
+    }else{
+      //vemos si es anual
+      if(intervalo_carrera[0]['intervalo_gestion_tipo_id'] == 4){
+        //es anual
+        let estado_final = '8';
+      }
+    }
+
+    let sqlnotas = `
+    select oferta_curricular_id as instituto_estudiante_inscripcion_id_no_aprobados from
+    (
+    select iei.oferta_curricular_id,
+    (select count(id) from instituto_estudiante_inscripcion_docente_calificacion
+    where  instituto_estudiante_inscripcion_id = iei.id and 
+    modalidad_evaluacion_tipo_id = ${estado_final} and 
+    nota_tipo_id = 1 and 
+    cuantitativa >= 61) as aprobado
+    
+    FROM
+    instituto_estudiante_inscripcion as iei
+    where
+    matricula_estudiante_id in  (
+    select id from matricula_estudiante where 
+    institucion_educativa_estudiante_id in (select id from institucion_educativa_estudiante where persona_id = ${persona_id} )
+    )
+    ) as data 
+    where aprobado = 1
+    `;
+
 
     const plan_estudio_carrera_id = planEstudioCarreraAux[0]['plan_estudio_carrera_id'];
     console.log(plan_estudio_carrera_id);
