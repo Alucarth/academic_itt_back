@@ -67,7 +67,8 @@ export class PersonaService {
       };
       console.log("personasegip", personasegip);
 
-      const segipdata = await this.segipService.contrastar(personasegip, 1);
+      //const segipdata = await this.segipService.contrastar(personasegip, 1);
+      const segipdata = await this.segipService.contrastar(personasegip, dto.cedulaTipoId);
       //console.log("segipdata", segipdata);
       if (segipdata["finalizado"] === false) {
         //return { message: "Datos SEGIP no corresponden", segipdata };
