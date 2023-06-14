@@ -317,8 +317,6 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             console.log(crearResult);
            
        });
-        // insertar o actualizar promedios
-        await this.crearPromedioCalificacionByAulaId(dto[0].aula_id,dto[0].periodo_tipo_id);
 
         console.log(resultado);
            return this._serviceResp.respuestaHttp201(

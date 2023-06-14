@@ -39,10 +39,6 @@ export class CreateInstitutoInscripcionDocenteCalificacionDto {
     @IsNumber()
     aula_docente_id: number;
   
-    @IsNotEmpty({ message: "Debe ingresar al aula" })
-    @IsNumber()
-    aula_id: number;
-  
     @IsNotEmpty({ message: "Debe ingresar el estudiane inscrito" })
     @IsNumber()
     instituto_estudiante_inscripcion_id: number;
