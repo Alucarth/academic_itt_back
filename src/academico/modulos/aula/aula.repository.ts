@@ -17,6 +17,34 @@ constructor(private dataSource: DataSource) {}
             },
         });
     }
+    async getDatoAulaPeriodo(id){
+
+        return  await this.dataSource.getRepository(Aula)
+        .createQueryBuilder('a')
+        .innerJoin('a.ofertaCurricular', 'o')
+        .where('a.id = :id', {id})
+        .select([
+            'a.id as aula_id',
+            'a.cupo as cupo',
+            'o.id as oferta_id',
+            'o.periodo_tipo_id as periodo_tipo_id',
+        ])
+        .getRawOne();
+    }
+    async getDatoAulaDocente(id){
+
+        return  await this.dataSource.getRepository(Aula)
+        .createQueryBuilder('a')
+        .innerJoin('a.aulasDocentes', 'd')
+        .where('a.id = :id', {id})
+        .andWhere('d.bajaTipoId = 0')
+        .select([
+            'a.id as aula_id',
+            'd.id as aula_docente_id',
+            
+        ])
+        .getRawOne();
+    }
     async getByAulaId(id:number){
 
         return  await this.dataSource.getRepository(Aula)

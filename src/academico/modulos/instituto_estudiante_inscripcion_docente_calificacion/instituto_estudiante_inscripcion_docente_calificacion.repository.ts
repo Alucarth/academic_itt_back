@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common'
 import { AulaDocente } from 'src/academico/entidades/aulaDocente.entity';
 import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
+import { InstitutoEstudianteInscripcion } from 'src/academico/entidades/InstitutoEstudianteInscripcion.entity';
 import { InstitutoEstudianteInscripcionDocenteCalificacion } from 'src/academico/entidades/institutoEstudianteInscripcionDocenteCalificacion.entity';
 import { DataSource, EntityManager } from 'typeorm'
 import { CreateCarreraAutorizadaResolucionDto } from '../carrera_autorizada_resolucion/dto/createCarreraAutorizadaResolucion.dto';
 
 @Injectable()
 export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
+   
    
     
     constructor(private dataSource: DataSource) {}
@@ -18,6 +20,32 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
     
     async findAll(){
         return  await this.dataSource.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion).find();
+        
+    }
+    async findCalificacionesByModalidadAula(modalidad_id, docente_id){
+        return  await this.dataSource.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion).findBy(
+            {'modalidadEvaluacionTipoId':modalidad_id,
+             'aulaDocenteId':docente_id,
+        });
+        
+    }
+    async findCalificacionesByDato(item){
+        return  await this.dataSource.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion).findOneBy(
+            {'modalidadEvaluacionTipoId':item.modalidad_evaluacion_tipo_id,
+             'aulaDocenteId':item.aula_docente_id,
+             'notaTipoId':item.nota_tipo_id,
+             'periodoTipoId':item.periodo_tipo_id,
+             'institutoEstudianteInscripcionId':item.instituto_estudiante_inscripcion_id,
+        });
+        
+    }
+    async findPromedioByDato(item, modalidad){
+        return  await this.dataSource.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion).findOneBy(
+            {'modalidadEvaluacionTipoId':modalidad,
+             'notaTipoId':item.nota_tipo_id,
+             'periodoTipoId':item.periodo_tipo_id,
+             'institutoEstudianteInscripcionId':item.instituto_estudiante_inscripcion_id,
+        });
         
     }
 
@@ -103,7 +131,254 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
           });
         return await transaction.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion).save(calificaciones);
     }
+    async crearPromedios(idUsuario, notas,docente_id, modalidad_id, transaction) {
 
+      const calificaciones: InstitutoEstudianteInscripcionDocenteCalificacion[] = notas.map((item) => {
+        
+          const calificacion  = new InstitutoEstudianteInscripcionDocenteCalificacion()
+          calificacion.institutoEstudianteInscripcionId = item.instituto_estudiante_inscripcion_id;
+          calificacion.aulaDocenteId = docente_id;
+          calificacion.periodoTipoId = item.periodo_tipo_id;
+          calificacion.cuantitativa = item.total;
+          calificacion.cualitativa = 'FINAL';
+          calificacion.valoracionTipoId = 1; //nota normal
+          calificacion.notaTipoId = item.nota_tipo_id;
+          calificacion.modalidadEvaluacionTipoId = modalidad_id;
+          calificacion.usuarioId = idUsuario;
+          return calificacion;
+        });
+      return await transaction.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion).save(calificaciones);
+  }
+    /*
+    async crearOneInscripcionDocenteCalificacion(idUsuario, item, transaction) {
+
+       // const calificaciones: InstitutoEstudianteInscripcionDocenteCalificacion[] = notas.map((item) => {
+          
+            const calificacion  = new InstitutoEstudianteInscripcionDocenteCalificacion()
+            calificacion.institutoEstudianteInscripcionId = item.instituto_estudiante_inscripcion_id;
+            calificacion.aulaDocenteId = item.aula_docente_id;
+            calificacion.periodoTipoId = item.periodo_tipo_id;
+            calificacion.cuantitativa = item.cuantitativa;
+            calificacion.cualitativa = item.cualitativa;
+            calificacion.valoracionTipoId = 1; //nota normal
+            calificacion.notaTipoId = item.nota_tipo_id;
+            calificacion.modalidadEvaluacionTipoId = item.modalidad_evaluacion_tipo_id;
+            calificacion.usuarioId = idUsuario;
+          //  return calificacion;
+          //});
+        return await transaction.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion).save(calificacion);
+    }*/
+    async crearOneInscripcionDocenteCalificacion(
+      idUsuario, 
+      item, 
+      modalidad, 
+      docente, 
+      transaction) {
+
+      return   await transaction
+      .createQueryBuilder()
+      .insert()
+      .into(InstitutoEstudianteInscripcionDocenteCalificacion)
+      .values({
+        institutoEstudianteInscripcionId : item.instituto_estudiante_inscripcion_id,
+        aulaDocenteId : docente,
+        periodoTipoId : item.periodo_tipo_id,
+        cuantitativa : item.cuantitativa,
+        cualitativa : item.cualitativa,
+        valoracionTipoId : 1, //nota normal
+        notaTipoId : item.nota_tipo_id,
+        modalidadEvaluacionTipoId :modalidad,
+        usuarioId : idUsuario,
+      })
+      .execute();
+    }
+
+    async actualizarDatosCalificaciones(
+        id: number,
+        idUsuario: number,
+        item:any,
+        transaction: EntityManager
+      ) {
+        
+        return await transaction
+          .createQueryBuilder()
+          .update(InstitutoEstudianteInscripcionDocenteCalificacion)
+          .set({
+            cuantitativa:item.cuantitativa
+          })
+          .where({ id: id })
+          .execute();
+      }
+
+      async actualizaPromedio(
+        idUsuario: number,
+        id: number,
+        item:any,
+ 
+      ) {
+        
+        return await this.dataSource.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
+          .createQueryBuilder()
+          .update(InstitutoEstudianteInscripcionDocenteCalificacion)
+          .set({
+            cuantitativa:item.total
+          })
+          .where({ id: id })
+          .execute();
+      }
+      
+      async actualizaEstadoMatricula(
+        id: number,
+        estado:number,
+ 
+      ) {
+        console.log("actualiza_estado")
+        console.log(id)
+        console.log(estado)
+        return await this.dataSource.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
+          .createQueryBuilder()
+          .update(InstitutoEstudianteInscripcion)
+          .set({
+            estadoMatriculaTipoId: estado,
+          })
+          .where({ id: id })
+          .execute();
+      }
+  
+
+      async findAllPromedioSemestralByAulaId(id: number) {
+        
+        const result = await this.dataSource.query(`
+    
+        SELECT 
+        c.instituto_estudiante_inscripcion_id, 
+        c.nota_tipo_id , 
+        SUM(c.cuantitativa)/2 as cuantitativa,
+        COUNT(c.modalidad_evaluacion_tipo_id) as cantidad,
+        c.periodo_tipo_id
+        FROM 
+        instituto_estudiante_inscripcion_docente_calificacion c, 
+        instituto_estudiante_inscripcion i 
+        WHERE 
+        i.aula_id = ${id}  
+        AND i.id = c.instituto_estudiante_inscripcion_id 
+        AND c.modalidad_evaluacion_tipo_id in (1,2) 
+        GROUP BY 
+        c.instituto_estudiante_inscripcion_id, c.nota_tipo_id, c.periodo_tipo_id
+        HAVING
+        COUNT(c.modalidad_evaluacion_tipo_id)=2
+        ORDER BY 
+        c.instituto_estudiante_inscripcion_id , c.nota_tipo_id 
+        `);
+        console.log("resultSemestral== ", result);
+        return result;
+      }
+      async findAllPromedioAnualByAulaId(id: number) {
+        
+        const result = await this.dataSource.query(`
+    
+        SELECT 
+        c.instituto_estudiante_inscripcion_id, 
+        c.nota_tipo_id , 
+        SUM(c.cuantitativa)/4 as cuantitativa,
+        COUNT(c.modalidad_evaluacion_tipo_id) as cantidad,
+        c.periodo_tipo_id
+        FROM 
+        instituto_estudiante_inscripcion_docente_calificacion c, 
+        instituto_estudiante_inscripcion i 
+        WHERE 
+        i.aula_id = ${id}  
+        AND i.id = c.instituto_estudiante_inscripcion_id 
+        AND c.modalidad_evaluacion_tipo_id in (3,4,5,6) 
+        GROUP BY 
+        c.instituto_estudiante_inscripcion_id, c.nota_tipo_id, c.periodo_tipo_id
+        HAVING
+        COUNT(c.modalidad_evaluacion_tipo_id)=4
+        ORDER BY 
+        c.instituto_estudiante_inscripcion_id , c.nota_tipo_id 
+    
+        `);
+    
+        console.log("resultAnual: ", result);
+    
+        return result;
+      }
+
+      async findAllPromedioAnualByEstudianteId(id: number) {
+        
+        const result = await this.dataSource.query(`
+        SELECT 
+        c.instituto_estudiante_inscripcion_id, 
+        c.nota_tipo_id , 
+        sum(c.cuantitativa)/4 as total,
+        count(c.modalidad_evaluacion_tipo_id ) as cantidad
+        FROM 
+        instituto_estudiante_inscripcion_docente_calificacion c
+        WHERE 
+        c.instituto_estudiante_inscripcion_id = ${id}  
+        AND c.modalidad_evaluacion_tipo_id in (3,4,5,6)
+        GROUP BY 
+        c.instituto_estudiante_inscripcion_id, c.nota_tipo_id , c.periodo_tipo_id
+        ORDER BY 
+        c.instituto_estudiante_inscripcion_id , c.nota_tipo_id 
+        `);
+    
+        console.log("result= ", result);
+    
+        return result;
+      }
+      async findAllEstadosFinalesByAulaId(id: number) {
+        
+        const result = await this.dataSource.query(`
+        SELECT 
+        c.instituto_estudiante_inscripcion_id, 
+        sum(c.cuantitativa) as total ,
+       case
+       	when sum(c.cuantitativa) >60 then 30
+       	else 43
+       end as estado
+         FROM 
+        instituto_estudiante_inscripcion_docente_calificacion c, 
+        instituto_estudiante_inscripcion i 
+        WHERE 
+        i.aula_id = ${id} 
+        AND i.id = c.instituto_estudiante_inscripcion_id 
+        AND c.modalidad_evaluacion_tipo_id in (7,8) 
+        GROUP BY 
+        c.instituto_estudiante_inscripcion_id, c.modalidad_evaluacion_tipo_id, c.periodo_tipo_id
+        ORDER BY 
+        c.instituto_estudiante_inscripcion_id
+        `);
+    
+        console.log("resultEstados= ", result);
+    
+        return result;
+      }
+
+      async findAllPromedioSemestralByEstudianteId(id: number) {
+       
+        
+        const result = await this.dataSource.query(`
+        SELECT 
+        c.instituto_estudiante_inscripcion_id, 
+        c.nota_tipo_id , 
+        sum(c.cuantitativa)/2 as total,
+        count(c.modalidad_evaluacion_tipo_id ) as cantidad
+        FROM 
+        instituto_estudiante_inscripcion_docente_calificacion c
+        WHERE 
+        c.instituto_estudiante_inscripcion_id = ${id}  
+        AND c.modalidad_evaluacion_tipo_id in (1,2)
+        GROUP BY 
+        c.instituto_estudiante_inscripcion_id, c.nota_tipo_id , c.periodo_tipo_id
+        ORDER BY 
+        c.instituto_estudiante_inscripcion_id , c.nota_tipo_id 
+        `);
+    
+        console.log("result= ", result);
+    
+        return result;
+      }
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
     }

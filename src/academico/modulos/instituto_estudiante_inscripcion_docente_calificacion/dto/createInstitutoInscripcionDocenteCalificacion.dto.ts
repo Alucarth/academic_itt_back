@@ -19,8 +19,8 @@ class InstitutoInscripcionDocenteCalificacion {
   @IsNumber()
   cuantitativa: number;
 
-  @IsNotEmpty({ message: "Debe ingresar la nota cualitativa" })
-  @IsNumber()
+  @IsOptional({ message: "Debe ingresar la nota cualitativa" })
+  @IsString()
   cualitativa: string;
 
   @IsNotEmpty({ message: "Debe ingresar el tipo_nota" })
@@ -34,6 +34,40 @@ class InstitutoInscripcionDocenteCalificacion {
 }
 
 export class CreateInstitutoInscripcionDocenteCalificacionDto {
+
+    @IsNotEmpty({ message: "Debe ingresar al aula y docente" })
+    @IsNumber()
+    aula_docente_id: number;
+  
+    @IsNotEmpty({ message: "Debe ingresar al aula" })
+    @IsNumber()
+    aula_id: number;
+  
+    @IsNotEmpty({ message: "Debe ingresar el estudiane inscrito" })
+    @IsNumber()
+    instituto_estudiante_inscripcion_id: number;
+  
+    @IsNotEmpty({ message: "Debe ingresar el aula" })
+    @IsNumber()
+    periodo_tipo_id: number;
+  
+    @IsNotEmpty({ message: "Debe ingresar la nota cuantitativa" })
+    @IsNumber()
+    cuantitativa: number;
+  
+    @IsOptional({ message: "Debe ingresar la nota cualitativa" })
+    @IsString()
+    cualitativa: string;
+  
+    @IsNotEmpty({ message: "Debe ingresar el tipo_nota" })
+    @IsNumber()
+    nota_tipo_id: number;
+  
+    @IsNotEmpty({ message: "Debe ingresar el tipo_nota" })
+    @IsNumber()
+    modalidad_evaluacion_tipo_id: number;
+    
+   
     @ValidateNested({ each: true })
     @Type(() => InstitutoInscripcionDocenteCalificacion)
     items: InstitutoInscripcionDocenteCalificacion[];

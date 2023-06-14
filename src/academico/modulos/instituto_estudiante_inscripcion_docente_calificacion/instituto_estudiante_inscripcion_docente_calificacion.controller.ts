@@ -20,8 +20,17 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionController {
     async getAllCalificacionesByInscripcionId(@Param('id') id: number,){
         return await this.inscripcionDocenteCalificacionService.getAllCalificacionesByInscripcionId(id);
     }
+    
+    @Get('promedios/aula-periodo/:id/:periodo')
+    async getAllPromedioCalificacionByAulaId(@Param('id') id: number, @Param('periodo') periodo: number){
+        return await this.inscripcionDocenteCalificacionService.createUpdatePromedioCalificacionByAulaId(id, periodo);
+    }
+    @Get('estados-finales/aula/:id')
+    async getAllEstadosFinalesByAulaId(@Param('id') id: number){
+        return await this.inscripcionDocenteCalificacionService.updateEstadosFinalesByAulaId(id);
+    }
     @Post()
-    async createOfertaCurricular(@Body() dto: CreateInstitutoInscripcionDocenteCalificacionDto[]){
+    async createInscripcionDocenteCalificacion(@Body() dto: CreateInstitutoInscripcionDocenteCalificacionDto[]){
         return  await this.inscripcionDocenteCalificacionService.crearInscripcionDocenteCalificacion(dto);        
     }
 

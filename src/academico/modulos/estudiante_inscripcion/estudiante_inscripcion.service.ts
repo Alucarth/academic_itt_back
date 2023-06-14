@@ -41,44 +41,7 @@ export class EstudianteInscripcionService {
         return dato
     }
     
-    async createEstudianteInscripcionOfertaNoFunciona (dto: CreateEstudianteInscripcionOfertaDto) {
-
-        const op = async (transaction: EntityManager) => {
-
-          const nuevaInscripcion =  await this.estudianteInscripcionRepositorio.createEstudianteInscripcionOferta(
-            dto,
-            transaction
-          )
-          
-          const crearResult = await this.estudianteInscripcionRepositorio.runTransaction(op)
-          
-          if(nuevaInscripcion?.id){
-              console.log(nuevaInscripcion.id);    
-              //Obtener todas las asignaturas
-              if(dto.ofertas.length > 0){
-                  //Crear la oferta academica 
-                  const resultado = await this.estudianteInscripcionOfertaAcademicaRepositorio.createEstudianteInscripcionOfertaAcademica(
-                      1, 
-                      nuevaInscripcion.id, 
-                      dto.ofertas, 
-                      transaction
-                  );   
-              }    
-          }
-          return nuevaInscripcion;
-        }
-        const crearResult = await this.estudianteInscripcionRepositorio.runTransaction(op)
-
-          if(crearResult){
-            return this._serviceResp.respuestaHttp201(
-                crearResult,
-                'Registro de curso y oferta Creado !!',
-                '',
-            );
-          }
-       
-
-    }
+   
 
     async createEstudianteInscripcionOferta (dto: CreateEstudianteInscripcionOfertaDto) {
             const dato = {
