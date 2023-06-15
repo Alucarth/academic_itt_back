@@ -24,7 +24,7 @@ export class OfertaCurricularService {
         @Inject(AulaDetalleRepository) 
         private aulaDetalleRepository: AulaDetalleRepository,
 
-         private _serviceResp: RespuestaSigedService, 
+        private _serviceResp: RespuestaSigedService, 
         
     ){}
 
@@ -91,7 +91,7 @@ export class OfertaCurricularService {
          console.log("servicio");
      
        const resultado = [];
-         dto.forEach(async item => {
+       for(const item of dto){
 
                 const op = async (transaction: EntityManager) => {
              
@@ -112,7 +112,7 @@ export class OfertaCurricularService {
                         if(nuevaOferta?.id){
                             console.log("INSERTADO OFERTA");
                             console.log(nuevaOferta.id);
-                            item.aulas.forEach(async aula => {
+                            for(const aula of item.aulas){
                                 const datoAula = {
                                     oferta_curricular_id: nuevaOferta.id,
                                     cupo: aula.cupo,
@@ -131,7 +131,7 @@ export class OfertaCurricularService {
                                         transaction
                                     );*/
                                 }
-                            });
+                            }
                         }
                     return nuevaOferta;
                 }
@@ -139,7 +139,7 @@ export class OfertaCurricularService {
                 if(crearResult){
                     resultado.push(crearResult);
                 }
-        });
+        }
         
            // console.log("fin");
             if(resultado.length>0){
@@ -161,7 +161,7 @@ export class OfertaCurricularService {
     async crear (dto: CreateOfertaCurricularDto[]) {
       
             try {
-                dto.forEach(async item => {
+              for(const item of dto){
                 //buscamos oferta
                 const oferta = await this.getOfertaByPlanAsignaturaGestionPeriodo(
                     item.instituto_plan_estudio_carrera_id,
@@ -196,7 +196,7 @@ export class OfertaCurricularService {
                 }
 
                 if(ofertaId>0){
-                    item.aulas.forEach(async aula => {
+                  for(const aula of item.aulas){
                         const datoAula =  await this.aulaRepository.getDatoAula(
                             ofertaId,
                             aula.paralelo_tipo_id
@@ -233,10 +233,10 @@ export class OfertaCurricularService {
                                     nuevos//aula.detalles
                                 );    
                             }
-                    });
+                  }
                 }
                 
-                });
+                }
                 return this._serviceResp.respuestaHttp201(
                     "",
                     "Registro Creado !!",

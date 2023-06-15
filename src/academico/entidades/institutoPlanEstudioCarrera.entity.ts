@@ -54,7 +54,7 @@ export class InstitutoPlanEstudioCarrera {
   @Column({ type: 'integer', name: 'plan_estudio_carrera_id' })
   planEstudioCarreraId: number;
 
-  @ManyToOne(() => PlanEstudioCarrera, (planEstudioCarrera) => planEstudioCarrera.institutosPlanesCarreras, { nullable: false, cascade: true })
+  @ManyToOne(() => PlanEstudioCarrera, (planEstudioCarrera) => planEstudioCarrera.institutosPlanesCarreras, { nullable: false})
   @JoinColumn({ name: 'plan_estudio_carrera_id', referencedColumnName: 'id'})
   planEstudioCarrera: PlanEstudioCarrera;
   

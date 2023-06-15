@@ -48,14 +48,14 @@ export class PlanEstudioAsignaturaRegla {
   @Column({ name: 'plan_estudio_asignatura_id', nullable:false })
   planEstudioAsignaturaId: number;
 
-  @ManyToOne(() => PlanEstudioAsignatura, (planEstudioAsignatura) => planEstudioAsignatura.planesAsignaturasReglas, { nullable: false, cascade: true })
+  @ManyToOne(() => PlanEstudioAsignatura, (planEstudioAsignatura) => planEstudioAsignatura.planesAsignaturasReglas, { nullable: false })
   @JoinColumn({ name: 'plan_estudio_asignatura_id', referencedColumnName: 'id'})
   planEstudioAsignatura: PlanEstudioAsignatura;
 
   @Column({ name: 'anterior_plan_estudio_asignatura_id', nullable:false })
   anteriorPlanEstudioAsignaturaId: number;
 
-  @ManyToOne(() => PlanEstudioAsignatura, (planEstudioAsignatura) => planEstudioAsignatura.planesAsignaturasReglas, { nullable: false, cascade: true })
+  @ManyToOne(() => PlanEstudioAsignatura, (planEstudioAsignatura) => planEstudioAsignatura.planesAsignaturasReglas, { nullable: false , eager: true})
   @JoinColumn({ name: 'anterior_plan_estudio_asignatura_id', referencedColumnName: 'id'})
   anteriorPlanEstudioAsignatura: PlanEstudioAsignatura;
 

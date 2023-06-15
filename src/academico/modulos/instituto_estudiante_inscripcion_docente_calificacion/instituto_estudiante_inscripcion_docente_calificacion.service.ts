@@ -214,7 +214,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
     console.log("calificaciones");
     const resultado = [];
 
-         dto.forEach(async item => {
+        for (const item of dto) {
         
           //console.log(item);
           const datoCalificacion = await this.inscDocenteCalificacionRepositorio.findCalificacionesByDato(item);
@@ -243,7 +243,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             ///revisamos los promedios de los estudiantes en la ultima calificación
             console.log(crearResult);
            
-       });
+       }
 
         console.log(resultado);
            return this._serviceResp.respuestaHttp201(
