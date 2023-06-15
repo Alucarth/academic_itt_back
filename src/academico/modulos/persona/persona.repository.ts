@@ -19,7 +19,7 @@ export class PersonaRepository {
 
     const result0 = await this.dataSource.getRepository(Persona).findOneBy({
       carnetIdentidad: dto.carnetIdentidad,
-      //complemento: dto.complemento,
+      complemento: dto.complemento,
     });
 
     console.log("result0: ", result0);
@@ -30,48 +30,108 @@ export class PersonaRepository {
 
     console.log("result0.id", result0.id);
 
-    const result = await this.dataSource.query(`
-
-    SELECT
-    data2.*,
-    ut.lugar AS comunidad,
-    muni.lugar AS municipio,
-    prov.lugar AS provincia,
-    dep.lugar AS departamento,
-    pais.lugar AS pais 
-  FROM
-    (
-    SELECT DATA
-      .*,
-      ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID = DATA.provincia_id ) AS depto_id,
-      ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID IN ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID = DATA.provincia_id ) ) AS pais_id 
-    FROM
-      (
-      SELECT		
-        persona.*,
-        ( SELECT genero FROM genero_tipo WHERE ID = persona.genero_tipo_id ) AS genero,			
-        ( SELECT idioma FROM idioma_tipo WHERE ID = persona.materno_idioma_tipo_id ) AS materno_idioma_tipo,	
-        nacimiento_unidad_territorial_id AS comunidad_id,
-        ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID = nacimiento_unidad_territorial_id ) AS municipio_id,
-        ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID IN ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID = nacimiento_unidad_territorial_id ) ) AS provincia_id
-        
-      FROM
-        persona
-      WHERE
-        persona.ID = ${result0.id}
-      ) AS DATA 
-    ) AS data2
-    left JOIN unidad_territorial ut ON ut.ID = data2.comunidad_id
-    left JOIN unidad_territorial muni ON muni.ID = data2.municipio_id
-    left JOIN unidad_territorial prov ON prov.ID = data2.provincia_id
-    left JOIN unidad_territorial dep ON dep.ID = data2.depto_id
-    left JOIN unidad_territorial pais ON pais.ID = data2.pais_id
-
+    //VEMOS SI TIENE HASTA COMUNIDAD O SOLO PAIS
+    const resultUt = await this.dataSource.query(`
+    SELECT      
+      persona.id as persona_id,  
+      unidad_territorial.id as unidad_territorial_id, 
+      unidad_territorial.lugar, 
+      unidad_territorial.unidad_territorial_tipo_id, 
+      unidad_territorial.unidad_territorial_id, 
+      unidad_territorial_tipo.unidad_territorial, 
+      unidad_territorial_tipo.comentario
+    FROM      
+      persona      
+      INNER JOIN
+      unidad_territorial
+      ON 
+        persona.nacimiento_unidad_territorial_id = unidad_territorial.id
+      INNER JOIN
+      unidad_territorial_tipo
+      ON 
+        unidad_territorial.unidad_territorial_tipo_id = unidad_territorial_tipo.id
+      WHERE persona.id = ${result0.id}
     `);
 
-    console.log("result: ", result);
 
-    return result;
+    if(resultUt[0]['unidad_territorial_tipo_id'] == 0)
+    {
+      //es solo un pais
+      const result = await this.dataSource.query(`
+       
+        SELECT		
+          persona.*,
+          ( SELECT genero FROM genero_tipo WHERE ID = persona.genero_tipo_id ) AS genero,			
+          ( SELECT idioma FROM idioma_tipo WHERE ID = persona.materno_idioma_tipo_id ) AS materno_idioma_tipo,	          
+          nacimiento_unidad_territorial_id AS pais_id,
+          ( SELECT lugar FROM unidad_territorial WHERE ID = nacimiento_unidad_territorial_id ) AS pais,
+          0 as depto_id,
+          0 as provincia_id,
+          0 as municipio_id,
+          0 as comunidad_id,
+          '' as departamento,
+          '' as provincia,
+          '' as municipio,
+          '' as comunidad
+        FROM
+          persona
+        WHERE
+          persona.ID = ${result0.id}
+         
+  
+      `);
+  
+      console.log("result: ", result);
+  
+      return result;
+      
+
+    }else{
+
+      //llega a comunidad
+      const result = await this.dataSource.query(`
+        SELECT
+        data2.*,
+        ut.lugar AS comunidad,
+        muni.lugar AS municipio,
+        prov.lugar AS provincia,
+        dep.lugar AS departamento,
+        pais.lugar AS pais 
+      FROM
+        (
+        SELECT DATA
+          .*,
+          ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID = DATA.provincia_id ) AS depto_id,
+          ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID IN ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID = DATA.provincia_id ) ) AS pais_id 
+        FROM
+          (
+          SELECT		
+            persona.*,
+            ( SELECT genero FROM genero_tipo WHERE ID = persona.genero_tipo_id ) AS genero,			
+            ( SELECT idioma FROM idioma_tipo WHERE ID = persona.materno_idioma_tipo_id ) AS materno_idioma_tipo,	
+            nacimiento_unidad_territorial_id AS comunidad_id,
+            ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID = nacimiento_unidad_territorial_id ) AS municipio_id,
+            ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID IN ( SELECT unidad_territorial_id FROM unidad_territorial WHERE ID = nacimiento_unidad_territorial_id ) ) AS provincia_id
+            
+          FROM
+            persona
+          WHERE
+            persona.ID = ${result0.id}
+          ) AS DATA 
+        ) AS data2
+        left JOIN unidad_territorial ut ON ut.ID = data2.comunidad_id
+        left JOIN unidad_territorial muni ON muni.ID = data2.municipio_id
+        left JOIN unidad_territorial prov ON prov.ID = data2.provincia_id
+        left JOIN unidad_territorial dep ON dep.ID = data2.depto_id
+        left JOIN unidad_territorial pais ON pais.ID = data2.pais_id
+  
+      `);
+  
+      console.log("result: ", result);
+  
+      return result;
+    }
+    
   }
 
   async crearPersona(dto: CreatePersonaoDto) {
@@ -122,25 +182,25 @@ export class PersonaRepository {
           .update(Persona)
           .set({
 
-           generoTipoId : dto.generoTipoId,
-           estadoCivilTipoId : dto.estadoCivilTipoId,           
-           maternoIdiomaTipoId : dto.maternoIdiomaTipoId,           
-           expedidoUnidadTerritorialId : dto.expedidoUnidadTerritorialId,
-           nacimientoUnidadTerritorialId : dto.nacimientoUnidadTerritorialId,
-           nacimientoOficialia : dto.nacimientoOficialia,
-           nacimientoLibro : dto.nacimientoLibro,
-           nacimientoPartida : dto.nacimientoPartida,
-           nacimientoFolio : dto.nacimientoFolio,
-           carnetIbc : dto.carnetIbc,
-           pasaporte : dto.pasaporte,
-           libretaMilitar : dto.libretaMilitar,
-           dobleNacionalidad : dto.dobleNacionalidad,
-           codigoRda : dto.codigoRda,
-           nacimientoLocalidad : dto.nacimientoLocalidad,
-           tieneDiscapacidad : dto.tieneDiscapacidad,
-           telefono : dto.telefono,
-           email : dto.email,
-           cedulaTipoId: dto.cedulaTipoId
+           generoTipoId                 : dto.generoTipoId,
+           estadoCivilTipoId            : dto.estadoCivilTipoId,
+           maternoIdiomaTipoId          : dto.maternoIdiomaTipoId,
+           expedidoUnidadTerritorialId  : dto.expedidoUnidadTerritorialId,
+           nacimientoUnidadTerritorialId: dto.nacimientoUnidadTerritorialId,
+           nacimientoOficialia          : dto.nacimientoOficialia,
+           nacimientoLibro              : dto.nacimientoLibro,
+           nacimientoPartida            : dto.nacimientoPartida,
+           nacimientoFolio              : dto.nacimientoFolio,
+           carnetIbc                    : dto.carnetIbc,
+           pasaporte                    : dto.pasaporte,
+           libretaMilitar               : dto.libretaMilitar,
+           dobleNacionalidad            : dto.dobleNacionalidad,
+           codigoRda                    : dto.codigoRda,
+           nacimientoLocalidad          : dto.nacimientoLocalidad,
+           tieneDiscapacidad            : dto.tieneDiscapacidad,
+           telefono                     : dto.telefono,
+           email                        : dto.email,
+           cedulaTipoId                 : dto.cedulaTipoId
             
           })
           .where("id = :id", { id: dto.id })
