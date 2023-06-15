@@ -195,7 +195,6 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
 
     async actualizarDatosCalificaciones(
         id: number,
-        idUsuario: number,
         item:any,
         transaction: EntityManager
       ) {

@@ -87,173 +87,101 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
         );
 
     }
-    async crearPromedioCalificacionByAulaId (id:number, regimen:number) {
-      
-        //const datoAulaRegimen = await this.aulaRepository.getDatoAulaPeriodo(id);
-        //sacamos el ultimo docente del aula
-        const docente = await this.aulaRepository.getDatoAulaDocente(id);
-
-        if(regimen==55){ //anual
-            const promediosAnuales = await this.inscDocenteCalificacionRepositorio.findAllPromedioAnualByAulaId(id);
-            if(promediosAnuales.length>0){
-                const op = async (transaction: EntityManager) => {
-                  //  const datoPromedio = 
-
-                    const promedios = await this.inscDocenteCalificacionRepositorio.crearPromedios(
-                        1, 
-                        promediosAnuales, 
-                        docente.docente_id,
-                        8,
-                        transaction
-                    );
-                    return promedios;
-                }
-                const crearResult = await this.inscDocenteCalificacionRepositorio.runTransaction(op)
-            }
-        }
-        if(regimen<55){ //semestral
-            const promediosSemestrales = await this.inscDocenteCalificacionRepositorio.findAllPromedioSemestralByAulaId(id);
-            if(promediosSemestrales.length>0){
-                const op = async (transaction: EntityManager) => {
-                  //  const datoPromedio = 
-
-                    const promedios = await this.inscDocenteCalificacionRepositorio.crearPromedios(
-                        1, 
-                        promediosSemestrales, 
-                        docente.docente_id,
-                        7,
-                        transaction
-                    );
-                    return promedios;
-                }
-                const crearResult = await this.inscDocenteCalificacionRepositorio.runTransaction(op)
-            }
-        }
-       return "exito";
-    }     
+   
     async createUpdatePromedioCalificacionByAulaId (id:number, periodo:number) {
       
         //const datoAulaRegimen = await this.aulaRepository.getDatoAulaPeriodo(id);
         //sacamos el ultimo docente del aula
         const docente = await this.aulaRepository.getDatoAulaDocente(id);
-
+        const resultado = [];
         if(periodo==55){ //anual
-            console.log("anual");
+            
             const promediosAnuales = await this.inscDocenteCalificacionRepositorio.findAllPromedioAnualByAulaId(id);
-            promediosAnuales.forEach(async item => {
+            for(const item of promediosAnuales)
+             {
                 //console.log(item);
                 const datoPromedio = await this.inscDocenteCalificacionRepositorio.findPromedioByDato(item,8);
            
                 const op = async (transaction: EntityManager) => {
                 //console.log(datoCalificacion);
                     if(datoPromedio){
-                           await this.inscDocenteCalificacionRepositorio.actualizarDatosCalificaciones(
+                         const actualizados =  await this.inscDocenteCalificacionRepositorio.actualizarDatosCalificaciones(
                             datoPromedio.id,
-                            1,
                             item,
                             transaction
                         )
+                        resultado.push(actualizados);
                     }
                     if(!datoPromedio){
-                          await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
+                        const nuevos = await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
                                 1,
                                 item,
                                 8,
                                 docente.aula_docente_id,
                                 transaction
                             );
+                            resultado.push(nuevos);
                      }
-                  
                 }
-                const crearResult = await this.inscDocenteCalificacionRepositorio.runTransaction(op);
-                console.log(crearResult);
-             });
-           
+                await this.inscDocenteCalificacionRepositorio.runTransaction(op);
+             }
         }
 
         if(periodo<55){ //semestral
            // console.log("semestral");
             const promediosSemestrales = await this.inscDocenteCalificacionRepositorio.findAllPromedioSemestralByAulaId(id);
-            console.log(promediosSemestrales);
-            promediosSemestrales.forEach(async item => {
+            
+            for(const item of promediosSemestrales)
+            {
                 const datoPromedio = await this.inscDocenteCalificacionRepositorio.findPromedioByDato(item,7);
-                console.log(datoPromedio);
+                
                 const op = async (transaction: EntityManager) => {
                 //console.log(datoCalificacion);
                     if(datoPromedio){
-                        console.log("actualiza sem");
-                           await this.inscDocenteCalificacionRepositorio.actualizarDatosCalificaciones(
+                        
+                        const actualizados = await this.inscDocenteCalificacionRepositorio.actualizarDatosCalificaciones(
                             datoPromedio.id,
-                            1,
                             item,
                             transaction
                         )
+                        resultado.push(actualizados);
                     }
                     if(!datoPromedio){
-                        console.log("nuevo sem");
-                          await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
+                        
+                        const nuevos =  await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
                                 1,
                                 item,
                                 7,
                                 docente.aula_docente_id,
                                 transaction
                             );
-                     }
-                  
+                        resultado.push(nuevos);
+                     }                  
                 }
-                    const crearResult = await this.inscDocenteCalificacionRepositorio.runTransaction(op);
-
-                  console.log(crearResult);
-             });
-           
+                    await this.inscDocenteCalificacionRepositorio.runTransaction(op);
+             }
         }
-        return this._serviceResp.respuestaHttp201(
-            "",
-            'Promedios actualizados correctamente!!',
-            '',
-        );
+        return resultado;
     }   
 
     async updateEstadosFinalesByAulaId (id:number) {
         console.log("update estados");
-
+        const resultado = [];
         const estadosFinales = await this.inscDocenteCalificacionRepositorio.findAllEstadosFinalesByAulaId(id);
         if(estadosFinales.length > 0){
-            estadosFinales.forEach(async item => {
-                await this.inscDocenteCalificacionRepositorio.actualizaEstadoMatricula(
+            for (const item of estadosFinales){
+               const estados = await this.inscDocenteCalificacionRepositorio.actualizaEstadoMatricula(
                     item.instituto_estudiante_inscripcion_id,
                     item.estado);
-                }
-            );
+                    resultado.push(estados);
+            }
         }
-        return this._serviceResp.respuestaHttp201(
-            "",
-            'Estados Finales actualizados!!',
-            '',
-        );
+        return resultado;
     }   
     
     
    
-    verificaCalificaciones(calificaciones, dto) {
-
-        const nuevos = dto.filter(d =>
-            calificaciones.some(p =>  d.instituto_estudiante_inscripcion_id == p.institutoEstudianteInscripcionId &&  d.nota_tipo_id!=p.notaTipoId)
-           // calificaciones.every((p) =>  (p.institutoEstudianteInscripcionId == d.instituto_estudiante_inscripcion_id ) )
-         );
-         const existentes = dto.filter((d) =>
-         calificaciones.some(p =>  d.instituto_estudiante_inscripcion_id == p.institutoEstudianteInscripcionId &&  d.nota_tipo_id==p.notaTipoId)
-         );
-         const activos = calificaciones
-         .map((c) =>
-         dto.every(
-             (d) =>
-               d.instituto_estudiante_inscripcion_id == c.institutoEstudianteInscripcionId && d.nota_tipo_id != c.notaTipoId
-           )    
-         )
-        return  nuevos;
-    }
-
+    
     //Registro de calificaciones en formato de array
     async crearInscripcionDocenteCalificacionArray (dto: CreateInstitutoInscripcionDocenteCalificacionDto[]) {
       
@@ -296,7 +224,6 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
               if(datoCalificacion){
                   await this.inscDocenteCalificacionRepositorio.actualizarDatosCalificaciones(
                       datoCalificacion.id,
-                      1,
                       item,
                       transaction
                   )
@@ -325,6 +252,66 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                '',
            );
      
+ }
+ async crearNotasModalidad (dto: CreateInstitutoInscripcionDocenteCalificacionDto[]) {
+        console.log("calificaciones");
+        const resultado = [];
+         for (const item of dto) {
+          const datoCalificacion = await this.inscDocenteCalificacionRepositorio.findCalificacionesByDato(item);
+     
+          const op = async (transaction: EntityManager) => {
+          //console.log(datoCalificacion);
+              if(datoCalificacion){
+                 const actualizados =  await this.inscDocenteCalificacionRepositorio.actualizarDatosCalificaciones(
+                      datoCalificacion.id,
+                      item,
+                      transaction
+                  )
+                  resultado.push(actualizados);
+              }
+              if(!datoCalificacion){
+                const nuevos =  await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
+                              1,
+                          item,
+                          item.modalidad_evaluacion_tipo_id,
+                          item.aula_docente_id,
+                          transaction
+                      );
+                  resultado.push(nuevos);
+               }
+            
+          }
+            await this.inscDocenteCalificacionRepositorio.runTransaction(op);
+       }
+       console.log(resultado.length)
+       return resultado;
+        
+ }
+ async crearInscripcionDocenteCalificacionGlobal (dto: CreateInstitutoInscripcionDocenteCalificacionDto[]) {
+     
+          const notas = await this.crearNotasModalidad(dto);
+          const promedios = await this.createUpdatePromedioCalificacionByAulaId(dto[0].aula_id,dto[0].periodo_tipo_id );
+          await this.updateEstadosFinalesByAulaId(dto[0].aula_id);
+         if(notas.length>0){
+            if(promedios.length>0){
+                return this._serviceResp.respuestaHttp201(
+                    notas,
+                    'Calificaciones y Promedios  actualizados correctamente !!',
+                    '',
+                );
+            }else{
+                return this._serviceResp.respuestaHttp201(
+                    notas,
+                    'Calificaciones registrados/actualizados correctamente !!',
+                    '',
+                );
+            }
+        }
+        return this._serviceResp.respuestaHttp500(
+            "",
+            'No se pudo guardar la información !!',
+            '',
+        );
  }
 
 
