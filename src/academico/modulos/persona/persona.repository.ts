@@ -122,25 +122,25 @@ export class PersonaRepository {
           .update(Persona)
           .set({
 
-           generoTipoId : dto.generoTipoId,
-           estadoCivilTipoId : dto.estadoCivilTipoId,           
-           maternoIdiomaTipoId : dto.maternoIdiomaTipoId,           
-           expedidoUnidadTerritorialId : dto.expedidoUnidadTerritorialId,
-           nacimientoUnidadTerritorialId : dto.nacimientoUnidadTerritorialId,
-           nacimientoOficialia : dto.nacimientoOficialia,
-           nacimientoLibro : dto.nacimientoLibro,
-           nacimientoPartida : dto.nacimientoPartida,
-           nacimientoFolio : dto.nacimientoFolio,
-           carnetIbc : dto.carnetIbc,
-           pasaporte : dto.pasaporte,
-           libretaMilitar : dto.libretaMilitar,
-           dobleNacionalidad : dto.dobleNacionalidad,
-           codigoRda : dto.codigoRda,
-           nacimientoLocalidad : dto.nacimientoLocalidad,
-           tieneDiscapacidad : dto.tieneDiscapacidad,
-           telefono : dto.telefono,
-           email : dto.email,
-           cedulaTipoId: dto.cedulaTipoId
+           generoTipoId                 : dto.generoTipoId,
+           estadoCivilTipoId            : dto.estadoCivilTipoId,
+           maternoIdiomaTipoId          : dto.maternoIdiomaTipoId,
+           expedidoUnidadTerritorialId  : dto.expedidoUnidadTerritorialId,
+           nacimientoUnidadTerritorialId: dto.nacimientoUnidadTerritorialId,
+           nacimientoOficialia          : dto.nacimientoOficialia,
+           nacimientoLibro              : dto.nacimientoLibro,
+           nacimientoPartida            : dto.nacimientoPartida,
+           nacimientoFolio              : dto.nacimientoFolio,
+           carnetIbc                    : dto.carnetIbc,
+           pasaporte                    : dto.pasaporte,
+           libretaMilitar               : dto.libretaMilitar,
+           dobleNacionalidad            : dto.dobleNacionalidad,
+           codigoRda                    : dto.codigoRda,
+           nacimientoLocalidad          : dto.nacimientoLocalidad,
+           tieneDiscapacidad            : dto.tieneDiscapacidad,
+           telefono                     : dto.telefono,
+           email                        : dto.email,
+           cedulaTipoId                 : dto.cedulaTipoId
             
           })
           .where("id = :id", { id: dto.id })
