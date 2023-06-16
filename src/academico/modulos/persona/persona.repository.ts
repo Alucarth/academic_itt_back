@@ -135,41 +135,37 @@ export class PersonaRepository {
   }
 
   async crearPersona(dto: CreatePersonaoDto) {
-    
-    console.log('----------------------------');
+ 
     console.log(dto);
-
     const persona = new Persona();
-    persona.carnetIdentidad = dto.carnetIdentidad;
-    persona.complemento = dto.complemento;
-    persona.paterno = dto.paterno;
-    persona.materno = dto.materno;
-    persona.nombre = dto.nombre;
-    persona.fechaNacimiento = new Date(dto.fechaNacimiento);
-    persona.generoTipoId = dto.generoTipoId;
-    persona.estadoCivilTipoId = dto.estadoCivilTipoId;
-    persona.sangreTipoId = dto.sangreTipoId;
-    persona.maternoIdiomaTipoId = dto.maternoIdiomaTipoId;
-    persona.segipTipoId = dto.segipTipoId;
-    persona.expedidoUnidadTerritorialId = dto.expedidoUnidadTerritorialId;
+    persona.carnetIdentidad               = dto.carnetIdentidad;
+    persona.complemento                   = dto.complemento;
+    persona.paterno                       = dto.paterno;
+    persona.materno                       = dto.materno;
+    persona.nombre                        = dto.nombre;
+    persona.fechaNacimiento               = new Date(dto.fechaNacimiento);
+    persona.generoTipoId                  = dto.generoTipoId;
+    persona.estadoCivilTipoId             = dto.estadoCivilTipoId;
+    persona.sangreTipoId                  = dto.sangreTipoId;
+    persona.maternoIdiomaTipoId           = dto.maternoIdiomaTipoId;
+    persona.segipTipoId                   = dto.segipTipoId;
+    persona.expedidoUnidadTerritorialId   = dto.expedidoUnidadTerritorialId;
     persona.nacimientoUnidadTerritorialId = dto.nacimientoUnidadTerritorialId;
-    persona.nacimientoOficialia = dto.nacimientoOficialia;
-    persona.nacimientoLibro = dto.nacimientoLibro;
-    persona.nacimientoPartida = dto.nacimientoPartida;
-    persona.nacimientoFolio = dto.nacimientoFolio;
-    persona.carnetIbc = dto.carnetIbc;
-    persona.pasaporte = dto.pasaporte;
-    persona.libretaMilitar = dto.libretaMilitar;
-    persona.dobleNacionalidad = dto.dobleNacionalidad;
-    persona.codigoRda = dto.codigoRda;
-    persona.nacimientoLocalidad = dto.nacimientoLocalidad;
-    persona.tieneDiscapacidad = dto.tieneDiscapacidad;
-    persona.telefono = dto.telefono;
-    persona.email = dto.email;
-    persona.cedulaTipoId = dto.cedulaTipoId;
+    persona.nacimientoOficialia           = dto.nacimientoOficialia;
+    persona.nacimientoLibro               = dto.nacimientoLibro;
+    persona.nacimientoPartida             = dto.nacimientoPartida;
+    persona.nacimientoFolio               = dto.nacimientoFolio;
+    persona.carnetIbc                     = dto.carnetIbc;
+    persona.pasaporte                     = dto.pasaporte;
+    persona.libretaMilitar                = dto.libretaMilitar;
+    persona.dobleNacionalidad             = dto.dobleNacionalidad;
+    persona.codigoRda                     = dto.codigoRda;
+    persona.nacimientoLocalidad           = dto.nacimientoLocalidad;
+    persona.tieneDiscapacidad             = dto.tieneDiscapacidad;
+    persona.telefono                      = dto.telefono;
+    persona.email                         = dto.email;
+    persona.cedulaTipoId                  = dto.cedulaTipoId;
 
-
-    console.log("----------------------------x");
     return await this.dataSource.getRepository(Persona).save(persona);
   }
 
