@@ -57,18 +57,7 @@ export class PlanEstudioAsignaturaService {
     async getOneByPlanAsignatura(idPlan:number, idAsignatura:number){
         const pea = await this.planEstudioAsignaturaRepository.findOneByPlanAsignatura(idPlan, idAsignatura);
         return pea;
-       /* if(pea){
-            return this._serviceResp.respuestaHttp201(
-              pea,
-              'Resultados encontrados !!',
-              '',
-          );
-        }
-        return this._serviceResp.respuestaHttp404(
-          "",
-          'No se encontraron resultados !!',
-          '',
-      );*/
+      
     }
 
     async getOfertaPlanEstudioAsignatura(idPlan:number, idRegimen:number, idAsignatura:number){
@@ -79,18 +68,7 @@ export class PlanEstudioAsignaturaService {
           'asignaturaTipoId':idAsignatura
         }
       );
-      if(planAsignatura){
-          return this._serviceResp.respuestaHttp201(
-            planAsignatura,
-            'Resultados encontrados !!',
-            '',
-        );
-      }
-      return this._serviceResp.respuestaHttp404(
-        "",
-        'No se encontraron resultados !!',
-        '',
-    );
+      return planAsignatura;
   }
 
     async getAsignaturasPrerequisitosByPlan(id:number){
@@ -108,36 +86,179 @@ export class PlanEstudioAsignaturaService {
         '',
     );
   }
-  verificaPlanAsignatura(planes, dto) {
+  async verificaPlanAsignatura(planes, dto) {
   
-    const nuevos = dto.filter((d) =>
-            planes.every((p) =>  p.asignaturTipoId == d.asignatura_tipo_id )
-     );
-     const existentes = dto.filter((d) =>
-            planes.every((p) =>  p.asignaturTipoId != d.asignatura_tipo_id )
-     );
+    // obtiene los que no fueron actualizados
+    const eliminar = planes.filter(item2 => {
+      return !dto.some(item1 => 
+        item1.asignatura_tipo_id === item2.asignatura_tipo_id &&
+        item1.regimen_grado_tipo_id === item2.regimen_grado_tipo_id
+      );
+    });
+    
+      //obtiene los que existen
+    const existentes = planes.filter(item2 => {
+      return dto.some(item1 => 
+        item1.asignatura_tipo_id === item2.asignatura_tipo_id &&
+        item1.regimen_grado_tipo_id === item2.regimen_grado_tipo_id
+      );
+    });
+    const nuevos = dto.filter(item2 => {
+      return !planes.some(item1 => 
+        item1.asignatura_tipo_id === item2.asignatura_tipo_id &&
+        item1.regimen_grado_tipo_id === item2.regimen_grado_tipo_id
+      );
+    });
     return  {
-      nuevos, 
-      existentes
+      existentes,
+      eliminar,
+      nuevos
     };
   }
+
     async crearPlanAsignatura (dto: CreatePlanAsignaturaPrerequisitoDto[]) {
+      const resultado = [];
+      //actualizamos e insertamos
+        for(const item of dto){
+              const planAsignatura = await this.getOfertaPlanEstudioAsignatura( item.plan_estudio_carrera_id, item.regimen_grado_tipo_id, item.asignatura_tipo_id);
+              const op = async (transaction: EntityManager) => {
+                //console.log(datoCalificacion);
+                    if(planAsignatura){
+                      const actualizados = await this.planEstudioAsignaturaRepository.updatePlanAsignaturaById(
+                            planAsignatura.id,
+                            item
+                        )
+                        resultado.push(actualizados);
+                    }
+                    if(!planAsignatura){
+                      const nuevos = await this.planEstudioAsignaturaRepository.crearOnePlanEstudioAsignatura(
+                                    1,
+                                item,
+                                transaction
+                            );
+                            resultado.push(nuevos);
+                     }
+                }
+                  const crearResult = await this.planEstudioAsignaturaRepository.runTransaction(op);
+                  console.log(crearResult);
+              
+            }
+            return resultado;
+          
+      }
+
+      async eliminarPlanAsignatura (dto: CreatePlanAsignaturaPrerequisitoDto[]) {
+        
+        const planesAsignaturas = await this.planEstudioAsignaturaRepository.getAsignaturasByPLanEstudioId(dto[0].plan_estudio_carrera_id);
+            const { existentes, eliminar,nuevos} = await this.verificaPlanAsignatura(planesAsignaturas, dto);
+
+            console.log(existentes);
+            console.log("-----------------eliminar:");
+            console.log(eliminar);
+            console.log("-----------------nuevos");
+            console.log(nuevos);
+            //eliminados y en cascada la regla si tuviera
+            for(const item of eliminar){
+
+                const planAsignatura = await this.getOfertaPlanEstudioAsignatura( item.plan_estudio_carrera_id, item.regimen_grado_tipo_id, item.asignatura_tipo_id);
+                  await this.pearRepository
+                .createQueryBuilder()
+                .delete()
+                .from(PlanEstudioAsignatura)
+                .where({id:planAsignatura.id})
+                .execute();
+              }
+          return eliminar;
+       }
+
+       async crudReglaPlanEstudioAsignaturaById( dto){
+        const reglas = [];
+        for(const item of dto){
+          const plan = await this.getOneByPlanAsignatura( item.plan_estudio_carrera_id, item.asignatura_tipo_id);
+          const anterior = await this.getOneByPlanAsignatura( item.plan_estudio_carrera_id, item.prerequisito_id);
+          if(item.prerequisito_id>0){
+            const regla = await this.pearRepository.findOneBy({
+              'planEstudioAsignaturaId':plan.id,
+            });
+ 
+            if(regla){ 
+             
+              if(item.prerequisito_id>0 && item.prerequisito_id!=regla.anteriorPlanEstudioAsignaturaId){
+              //actualizamos el nuevo prerequisito
+              
+                  if(anterior){
+                    console.log("actualizad");
+                    const act =  await this.pearRepository
+                          .createQueryBuilder()
+                          .update(PlanEstudioAsignaturaRegla)
+                          .set(
+                            {
+                                anteriorPlanEstudioAsignaturaId: anterior.id,
+                            },
+                          )
+                          .where({id:regla.id})
+                          .execute();
+                          reglas.push(act);
+                  }
+              }
+              //se eliminara el prerequsito si ya es 0 y existe
+              if(item.prerequisito_id==0 && regla){
+                console.log("borra");
+                const borr = await this.pearRepository
+                .createQueryBuilder()
+                .delete()
+                .from(PlanEstudioAsignaturaRegla)
+                .where({id:regla.id})
+                .execute();
+                reglas.push(borr);
+              }
+          }
+          //console.log("para el nuevo");
+          //console.log(item.prerequisito_id);
+          //console.log(regla);
+            if(item.prerequisito_id>0 && !regla){
+              console.log("insert");
+             const nuev = await this.pearRepository
+              .createQueryBuilder()
+              .insert()
+              .into(PlanEstudioAsignaturaRegla)
+              .values([
+                {
+                    planEstudioAsignaturaId: plan.id,
+                    anteriorPlanEstudioAsignaturaId: anterior.id,
+                    activo:true,
+                    usuarioId: 1,
+                },
+              ])
+              .returning("id")
+              .execute();
+
+              reglas.push(nuev);
+            }
+          }
+        }
+        return reglas;
+    }
+/*
+      async crearPlanAsignatura222222 (dto: CreatePlanAsignaturaPrerequisitoDto[]) {
        
         const planesAsignaturas = await this.planEstudioAsignaturaRepository.getAsignaturasByPLanEstudioId(dto[0].plan_estudio_carrera_id);
 
-        const { nuevos, existentes} = await this.verificaPlanAsignatura(
+        const { nuevosdto, nuevosp, existentes, inexistentes} = await this.verificaPlanAsignatura(
             planesAsignaturas,
             dto
           )
           console.log("los nuevos");
-          console.log(nuevos);
+          console.log(nuevosdto);
+          console.log(nuevosp);
           console.log(existentes);
+          console.log(inexistentes);
           console.log("fin--------------");
             const op = async (transaction: EntityManager) => {
 
                 const nuevoArray = await this.planEstudioAsignaturaRepository.crearPlanEstudioAsignatura(
                     1, 
-                    nuevos, 
+                    nuevosp, 
                     transaction
                 );
               return nuevoArray;
@@ -150,50 +271,39 @@ export class PlanEstudioAsignaturaService {
                  
             }
             return this._serviceResp.respuestaHttp500(
-              nuevos,
+              nuevosp,
               'No se pudo guardar la información !!',
               '',
           );
-      }
+      }*/
     
       async crearPlanAsignaturaPrerequisito(dto: CreatePlanAsignaturaPrerequisitoDto[]) {
              
-             //creamos los planes estudio asignatura
-              const planes = await this.crearPlanAsignatura(dto);
-              //insertamos las reglas
-              for(const item of dto){
-                  if(item.prerequisito_id>0){
-                    const plan = await this.getOneByPlanAsignatura( item.plan_estudio_carrera_id, item.asignatura_tipo_id);
-                    const anterior = await this.getOneByPlanAsignatura( item.plan_estudio_carrera_id, item.prerequisito_id);
-                   
-                    const regla = await this.pearRepository.findOneBy({
-                      'planEstudioAsignaturaId':plan.id,
-                      'anteriorPlanEstudioAsignaturaId':anterior.id,
-                    });
-                    
-                    if (!regla) {
-                      console.log(anterior.id);
-                      const res1 = await this.pearRepository
-                      .createQueryBuilder()
-                      .insert()
-                      .into(PlanEstudioAsignaturaRegla)
-                      .values([
-                        {
-                            planEstudioAsignaturaId: plan.id,
-                            anteriorPlanEstudioAsignaturaId: anterior.id,
-                            activo:true,
-                            usuarioId: 1,
-                        },
-                      ])
-                      .returning("id")
-                      .execute();
-                    }
-                  }
-                }
-            if(planes.length>0){
+             //creamos los planes estudio asignatura de todo el DTO
+           const planesNuevos = await this.crearPlanAsignatura(dto);
+              //eliminamos los no reportados tanto plan_estudio_asignatura como  la regla
+           const eliminados = await this.eliminarPlanAsignatura(dto);
+              //insertamos actualizamos o borramos las reglas
+           const reglas = await this.crudReglaPlanEstudioAsignaturaById(dto);
+
+           if(planesNuevos.length>0 ){
               return this._serviceResp.respuestaHttp201(
-                  planes,
+                planesNuevos,
                   'Registro de planes y requisitos Creado !!',
+                  '',
+              );
+            }
+            if(eliminados.length>0 ){
+              return this._serviceResp.respuestaHttp201(
+                eliminados,
+                  'algunos planes fueron eliminados !!',
+                  '',
+              );
+            }
+            if(reglas.length>0 ){
+              return this._serviceResp.respuestaHttp201(
+                eliminados,
+                  'algunas reglas  fueron actualizados o eliminados !!',
                   '',
               );
             }
@@ -204,6 +314,7 @@ export class PlanEstudioAsignaturaService {
           );
       }
 
+   //actualizacion individual de un plan_estudio_asignatura
       async editPlanEstudioAsignaturaById(id: number, dto:UpdatePlanEstudioAsignaturaDto)
       {
           const dato = await this.getById(id);

@@ -72,7 +72,16 @@ export class PlanEstudioAsignaturaRepository {
 
     
     async getAsignaturasByPLanEstudioId(id){
-        return  await this.dataSource.getRepository(PlanEstudioAsignatura).findBy({'planEstudioCarreraId':id});
+        return  await this.dataSource.getRepository(PlanEstudioAsignatura)
+        .createQueryBuilder("pa")
+        .select([
+            'pa.id as id',
+            'pa.planEstudioCarreraId as plan_estudio_carrera_id',
+            'pa.regimenGradoTipoId as regimen_grado_tipo_id',
+            'pa.asignaturaTipoId as asignatura_tipo_id',
+        ])
+        .where('pa.planEstudioCarreraId = :id', {id})
+        .getRawMany();
     }
     async crearPlanEstudioAsignatura(idUsuario, asignaturas, transaction) {
 
@@ -89,15 +98,15 @@ export class PlanEstudioAsignaturaRepository {
     
         return await transaction.getRepository(PlanEstudioAsignatura).save(planesAsignaturas)
     }
-    async crearOnePlanEstudioAsignatura(idUsuario, asignaturas, transaction) {
+    async crearOnePlanEstudioAsignatura(idUsuario, asignatura, transaction) {
 
        // const planesAsignaturas: PlanEstudioAsignatura[] = asignaturas.map((item) => {
           
           const planAsignatura  = new PlanEstudioAsignatura()
-          planAsignatura.planEstudioCarreraId =asignaturas.plan_estudio_carrera_id;
-          planAsignatura.regimenGradoTipoId =asignaturas.regimen_grado_tipo_id;
-          planAsignatura.asignaturaTipoId =asignaturas.asignatura_tipo_id;
-          planAsignatura.horas =asignaturas.horas;
+          planAsignatura.planEstudioCarreraId =asignatura.plan_estudio_carrera_id;
+          planAsignatura.regimenGradoTipoId =asignatura.regimen_grado_tipo_id;
+          planAsignatura.asignaturaTipoId =asignatura.asignatura_tipo_id;
+          planAsignatura.horas =asignatura.horas;
           planAsignatura.usuarioId =idUsuario;
         //  return planAsignatura;
 //});
@@ -112,7 +121,6 @@ export class PlanEstudioAsignaturaRepository {
         .update(PlanEstudioAsignatura)
         .set({
             horas : dto.horas,
-           // fechaModificacion:Date(),
         })
         .where({ id: id })
         .execute(); 
