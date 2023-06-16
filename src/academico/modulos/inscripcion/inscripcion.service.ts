@@ -1512,8 +1512,9 @@ export class InscripcionService {
       plan_estudio_resolucion.id as plan_estudio_resolucion_id, 
       plan_estudio_resolucion.descripcion as plan_estudio_resolucion_descripcion, 
       plan_estudio_resolucion.numero_resolucion as plan_estudio_resolucion_numero_resolucion, 
-      plan_estudio_resolucion.fecha_resolucion as plan_estudio_resolucion_fecha_resolucion, 
-      plan_estudio_resolucion.activo
+      CAST(plan_estudio_resolucion.fecha_resolucion AS TEXT) as plan_estudio_resolucion_fecha_resolucion, 
+      plan_estudio_resolucion.activo,
+      plan_estudio_resolucion.descripcion
     FROM
       carrera_autorizada
       INNER JOIN
@@ -1546,11 +1547,13 @@ export class InscripcionService {
         carrera_tipo.id = plan_estudio_carrera.carrera_tipo_id AND
         instituto_plan_estudio_carrera.plan_estudio_carrera_id = plan_estudio_carrera.id AND
         intervalo_gestion_tipo.id = plan_estudio_carrera.intervalo_gestion_tipo_id AND
-        nivel_academico_tipo.id = plan_estudio_carrera.nivel_academico_tipo_id
+        nivel_academico_tipo.id = plan_estudio_carrera.nivel_academico_tipo_id AND
+        plan_estudio_carrera.activo = true
       INNER JOIN
       plan_estudio_resolucion
       ON 
-        plan_estudio_carrera.plan_estudio_resolucion_id = plan_estudio_resolucion.id
+        plan_estudio_carrera.plan_estudio_resolucion_id = plan_estudio_resolucion.id and
+        plan_estudio_resolucion.activo = true
     WHERE
       institucion_educativa_sucursal.id = ${ieSucursalId} 
     order by 4
