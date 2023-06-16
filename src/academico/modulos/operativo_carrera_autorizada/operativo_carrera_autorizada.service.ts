@@ -67,7 +67,11 @@ export class OperativoCarreraAutorizadaService {
             carreraId,
             gestionId
         );
-            return operativo;
+        return this._serviceResp.respuestaHttp202(
+            operativo,
+            'Se cambio de estado correctamente',
+            '',
+        );
 
     }
 

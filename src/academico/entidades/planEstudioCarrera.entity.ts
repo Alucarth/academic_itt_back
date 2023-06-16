@@ -94,14 +94,14 @@ export class PlanEstudioCarrera {
   @Column({ type: 'integer', name: 'plan_estudio_resolucion_id' })
   planEstudioResolucionId: number;
 
-  @ManyToOne(() => PlanEstudioResolucion, (planEstudioResolucion) => planEstudioResolucion.planesCarreras, { nullable: false, cascade: true })
+  @ManyToOne(() => PlanEstudioResolucion, (planEstudioResolucion) => planEstudioResolucion.planesCarreras, { nullable: false, eager: true })
   @JoinColumn({ name: 'plan_estudio_resolucion_id', referencedColumnName: 'id'})
   planEstudioResolucion: PlanEstudioResolucion;
 
-  @OneToMany(() => PlanEstudioAsignatura, (planEstudioAsignatura) => planEstudioAsignatura.planEstudioCarrera)
+  @OneToMany(() => PlanEstudioAsignatura, (planEstudioAsignatura) => planEstudioAsignatura.planEstudioCarrera, { cascade: true })
   planesAsignaturas: PlanEstudioAsignatura[];
 
-  @OneToMany(() => InstitutoPlanEstudioCarrera, (institutoPlanEstudioCarrera) => institutoPlanEstudioCarrera.planEstudioCarrera)
+  @OneToMany(() => InstitutoPlanEstudioCarrera, (institutoPlanEstudioCarrera) => institutoPlanEstudioCarrera.planEstudioCarrera, { cascade: true })
   institutosPlanesCarreras: InstitutoPlanEstudioCarrera[];
 
   @OneToMany(() => MatriculaEstudiante, (matriculaEstudiante) => matriculaEstudiante.planEstudioCarrera)

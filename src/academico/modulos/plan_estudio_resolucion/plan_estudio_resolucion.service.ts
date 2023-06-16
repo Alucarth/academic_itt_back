@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { EntityManager } from 'typeorm';
 import { CarreraAutorizadaRepository } from '../carrera_autorizada/carrera_autorizada.repository';
@@ -160,5 +160,71 @@ export class PlanEstudioResolucionService {
       );
 
     }
+    async getById(id: number){
+      const resolucion = await this.planEstudioResolucionRepository.getOneById(id);
+          return resolucion;
+  }
+    async getCarrerasOfertasById(id: number){
+      const resolucion = await this.planEstudioResolucionRepository.findCarrerasByResolucionesId(id);
+          return resolucion;
+  }
+    async editEstadoResolucion(id: number)
+    {
+      const dato = await this.getById(id);
+        let estado = true;
+      if(dato.activo==true){
+        estado = false;
+      }
+        const resolucion = await this.planEstudioResolucionRepository.actualizarEstadoResolucion(
+            id,
+            estado
+        );
+        return this._serviceResp.respuestaHttp202(
+          resolucion,
+          'Se cambio de estado correctamente',
+          '',
+      );
+    }
+    async editDatoResolucion(id: number, dto:CreateResolucionDto)
+    {
+        
+        const res = await this.planEstudioResolucionRepository.updateDatosResolucionById(id,dto);
+        if(res){
+            console.log("res:", res);
+            console.log("Resolucion cambio de estado");
+            return this._serviceResp.respuestaHttp202(
+            res,
+            "Registro Actualizado !!",
+            ""
+            );
+        }
+        
+        return this._serviceResp.respuestaHttp500(
+        "",
+        "Error Registro  !!",
+        ""
+        );
+    }
 
+    async deleteResolucion(id: number)
+    {
+      const carreras = await this.planEstudioResolucionRepository.findCarrerasByResolucionesId(id);
+      if(carreras.length==0){
+        const result =  await this.planEstudioResolucionRepository.deleteResolucion(id);
+
+        if (result.affected === 0) {
+            throw new NotFoundException("registro no encontrado !");
+          }
+          return this._serviceResp.respuestaHttp203(
+            result,
+            "Registro Eliminado !!",
+            ""
+          );
+        }
+        return this._serviceResp.respuestaHttp500(
+          "",
+          "No se puede eliminar los datos existen ofertas curriculares asignadas !!",
+          ""
+        );
+    }
 }

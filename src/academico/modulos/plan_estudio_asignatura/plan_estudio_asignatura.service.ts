@@ -113,19 +113,26 @@ export class PlanEstudioAsignaturaService {
     const nuevos = dto.filter((d) =>
             planes.every((p) =>  p.asignaturTipoId == d.asignatura_tipo_id )
      );
-    return  nuevos;
+     const existentes = dto.filter((d) =>
+            planes.every((p) =>  p.asignaturTipoId != d.asignatura_tipo_id )
+     );
+    return  {
+      nuevos, 
+      existentes
+    };
   }
     async crearPlanAsignatura (dto: CreatePlanAsignaturaPrerequisitoDto[]) {
        
         const planesAsignaturas = await this.planEstudioAsignaturaRepository.getAsignaturasByPLanEstudioId(dto[0].plan_estudio_carrera_id);
 
-        const  nuevos = await this.verificaPlanAsignatura(
+        const { nuevos, existentes} = await this.verificaPlanAsignatura(
             planesAsignaturas,
             dto
           )
           console.log("los nuevos");
           console.log(nuevos);
-          
+          console.log(existentes);
+          console.log("fin--------------");
             const op = async (transaction: EntityManager) => {
 
                 const nuevoArray = await this.planEstudioAsignaturaRepository.crearPlanEstudioAsignatura(
@@ -154,7 +161,7 @@ export class PlanEstudioAsignaturaService {
              //creamos los planes estudio asignatura
               const planes = await this.crearPlanAsignatura(dto);
               //insertamos las reglas
-              dto.forEach(async item => {
+              for(const item of dto){
                   if(item.prerequisito_id>0){
                     const plan = await this.getOneByPlanAsignatura( item.plan_estudio_carrera_id, item.asignatura_tipo_id);
                     const anterior = await this.getOneByPlanAsignatura( item.plan_estudio_carrera_id, item.prerequisito_id);
@@ -182,7 +189,7 @@ export class PlanEstudioAsignaturaService {
                       .execute();
                     }
                   }
-                });
+                }
             if(planes.length>0){
               return this._serviceResp.respuestaHttp201(
                   planes,

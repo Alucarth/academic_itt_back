@@ -49,7 +49,7 @@ export class PlanEstudioResolucion {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
-  @OneToMany(() => PlanEstudioCarrera, (planEstudioCarrera) => planEstudioCarrera.planEstudioResolucion)
+  @OneToMany(() => PlanEstudioCarrera, (planEstudioCarrera) => planEstudioCarrera.planEstudioResolucion, { cascade: true })
   planesCarreras: PlanEstudioCarrera[];
 
 }

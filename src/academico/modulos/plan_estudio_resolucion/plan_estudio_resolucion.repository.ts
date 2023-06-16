@@ -22,6 +22,11 @@ export class PlanEstudioResolucionRepository {
         return  await this.dataSource.getRepository(PlanEstudioResolucion).findOneBy({'numeroResolucion':dto.numero_resolucion});
         
     }
+    async getOneById(id:number){
+        return  await this.dataSource.getRepository(PlanEstudioResolucion).findOneBy({
+            'id':id
+        });
+    }
     async findResolucionesAll(){
       //  return  await this.dataSource.getRepository(PlanEstudioResolucion).find();
         return  await this.dataSource.getRepository(PlanEstudioResolucion)
@@ -55,11 +60,23 @@ export class PlanEstudioResolucionRepository {
         .getMany()
 
     }
+
+    async findCarrerasByResolucionesId(id:number){
+        //  return  await this.dataSource.getRepository(PlanEstudioResolucion).find();
+          return  await this.dataSource.getRepository(PlanEstudioResolucion)
+          .createQueryBuilder("r")
+          .leftJoinAndSelect("r.planesCarreras", "p")
+          .leftJoinAndSelect("p.institutosPlanesCarreras", "i")
+          .leftJoinAndSelect("p.planesAsignaturas", "pa")
+          .leftJoinAndSelect("pa.ofertasCurriculares", "o")
+          .where('r.id = :id ', { id })
+          .getMany()
+  
+      }
     async findResoluciones(){
         //  return  await this.dataSource.getRepository(PlanEstudioResolucion).find();
           return  await this.dataSource.getRepository(PlanEstudioResolucion)
           .createQueryBuilder("r")
-          
           .select([
               'r.id',
               'r.numeroResolucion',
@@ -67,7 +84,6 @@ export class PlanEstudioResolucionRepository {
             
           ])
           .getMany()
-  
       }
    
     async crearNuevaResolucion(
@@ -84,6 +100,36 @@ export class PlanEstudioResolucionRepository {
             const result = await transaction.getRepository(PlanEstudioResolucion).save(resolucion);
        
         return result;
+    }
+    async actualizarEstadoResolucion(id:number, estado:boolean) {
+
+        return  await this.dataSource
+         .createQueryBuilder()
+         .update(PlanEstudioResolucion)
+         .set({
+           activo:estado
+         })
+         .where({ 
+             id: id
+          })
+         .execute();
+    }
+    async updateDatosResolucionById(id:number,dto: CreateResolucionDto) {
+       
+        return await this.dataSource
+        .createQueryBuilder()
+        .update(PlanEstudioResolucion)
+        .set({
+            numeroResolucion : dto.numero_resolucion,
+            fechaResolucion : dto.fecha_resolucion,
+            descripcion : dto.descripcion,
+           
+        })
+        .where({ id: id })
+        .execute(); 
+    }
+    async deleteResolucion(id: number) {
+        return await this.dataSource.getRepository(PlanEstudioResolucion).delete(id)
     }
 
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {

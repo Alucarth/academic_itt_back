@@ -68,7 +68,7 @@ export class OfertaCurricular {
   @Column({ type: 'integer', name: 'plan_estudio_asignatura_id' })
   planEstudioAsignaturaId: number;
 
-  @ManyToOne(() => PlanEstudioAsignatura, (planEstudioAsignatura) => planEstudioAsignatura.ofertasCurriculares, { nullable: false, cascade: true })
+  @ManyToOne(() => PlanEstudioAsignatura, (planEstudioAsignatura) => planEstudioAsignatura.ofertasCurriculares, { nullable: false, cascade: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'plan_estudio_asignatura_id', referencedColumnName: 'id'})
   planEstudioAsignatura:PlanEstudioAsignatura;
 
