@@ -1562,6 +1562,10 @@ export class InscripcionService {
 
   `);
 
+  for (let index = 0; index < result.length; index++) {    
+    const operativo = await this.opeCarreraService.findOperativoActivoCarrera(result[index]['carrera_autorizada_id']);    
+    result[index]['operativo'] = operativo.data
+  }
   
 
   return this._serviceResp.respuestaHttp200(
