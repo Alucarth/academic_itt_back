@@ -1,6 +1,6 @@
 import { Injectable, HttpStatus } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { MoreThanOrEqual, Not, Repository } from "typeorm";
+import { Equal, Like, MoreThanOrEqual, Not, Repository } from "typeorm";
 import { NotFoundException, HttpException } from "@nestjs/common";
 import { RespuestaSigedService } from "../../../shared/respuesta.service";
 import { CreateAsignaturaTipoDto } from "./dto/createAsignaturaTipo.dto";
@@ -28,6 +28,15 @@ export class AsignaturaTipoService {
       "",
       "Registro Encontrado !!"
     );
+  }
+
+  async searchSubject(search: string)
+  {
+    if(search)
+    {
+      return await this.asignaturaTipoRepository.findBy({asignatura:Like(`%${search}%`) })
+    }
+    return await this.asignaturaTipoRepository.find()
   }
 
   async create(dto: CreateAsignaturaTipoDto) {
