@@ -115,6 +115,7 @@ export class AsignaturaTipoService {
       );
     }
 
+    /*
     const asignaturaTipoExiste = await this.asignaturaTipoRepository.findOne({
       where: { 
         asignatura: dto.asignatura,
@@ -122,9 +123,10 @@ export class AsignaturaTipoService {
       },
     });
     console.log("asignaturaTipoExiste:", asignaturaTipoExiste);
+    */
 
 
-    /*
+    
     try {
       
       const result = await this.asignaturaTipoRepository
@@ -156,8 +158,7 @@ export class AsignaturaTipoService {
         }
       );
     }
-
-    */
+    
   }
 
   async deleteRecord(id: number) {
