@@ -76,7 +76,7 @@ export class OperativoCarreraAutorizadaService {
     }
 
     async createOperativoCarrera (dto: CreateOperativoCarreraAutorizadaDto) {
-        //actualizacion de todos los anteriores a falso
+        //actualizacion de todos los esatados  a falso
        const estado = await this.editEstado(dto.carrera_autorizada_id, dto.gestion_tipo_id);
 
        const operativo = await this.getByDato(dto);
@@ -145,12 +145,14 @@ export class OperativoCarreraAutorizadaService {
 
     async editEstadoById(id: number)
     {
+        //obntenemos el dato deloperativo
         const dato = await this.getById(id);
 
+        //actualiamos todos a falso
         const actualiza = await this.editEstado( 
             dato.carreraAutorizadaId, 
             dato.gestionTipoId, );
-
+        //ponemos en vigente solo el operativo seleccionado
         const res = await this.operativoCarreraAutorizadaRepositorio.actualizarEstadoById(id);
 
         if(res){
