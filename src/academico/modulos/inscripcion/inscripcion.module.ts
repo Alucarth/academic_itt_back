@@ -20,9 +20,10 @@ import { EstadoMatriculaTipo } from "../../entidades/estadoMatriculaTipo.entity"
 import { OfertaCurricular } from "../../entidades/ofertaCurricular.entity";
 import { UsersModule } from "../../../users/users.module";
 import { InstitutoPlanEstudioCarrera } from "../../entidades/institutoPlanEstudioCarrera.entity";
-
+import { OperativoCarreraAutorizadaModule } from "../operativo_carrera_autorizada/operativo_carrera_autorizada.module"
 @Module({
   imports: [
+    OperativoCarreraAutorizadaModule,
     UsersModule,
     DatabaseModule,
     PersonaModule,

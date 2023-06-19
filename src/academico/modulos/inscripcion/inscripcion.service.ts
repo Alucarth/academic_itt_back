@@ -22,6 +22,7 @@ import { CreateInscriptionDto } from "./dto/createInscription.dto";
 import { CreateMatriculaDto } from "./dto/createMatricula.dto";
 import { UsersService } from "../../../users/users.service";
 import { CreateInscriptionNuevoDto } from "./dto/createInscriptionNuevo.dto";
+import { OperativoCarreraAutorizadaService } from "../operativo_carrera_autorizada/operativo_carrera_autorizada.service";
 
 @Injectable()
 export class InscripcionService {
@@ -50,7 +51,8 @@ export class InscripcionService {
     private ipecRepository: Repository<InstitutoPlanEstudioCarrera>,
     private _serviceResp: RespuestaSigedService,
     private _servicePersona: PersonaService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly opeCarreraService: OperativoCarreraAutorizadaService
   ) {}
 
   async createMatricula(dto: CreateMatriculaDto) {
@@ -1559,6 +1561,8 @@ export class InscripcionService {
     order by 4
 
   `);
+
+  
 
   return this._serviceResp.respuestaHttp200(
     result,

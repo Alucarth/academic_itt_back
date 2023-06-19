@@ -16,6 +16,7 @@ import { OperativoCarreraAutorizadaService } from './operativo_carrera_autorizad
   controllers: [OperativoCarreraAutorizadaController],
   providers: [OperativoCarreraAutorizadaService,
     OperativoCarreraAutorizadaRepository,
-  RespuestaSigedService]
+  RespuestaSigedService],
+  exports: [OperativoCarreraAutorizadaService]
 })
 export class OperativoCarreraAutorizadaModule {}
