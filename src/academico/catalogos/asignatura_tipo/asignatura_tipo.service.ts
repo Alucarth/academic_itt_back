@@ -55,6 +55,22 @@ export class AsignaturaTipoService {
       );
     }
 
+    //evitar duplicados en asignatura y abreviacion
+    const asignaturaTipoExiste = await this.asignaturaTipoRepository.findOne({
+      where: { 
+        asignatura: dto.asignatura,
+        abreviacion: dto.abreviacion
+      },
+    });
+    console.log("asignaturaTipoExiste:", asignaturaTipoExiste);
+    if(asignaturaTipoExiste){
+      return this._serviceResp.respuestaHttp200(
+        asignaturaTipoExiste,
+        "Registro Ya Existe !!",
+        ""
+      );
+    }
+
     try {
       const res = await this.asignaturaTipoRepository
         .createQueryBuilder()
@@ -107,6 +123,18 @@ export class AsignaturaTipoService {
         ""
       );
     }
+
+    /*
+    const asignaturaTipoExiste = await this.asignaturaTipoRepository.findOne({
+      where: { 
+        asignatura: dto.asignatura,
+        abreviacion: dto.abreviacion
+      },
+    });
+    console.log("asignaturaTipoExiste:", asignaturaTipoExiste);
+    */
+
+
     
     try {
       
@@ -139,6 +167,7 @@ export class AsignaturaTipoService {
         }
       );
     }
+    
   }
 
   async deleteRecord(id: number) {
