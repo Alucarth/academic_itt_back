@@ -1082,7 +1082,8 @@ export class InscripcionService {
         
         let horarios = await this.inscripcionRepository.query(`
           select 
-            ( select sigla from dia_tipo where id = dia_tipo_id) as dia,	
+            ( select dia from dia_tipo where id = dia_tipo_id) as dia,	
+            ( select sigla from dia_tipo where id = dia_tipo_id) as sigla,	
             concat(substring(to_char(hora_inicio,'HH24:MI'),1,5), '-',(select substring(to_char(hora_fin,'HH24:MI'),1,5))) as horario
           from 
           aula_detalle where aula_id = ${res_paralelos[index]['aula_id']}
