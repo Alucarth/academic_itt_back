@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../../../auth/guards/jwt-auth.guard";
@@ -28,6 +29,19 @@ export class AsignaturaTipoController {
   })
   async getAll() {
     return await this.asignaturaTipoService.getAll();
+  }
+
+  @Get('search')
+  async search(@Query() subject: any)
+  {
+    // console.log('search', subject)
+    let result = await this.asignaturaTipoService.searchSubject(subject.query)
+    let data = []
+    result.forEach(element => {
+      data.push({ id: element.id, name: element.asignatura, code: element.abreviacion, hours: 0 })
+    });
+    
+    return data
   }
 
   @Post("")
