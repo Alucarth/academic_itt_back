@@ -1,6 +1,6 @@
 import { Injectable, HttpStatus } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { MoreThanOrEqual, Not, Repository } from "typeorm";
+import { Equal, Like, MoreThanOrEqual, Not, Repository } from "typeorm";
 import { NotFoundException, HttpException } from "@nestjs/common";
 import { RespuestaSigedService } from "../../../shared/respuesta.service";
 import { CreateAsignaturaTipoDto } from "./dto/createAsignaturaTipo.dto";
@@ -30,6 +30,15 @@ export class AsignaturaTipoService {
     );
   }
 
+  async searchSubject(search: string)
+  {
+    if(search)
+    {
+      return await this.asignaturaTipoRepository.findBy({asignatura:Like(`%${search}%`) })
+    }
+    return await this.asignaturaTipoRepository.find()
+  }
+
   async create(dto: CreateAsignaturaTipoDto) {
     //TODO: en la tabla actual el campo asignatura_id todo esta con CERO
     //existe el area tipo = 0 ?
@@ -42,6 +51,22 @@ export class AsignaturaTipoService {
       return this._serviceResp.respuestaHttp404(
         0,
         "AsignaturaTipoId no encontrada!",
+        ""
+      );
+    }
+
+    //evitar duplicados en asignatura y abreviacion
+    const asignaturaTipoExiste = await this.asignaturaTipoRepository.findOne({
+      where: { 
+        asignatura: dto.asignatura,
+        abreviacion: dto.abreviacion
+      },
+    });
+    console.log("asignaturaTipoExiste:", asignaturaTipoExiste);
+    if(asignaturaTipoExiste){
+      return this._serviceResp.respuestaHttp200(
+        asignaturaTipoExiste,
+        "Registro Ya Existe !!",
         ""
       );
     }
@@ -98,6 +123,18 @@ export class AsignaturaTipoService {
         ""
       );
     }
+
+    /*
+    const asignaturaTipoExiste = await this.asignaturaTipoRepository.findOne({
+      where: { 
+        asignatura: dto.asignatura,
+        abreviacion: dto.abreviacion
+      },
+    });
+    console.log("asignaturaTipoExiste:", asignaturaTipoExiste);
+    */
+
+
     
     try {
       
@@ -130,6 +167,7 @@ export class AsignaturaTipoService {
         }
       );
     }
+    
   }
 
   async deleteRecord(id: number) {

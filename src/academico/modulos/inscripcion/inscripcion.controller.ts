@@ -49,7 +49,7 @@ export class InscripcionController {
     summary:
       "Devuelve todos los matriculados en una gestion, periodo, carrera e institucion educativa",
   })
-  @Get("/matriculados/:gestionId/:periodoId/:carreraId/:ieId")
+  /*@Get("/matriculados/:gestionId/:periodoId/:carreraId/:ieId")
   async getAllMatriculadosByGestion(
     @Param("gestionId") gestionId: string,
     @Param("periodoId") periodoId: string,
@@ -62,7 +62,27 @@ export class InscripcionController {
       parseInt(carreraId),
       parseInt(ieId)
     );
+  }*/
+
+  //se aumenta el instituto_plan_estudio_carrera_id
+  @Get("/matriculados/:gestionId/:periodoId/:carreraId/:ieId/:ipecId")
+  async getAllMatriculadosByGestion(
+    @Param("gestionId") gestionId: string,
+    @Param("periodoId") periodoId: string,
+    @Param("carreraId") carreraId: string,
+    @Param("ieId") ieId: string,
+    @Param("ipecId") ipecId: string,
+  ) {
+    return await this.inscripcionService.getAllMatriculadosByGestion(
+      parseInt(gestionId),
+      parseInt(periodoId),
+      parseInt(carreraId),
+      parseInt(ieId),
+      parseInt(ipecId),
+    );
   }
+
+
   @Get("byAulaId/:id")
   async getAllInscritosByAulaId(
     @Param("id") id: number

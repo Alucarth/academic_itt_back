@@ -22,6 +22,7 @@ import { CreateInscriptionDto } from "./dto/createInscription.dto";
 import { CreateMatriculaDto } from "./dto/createMatricula.dto";
 import { UsersService } from "../../../users/users.service";
 import { CreateInscriptionNuevoDto } from "./dto/createInscriptionNuevo.dto";
+import { OperativoCarreraAutorizadaService } from "../operativo_carrera_autorizada/operativo_carrera_autorizada.service";
 
 @Injectable()
 export class InscripcionService {
@@ -50,8 +51,9 @@ export class InscripcionService {
     private ipecRepository: Repository<InstitutoPlanEstudioCarrera>,
     private _serviceResp: RespuestaSigedService,
     private _servicePersona: PersonaService,
-    private readonly usersService: UsersService
-  ) {}
+    private readonly usersService: UsersService,
+    private readonly opeCarreraService: OperativoCarreraAutorizadaService
+  ) { }
 
   async createMatricula(dto: CreateMatriculaDto) {
     const persona = await this._servicePersona.findPersona(dto.personaId);
@@ -64,7 +66,7 @@ export class InscripcionService {
       );
     }
     const personaAux = persona[0];
-   
+
     const institucionEducativaSucursal =
       await this.ieSucursalRepository.findOne({
         where: {
@@ -129,7 +131,7 @@ export class InscripcionService {
       
         `);
 
-    
+
       if (parseInt(existe[0].existe) == 0) {
         //si no existe, es nuevo nuevo, se crean ambos
         console.log("insertar institucionEducativaEstudiante");
@@ -183,7 +185,7 @@ export class InscripcionService {
         
           `);
 
-       
+
 
         //buscamos si existe la matricula
         const existeMat = await this.inscripcionRepository.query(`
@@ -535,7 +537,8 @@ export class InscripcionService {
     }
   }
 
-  async getAllMatriculadosByGestion(
+
+  async getAllMatriculadosByGestionOLD(
     gestionId: number,
     periodoId: number,
     carreraAutorizadaId: number,
@@ -600,6 +603,85 @@ export class InscripcionService {
         institucion_educativa.id =  ${ieId}  and 
         matricula_estudiante.periodo_tipo_id = ${periodoId} and 
         matricula_estudiante.gestion_tipo_id = ${gestionId}
+        order by paterno, materno, nombre
+    `);
+
+    console.log("result: ", result);
+
+    return this._serviceResp.respuestaHttp200(
+      result,
+      "Registro Encontrado !!",
+      ""
+    );
+  }
+
+  async getAllMatriculadosByGestion(
+    gestionId: number,
+    periodoId: number,
+    carreraAutorizadaId: number,
+    ieId: number,
+    ipecId: number
+  ) {
+    //TODO: aumentar ueId
+
+    const result = await this.inscripcionRepository.query(`
+   
+      SELECT
+        carrera_autorizada.id AS carrera_autorizada_id, 
+        carrera_tipo.id AS carrera_tipo_id, 
+        carrera_tipo.carrera, 
+        instituto_plan_estudio_carrera.id AS instituto_plan_estudio_carrera_id, 
+        matricula_estudiante.id AS matricula_estudiante_id, 
+        matricula_estudiante.gestion_tipo_id, 
+        matricula_estudiante.periodo_tipo_id, 
+        matricula_estudiante.doc_matricula, 
+        persona.id AS persona_id, 
+        persona.carnet_identidad, 
+        persona.complemento, 
+        persona.paterno, 
+        persona.materno, 
+        persona.nombre, 
+        institucion_educativa_sucursal.id as institucion_educativa_sucursal_id, 
+        institucion_educativa.id as institucion_educativa_id, 
+        institucion_educativa.institucion_educativa,
+        (select count(matricula_estudiante_id) from instituto_estudiante_inscripcion where matricula_estudiante_id =  matricula_estudiante.id) as inscrito_en_la_gestion 
+      FROM
+        carrera_autorizada
+        INNER JOIN
+        instituto_plan_estudio_carrera
+        ON 
+          carrera_autorizada."id" = instituto_plan_estudio_carrera.carrera_autorizada_id
+        INNER JOIN
+        matricula_estudiante
+        ON 
+          instituto_plan_estudio_carrera.id = matricula_estudiante.instituto_plan_estudio_carrera_id
+        INNER JOIN
+        carrera_tipo
+        ON 
+          carrera_autorizada.carrera_tipo_id = carrera_tipo.id
+        INNER JOIN
+        institucion_educativa_estudiante
+        ON 
+          matricula_estudiante.institucion_educativa_estudiante_id = institucion_educativa_estudiante.id
+        INNER JOIN
+        persona
+        ON 
+          institucion_educativa_estudiante.persona_id = persona.id
+        INNER JOIN
+        institucion_educativa_sucursal
+        ON 
+          carrera_autorizada.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id AND
+          institucion_educativa_estudiante.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id
+        INNER JOIN
+        institucion_educativa
+        ON 
+          institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa.id
+      WHERE
+        carrera_autorizada.id = ${carreraAutorizadaId} and 
+        institucion_educativa.id =  ${ieId}  and 
+        matricula_estudiante.periodo_tipo_id = ${periodoId} and 
+        matricula_estudiante.gestion_tipo_id = ${gestionId} and
+        matricula_estudiante.instituto_plan_estudio_carrera_id = ${ipecId}
         order by paterno, materno, nombre
     `);
 
@@ -846,7 +928,7 @@ export class InscripcionService {
     );
   }
 
-  async getAllMateriasInscripcionNuevo(carreraAutorizadaId: number, matriculaEstudianteId:number) {
+  async getAllMateriasInscripcionNuevo(carreraAutorizadaId: number, matriculaEstudianteId: number) {
     // semestral ? anual ?
     const matricula_estudiante = matriculaEstudianteId; //62;
 
@@ -880,6 +962,9 @@ export class InscripcionService {
       // es anual, el primer año es 7
       regimen_grado_tipo_id = 7;
     }
+
+    console.log('intervaloGestion : ', intervaloGestion);
+    console.log('regimen_grado_tipo_id : ', regimen_grado_tipo_id);
 
     const result = await this.inscripcionRepository.query(`
       SELECT
@@ -944,8 +1029,14 @@ export class InscripcionService {
         regimen_grado_tipo.id = ${regimen_grado_tipo_id}
     `);
 
+    console.log('result : ', result);
+
 
     for (let i = 0; i < result.length; i++) {
+      console.log('i :', i);
+      console.log('oferta_curricular.id', result[i].oferta_curricular_id);
+
+      //concat((select substring(to_char(hora_inicio,'HH24:MI'),1,5) from aula_detalle where aula_id = aula.id), '-',(select substring(to_char(hora_fin,'HH24:MI'),1,5) from aula_detalle where aula_id = aula.id)) as horario,
       let res_paralelos = await this.inscripcionRepository.query(`
         SELECT
           case trim(concat(persona.paterno, ' ', persona.materno, ' ', persona.nombre))
@@ -957,7 +1048,7 @@ export class InscripcionService {
           aula.id as aula_id, 
           paralelo_tipo.id as paralelo_tipo_id, 
           paralelo_tipo.paralelo,           
-          concat((select substring(to_char(hora_inicio,'HH24:MI'),1,5) from aula_detalle where aula_id = aula.id), '-',(select substring(to_char(hora_fin,'HH24:MI'),1,5) from aula_detalle where aula_id = aula.id)) as horario,
+          '' as horario,
           aula.activo,
           0 as inscrito
         FROM
@@ -986,9 +1077,11 @@ export class InscripcionService {
           oferta_curricular.id = ${result[i].oferta_curricular_id}
       `);
 
+      console.log('res_paralelos : ', res_paralelos);
+
       //vemos los que ya esta inscrito
 
-      for (let index=0; index < res_paralelos.length; index++){
+      for (let index = 0; index < res_paralelos.length; index++) {
         //por cada paralelo vemos si esta incrito
 
         const existe = await this.inscripcionRepository.query(`
@@ -1056,8 +1149,8 @@ export class InscripcionService {
    * @param matriculaEstudianteId 
    * @returns 
    */
-  async getAllMateriasInscripcionAntiguoSINNOTAS(carreraAutorizadaId: number, matriculaEstudianteId:number) {
-    
+  async getAllMateriasInscripcionAntiguoSINNOTAS(carreraAutorizadaId: number, matriculaEstudianteId: number) {
+
     //con carrera autorizada, obtenemos el pla_estudio_carrera_id, OJO SOLO  DEBERIA HABER UNO ?
 
 
@@ -1066,7 +1159,7 @@ export class InscripcionService {
         where carrera_autorizada_id = ${carreraAutorizadaId}
     `);
 
-    if(planEstudioCarreraAux.length == 0){
+    if (planEstudioCarreraAux.length == 0) {
       return this._serviceResp.respuestaHttp404(
         carreraAutorizadaId,
         "No existe plan de estudio para esta carrera !!",
@@ -1076,7 +1169,7 @@ export class InscripcionService {
 
     const plan_estudio_carrera_id = planEstudioCarreraAux[0]['plan_estudio_carrera_id'];
     console.log(plan_estudio_carrera_id);
-    
+
     const result = await this.inscripcionRepository.query(`
       SELECT
         plan_estudio_asignatura.id, 
@@ -1129,28 +1222,28 @@ export class InscripcionService {
 
     //un distinct de las etapas o grados 
     const etapas = result.map(item => item.regimen_grado)
-    .filter((value, index, self) => self.indexOf(value) === index)
+      .filter((value, index, self) => self.indexOf(value) === index)
 
     console.log(etapas);
-    
+
     let dataResult = [];
-   
-    for (let i = 0; i < etapas.length; i++) {   
-      
-     
-        let obj1 = { regimen_grado : etapas[i], asignaturas: [] };        
-        //filtramos todo lo que sea de la etapa
 
-        let obj2 = result.filter(obj => {
-          return obj.regimen_grado === etapas[i];
-        });
+    for (let i = 0; i < etapas.length; i++) {
 
-        console.log('obj2 --> ', obj2);
-        //return;
 
-        for (let index = 0; index < obj2.length; index++) {   
+      let obj1 = { regimen_grado: etapas[i], asignaturas: [] };
+      //filtramos todo lo que sea de la etapa
 
-          let res_paralelos = await this.inscripcionRepository.query(`
+      let obj2 = result.filter(obj => {
+        return obj.regimen_grado === etapas[i];
+      });
+
+      console.log('obj2 --> ', obj2);
+      //return;
+
+      for (let index = 0; index < obj2.length; index++) {
+
+        let res_paralelos = await this.inscripcionRepository.query(`
             SELECT
               
               case trim(concat(persona.paterno, ' ', persona.materno, ' ', persona.nombre))
@@ -1191,10 +1284,10 @@ export class InscripcionService {
               oferta_curricular.id = ${obj2[index].oferta_curricular_id}
           `);
 
-            for (let j=0; j < res_paralelos.length; j++){
-              //por cada paralelo vemos si esta incrito
-      
-              const existe = await this.inscripcionRepository.query(`
+        for (let j = 0; j < res_paralelos.length; j++) {
+          //por cada paralelo vemos si esta incrito
+
+          const existe = await this.inscripcionRepository.query(`
               select count(*) as existe 
                 from 
                 instituto_estudiante_inscripcion
@@ -1203,24 +1296,24 @@ export class InscripcionService {
                   aula_id = ${res_paralelos[j].aula_id} and 
                   oferta_curricular_id = ${res_paralelos[j].oferta_curricular_id}      
                 `);
-      
-              if (parseInt(existe[0].existe) != 0) {
-                res_paralelos[j].inscrito = 1;
-              }
-      
-            }
 
-          obj2[index].paralelos = res_paralelos;
+          if (parseInt(existe[0].existe) != 0) {
+            res_paralelos[j].inscrito = 1;
+          }
 
         }
 
-        //obj1.asignaturas.push(obj2);
-        obj1.asignaturas = obj2;
-        dataResult.push(obj1);
+        obj2[index].paralelos = res_paralelos;
+
+      }
+
+      //obj1.asignaturas.push(obj2);
+      obj1.asignaturas = obj2;
+      dataResult.push(obj1);
     }
     //console.log('dataResult --> ', dataResult);
 
-    
+
 
     return this._serviceResp.respuestaHttp200(
       dataResult,
@@ -1229,8 +1322,8 @@ export class InscripcionService {
     );
   }
 
-  async getAllMateriasInscripcionAntiguo(carreraAutorizadaId: number, matriculaEstudianteId:number) {
-    
+  async getAllMateriasInscripcionAntiguo(carreraAutorizadaId: number, matriculaEstudianteId: number) {
+
     //con carrera autorizada, obtenemos el pla_estudio_carrera_id, OJO SOLO  DEBERIA HABER UNO ?
 
     //SE TOMA EN COSIDERACION LAS NOTAS DE APROBACION
@@ -1242,7 +1335,7 @@ export class InscripcionService {
         where carrera_autorizada_id = ${carreraAutorizadaId}
     `);
 
-    if(planEstudioCarreraAux.length == 0){
+    if (planEstudioCarreraAux.length == 0) {
       return this._serviceResp.respuestaHttp404(
         carreraAutorizadaId,
         "No existe plan de estudio para esta carrera !!",
@@ -1278,11 +1371,11 @@ export class InscripcionService {
       select intervalo_gestion_tipo_id from carrera_autorizada_resolucion where carrera_autorizada_id = ${carreraAutorizadaId}  order by id desc limit 1
     `);
 
-    if(intervalo_carrera.length == 0) {
+    if (intervalo_carrera.length == 0) {
 
-    }else{
+    } else {
       //vemos si es anual
-      if(intervalo_carrera[0]['intervalo_gestion_tipo_id'] == 4){
+      if (intervalo_carrera[0]['intervalo_gestion_tipo_id'] == 4) {
         //es anual
         let estado_final = '8';
       }
@@ -1312,7 +1405,7 @@ export class InscripcionService {
 
     const plan_estudio_carrera_id = planEstudioCarreraAux[0]['plan_estudio_carrera_id'];
     console.log(plan_estudio_carrera_id);
-    
+
     const result = await this.inscripcionRepository.query(`
       SELECT
         plan_estudio_asignatura.id, 
@@ -1365,28 +1458,28 @@ export class InscripcionService {
 
     //un distinct de las etapas o grados 
     const etapas = result.map(item => item.regimen_grado)
-    .filter((value, index, self) => self.indexOf(value) === index)
+      .filter((value, index, self) => self.indexOf(value) === index)
 
     console.log(etapas);
-    
+
     let dataResult = [];
-   
-    for (let i = 0; i < etapas.length; i++) {   
-      
-     
-        let obj1 = { regimen_grado : etapas[i], asignaturas: [] };        
-        //filtramos todo lo que sea de la etapa
 
-        let obj2 = result.filter(obj => {
-          return obj.regimen_grado === etapas[i];
-        });
+    for (let i = 0; i < etapas.length; i++) {
 
-        console.log('obj2 --> ', obj2);
-        //return;
 
-        for (let index = 0; index < obj2.length; index++) {   
+      let obj1 = { regimen_grado: etapas[i], asignaturas: [] };
+      //filtramos todo lo que sea de la etapa
 
-          let res_paralelos = await this.inscripcionRepository.query(`
+      let obj2 = result.filter(obj => {
+        return obj.regimen_grado === etapas[i];
+      });
+
+      console.log('obj2 --> ', obj2);
+      //return;
+
+      for (let index = 0; index < obj2.length; index++) {
+
+        let res_paralelos = await this.inscripcionRepository.query(`
             SELECT
               
               case trim(concat(persona.paterno, ' ', persona.materno, ' ', persona.nombre))
@@ -1427,10 +1520,10 @@ export class InscripcionService {
               oferta_curricular.id = ${obj2[index].oferta_curricular_id}
           `);
 
-            for (let j=0; j < res_paralelos.length; j++){
-              //por cada paralelo vemos si esta incrito
-      
-              const existe = await this.inscripcionRepository.query(`
+        for (let j = 0; j < res_paralelos.length; j++) {
+          //por cada paralelo vemos si esta incrito
+
+          const existe = await this.inscripcionRepository.query(`
               select count(*) as existe 
                 from 
                 instituto_estudiante_inscripcion
@@ -1439,24 +1532,24 @@ export class InscripcionService {
                   aula_id = ${res_paralelos[j].aula_id} and 
                   oferta_curricular_id = ${res_paralelos[j].oferta_curricular_id}      
                 `);
-      
-              if (parseInt(existe[0].existe) != 0) {
-                res_paralelos[j].inscrito = 1;
-              }
-      
-            }
 
-          obj2[index].paralelos = res_paralelos;
+          if (parseInt(existe[0].existe) != 0) {
+            res_paralelos[j].inscrito = 1;
+          }
 
         }
 
-        //obj1.asignaturas.push(obj2);
-        obj1.asignaturas = obj2;
-        dataResult.push(obj1);
+        obj2[index].paralelos = res_paralelos;
+
+      }
+
+      //obj1.asignaturas.push(obj2);
+      obj1.asignaturas = obj2;
+      dataResult.push(obj1);
     }
     //console.log('dataResult --> ', dataResult);
 
-    
+
 
     return this._serviceResp.respuestaHttp200(
       dataResult,
@@ -1560,11 +1653,17 @@ export class InscripcionService {
 
   `);
 
-  return this._serviceResp.respuestaHttp200(
-    result,
-    "Registro Encontrado !!",
-    ""
-  );
+    for (let index = 0; index < result.length; index++) {
+      const operativo = await this.opeCarreraService.findOperativoActivoCarrera(result[index]['carrera_autorizada_id']);
+      result[index]['operativo'] = operativo.data
+    }
+
+
+    return this._serviceResp.respuestaHttp200(
+      result,
+      "Registro Encontrado !!",
+      ""
+    );
 
   }
 
