@@ -27,7 +27,28 @@ export class InstitutoPlanEstudioCarreraRepository {
         });
         return dato;
     }
-
+    async findCarreraAutorizadaResolucion(resolucion_id, carrera_id){
+        const dato = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera)
+        .createQueryBuilder("ip")
+        .innerJoinAndSelect("ip.planEstudioCarrera", "pe")       
+        .innerJoinAndSelect("pe.planEstudioResolucion", "pr")  
+        .leftJoinAndSelect("ip.ofertasCurriculares", "o")  
+        .select([
+            'ip.id',
+            'ip.observacion',
+            'pe.id',
+            'pr.id',
+            'pr.numeroResolucion',
+            'pr.fechaResolucion',
+            'pr.descripcion',
+            'pr.activo',
+            'o.id',
+        ])
+        .where('ip.carreraAutorizadaId = :carrera_id ', { carrera_id })
+        .andWhere('pe.planEstudioResolucionId = :resolucion_id ', { resolucion_id })
+        .getOne();
+        return dato;
+    }
     async findResolucionesCarreraAutorizadaId( id:number){
         const itt = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera)
         .createQueryBuilder("ip")
@@ -108,6 +129,9 @@ export class InstitutoPlanEstudioCarreraRepository {
         
       return await transaction.getRepository(InstitutoPlanEstudioCarrera).save(institutoPlan)
   }
+  async deleteAsignacion(id: number) {
+    return await this.dataSource.getRepository(InstitutoPlanEstudioCarrera).delete(id)
+}
   async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
     return this.dataSource.manager.transaction<T>(op)
 }

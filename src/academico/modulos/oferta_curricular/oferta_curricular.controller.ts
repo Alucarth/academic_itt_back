@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { OfertaCurricular } from 'src/academico/entidades/ofertaCurricular.entity';
 import { DataSource } from 'typeorm';
 import { CreateOfertaCurricularDto } from './dto/createOfertaCurricular.dto';
@@ -42,6 +42,10 @@ export class OfertaCurricularController {
         console.log("fin");*/
      //   return  await this.ofertaCurricularService.createOfertaCurricular(dto);        
         return  await this.ofertaCurricularService.crear(dto);        
+    }
+    @Delete("/:id")
+    async deleteResolucion(@Param("id") id: string) {
+      return await this.ofertaCurricularService.deleteOferta(parseInt(id));
     }
     
 }

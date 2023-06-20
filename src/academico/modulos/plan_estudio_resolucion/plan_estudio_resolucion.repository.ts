@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InstitucionEducativaCurso } from 'src/academico/entidades/institucionEducativaCurso.entity';
+import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPlanEstudioCarrera.entity';
 import { PlanEstudioResolucion } from 'src/academico/entidades/planEstudioResolucion.entity';
 import { DataSource, EntityManager } from 'typeorm'
 import { CreateCarreraAutorizadaResolucionDto } from '../carrera_autorizada_resolucion/dto/createCarreraAutorizadaResolucion.dto';
@@ -69,8 +70,47 @@ export class PlanEstudioResolucionRepository {
           .leftJoinAndSelect("p.institutosPlanesCarreras", "i")
           .leftJoinAndSelect("p.planesAsignaturas", "pa")
           .leftJoinAndSelect("pa.ofertasCurriculares", "o")
+          .select([
+            'r.id',
+            'p.id',
+            'i.id',
+            'pa.id',
+            'o.id',
+        ])
           .where('r.id = :id ', { id })
           .getMany()
+  
+      }
+    async findCarreraByResolucionId(id:number, ca:number){
+        //  return  await this.dataSource.getRepository(PlanEstudioResolucion).find();
+          return  await this.dataSource.getRepository(PlanEstudioResolucion)
+          .createQueryBuilder("r")
+          .innerJoinAndSelect("r.planesCarreras", "p")
+          .innerJoinAndSelect("p.institutosPlanesCarreras", "i")
+          .select([
+            'r.id',
+            'p.id',
+            'i.id',
+            
+        ])
+          .where('r.id = :id ', { id })
+          .andWhere('i.carreraAutorizadaId = :ca ', { ca })
+          .getOne();
+  
+      }
+    async findCarrerasAutorizadasByResolucionId(id:number){
+        //  return  await this.dataSource.getRepository(PlanEstudioResolucion).find();
+          return  await this.dataSource.getRepository(PlanEstudioResolucion)
+          .createQueryBuilder("r")
+          .leftJoinAndSelect("r.planesCarreras", "p")
+          .leftJoinAndSelect("p.institutosPlanesCarreras", "i")
+          .select([
+            'r.id',
+            'p.id',
+            'i.id'
+          ])
+          .where('r.id = :id ', { id })
+          .getMany();
   
       }
     async findResoluciones(){
@@ -114,6 +154,20 @@ export class PlanEstudioResolucionRepository {
           })
          .execute();
     }
+    async actualizarEstadoInstitucionResolucion(id:number, estado:boolean) {
+
+        return  await this.dataSource
+         .createQueryBuilder()
+         .update(InstitutoPlanEstudioCarrera)
+         .set({
+           activo:estado
+         })
+         .where({ 
+             id: id
+          })
+         .execute();
+    }
+
     async updateDatosResolucionById(id:number,dto: CreateResolucionDto) {
        
         return await this.dataSource

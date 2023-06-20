@@ -193,6 +193,9 @@ export class OfertaCurricularRepository {
     */
         return 1;
       }
+    async deleteOferta(id: number) {
+        return await this.dataSource.getRepository(OfertaCurricular).delete(id)
+    }
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
     }

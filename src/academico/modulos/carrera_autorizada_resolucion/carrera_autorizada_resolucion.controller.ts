@@ -28,7 +28,7 @@ export class CarreraAutorizadaResolucionController {
     async editar( @Body() dto: UpdateCarreraAutorizadaResolucionDto) {
        console.log("update" + dto);
         return await this.carreraAutorizadaResolucionService.update(dto);
-    }*/
-
+    }
+    */
 }
 

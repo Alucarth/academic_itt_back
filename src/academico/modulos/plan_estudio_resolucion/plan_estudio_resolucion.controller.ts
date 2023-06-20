@@ -38,14 +38,20 @@ export class PlanEstudioResolucionController {
       console.log("-*************- EDIT RESOLUCION");
       return await this.planEstudioResolucionService.editDatoResolucion(id,dto);
     }
-    @Put('estado/:id')
-    async editEstadoResolucion(@Param('id') id: number) {
+    @Put('estado-carrera/:id/:ca')
+    async editEstadoResolucion(@Param('id') id: number, @Param('ca') ca: number) {
       console.log("-*************- EDIT ESTADO RESOLUCION");
-      return await this.planEstudioResolucionService.editEstadoResolucion(id);
+      //return await this.planEstudioResolucionService.editEstadoResolucion(id,ca);
+      return await this.planEstudioResolucionService.editEstadoResolucionCarrera(id,ca);
+
     }
     @Delete("/:id")
     async deleteResolucion(@Param("id") id: string) {
       return await this.planEstudioResolucionService.deleteResolucion(parseInt(id));
+    }
+    @Delete("asignacion/:id/:ca")
+    async deleteCarreraResolucion(@Param("id") id: string, @Param("ca") ca: string) {
+      return await this.planEstudioResolucionService.deleteResolucionCarrera(parseInt(id), parseInt(ca));
     }
 
 }

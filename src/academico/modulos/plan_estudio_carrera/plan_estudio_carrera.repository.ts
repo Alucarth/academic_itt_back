@@ -46,6 +46,41 @@ export class PlanEstudioCarreraRepository {
           .getRawMany();
 
     }
+    async findCarrerasInstitutosByResolucionId(id){
+        return  await this.dataSource.getRepository(PlanEstudioCarrera)
+        .createQueryBuilder("pc")
+        .innerJoinAndSelect("pc.planEstudioResolucion", "r")
+        .innerJoinAndSelect("pc.institutosPlanesCarreras", "i")
+        .leftJoinAndSelect("i.ofertasCurriculares", "o")
+        .select([
+            'pc.id as plan_estudio_carrera_id',
+            'r.id as plan_estudio_resolucion_id',
+            'i.id as instituto_plan_estudio_carrera_id',
+            'i.carreraAutorizadaId as carrera_autorizada_id',
+            'i.activo as activo',
+            'o.id as oferta_curricular_id',
+
+        ])
+          .where("r.id = :id ", { id })
+          .getRawMany();
+
+    }
+    async findCarreraInstitutoByResolucionId(id:number, ca:number){
+        return  await this.dataSource.getRepository(PlanEstudioCarrera)
+        .createQueryBuilder("pc")
+        .innerJoinAndSelect("pc.planEstudioResolucion", "r")
+        .innerJoinAndSelect("pc.institutosPlanesCarreras", "i")
+        .select([
+            'pc.id as plan_estudio_carrera_id',
+            'r.id as plan_estudio_resolucion_id',
+            'i.id as instituto_plan_estudio_carrera_id',
+            'i.carreraAutorizadaId as carrera_autorizada_id',
+            'i.activo as activo',
+        ])
+          .where("pc.planEstudioResolucionId = :id ", { id })
+          .andWhere("i.carreraAutorizadaId = :ca ", { ca })
+          .getRawOne();
+    }
     async findResolucionesByData(
         carrera_id:number,
         nivel_id:number,
@@ -58,18 +93,23 @@ export class PlanEstudioCarreraRepository {
         return  await this.dataSource.getRepository(PlanEstudioCarrera)
         .createQueryBuilder("pc")
         .innerJoinAndSelect("pc.planEstudioResolucion", "r")
+        .innerJoinAndSelect("pc.institutosPlanesCarreras", "i")
         .select([
             'pc.id as plan_estudio_carrera_id',
             'r.id as plan_estudio_resolucion_id',
             'r.numero_resolucion as numero_resolucion',
             'r.fecha_resolucion as fecha_resolucion',
             'r.activo as activo',
+            'i.id as instituto_plan_estudio_carrera_id',
+            'i.activo as activo_asignacion',
+
         ])
-          .where("pc.carreraTipoId = :carrera_id ", { carrera_id })
-          .andWhere("pc.areaTipoId = :area_id ", { area_id })
-          .andWhere("pc.nivelAcademicoTipoId = :nivel_id ", { nivel_id })
-          .andWhere("pc.intervaloGestionTipoId = :intervalo_id ", { intervalo_id })
-          .andWhere("pc.tiempoEstudio = :tiempo ", { tiempo })
+          .where("pc.carreraTipoId = :carrera_id", { carrera_id })
+          .andWhere("pc.areaTipoId = :area_id", { area_id })
+          .andWhere("pc.nivelAcademicoTipoId = :nivel_id", { nivel_id })
+          .andWhere("pc.intervaloGestionTipoId = :intervalo_id", { intervalo_id })
+          .andWhere("pc.tiempoEstudio = :tiempo", { tiempo })
+          .andWhere("i.activo = true")
           .getRawMany();
 
     }

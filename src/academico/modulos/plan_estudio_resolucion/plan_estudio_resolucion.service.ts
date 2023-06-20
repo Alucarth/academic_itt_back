@@ -4,6 +4,7 @@ import { EntityManager } from 'typeorm';
 import { CarreraAutorizadaRepository } from '../carrera_autorizada/carrera_autorizada.repository';
 import { InstitutoPlanEstudioCarreraRepository } from '../instituto_plan_estudio_carrera/instituto_plan_estudio_carrera.repository';
 import { InstitutoPlanEstudioCarreraService } from '../instituto_plan_estudio_carrera/instituto_plan_estudio_carrera.service';
+import { OfertaCurricularRepository } from '../oferta_curricular/oferta_curricular.repository';
 import { PlanEstudioCarreraRepository } from '../plan_estudio_carrera/plan_estudio_carrera.repository';
 import { PlanEstudioCarreraService } from '../plan_estudio_carrera/plan_estudio_carrera.service';
 import { CreatePlanEstudioResolucionDto } from './dto/createPlanEstudioResolucion.dto';
@@ -22,6 +23,9 @@ export class PlanEstudioResolucionService {
 
         @Inject(PlanEstudioCarreraRepository) 
         private planEstudioCarreraRepository: PlanEstudioCarreraRepository,
+
+        @Inject(OfertaCurricularRepository) 
+        private ofertaCurricularRepository: OfertaCurricularRepository,
        
         @Inject(InstitutoPlanEstudioCarreraRepository) 
         private institutoPlanEstudioCarreraRepository: InstitutoPlanEstudioCarreraRepository,
@@ -168,14 +172,64 @@ export class PlanEstudioResolucionService {
       const resolucion = await this.planEstudioResolucionRepository.findCarrerasByResolucionesId(id);
           return resolucion;
   }
-    async editEstadoResolucion(id: number)
+
+  async editEstadoResolucionCarrera(id: number, ca:number)
+  {
+      const datoCarreraResolucionInstituto = await this.planEstudioCarreraRepository.findCarreraInstitutoByResolucionId(id, ca);
+      console.log(datoCarreraResolucionInstituto);
+      if(datoCarreraResolucionInstituto){
+        let estado = true;
+        if(datoCarreraResolucionInstituto.activo==true){
+          estado = false;
+        }
+        await this.planEstudioResolucionRepository.actualizarEstadoInstitucionResolucion(
+          datoCarreraResolucionInstituto.instituto_plan_estudio_carrera_id,
+          estado
+        );
+        return this._serviceResp.respuestaHttp202(
+          datoCarreraResolucionInstituto,
+          'Se cambio de estado correctamente',
+          '',
+      );
+      }
+      return this._serviceResp.respuestaHttp401(
+        "",
+        'No se pudo actualizar el estado',
+        '',
+      );        
+    }
+    async editEstadoResolucion(id: number, ca:number)
     {
+      
       const dato = await this.getById(id);
         let estado = true;
       if(dato.activo==true){
         estado = false;
       }
-        const resolucion = await this.planEstudioResolucionRepository.actualizarEstadoResolucion(
+      //buscar si tiene carreras autorizadas
+      const listaCarreras = await this.planEstudioCarreraRepository.findCarrerasByResolucionId(id);
+      console.log("inicio listaa");
+      console.log(listaCarreras);
+      console.log("listaa");
+
+      const listaCarrerasInstitutos = await this.planEstudioCarreraRepository.findCarrerasInstitutosByResolucionId(id);
+
+      console.log("inicio listaa 222");
+      console.log(listaCarrerasInstitutos);
+      console.log("listaa 222");
+
+      if(listaCarrerasInstitutos.length==1){
+        let estado = true;
+        if(listaCarrerasInstitutos[0].activo==true){
+          estado = false;
+        }
+        const resolucionInstituto = await this.planEstudioResolucionRepository.actualizarEstadoInstitucionResolucion(
+          listaCarrerasInstitutos[0].instituto_plan_estudio_carrera_id,
+          estado
+        );
+      }
+      
+       const resolucion = await this.planEstudioResolucionRepository.actualizarEstadoResolucion(
             id,
             estado
         );
@@ -185,6 +239,7 @@ export class PlanEstudioResolucionService {
           '',
       );
     }
+
     async editDatoResolucion(id: number, dto:CreateResolucionDto)
     {
         
@@ -209,6 +264,31 @@ export class PlanEstudioResolucionService {
     async deleteResolucion(id: number)
     {
       const carreras = await this.planEstudioResolucionRepository.findCarrerasByResolucionesId(id);
+
+      console.log("inicio carr");
+      console.log(carreras);
+      console.log("carrr");
+      //busqueda de carreras
+      const listaCarreras = await this.planEstudioCarreraRepository.findCarrerasByResolucionId(id);
+
+      console.log("inicio listaa");
+      console.log(listaCarreras);
+      console.log("listaa");
+      //busqueda de ofertas
+      const listaCarrerasInstitutos = await this.planEstudioCarreraRepository.findCarrerasInstitutosByResolucionId(id);
+
+      console.log("inicio listaa 222");
+      console.log(listaCarrerasInstitutos);
+      console.log("listaa 222");
+
+      if(listaCarrerasInstitutos.length==1){
+        if(listaCarrerasInstitutos[0].oferta_curricular_id){ //si existe una oferta la vamos a eliminar
+          //const result =  await this.ofertaCurricularRepository.deleteOferta(id);
+          console.log("borrar");
+        }
+
+      }
+      /*
       if(carreras.length==0){
         const result =  await this.planEstudioResolucionRepository.deleteResolucion(id);
 
@@ -226,5 +306,38 @@ export class PlanEstudioResolucionService {
           "No se puede eliminar los datos existen ofertas curriculares asignadas !!",
           ""
         );
+      }*/
+    }
+    async deleteResolucionCarrera(id: number, ca:number)
+    {
+      const institutoResolucionCarrera = await this.institutoPlanEstudioCarreraRepository.findCarreraAutorizadaResolucion(id,ca);
+      console.log(institutoResolucionCarrera);
+      //borramos la asignación siempre y cuando no tenga ofertas
+      if(!institutoResolucionCarrera){
+        return this._serviceResp.respuestaHttp203(
+          "",
+          "Registro Eliminado !!",
+          ""
+        );
+      }
+      if(institutoResolucionCarrera.id && institutoResolucionCarrera.ofertasCurriculares.length==0){
+        const result = await this.institutoPlanEstudioCarreraRepository.deleteAsignacion(id);
+        if (result.affected === 0) {
+          throw new NotFoundException("registro no encontrado !");
+        }
+        return this._serviceResp.respuestaHttp203(
+          result,
+          "Registro Eliminado !!",
+          ""
+        );
+      }
+      if(institutoResolucionCarrera.ofertasCurriculares.length>0){
+        return this._serviceResp.respuestaHttp500(
+          "",
+          "No se puede eliminar los datos existen ofertas curriculares asignadas !!",
+          ""
+        );
+      }
+     
     }
 }

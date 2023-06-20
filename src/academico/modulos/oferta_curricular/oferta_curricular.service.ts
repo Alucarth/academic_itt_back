@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Aula } from 'src/academico/entidades/aula.entity';
 import { OfertaCurricular } from 'src/academico/entidades/ofertaCurricular.entity';
@@ -255,6 +255,18 @@ export class OfertaCurricularService {
                   }
                 );
             }
-       
+    }
+    async deleteOferta(id: number)
+    {
+      const result =  await this.ofertaCurricularRepository.deleteOferta(id);
+        if (result.affected === 0) {
+            throw new NotFoundException("registro no encontrado !");
+          }
+          return this._serviceResp.respuestaHttp203(
+            result,
+            "Registro Eliminado !!",
+            ""
+          );
+        
     }
 }
