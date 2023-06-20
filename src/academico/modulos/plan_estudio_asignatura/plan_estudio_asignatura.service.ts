@@ -159,6 +159,12 @@ export class PlanEstudioAsignaturaService {
             console.log(nuevos);
             //eliminados y en cascada la regla si tuviera
             for(const item of eliminar){
+              await this.pearRepository
+              .createQueryBuilder()
+              .delete()
+              .from(PlanEstudioAsignaturaRegla)
+              .where({anteriorPlanEstudioAsignaturaId:item.id})
+              .execute();
 
                 const planAsignatura = await this.getOfertaPlanEstudioAsignatura( item.plan_estudio_carrera_id, item.regimen_grado_tipo_id, item.asignatura_tipo_id);
                   await this.pearRepository
@@ -167,6 +173,9 @@ export class PlanEstudioAsignaturaService {
                 .from(PlanEstudioAsignatura)
                 .where({id:planAsignatura.id})
                 .execute();
+
+                 
+                
               }
           return eliminar;
        }
