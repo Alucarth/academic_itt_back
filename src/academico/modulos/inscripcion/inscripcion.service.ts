@@ -1048,7 +1048,7 @@ export class InscripcionService {
           aula.id as aula_id, 
           paralelo_tipo.id as paralelo_tipo_id, 
           paralelo_tipo.paralelo,           
-          '' as horario,
+          
           aula.activo,
           0 as inscrito
         FROM
@@ -1077,7 +1077,24 @@ export class InscripcionService {
           oferta_curricular.id = ${result[i].oferta_curricular_id}
       `);
 
+      
+      for (let index = 0; index < res_paralelos.length; index++) {
+        
+        let horarios = await this.inscripcionRepository.query(`
+          select 
+            ( select sigla from dia_tipo where id = dia_tipo_id) as dia,	
+            concat(substring(to_char(hora_inicio,'HH24:MI'),1,5), '-',(select substring(to_char(hora_fin,'HH24:MI'),1,5))) as horario
+          from 
+          aula_detalle where aula_id = ${res_paralelos[index]['aula_id']}
+        `);
+
+        res_paralelos[index]['horarios'] = horarios;
+        
+      }
+
+
       console.log('res_paralelos : ', res_paralelos);
+      //console.log('horarios : ', horarios);
 
       //vemos los que ya esta inscrito
 
