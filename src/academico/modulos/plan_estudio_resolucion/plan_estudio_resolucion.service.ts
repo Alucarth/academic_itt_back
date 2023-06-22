@@ -311,25 +311,30 @@ export class PlanEstudioResolucionService {
     async deleteResolucionCarrera(id: number, ca:number)
     {
       const institutoResolucionCarrera = await this.institutoPlanEstudioCarreraRepository.findCarreraAutorizadaResolucion(id,ca);
-      console.log(institutoResolucionCarrera);
+      console.log("irec", institutoResolucionCarrera);
       //borramos la asignación siempre y cuando no tenga ofertas
       if(!institutoResolucionCarrera){
         return this._serviceResp.respuestaHttp203(
           "",
-          "Registro Eliminado !!",
+          "No existe la asignacion de resolucion !!",
           ""
         );
       }
-      if(institutoResolucionCarrera.id && institutoResolucionCarrera.ofertasCurriculares.length==0){
-        const result = await this.institutoPlanEstudioCarreraRepository.deleteAsignacion(id);
-        if (result.affected === 0) {
-          throw new NotFoundException("registro no encontrado !");
-        }
-        return this._serviceResp.respuestaHttp203(
-          result,
-          "Registro Eliminado !!",
-          ""
-        );
+      if(institutoResolucionCarrera.id 
+        && institutoResolucionCarrera.ofertasCurriculares.length==0
+        && institutoResolucionCarrera.matriculasEstudiantes.length==0
+        ){
+          const result = await this.institutoPlanEstudioCarreraRepository.deleteAsignacion(institutoResolucionCarrera.id);
+          console.log("resultado",result);
+          if (result.affected === 0) {
+            throw new NotFoundException("registro no encontrado !");
+          }
+          
+          return this._serviceResp.respuestaHttp203(
+            result,
+            "Registro Eliminado !!",
+            ""
+          );
       }
       if(institutoResolucionCarrera.ofertasCurriculares.length>0){
         return this._serviceResp.respuestaHttp500(
