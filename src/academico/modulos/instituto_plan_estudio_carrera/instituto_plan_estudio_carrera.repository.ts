@@ -33,9 +33,11 @@ export class InstitutoPlanEstudioCarreraRepository {
         .innerJoinAndSelect("ip.planEstudioCarrera", "pe")       
         .innerJoinAndSelect("pe.planEstudioResolucion", "pr")  
         .leftJoinAndSelect("ip.ofertasCurriculares", "o")  
+        .leftJoinAndSelect("ip.matriculasEstudiantes", "m")  
         .select([
             'ip.id',
             'ip.observacion',
+            'ip.activo',
             'pe.id',
             'pr.id',
             'pr.numeroResolucion',
@@ -43,6 +45,7 @@ export class InstitutoPlanEstudioCarreraRepository {
             'pr.descripcion',
             'pr.activo',
             'o.id',
+            'm.id',
         ])
         .where('ip.carreraAutorizadaId = :carrera_id ', { carrera_id })
         .andWhere('pe.planEstudioResolucionId = :resolucion_id ', { resolucion_id })

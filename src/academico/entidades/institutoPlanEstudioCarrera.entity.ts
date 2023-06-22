@@ -62,6 +62,6 @@ export class InstitutoPlanEstudioCarrera {
   ofertasCurriculares: OfertaCurricular[];
 
   @OneToMany(() => MatriculaEstudiante, (matriculaEstudiante) => matriculaEstudiante.institutoPlanEstudioCarrera)
-  matriculaEstudiantes: MatriculaEstudiante[];
+  matriculasEstudiantes: MatriculaEstudiante[];
 
 }

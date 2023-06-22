@@ -60,7 +60,7 @@ export class MatriculaEstudiante {
     () => GestionTipo,
     (gestionTipo) => gestionTipo.matriculaEstudiantes
   )
-  @JoinColumn([{ name: "gestion_tipo_id", referencedColumnName: "id" }])
+  @JoinColumn({ name: "gestion_tipo_id", referencedColumnName: "id" })
   gestionTipo: GestionTipo;
 
   @ManyToOne(
@@ -68,30 +68,30 @@ export class MatriculaEstudiante {
     (institucionEducativaEstudiante) =>
       institucionEducativaEstudiante.matriculaEstudiantes
   )
-  @JoinColumn([
+  @JoinColumn(
     { name: "institucion_educativa_estudiante_id", referencedColumnName: "id" },
-  ])
+   )
   institucionEducativaEstudiante: InstitucionEducativaEstudiante;
 
   @ManyToOne(
     () => PeriodoTipo,
     (periodoTipo) => periodoTipo.matriculaEstudiantes
   )
-  @JoinColumn([{ name: "periodo_tipo_id", referencedColumnName: "id" }])
+  @JoinColumn({ name: "periodo_tipo_id", referencedColumnName: "id" })
   periodoTipo: PeriodoTipo;
 
   @ManyToOne(
     () => PlanEstudioCarrera,
     (planEstudioCarrera) => planEstudioCarrera.matriculaEstudiantes
   )
-  @JoinColumn([{ name: "plan_estudio_carrera_id", referencedColumnName: "id" }])
+  @JoinColumn({ name: "plan_estudio_carrera_id", referencedColumnName: "id" })
   planEstudioCarrera: PlanEstudioCarrera;
 
-  @ManyToOne(
-    () => InstitutoPlanEstudioCarrera,
-    (institutoPlanEstudioCarrera) => institutoPlanEstudioCarrera.matriculaEstudiantes
-  )
-  @JoinColumn([{ name: "instituto_plan_estudio_carrera_id", referencedColumnName: "id" }])
+  @Column({ name: 'instituto_plan_estudio_carrera_id', nullable:false })
+  institutoPlanEstudioCarreraId: number;
+
+  @ManyToOne(() => InstitutoPlanEstudioCarrera, (institutoPlanEstudioCarrera) => institutoPlanEstudioCarrera.matriculasEstudiantes, { nullable: false, cascade: true })
+  @JoinColumn({ name: "instituto_plan_estudio_carrera_id", referencedColumnName: "id" })
   institutoPlanEstudioCarrera: InstitutoPlanEstudioCarrera;
   
 }
