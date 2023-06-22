@@ -147,13 +147,19 @@ export class OperativoCarreraAutorizadaService {
     {
         //obntenemos el dato deloperativo
         const dato = await this.getById(id);
-
+        console.log(dato);
+        let estado = false;
+       
+        if(dato.activo==false){
+            estado = true;
+        }
         //actualiamos todos a falso
         const actualiza = await this.editEstado( 
             dato.carreraAutorizadaId, 
             dato.gestionTipoId, );
+            console.log(actualiza);
         //ponemos en vigente solo el operativo seleccionado
-        const res = await this.operativoCarreraAutorizadaRepositorio.actualizarEstadoById(id);
+        const res = await this.operativoCarreraAutorizadaRepositorio.actualizarEstadoById(id, estado);
 
         if(res){
             console.log("res:", res);

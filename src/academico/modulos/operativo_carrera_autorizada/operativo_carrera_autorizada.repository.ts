@@ -145,13 +145,13 @@ export class OperativoCarreraAutorizadaRepository {
 
       }
 
-      async actualizarEstadoById(id: number) {
+      async actualizarEstadoById(id: number, estado:boolean) {
        
         return await this.dataSource
           .createQueryBuilder()
           .update(OperativoCarreraAutorizada)
           .set({
-            activo:true
+            activo:estado
           })
           .where({ id: id })
           .execute();
