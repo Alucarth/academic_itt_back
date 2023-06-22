@@ -67,11 +67,7 @@ export class OperativoCarreraAutorizadaService {
             carreraId,
             gestionId
         );
-        return this._serviceResp.respuestaHttp202(
-            operativo,
-            'Se cambio de estado correctamente',
-            '',
-        );
+        return operativo;
 
     }
 
@@ -153,23 +149,24 @@ export class OperativoCarreraAutorizadaService {
         if(dato.activo==false){
             estado = true;
         }
-        //actualiamos todos a falso
+
         const actualiza = await this.editEstado( 
             dato.carreraAutorizadaId, 
             dato.gestionTipoId, );
             console.log(actualiza);
-        //ponemos en vigente solo el operativo seleccionado
-        const res = await this.operativoCarreraAutorizadaRepositorio.actualizarEstadoById(id, estado);
+            if (actualiza){
+                const res = await this.operativoCarreraAutorizadaRepositorio.actualizarEstadoById(id, estado);
 
-        if(res){
-            console.log("res:", res);
-            console.log("Operativo cambio de estado");
-            return this._serviceResp.respuestaHttp202(
-            res,
-            "Registro Actualizado !!",
-            ""
-            );
-        }
+                if(res){
+                    console.log("res:", res);
+                    console.log("Operativo cambio de estado");
+                    return this._serviceResp.respuestaHttp202(
+                    res,
+                    "Registro Actualizado !!",
+                    ""
+                    );
+                }
+            }
         
         return this._serviceResp.respuestaHttp500(
         "",
