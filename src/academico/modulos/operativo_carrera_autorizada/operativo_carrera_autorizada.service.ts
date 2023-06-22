@@ -142,15 +142,15 @@ export class OperativoCarreraAutorizadaService {
     async editEstadoById(id: number)
     {
         //obntenemos el dato deloperativo
-        const dato = await this.getById(id);
-        console.log('datao========================:',dato);
+        const dato = await this.operativoCarreraAutorizadaRepositorio.getOneById(id);
+        console.log('datao======********=======:',dato);
         let estado = true;
        
         // if(dato.activo==false){
         //     estado = true;
         // }
         console.log('estado', estado)
-        const actualiza = await this.editEstado(
+        const actualiza = await this.operativoCarreraAutorizadaRepositorio.actualizarEstado(
             dato.carreraAutorizadaId,
             dato.gestionTipoId);
         const lista = await this.findAllOperativosCarrera(38)
