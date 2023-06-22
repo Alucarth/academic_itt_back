@@ -143,31 +143,33 @@ export class OperativoCarreraAutorizadaService {
     {
         //obntenemos el dato deloperativo
         const dato = await this.getById(id);
-        console.log(dato);
-        let estado = false;
+        console.log('datao========================:',dato);
+        let estado = true;
        
-        if(dato.activo==false){
-            estado = true;
-        }
-
-        const actualiza = await this.editEstado( 
-            dato.carreraAutorizadaId, 
-            dato.gestionTipoId, );
-            console.log(actualiza);
-            if (actualiza){
-                const res = await this.operativoCarreraAutorizadaRepositorio.actualizarEstadoById(id, estado);
-
-                if(res){
-                    console.log("res:", res);
-                    console.log("Operativo cambio de estado");
-                    return this._serviceResp.respuestaHttp202(
+        // if(dato.activo==false){
+        //     estado = true;
+        // }
+        console.log('estado', estado)
+        const actualiza = await this.editEstado(
+            dato.carreraAutorizadaId,
+            dato.gestionTipoId);
+        const lista = await this.findAllOperativosCarrera(38)
+        console.log('verificando lista',lista)
+        console.log('actualiza:', actualiza);
+        if (actualiza.affected > 0) {
+            const res = await this.operativoCarreraAutorizadaRepositorio.actualizarEstadoById(id, estado);
+            console.log('resultado', res)
+            if (res) {
+                console.log("res:", res);
+                console.log("Operativo cambio de estado");
+                return this._serviceResp.respuestaHttp202(
                     res,
                     "Registro Actualizado !!",
                     ""
-                    );
-                }
+                );
             }
-        
+        }
+
         return this._serviceResp.respuestaHttp500(
         "",
         "Error Registro  !!",

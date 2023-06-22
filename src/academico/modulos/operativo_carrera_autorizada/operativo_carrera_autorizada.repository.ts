@@ -130,7 +130,7 @@ export class OperativoCarreraAutorizadaRepository {
     }
 
       async actualizarEstado(carrera,gestion) {
-
+        console.log('carrer gestion',carrera,gestion)
        return  await this.dataSource
         .createQueryBuilder()
         .update(OperativoCarreraAutorizada)
@@ -146,12 +146,12 @@ export class OperativoCarreraAutorizadaRepository {
       }
 
       async actualizarEstadoById(id: number, estado:boolean) {
-       
+        console.log('id llegando',id)
         return await this.dataSource
           .createQueryBuilder()
           .update(OperativoCarreraAutorizada)
           .set({
-            activo:estado
+            activo:true
           })
           .where({ id: id })
           .execute();
