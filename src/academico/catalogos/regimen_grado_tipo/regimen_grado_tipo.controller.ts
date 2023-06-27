@@ -12,8 +12,19 @@ export class RegimenGradoTipoController {
     async getAll(){
         return await this.regimenGradoTipoService.getAll();
     }
+
+    @Get('years')
+    async getYears(){
+        return await this.regimenGradoTipoService.findByRegimenGrado('AÑO');
+    }
+
+    @Get('semesters')
+    async getSemester(){
+        return await this.regimenGradoTipoService.findByRegimenGrado('SEMESTRE')
+    }
+    
     @Get('/:regimen')
     async getByRegimen(@Param("regimen") regimen: string){
         return await this.regimenGradoTipoService.getByRegimen(regimen);
-    }
+    }  
 }

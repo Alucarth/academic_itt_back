@@ -79,7 +79,7 @@ export class OfertaCurricularRepository {
       return ofertas;
   }
     async findOfertasByCarreraAutorizadaIdGestionPeriodoDocente( id:number, gestion:number,periodo:number){
-      console.log("resultado");
+      console.log("resultado aaaaaaaaaaaaaaaaaaaaaaaa");
       console.log(id);
       console.log(gestion);
       console.log(periodo);
@@ -114,6 +114,8 @@ export class OfertaCurricularRepository {
           'd.numeroAula',  
           'dt.dia',  
           'do.id',  
+          'do.asignacionFechaInicio',  
+          'do.asignacionFechaFin',
           'm.id',  
           'p.paterno',  
           'p.materno',  

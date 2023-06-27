@@ -70,7 +70,7 @@ export class OfertaCurricularService {
     }
     async getAllAsignaturasByCarreraGestionPeriodoDocente(id:number, gestion:number, periodo:number){
         const oferta = await this.ofertaCurricularRepository.findOfertasByCarreraAutorizadaIdGestionPeriodoDocente(id,gestion,periodo);
-
+        console.log('ofertaXD',oferta)
         if (oferta){
             return this._serviceResp.respuestaHttp201(
                 oferta,
