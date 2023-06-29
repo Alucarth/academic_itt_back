@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RegimenGradoTipo } from 'src/academico/entidades/regimenGradoTipo.entity';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 
 @Injectable()
 export class RegimenGradoTipoService {
@@ -38,5 +38,22 @@ export class RegimenGradoTipoService {
                 '',
             );
 
+        }
+
+        async findByRegimenGrado(value:any)
+        {
+            const result = await this.regimenGradoTipoRepository.find({
+                select:{id:true,regimenGrado:true},
+                where:{
+                    regimenGrado: Like(`%${value}`),
+                }
+            })
+            console.log('resulta years',result)
+            if(result)
+            {
+                return this._serviceResp.respuestaHttp200(result,'resultado encontrado','')
+            }
+
+            return this._serviceResp.respuestaHttp500("","No se contraron resultados !!!","")
         }
 }
