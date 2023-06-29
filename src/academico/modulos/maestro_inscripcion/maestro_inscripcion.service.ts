@@ -1580,4 +1580,15 @@ export class MaestroInscripcionService {
       //return 0;
     }
   }
+
+  async getTotalDocentes(){
+    const total = await this.maeRepository
+    .createQueryBuilder("me")
+    .innerJoin("me.institucionEducativaSucursal", "s")
+    .innerJoin("s.institucionEducativa", "i")
+    .where('i.educacionTipoId in (7,8,9)')
+    .getCount();
+    
+    return total 
+  }
 }

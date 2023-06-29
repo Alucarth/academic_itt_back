@@ -26,6 +26,16 @@ export class InstitucionEducativaRepository {
         console.log(itts);
         return itts;
     }
+    async findTotalItt(){
+        const itts = await this.dataSource.getRepository(InstitucionEducativa)
+        .createQueryBuilder("a")
+        .innerJoinAndSelect("a.educacionTipo", "b")
+        .where('b.id in (7,8,9)')
+        .andWhere('a.estadoInstitucionEducativaTipoId = 10')
+        .getCount();
+        console.log(itts);
+        return itts;
+    }
    
     async getBySieId(id:number){
         const itt = await this.dataSource.getRepository(InstitucionEducativa)
@@ -270,6 +280,35 @@ export class InstitucionEducativaRepository {
        return await  transaction.getRepository(InstitucionEducativaCurso).delete(id)
 
     }*/
+
+    async findTotalDependencias(){
+        
+        const list = await this.dataSource.getRepository(InstitucionEducativa)
+        .createQueryBuilder("a")
+        .innerJoinAndSelect("a.jurisdiccionGeografica", "h")
+        .innerJoinAndSelect("h.localidadUnidadTerritorial2001", "u1")
+        .innerJoinAndSelect("u1.unidadTerritorialPadre", "up1")
+        .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
+        .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
+        .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
+        .innerJoin("a.acreditados", "e")
+        .innerJoin("e.dependenciaTipo", "g")
+       
+        .select([
+            "up4.lugar as departamento",
+           // "COUNT(up4.id) as departamento_id", 
+            "g.dependencia as dependencia",
+            "COUNT(e.dependenciaTipoId) as total",  
+        ])
+        .where('a.educacionTipoId in (7,8,9)')
+        .groupBy('up4.id')
+        .addGroupBy('g.dependencia')
+        .addGroupBy('g.id')
+        .getRawMany();
+        //.getMany();
+        return list;
+    }
+    
     
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)

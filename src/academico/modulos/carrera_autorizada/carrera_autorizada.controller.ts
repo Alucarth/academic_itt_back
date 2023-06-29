@@ -22,4 +22,9 @@ export class CarreraAutorizadaController {
     async getCarreraById(@Param("id", ParseIntPipe) id: number) {
       return await this.carreraAutorizadaService.getCarreraById(id);
     }
+    @Get('reporte/totales')
+    async getTotalCarreras(){
+        console.log("total carreras");
+        return await this.carreraAutorizadaService.getTotalCarreras();
+    }
 }

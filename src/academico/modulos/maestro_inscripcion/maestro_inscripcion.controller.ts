@@ -116,4 +116,11 @@ export class MaestroInscripcionController {
     console.log("maestroInscripcionId", body.maestroInscripcionId);
     return await this.usersService.changeStatusById(body);
   }
+
+  @Get('reporte/totales')
+    async getTotaldocentes(){
+        console.log("total docentes");
+        return await this.usersService.getTotalDocentes();
+  }
+
 }

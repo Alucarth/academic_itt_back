@@ -1685,5 +1685,14 @@ export class InscripcionService {
 
   }
 
-
+  async getTotalEstudiantes(){
+    const total = await this.ieeRepository
+    .createQueryBuilder("iee")
+    .innerJoin("iee.institucionEducativaSucursal", "s")
+    .innerJoin("s.institucionEducativa", "i")
+    .where('i.educacionTipoId in (7,8,9)')
+    .getCount();
+    
+    return total 
+  }
 }

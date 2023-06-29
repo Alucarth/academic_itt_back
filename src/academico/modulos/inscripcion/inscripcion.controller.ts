@@ -191,5 +191,11 @@ export class InscripcionController {
     );
   }
 
+  @Get('reporte/totales')
+    async getTotalEstudiantes(){
+        console.log("total estudiantes");
+        return await this.inscripcionService.getTotalEstudiantes();
+  }
+
 
 }

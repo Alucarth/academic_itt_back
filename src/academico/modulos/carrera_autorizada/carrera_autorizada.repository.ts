@@ -158,6 +158,17 @@ export class CarreraAutorizadaRepository {
        
         return result;
     }
+    async findTotalCarreras(){
+        const carreras = await this.dataSource.getRepository(CarreraAutorizada)
+        .createQueryBuilder("ca")
+        .innerJoin("ca.institucionEducativaSucursal", "s")
+        .innerJoin("s.institucionEducativa", "i")
+        .where('i.educacionTipoId in (7,8,9)')
+        .getCount();
+        console.log(carreras);
+        return carreras;
+    }
+
 
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)

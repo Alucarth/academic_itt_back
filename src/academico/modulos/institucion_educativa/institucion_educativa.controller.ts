@@ -10,8 +10,12 @@ export class InstitucionEducativaController {
     constructor (
         private readonly institucionEducativaService: InstitucionEducativaService 
         ){}
+
+    
+
     @Get()
     async getAll():Promise<InstitucionEducativa[]>{
+        //console.log("ins-educ");
         return await this.institucionEducativaService.getAll();
     }
     
@@ -33,6 +37,16 @@ export class InstitucionEducativaController {
     async getListaItt(){
         console.log("lista itts");
         return await this.institucionEducativaService.getAllItt();
+    }
+    @Get('reporte/totales')
+    async getTotalItt(){
+        console.log("total itt");
+        return await this.institucionEducativaService.getTotalItt();
+    }
+    @Get('reporte/dependencias')
+    async getTotalDependencias(){
+        console.log("total por dependencias");
+        return await this.institucionEducativaService.getTotalDependencias();
     }
 
     @Get('sie/:sie')
