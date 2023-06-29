@@ -158,10 +158,12 @@ export class CarreraAutorizadaRepository {
        
         return result;
     }
+   
     async findTotalCarreras(){
         const carreras = await this.dataSource.getRepository(CarreraAutorizada)
         .createQueryBuilder("ca")
         .innerJoin("ca.carreraTipo", "c")
+        .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
         .select([
             'c.carrera as carrera',
             'COUNT(ca.carreraTipoId) as total'
@@ -174,7 +176,46 @@ export class CarreraAutorizadaRepository {
         return carreras;
     }
 
+    async findListaCarrerasEstudiantes(id){
+        return await this.dataSource
+          .getRepository(CarreraAutorizada)
+          .createQueryBuilder("ca")
+          .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
+          .innerJoinAndSelect("ca.carreraTipo", "ct")
+          .innerJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
+          .innerJoinAndSelect("ipec.matriculasEstudiantes", "m")
+          .select([
+            "ct.carrera as carrera",
+            "COUNT(distinct(m.institucionEducativaEstudianteId)) as total",
+          ])
+          .where("s.institucionEducativaId = :id ", { id })
+          .groupBy('ct.carrera')
+          .getRawMany();
+    }
 
+    async findListaRegimenCarrerasEstudiantes(id){
+        return await this.dataSource
+          .getRepository(CarreraAutorizada)
+          .createQueryBuilder("ca")
+          .innerJoinAndSelect("ca.resoluciones", "r")
+          .innerJoinAndSelect("r.intervaloGestionTipo", "igt")
+          .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
+          .innerJoinAndSelect("s.institucionEducativa", "i")
+          .innerJoinAndSelect("ca.carreraTipo", "ct")
+          .innerJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
+          .innerJoinAndSelect("ipec.matriculasEstudiantes", "m")
+          .select([
+            "i.institucion_educativa as institucion_educativa",
+            "igt.intervalo_gestion as modalidad",
+            "ct.carrera as carrera",
+            "COUNT(distinct(m.institucionEducativaEstudianteId)) as total",
+          ])
+          .where("s.institucionEducativaId = :id ", { id })
+          .groupBy('ct.carrera')
+          .addGroupBy('i.institucion_educativa')
+          .addGroupBy('igt.intervalo_gestion')
+          .getRawMany();
+    }
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
     }

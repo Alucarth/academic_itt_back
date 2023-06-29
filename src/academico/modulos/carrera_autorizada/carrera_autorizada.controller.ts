@@ -22,9 +22,21 @@ export class CarreraAutorizadaController {
     async getCarreraById(@Param("id", ParseIntPipe) id: number) {
       return await this.carreraAutorizadaService.getCarreraById(id);
     }
+
     @Get('reporte/totales')
     async getTotalCarreras(){
         console.log("total carreras");
         return await this.carreraAutorizadaService.getTotalCarreras();
+    }
+
+    @Get('reporte/estudiantes/:id')
+    async getListaEstudiantes(@Param("id", ParseIntPipe) id: number){
+        console.log("total estudiantes");
+        return await this.carreraAutorizadaService.getTotalEstudiantes(id);
+    }
+    @Get('reporte/regimen-estudiantes/:id')
+    async getListaEstudiantesRegimen(@Param("id", ParseIntPipe) id: number){
+        console.log("lista carreras, regimen y total de estudiantes");
+        return await this.carreraAutorizadaService.getListaCarrerasRegimen(id);
     }
 }

@@ -15,7 +15,7 @@ export class UnidadTerritorialController {
         return await this.unidadTerritorialService.findUnidadesTerritoriales();
     }
 
-    @Get('/:id')
+    @Get(':id')
     async getOneById(@Param('id') id: number):Promise<UnidadTerritorial>{
         return await this.unidadTerritorialService.findUnidadTerritorial(id);
     }
@@ -28,6 +28,10 @@ export class UnidadTerritorialController {
     @Get('dependientes/:id')
     async getDependientes(@Param('id') id: number){
         return await this.unidadTerritorialService.findDependientes(id);
+    }
+    @Get('lista/departamentos')
+    async getDepartamentos(){
+        return await this.unidadTerritorialService.findDepartamentos();
     }
     
   

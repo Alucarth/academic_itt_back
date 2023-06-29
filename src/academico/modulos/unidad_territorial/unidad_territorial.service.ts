@@ -33,6 +33,10 @@ export class UnidadTerritorialService {
            '',
        );
    }
+    async findDepartamentos(){
+        const resultado =  await this.unidadTerritorialRepositorio.getDepartamentos();
+        return resultado;
+   }
     
     
 }

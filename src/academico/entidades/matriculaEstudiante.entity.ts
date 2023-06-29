@@ -68,6 +68,8 @@ export class MatriculaEstudiante {
     (institucionEducativaEstudiante) =>
       institucionEducativaEstudiante.matriculaEstudiantes
   )
+  @Column("integer", { name: "institucion_educativa_estudiante_id" })
+  institucionEducativaEstudianteId: number;
   @JoinColumn(
     { name: "institucion_educativa_estudiante_id", referencedColumnName: "id" },
    )

@@ -1721,7 +1721,7 @@ export class InscripcionService {
     .addGroupBy('g.id')
     .getRawMany();
 
-    const list = lista.reduce((acc, curr) => {
+    /*const list = lista.reduce((acc, curr) => {
       const { departamento, dependencia, total } = curr;
       const dependenciaData = { dependencia, total: parseInt(total, 10) };
     
@@ -1732,8 +1732,8 @@ export class InscripcionService {
       }
     
       return acc;
-    }, {});
+    }, {});*/
 
-    return list;
+    return lista;
 }
 }
