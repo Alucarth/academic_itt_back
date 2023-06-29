@@ -72,14 +72,14 @@ export class CarreraAutorizadaService {
         const carreras = await this.carreraAutorizadaRepositorio.findListaCarreras();
         return carreras;
       }
-      
+
       async getTotalEstudiantes(id:number){
         const carreras = await this.carreraAutorizadaRepositorio.findListaCarrerasEstudiantes(id);
         return carreras;
       }
 
-      async getListaCarrerasRegimen(id:number){
-        const carreras = await this.carreraAutorizadaRepositorio.findListaRegimenCarrerasEstudiantes(id);
+      async getListaCarrerasRegimen(lugar:number, dependencia:number){
+        const carreras = await this.carreraAutorizadaRepositorio.findListaRegimenCarrerasEstudiantes(lugar, dependencia);
         return carreras;
       }
 }

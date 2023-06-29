@@ -202,7 +202,7 @@ export class CarreraAutorizadaRepository {
           .getRawMany();
     }
 
-    async findListaRegimenCarrerasEstudiantes(id){
+    async findListaRegimenCarrerasEstudiantes(lugar,dependencia){
         return await this.dataSource
           .getRepository(CarreraAutorizada)
           .createQueryBuilder("ca")
@@ -210,16 +210,26 @@ export class CarreraAutorizadaRepository {
           .innerJoinAndSelect("r.intervaloGestionTipo", "igt")
           .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
           .innerJoinAndSelect("s.institucionEducativa", "i")
+          .innerJoinAndSelect("i.jurisdiccionGeografica", "h")
+          .innerJoinAndSelect("h.localidadUnidadTerritorial2001", "u1")
+          .innerJoinAndSelect("u1.unidadTerritorialPadre", "up1")
+          .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
+          .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
+          .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
           .innerJoinAndSelect("ca.carreraTipo", "ct")
           .innerJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
           .innerJoinAndSelect("ipec.matriculasEstudiantes", "m")
+          .innerJoinAndSelect("i.acreditados", "e")
           .select([
             "i.institucion_educativa as institucion_educativa",
             "igt.intervalo_gestion as modalidad",
             "ct.carrera as carrera",
             "COUNT(distinct(m.institucionEducativaEstudianteId)) as total",
           ])
-          .where("s.institucionEducativaId = :id ", { id })
+          .where('i.educacionTipoId in (7,8,9)')
+          .andWhere('ca.areaTipoId > 1')
+          .andWhere('e.dependenciaTipoId = :dependencia ', { dependencia })
+          .andWhere('up4.id = :lugar ', { lugar })
           .groupBy('ct.carrera')
           .addGroupBy('i.institucion_educativa')
           .addGroupBy('igt.intervalo_gestion')
