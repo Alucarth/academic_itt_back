@@ -161,11 +161,16 @@ export class CarreraAutorizadaRepository {
     async findTotalCarreras(){
         const carreras = await this.dataSource.getRepository(CarreraAutorizada)
         .createQueryBuilder("ca")
-        .innerJoin("ca.institucionEducativaSucursal", "s")
-        .innerJoin("s.institucionEducativa", "i")
-        .where('i.educacionTipoId in (7,8,9)')
-        .getCount();
-        console.log(carreras);
+        .innerJoin("ca.carreraTipo", "c")
+        .select([
+            'c.carrera as carrera',
+            'COUNT(ca.carreraTipoId) as total'
+        ])
+        .where('ca.area_tipo_id>1')
+        .groupBy('c.carrera')
+        .orderBy('c.carrera')
+        .getRawMany();
+       // console.log(carreras);
         return carreras;
     }
 

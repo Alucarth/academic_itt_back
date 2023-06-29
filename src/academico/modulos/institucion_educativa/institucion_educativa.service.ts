@@ -51,6 +51,26 @@ export class InstitucionEducativaService {
 
         return lista;
     }
+    async getListaLugarDependencias(lugar, dependencia){
+        const lista = await this.institucionEducativaRepositorio.findListaLugarDependencias(lugar, dependencia);
+        /*
+        const lista = list.reduce((acc, curr) => {
+            const { departamento, dependencia, total } = curr;
+            const dependenciaData = { dependencia, total: parseInt(total, 10) };
+          
+            if (acc[departamento]) {
+              acc[departamento].push(dependenciaData);
+            } else {
+              acc[departamento] = [dependenciaData];
+            }
+          
+            return acc;
+          }, {});*/
+          
+         // console.log(lista);
+
+        return lista;
+    }
 
     
     async getBySieId(id:number){

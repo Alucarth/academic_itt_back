@@ -93,6 +93,9 @@ export class MaestroInscripcion {
   @JoinColumn({ name: 'financiamiento_tipo_id', referencedColumnName: 'id'})
   financiamientoTipo: FinanciamientoTipo;
 
+  @Column({ type: 'integer', name: 'cargo_tipo_id' })
+  cargoTipoId: number;
+
   @ManyToOne(() => CargoTipo, (cargoTipo) => cargoTipo.maestrosInscripciones, { nullable: false, cascade: true })
   @JoinColumn({ name: 'cargo_tipo_id', referencedColumnName: 'id'})
   cargoTipo: CargoTipo;

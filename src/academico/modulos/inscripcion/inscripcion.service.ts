@@ -1695,4 +1695,45 @@ export class InscripcionService {
     
     return total 
   }
+ 
+  async getTotalEstudiantesDependencia(){
+    const lista = await this.ieeRepository
+    .createQueryBuilder("iee")
+    .innerJoin("iee.institucionEducativaSucursal", "s")
+    .innerJoin("s.institucionEducativa", "a")
+    .innerJoinAndSelect("a.jurisdiccionGeografica", "h")
+    .innerJoinAndSelect("h.localidadUnidadTerritorial2001", "u1")
+    .innerJoinAndSelect("u1.unidadTerritorialPadre", "up1")
+    .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
+    .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
+    .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
+    .innerJoin("a.acreditados", "e")
+    .innerJoin("e.dependenciaTipo", "g")
+    .select([
+        "up4.lugar as departamento",
+        "g.dependencia as dependencia",
+        "COUNT(e.dependenciaTipoId) as total",  
+        "COUNT(iee.id) as total_estudiantes",  
+    ])
+    .where('a.educacionTipoId in (7,8,9)')
+    .groupBy('up4.id')
+    .addGroupBy('g.dependencia')
+    .addGroupBy('g.id')
+    .getRawMany();
+
+    const list = lista.reduce((acc, curr) => {
+      const { departamento, dependencia, total } = curr;
+      const dependenciaData = { dependencia, total: parseInt(total, 10) };
+    
+      if (acc[departamento]) {
+        acc[departamento].push(dependenciaData);
+      } else {
+        acc[departamento] = [dependenciaData];
+      }
+    
+      return acc;
+    }, {});
+
+    return list;
+}
 }

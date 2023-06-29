@@ -64,7 +64,7 @@ export class CarreraAutorizadaService {
         );
       }
       async getTotalCarreras(){
-        const itt = await this.carreraAutorizadaRepositorio.findTotalCarreras();
-        return itt;
+        const carreras = await this.carreraAutorizadaRepositorio.findTotalCarreras();
+        return carreras;
     }
 }

@@ -139,6 +139,7 @@ export class InstitucionEducativaRepository {
             'up2.lugar as municipio',
             'up3.lugar as provincia',
             'up4.lugar as departamento',
+            'up4.id as departamento_id',
             'j.sucursal_nombre as sede_subsede',
             'e.id as acreditacion_id',
             'j.id as sucursal_id',
@@ -308,7 +309,43 @@ export class InstitucionEducativaRepository {
         //.getMany();
         return list;
     }
-    
+    async findListaLugarDependencias(lugar, dependencia){
+        
+        const list = await this.dataSource.getRepository(InstitucionEducativa)
+        .createQueryBuilder("a")
+        .innerJoinAndSelect("a.jurisdiccionGeografica", "h")
+        .innerJoinAndSelect("h.localidadUnidadTerritorial2001", "u1")
+        .innerJoinAndSelect("u1.unidadTerritorialPadre", "up1")
+        .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
+        .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
+        .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
+        .innerJoinAndSelect("a.acreditados", "e")
+        .innerJoinAndSelect("a.sucursales", "s")
+        .innerJoinAndSelect("s.carreras", "c")
+        .innerJoinAndSelect("s.maestrosInscripciones", "m")
+        .innerJoinAndSelect("m.persona", "p")
+        .innerJoinAndSelect("e.dependenciaTipo", "g")
+        .select([
+            "a.id as institucion_educativa_id",
+            "a.institucionEducativa as institucion_educativa",
+            "s.sucursalNombre as sucursal_nombre",
+         //   "p.nombre as nombre",
+         //   "p.paterno as paterno",
+         //   "p.materno as materno",
+            "COUNT(c.carreraTipoId) as total",  
+        ])
+        .where('a.educacionTipoId in (7,8,9)')
+       // .andWhere('m.cargoTipoId in (2)')
+        .andWhere('e.dependenciaTipoId = :dependencia ', { dependencia })
+        .andWhere('up4.id = :lugar ', { lugar })
+        .groupBy('a.id')
+        .addGroupBy('s.sucursalNombre')
+       // .addGroupBy('p.nombre')
+       // .addGroupBy('p.paterno')
+       // .addGroupBy('p.materno')
+        .getRawMany();
+        return list;
+    }
     
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)

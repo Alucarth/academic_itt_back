@@ -196,6 +196,10 @@ export class InscripcionController {
         console.log("total estudiantes");
         return await this.inscripcionService.getTotalEstudiantes();
   }
-
+  @Get('reporte/dependencias')
+    async getTotalEstudiantesDependencia(){
+        console.log("total estudiantes por dependencia");
+        return await this.inscripcionService.getTotalEstudiantesDependencia();
+  }
 
 }

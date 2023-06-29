@@ -48,6 +48,14 @@ export class InstitucionEducativaController {
         console.log("total por dependencias");
         return await this.institucionEducativaService.getTotalDependencias();
     }
+    @Get('reporte/lugar-dependencia/:lugar/:dependencia')
+    async getListaLugarDependencias(
+        @Param('lugar', ParseIntPipe) lugar: number,
+        @Param('dependencia', ParseIntPipe) dependencia: number
+    ){
+        console.log("total por lugar y dependencia");
+        return await this.institucionEducativaService.getListaLugarDependencias(lugar, dependencia);
+    }
 
     @Get('sie/:sie')
     async getBySie(@Param('sie', ParseIntPipe) sie: number){
