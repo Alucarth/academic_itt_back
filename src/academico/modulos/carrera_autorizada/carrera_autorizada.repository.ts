@@ -163,6 +163,15 @@ export class CarreraAutorizadaRepository {
         const carreras = await this.dataSource.getRepository(CarreraAutorizada)
         .createQueryBuilder("ca")
         .innerJoin("ca.carreraTipo", "c")
+        .where('ca.area_tipo_id>1')
+        .getCount();
+       // console.log(carreras);
+        return carreras;
+    }
+    async findListaCarreras(){
+        const carreras = await this.dataSource.getRepository(CarreraAutorizada)
+        .createQueryBuilder("ca")
+        .innerJoin("ca.carreraTipo", "c")
         .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
         .select([
             'c.carrera as carrera',
