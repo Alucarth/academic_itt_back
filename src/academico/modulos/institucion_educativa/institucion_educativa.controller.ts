@@ -53,8 +53,21 @@ export class InstitucionEducativaController {
         @Param('lugar', ParseIntPipe) lugar: number,
         @Param('dependencia', ParseIntPipe) dependencia: number
     ){
+        console.log("lista institutos, sede,carreras de un lugar y dependencia");
+        return await this.institucionEducativaService.getListaInstitutosLugarDependencias(lugar, dependencia);
+    }
+    @Get('reporte/lugar-estudiantes/:lugar/:dependencia')
+    async getListaLugarDependenciasEstudiantes(
+        @Param('lugar', ParseIntPipe) lugar: number,
+        @Param('dependencia', ParseIntPipe) dependencia: number
+    ){
         console.log("total por lugar y dependencia");
-        return await this.institucionEducativaService.getListaLugarDependencias(lugar, dependencia);
+        return await this.institucionEducativaService.getListaLugarDependenciasEstudiantes(lugar, dependencia);
+    }
+    @Get('reporte/general')
+    async getTotalGeneral(){
+        console.log("total general inst, est, doc, carreras");
+        return await this.institucionEducativaService.getTotalGeneral();
     }
 
     @Get('sie/:sie')

@@ -35,5 +35,14 @@ export class UnidadTerritorialRepository {
         
         return lugar;
     }
+    async getDepartamentos() {
+        
+        const lugar = await this.dataSource.getRepository(UnidadTerritorial)
+          .createQueryBuilder("b")
+          .where("b.unidadTerritorialTipo = 1 ")
+          .getMany();
+        
+        return lugar;
+    }
     
 }

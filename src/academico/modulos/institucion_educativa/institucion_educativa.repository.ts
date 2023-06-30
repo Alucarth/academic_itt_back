@@ -294,11 +294,11 @@ export class InstitucionEducativaRepository {
         .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
         .innerJoin("a.acreditados", "e")
         .innerJoin("e.dependenciaTipo", "g")
-       
         .select([
             "up4.lugar as departamento",
-           // "COUNT(up4.id) as departamento_id", 
+            "up4.id as departamento_id",
             "g.dependencia as dependencia",
+            "g.id as dependencia_id",
             "COUNT(e.dependenciaTipoId) as total",  
         ])
         .where('a.educacionTipoId in (7,8,9)')
@@ -309,7 +309,7 @@ export class InstitucionEducativaRepository {
         //.getMany();
         return list;
     }
-    async findListaLugarDependencias(lugar, dependencia){
+    async findListaInstitutosPorLugarDependencia(lugar, dependencia){
         
         const list = await this.dataSource.getRepository(InstitucionEducativa)
         .createQueryBuilder("a")
@@ -322,8 +322,8 @@ export class InstitucionEducativaRepository {
         .innerJoinAndSelect("a.acreditados", "e")
         .innerJoinAndSelect("a.sucursales", "s")
         .innerJoinAndSelect("s.carreras", "c")
-        .innerJoinAndSelect("s.maestrosInscripciones", "m")
-        .innerJoinAndSelect("m.persona", "p")
+        //.innerJoinAndSelect("s.maestrosInscripciones", "m")
+        //.innerJoinAndSelect("m.persona", "p")
         .innerJoinAndSelect("e.dependenciaTipo", "g")
         .select([
             "a.id as institucion_educativa_id",
@@ -335,6 +335,7 @@ export class InstitucionEducativaRepository {
             "COUNT(c.carreraTipoId) as total",  
         ])
         .where('a.educacionTipoId in (7,8,9)')
+        .andWhere('c.areaTipoId > 1')
        // .andWhere('m.cargoTipoId in (2)')
         .andWhere('e.dependenciaTipoId = :dependencia ', { dependencia })
         .andWhere('up4.id = :lugar ', { lugar })
@@ -346,7 +347,64 @@ export class InstitucionEducativaRepository {
         .getRawMany();
         return list;
     }
+
+    async findListaLugarDependenciasEstudiantes(lugar, dependencia){
+        
+        const list = await this.dataSource.getRepository(InstitucionEducativa)
+        .createQueryBuilder("a")
+        .innerJoinAndSelect("a.jurisdiccionGeografica", "h")
+        .innerJoinAndSelect("h.localidadUnidadTerritorial2001", "u1")
+        .innerJoinAndSelect("u1.unidadTerritorialPadre", "up1")
+        .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
+        .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
+        .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
+        .innerJoinAndSelect("a.acreditados", "e")
+        .innerJoinAndSelect("a.sucursales", "s")
+        .leftJoinAndSelect("s.institucionEducativaEstudiantes", "iee")
+        .innerJoinAndSelect("e.dependenciaTipo", "g")
+        .select([
+            "a.id as institucion_educativa_id",
+            "a.institucionEducativa as institucion_educativa",
+            "s.sucursalNombre as sucursal_nombre",
+            "COUNT(iee.id) as total",  
+        ])
+        .where('a.educacionTipoId in (7,8,9)')
+        .andWhere('e.dependenciaTipoId = :dependencia ', { dependencia })
+        .andWhere('up4.id = :lugar ', { lugar })
+        .groupBy('a.id')
+        .addGroupBy('s.sucursalNombre')
+        .getRawMany();
+        return list;
+    }
     
+    async findTotalGeneral(){
+        
+        const list = await this.dataSource.getRepository(InstitucionEducativa)
+        .createQueryBuilder("a")
+        .innerJoinAndSelect("a.jurisdiccionGeografica", "h")
+        .innerJoinAndSelect("h.localidadUnidadTerritorial2001", "u1")
+        .innerJoinAndSelect("u1.unidadTerritorialPadre", "up1")
+        .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
+        .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
+        .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
+        .leftJoinAndSelect("a.sucursales", "s")
+        //.leftJoinAndSelect("s.carreras", "c")
+        .leftJoinAndSelect("s.maestrosInscripciones", "m")
+       // .leftJoinAndSelect("s.institucionEducativaEstudiantes", "i")
+        .select([
+            "up4.lugar as departamento",
+            "COUNT(a.id) as total",  
+            "COUNT(m.id) as total_docentes",  
+          //  "COUNT(i.id) as total_estudiantes",  
+           // "COUNT(c.carreraTipoId) as total_carreras",  
+        ])
+        .where('a.educacionTipoId in (7,8,9,11,12,13)')
+        .andWhere('a.estadoInstitucionEducativaTipoId in (10)')
+        .groupBy('up4.id')
+        .getRawMany();
+        return list;
+    }
+
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
     }

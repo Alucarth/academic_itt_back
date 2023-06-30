@@ -32,43 +32,21 @@ export class InstitucionEducativaService {
         return itt;
     }
     async getTotalDependencias(){
-        const list = await this.institucionEducativaRepositorio.findTotalDependencias();
-        
-        const lista = list.reduce((acc, curr) => {
-            const { departamento, dependencia, total } = curr;
-            const dependenciaData = { dependencia, total: parseInt(total, 10) };
-          
-            if (acc[departamento]) {
-              acc[departamento].push(dependenciaData);
-            } else {
-              acc[departamento] = [dependenciaData];
-            }
-          
-            return acc;
-          }, {});
-          
-         // console.log(lista);
-
+        const lista = await this.institucionEducativaRepositorio.findTotalDependencias();
+        console.log(lista);
         return lista;
     }
-    async getListaLugarDependencias(lugar, dependencia){
-        const lista = await this.institucionEducativaRepositorio.findListaLugarDependencias(lugar, dependencia);
-        /*
-        const lista = list.reduce((acc, curr) => {
-            const { departamento, dependencia, total } = curr;
-            const dependenciaData = { dependencia, total: parseInt(total, 10) };
-          
-            if (acc[departamento]) {
-              acc[departamento].push(dependenciaData);
-            } else {
-              acc[departamento] = [dependenciaData];
-            }
-          
-            return acc;
-          }, {});*/
-          
-         // console.log(lista);
-
+    async getTotalGeneral(){
+        const lista = await this.institucionEducativaRepositorio.findTotalGeneral();
+       
+        return lista;
+    }
+    async getListaInstitutosLugarDependencias(lugar, dependencia){
+        const lista = await this.institucionEducativaRepositorio.findListaInstitutosPorLugarDependencia(lugar, dependencia);
+        return lista;
+    }
+    async getListaLugarDependenciasEstudiantes(lugar, dependencia){
+        const lista = await this.institucionEducativaRepositorio.findListaLugarDependenciasEstudiantes(lugar, dependencia);
         return lista;
     }
 

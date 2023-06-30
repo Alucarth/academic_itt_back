@@ -1716,7 +1716,9 @@ export class InscripcionService {
     .innerJoin("e.dependenciaTipo", "g")
     .select([
         "up4.lugar as departamento",
+        "up4.id as departamento_id",
         "g.dependencia as dependencia",
+        "g.id as dependencia_id",
         "COUNT(e.dependenciaTipoId) as total",  
         "COUNT(iee.id) as total_estudiantes",  
     ])
@@ -1726,7 +1728,7 @@ export class InscripcionService {
     .addGroupBy('g.id')
     .getRawMany();
 
-    const list = lista.reduce((acc, curr) => {
+    /*const list = lista.reduce((acc, curr) => {
       const { departamento, dependencia, total } = curr;
       const dependenciaData = { dependencia, total: parseInt(total, 10) };
     
@@ -1737,9 +1739,9 @@ export class InscripcionService {
       }
     
       return acc;
-    }, {});
+    }, {});*/
 
-    return list;
+    return lista;
 }
 
   //xls de matriculados
