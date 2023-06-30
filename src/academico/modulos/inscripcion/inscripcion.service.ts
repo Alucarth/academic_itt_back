@@ -1711,7 +1711,9 @@ export class InscripcionService {
     .innerJoin("e.dependenciaTipo", "g")
     .select([
         "up4.lugar as departamento",
+        "up4.id as departamento_id",
         "g.dependencia as dependencia",
+        "g.id as dependencia_id",
         "COUNT(e.dependenciaTipoId) as total",  
         "COUNT(iee.id) as total_estudiantes",  
     ])

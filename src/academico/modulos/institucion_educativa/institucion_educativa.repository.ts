@@ -294,11 +294,11 @@ export class InstitucionEducativaRepository {
         .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
         .innerJoin("a.acreditados", "e")
         .innerJoin("e.dependenciaTipo", "g")
-       
         .select([
             "up4.lugar as departamento",
-           // "COUNT(up4.id) as departamento_id", 
+            "up4.id as departamento_id",
             "g.dependencia as dependencia",
+            "g.id as dependencia_id",
             "COUNT(e.dependenciaTipoId) as total",  
         ])
         .where('a.educacionTipoId in (7,8,9)')
