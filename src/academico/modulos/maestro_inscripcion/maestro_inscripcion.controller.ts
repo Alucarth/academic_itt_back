@@ -12,8 +12,11 @@ import {
   ValidationPipe,
   Delete,
   Req,
+  Header,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Response } from "express";
+import { Res } from "@nestjs/common";
 
 import { MaestroInscripcionService } from '../maestro_inscripcion/maestro_inscripcion.service';
 import { CreateMaestroInscripcionDto } from './dto/createMaestroInscripcion.dto';
@@ -122,5 +125,20 @@ export class MaestroInscripcionController {
         console.log("total docentes");
         return await this.usersService.getTotalDocentes();
   }
+
+  @Get("/xlsAllDocentesByUeGestion/:ueId/:gestionId/:periodoId")
+  @Header("Content-Type", "text/xlsx")
+    async getXlsAllDocentesByUeGestion(
+      @Param("ueId") ueId: number,
+      @Param("gestionId") gestionId: number,
+      @Param("periodoId") periodoId: number,
+      @Res() res: Response
+    ) {
+    let result = await this.usersService.getXlsAllDocentesByUeGestion(ueId,
+      gestionId,
+      periodoId);
+    res.download(`${result}`);
+  }
+  
 
 }

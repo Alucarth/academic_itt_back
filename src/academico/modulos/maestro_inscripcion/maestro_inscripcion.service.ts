@@ -1,4 +1,4 @@
-import { Injectable, HttpStatus, Inject, UnauthorizedException } from "@nestjs/common";
+import { Injectable, HttpStatus, Inject, UnauthorizedException, BadRequestException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { MaestroInscripcion } from "src/academico/entidades/maestroInscripcion.entity";
 import { Repository } from "typeorm";
@@ -20,6 +20,12 @@ import { InstitucionEducativaSucursalRepository } from "../institucion_educativa
 import { UpdateMaestroInscripcionDatoDto } from "./dto/updateMaestroInscripcionDato.dto";
 import { UsersService } from '../../../users/users.service'
 import { JwtService } from "@nestjs/jwt";
+
+//para exportar a xls
+import { Workbook } from "exceljs";
+import * as tmp from "tmp";
+import { writeFile } from "fs/promises";
+
 
 @Injectable()
 export class MaestroInscripcionService {
@@ -1591,4 +1597,129 @@ export class MaestroInscripcionService {
     
     return total 
   }
+
+  async getXlsAllDocentesByUeGestion(
+    ueId: number,
+    gestionId: number,
+    periodoId: number
+    ){
+
+      const data = await this.maeRepository.query(`
+        SELECT
+            maestro_inscripcion.id, 
+            persona.paterno, 
+            persona.materno, 
+            persona.nombre, 
+            persona.carnet_identidad, 
+            persona.complemento, 
+            persona.fecha_nacimiento, 
+            persona.genero_tipo_id, 
+            persona.estado_civil_tipo_id, 
+            persona.sangre_tipo_id, 
+            institucion_educativa_sucursal.institucion_educativa_id, 
+            institucion_educativa_sucursal.sucursal_codigo, 
+            institucion_educativa_sucursal.sucursal_nombre, 
+            formacion_tipo.id as formacion_tipo_id, 
+            formacion_tipo.formacion, 
+            financiamiento_tipo.id as financiamiento_tipo_id, 
+            financiamiento_tipo.financiamiento, 
+            cargo_tipo.id as cargo_tipo_id, 
+            cargo_tipo.cargo, 
+            especialidad_tipo.id as especialidad_tipo_id, 
+            especialidad_tipo.especialidad, 
+            maestro_inscripcion.gestion_tipo_id, 
+            maestro_inscripcion.normalista, 
+            maestro_inscripcion.vigente, 
+            maestro_inscripcion.formacion_descripcion, 
+            maestro_inscripcion.braile, 
+            maestro_inscripcion.asignacion_fecha_inicio, 
+            maestro_inscripcion.asignacion_fecha_fin, 
+            maestro_inscripcion.item, 
+            maestro_inscripcion.periodo_tipo_id
+        FROM
+            maestro_inscripcion
+            INNER JOIN
+            persona
+            ON 
+                maestro_inscripcion.persona_id = persona.id
+            INNER JOIN
+            institucion_educativa_sucursal
+            ON 
+                maestro_inscripcion.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id
+            INNER JOIN
+            formacion_tipo
+            ON 
+                maestro_inscripcion.formacion_tipo_id = formacion_tipo.id
+            INNER JOIN
+            financiamiento_tipo
+            ON 
+                maestro_inscripcion.financiamiento_tipo_id = financiamiento_tipo.id
+            INNER JOIN
+            cargo_tipo
+            ON 
+                maestro_inscripcion.cargo_tipo_id = cargo_tipo.id
+            INNER JOIN
+            especialidad_tipo
+            ON 
+                maestro_inscripcion.especialidad_tipo_id = especialidad_tipo.id
+            where institucion_educativa_id = ${ueId} 
+            and maestro_inscripcion.gestion_tipo_id = ${gestionId}                       
+            order by 2,3,4;`);
+
+      console.log("result: ", data);
+      console.log("result size: ", data.length);
+
+      let rows = [];
+      data.forEach((doc) => {
+        rows.push(Object.values(doc));
+      });
+
+      //creating a workbook
+      let book = new Workbook();
+
+      //adding a worksheet to workbook
+      let sheet = book.addWorksheet("sheet1");
+      sheet.addRow(["LISTADO DE DOCENTES Y ADMINISTRATIVOS"]);
+      sheet.addRow(["Datos al 28/06/2023"]);
+
+      sheet.addRow([]);
+
+       //add the header
+      rows.unshift(Object.keys(data[0]));
+
+      //add multiple rows
+      sheet.addRows(rows);
+
+      // write te file
+      let File = await new Promise((resolve, reject) => {
+        tmp.file(
+          {
+            discardDescriptor: true,
+            prefix: `testXls`,
+            postfix: ".xlsx",
+            mode: parseInt("0600", 8),
+          },
+          async (err, file) => {
+            if (err) throw new BadRequestException(err);
+
+            //write temporary file
+            book.xlsx
+              .writeFile(file)
+              .then((_) => {
+                resolve(file);
+              })
+              .catch((err) => {
+                throw new BadRequestException(err);
+              });
+          }
+        );
+      });
+
+    return File;
+
+
+
+  }
+
+
 }

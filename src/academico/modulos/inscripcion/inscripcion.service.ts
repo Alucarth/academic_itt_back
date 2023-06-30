@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 
@@ -23,6 +23,11 @@ import { CreateMatriculaDto } from "./dto/createMatricula.dto";
 import { UsersService } from "../../../users/users.service";
 import { CreateInscriptionNuevoDto } from "./dto/createInscriptionNuevo.dto";
 import { OperativoCarreraAutorizadaService } from "../operativo_carrera_autorizada/operativo_carrera_autorizada.service";
+
+//para exportar a xls
+import { Workbook } from "exceljs";
+import * as tmp from "tmp";
+import { writeFile } from "fs/promises";
 
 @Injectable()
 export class InscripcionService {
@@ -1736,4 +1741,131 @@ export class InscripcionService {
 
     return list;
 }
+
+  //xls de matriculados
+  async getXlsAllMatriculadosByGestion(
+    gestionId: number,
+    periodoId: number,
+    carreraAutorizadaId: number,
+    ieId: number,
+    ipecId: number
+  ) {
+    //TODO: aumentar ueId
+
+    const data = await this.inscripcionRepository.query(`
+   
+      SELECT
+        carrera_autorizada.id AS carrera_autorizada_id, 
+        carrera_tipo.id AS carrera_tipo_id, 
+        carrera_tipo.carrera, 
+        instituto_plan_estudio_carrera.id AS instituto_plan_estudio_carrera_id, 
+        matricula_estudiante.id AS matricula_estudiante_id, 
+        matricula_estudiante.gestion_tipo_id, 
+        matricula_estudiante.periodo_tipo_id, 
+        matricula_estudiante.doc_matricula, 
+        persona.id AS persona_id, 
+        persona.carnet_identidad, 
+        persona.complemento, 
+        persona.paterno, 
+        persona.materno, 
+        persona.nombre, 
+        institucion_educativa_sucursal.id as institucion_educativa_sucursal_id, 
+        institucion_educativa.id as institucion_educativa_id, 
+        institucion_educativa.institucion_educativa,
+        (select count(matricula_estudiante_id) from instituto_estudiante_inscripcion where matricula_estudiante_id =  matricula_estudiante.id) as inscrito_en_la_gestion 
+      FROM
+        carrera_autorizada
+        INNER JOIN
+        instituto_plan_estudio_carrera
+        ON 
+          carrera_autorizada."id" = instituto_plan_estudio_carrera.carrera_autorizada_id
+        INNER JOIN
+        matricula_estudiante
+        ON 
+          instituto_plan_estudio_carrera.id = matricula_estudiante.instituto_plan_estudio_carrera_id
+        INNER JOIN
+        carrera_tipo
+        ON 
+          carrera_autorizada.carrera_tipo_id = carrera_tipo.id
+        INNER JOIN
+        institucion_educativa_estudiante
+        ON 
+          matricula_estudiante.institucion_educativa_estudiante_id = institucion_educativa_estudiante.id
+        INNER JOIN
+        persona
+        ON 
+          institucion_educativa_estudiante.persona_id = persona.id
+        INNER JOIN
+        institucion_educativa_sucursal
+        ON 
+          carrera_autorizada.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id AND
+          institucion_educativa_estudiante.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id
+        INNER JOIN
+        institucion_educativa
+        ON 
+          institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa.id
+      WHERE
+        carrera_autorizada.id = ${carreraAutorizadaId} and 
+        institucion_educativa.id =  ${ieId}  and 
+        matricula_estudiante.periodo_tipo_id = ${periodoId} and 
+        matricula_estudiante.gestion_tipo_id = ${gestionId} and
+        matricula_estudiante.instituto_plan_estudio_carrera_id = ${ipecId}
+        order by paterno, materno, nombre
+    `);
+
+    console.log("result: ", data);
+
+    let rows = [];
+      data.forEach((doc) => {
+        rows.push(Object.values(doc));
+      });
+
+      //creating a workbook
+      let book = new Workbook();
+
+      //adding a worksheet to workbook
+      let sheet = book.addWorksheet("sheet1");
+      sheet.addRow(["LISTADO DE MATRICULADOS CARRERA BELLEZA INTEGRAL - GESTION 2023"]);
+      sheet.addRow(["Datos al 28/06/2023"]);
+
+      sheet.addRow([]);
+
+       //add the header
+      rows.unshift(Object.keys(data[0]));
+
+      //add multiple rows
+      sheet.addRows(rows);
+
+      // write te file
+      let File = await new Promise((resolve, reject) => {
+        tmp.file(
+          {
+            discardDescriptor: true,
+            prefix: `testXls`,
+            postfix: ".xlsx",
+            mode: parseInt("0600", 8),
+          },
+          async (err, file) => {
+            if (err) throw new BadRequestException(err);
+
+            //write temporary file
+            book.xlsx
+              .writeFile(file)
+              .then((_) => {
+                resolve(file);
+              })
+              .catch((err) => {
+                throw new BadRequestException(err);
+              });
+          }
+        );
+      });
+
+    return File;
+
+    
+  }
+
+
+
 }

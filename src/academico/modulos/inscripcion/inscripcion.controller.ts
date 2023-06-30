@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Header,
   Param,
   ParseIntPipe,
   Post,
@@ -12,6 +13,9 @@ import { InscripcionService } from "./inscripcion.service";
 import { CreateInscriptionDto } from "./dto/createInscription.dto";
 import { CreateMatriculaDto } from "./dto/createMatricula.dto";
 import { CreateInscriptionNuevoDto } from "./dto/createInscriptionNuevo.dto";
+
+import { Response } from "express";
+import { Res } from "@nestjs/common";
 
 @ApiTags("Matriculacion e Inscripcion")
 @Controller("inscripcion")
@@ -200,6 +204,26 @@ export class InscripcionController {
     async getTotalEstudiantesDependencia(){
         console.log("total estudiantes por dependencia");
         return await this.inscripcionService.getTotalEstudiantesDependencia();
+  }
+
+  @Get("/xlsMatriculados/:gestionId/:periodoId/:carreraId/:ieId/:ipecId")
+  @Header("Content-Type", "text/xlsx")
+  async getXlsAllMatriculadosByGestion(
+    @Param("gestionId") gestionId: string,
+    @Param("periodoId") periodoId: string,
+    @Param("carreraId") carreraId: string,
+    @Param("ieId") ieId: string,
+    @Param("ipecId") ipecId: string,
+    @Res() res: Response
+  ) {
+    let result = await  this.inscripcionService.getXlsAllMatriculadosByGestion(
+      parseInt(gestionId),
+      parseInt(periodoId),
+      parseInt(carreraId),
+      parseInt(ieId),
+      parseInt(ipecId),
+    );
+    res.download(`${result}`);
   }
 
 }
