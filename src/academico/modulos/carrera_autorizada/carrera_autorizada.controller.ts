@@ -34,10 +34,27 @@ export class CarreraAutorizadaController {
         return await this.carreraAutorizadaService.getListaCarreras();
     }
 
+    @Get('reporte/dependencias')
+    async getTotalEstudiantesDependencia(){
+        console.log("total carreras por departamento y dependencia");
+        return await this.carreraAutorizadaService.getTotalDepartamentoDependencias();
+  }
+
     @Get('reporte/estudiantes/:id')
     async getListaEstudiantes(@Param("id", ParseIntPipe) id: number){
         console.log("total estudiantes");
         return await this.carreraAutorizadaService.getTotalEstudiantes(id);
+    }
+
+    @Get('reporte/paralelos-estudiantes/:id')
+    async getListaParalelosEstudiantes(@Param("id", ParseIntPipe) id: number){
+        console.log("total estudiantes");
+        return await this.carreraAutorizadaService.getListaParalelosEstudiantes(id);
+    }
+    @Get('reporte/carrera-paralelo-estudiante/:id')
+    async getListaCarreraParalelosEstudiantes(@Param("id", ParseIntPipe) id: number){
+        console.log("total estudiantes");
+        return await this.carreraAutorizadaService.getListaAsignaturaParaleloEstudianteCarrera(id);
     }
     @Get('reporte/carreras-estudiantes/:lugar/:dependencia')
     async getListaEstudiantesRegimen(@Param("lugar", ParseIntPipe) lugar: number, @Param("dependencia", ParseIntPipe) dependencia: number){

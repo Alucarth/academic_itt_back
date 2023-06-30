@@ -77,6 +77,18 @@ export class CarreraAutorizadaService {
         const carreras = await this.carreraAutorizadaRepositorio.findListaCarrerasEstudiantes(id);
         return carreras;
       }
+      async getTotalDepartamentoDependencias(){
+        const carreras = await this.carreraAutorizadaRepositorio.findTotalDependencias();
+        return carreras;
+      }
+      async getListaParalelosEstudiantes(id:number){
+        const carreras = await this.carreraAutorizadaRepositorio.findListParalelosaCarrerasEstudiantes(id);
+        return carreras;
+      }
+      async getListaAsignaturaParaleloEstudianteCarrera(id:number){
+        const carreras = await this.carreraAutorizadaRepositorio.findListAsignaturaParaleloCarreraEstudiante(id);
+        return carreras;
+      }
 
       async getListaCarrerasRegimen(lugar:number, dependencia:number){
         const carreras = await this.carreraAutorizadaRepositorio.findListaRegimenCarrerasEstudiantes(lugar, dependencia);
