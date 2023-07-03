@@ -390,20 +390,21 @@ export class InstitucionEducativaRepository {
         .innerJoinAndSelect("u1.unidadTerritorialPadre", "up1")
         .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
         .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
-        .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
+        .leftJoinAndSelect("up3.unidadTerritorialPadre", "up4")
         .leftJoinAndSelect("a.sucursales", "s")
-        //.leftJoinAndSelect("s.carreras", "c")
+        .leftJoinAndSelect("s.carreras", "c")
         .leftJoinAndSelect("s.maestrosInscripciones", "m")
-       // .leftJoinAndSelect("s.institucionEducativaEstudiantes", "i")
+        .leftJoinAndSelect("s.institucionEducativaEstudiantes", "i")
         .select([
             "up4.lugar as departamento",
-            "COUNT(a.id) as total",  
-            "COUNT(m.id) as total_docentes",  
-          //  "COUNT(i.id) as total_estudiantes",  
-           // "COUNT(c.carreraTipoId) as total_carreras",  
+            "COUNT(distinct(a.id)) as total_institutos",  
+            "COUNT(distinct(m.id)) as total_docentes",  
+            "COUNT(distinct(i.id)) as total_estudiantes",  
+            "COUNT(distinct(c.id)) as total_carreras",  
         ])
-        .where('a.educacionTipoId in (7,8,9,11,12,13)')
-        .andWhere('a.estadoInstitucionEducativaTipoId in (10)')
+        .where('a.educacionTipoId in (7,8,9)') //solo tecnicos y tecnológicos
+        .andWhere('a.estadoInstitucionEducativaTipoId in (10)') //abierta
+        .andWhere('c.areaTipoId > 1') //solo carreras
         .groupBy('up4.id')
         .getRawMany();
         return list;
