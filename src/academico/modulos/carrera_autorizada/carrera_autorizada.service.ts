@@ -89,6 +89,10 @@ export class CarreraAutorizadaService {
         const carreras = await this.carreraAutorizadaRepositorio.findListAsignaturaParaleloCarreraEstudiante(id);
         return carreras;
       }
+      async getListaAsignaturasParaleloEstudiantes(id:number){
+        const carreras = await this.carreraAutorizadaRepositorio.findListaAsignaturasParaleloEstudiantes(id);
+        return carreras;
+      }
 
       async getListaCarrerasRegimen(lugar:number, dependencia:number){
         const carreras = await this.carreraAutorizadaRepositorio.findListaRegimenCarrerasEstudiantes(lugar, dependencia);

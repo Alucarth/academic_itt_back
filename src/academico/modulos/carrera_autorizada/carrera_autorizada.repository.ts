@@ -190,6 +190,7 @@ export class CarreraAutorizadaRepository {
             "COUNT(ca.id) as total",  
         ])
         .where('a.educacionTipoId in (7,8,9)')
+        .andWhere('ca.areaTipoId>1')
         .groupBy('up4.id')
         .addGroupBy('g.dependencia')
         .addGroupBy('g.id')
@@ -275,6 +276,27 @@ export class CarreraAutorizadaRepository {
           .addGroupBy('iei.aulaId')
           .addGroupBy('a.asignatura')
           //.addGroupBy('o.planEstudioAsignaturaId')
+          .getRawMany();
+    }
+    async findListaAsignaturasParaleloEstudiantes(id){
+        return await this.dataSource
+          .getRepository(CarreraAutorizada)
+          .createQueryBuilder("ca")
+          .innerJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
+          .innerJoinAndSelect("ipec.ofertasCurriculares", "o")
+          .innerJoinAndSelect("o.aulas", "au")
+          .innerJoinAndSelect("au.paraleloTipo", "pt")
+          .innerJoinAndSelect("au.institutoEstudianteInscripcions", "iei")
+          .innerJoinAndSelect("o.planEstudioAsignatura", "pea")
+          .innerJoinAndSelect("pea.asignaturaTipo", "a")
+          .select([
+            "a.asignatura as asignatura",
+            "pt.paralelo as paralelo",
+            "COUNT(iei.matriculaEstudianteId) as total_estudiantes",
+          ])
+          .where("ca.id = :id ", { id })
+          .groupBy('a.asignatura')
+          .addGroupBy('pt.id')
           .getRawMany();
     }
 
