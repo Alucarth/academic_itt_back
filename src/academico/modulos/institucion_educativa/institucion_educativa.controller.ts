@@ -89,8 +89,12 @@ export class InstitucionEducativaController {
         console.log("total por lugar y dependencia");
         let result = await this.institucionEducativaService.getListaLugarDependenciasEstudiantes(lugar, dependencia);
         console.log('old',result)
+        let career_count =[]
         let contador = 0
+        let carrera_contador = []
         let insituto_carreras = []
+        let j=0
+        let x=0
         await Promise.all(result.map(async (instituto)=>{
             let instituto_career = await this.institucionEducativaService.getCareersInstitution(instituto.institucion_educativa_id)
             
@@ -116,27 +120,57 @@ export class InstitucionEducativaController {
                         contador = 0
                         await Promise.all(matriculas.map(async (matricula)=>{
                             // let estudiante = estudiantes.find((o)=>{return  matricula.institucionEducativaEstudiante.persona.id === o.persona.id })
-                            let estudiante = _.find(estudiantes,(o)=>{return matricula.institucionEducativaEstudiante.persona.id === o.persona.id} )
-                            if(estudiante){
-                                console.log('esudiante',estudiante)
-                                let index = estudiantes.indexOf(estudiante)
-                                estudiantes.splice(index,1)
-                                contador++
-                            }
+                            await new Promise((resolve,reject)=>{
+                                let estudiante = _.find(estudiantes,(o)=>{return matricula.institucionEducativaEstudiante.persona.id === o.persona.id} )
+                                // console.log(carrera )
+                                
+                                if(estudiante){
+                                    // console.log('esudiante',estudiante)
+                                    let index = estudiantes.indexOf(estudiante)
+                                    estudiantes.splice(index,1)
+                                    career_count.push(carrera.carreraTipo.id)
+                                    console.log(career_count.length)
+                                    // contador++
+                                    j++
+                                    console.log(j)
+                                    resolve(contador++)
+                                }else{
+                                    resolve(true)
+                                }
+                            })
                         }))
+                        x+=contador
+                        
+                        carrera_contador.push({carrera_tipo_id: carrera.carreraTipo.id, cantidad: contador})
+                        console.log(carrera_contador)
+                        console.log( `${carrera.carreraTipo.carrera} contador: ${contador}  j:${j} x:${x}`  )
+                        let career = 
+                        {
+                            carrera_autorizada_id:carrera.id,
+                            carrera_tipo_id: carrera.carreraTipo.id,
+                            modalidad: '',
+                            carrera: carrera.carreraTipo.carrera,
+                            institucion_educativa_id: instituto.institucion_educativa_id,
+                            institucion_educativa: instituto.institucion_educativa,
+                            sucursal_nombre: instituto.sucursal_nombre,
+                            estudiantes: contador
+                        }
+                        console.log(career)
                         let resolucion = await this.institucionEducativaService.getCarreraAutorizadaResolucion(carrera.id)
                         // console.log(resolucion)
-                        let career = 
-                                {
-                                    carrera_autorizada_id:carrera.id,
-                                    carrera_tipo_id: carrera.carreraTipo.id,
-                                    modalidad: resolucion.intervaloGestionTipo.intervaloGestion,
-                                    carrera: carrera.carreraTipo.carrera,
-                                    institucion_educativa_id: instituto.institucion_educativa_id,
-                                    institucion_educativa: instituto.institucion_educativa,
-                                    sucursal_nombre: instituto.sucursal_nombre,
-                                    estudiantes: contador
-                                }
+
+                        // let career = 
+                        //         {
+                        //             carrera_autorizada_id:carrera.id,
+                        //             carrera_tipo_id: carrera.carreraTipo.id,
+                        //             modalidad: resolucion.intervaloGestionTipo.intervaloGestion,
+                        //             carrera: carrera.carreraTipo.carrera,
+                        //             institucion_educativa_id: instituto.institucion_educativa_id,
+                        //             institucion_educativa: instituto.institucion_educativa,
+                        //             sucursal_nombre: instituto.sucursal_nombre,
+                        //             estudiantes: contador
+                        //         }
+                        career.modalidad = resolucion.intervaloGestionTipo.intervaloGestion
                         insituto_carreras.push(career)
                         contador = 0
                         // console.log(matriculas)
@@ -156,6 +190,16 @@ export class InstitucionEducativaController {
         }))
         console.log('new',result)
         console.log('count',contador)
+        let i=0
+        insituto_carreras.forEach(carrera => {
+            // let finder = career_count.filter((o)=>o === carrera.carrera_tipo_id)
+            i += carrera.estudiantes
+            // console.log(finder.length)
+        });
+        console.log('total',i)
+        console.log('total j',j)
+        console.log('total x',x)
+        console.log('career',career_count)
         
         return insituto_carreras
     }
