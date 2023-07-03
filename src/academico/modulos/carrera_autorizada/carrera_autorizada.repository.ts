@@ -168,6 +168,36 @@ export class CarreraAutorizadaRepository {
        // console.log(carreras);
         return carreras;
     }
+    async findTotalDependencias(){
+        
+        const list = await this.dataSource.getRepository(CarreraAutorizada)
+        .createQueryBuilder("ca")
+        .innerJoin("ca.institucionEducativaSucursal", "s")
+        .innerJoin("s.institucionEducativa", "a")
+        .innerJoinAndSelect("a.jurisdiccionGeografica", "h")
+        .innerJoinAndSelect("h.localidadUnidadTerritorial2001", "u1")
+        .innerJoinAndSelect("u1.unidadTerritorialPadre", "up1")
+        .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
+        .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
+        .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
+        .innerJoin("a.acreditados", "e")
+        .innerJoin("e.dependenciaTipo", "g")
+        .select([
+            "up4.lugar as departamento",
+            "up4.id as departamento_id",
+            "g.dependencia as dependencia",
+            "g.id as dependencia_id",
+            "COUNT(ca.id) as total",  
+        ])
+        .where('a.educacionTipoId in (7,8,9)')
+        .andWhere('ca.areaTipoId>1')
+        .groupBy('up4.id')
+        .addGroupBy('g.dependencia')
+        .addGroupBy('g.id')
+        .getRawMany();
+        //.getMany();
+        return list;
+    }
     async findListaCarreras(){
         const carreras = await this.dataSource.getRepository(CarreraAutorizada)
         .createQueryBuilder("ca")
@@ -199,6 +229,74 @@ export class CarreraAutorizadaRepository {
           ])
           .where("s.institucionEducativaId = :id ", { id })
           .groupBy('ct.carrera')
+          .getRawMany();
+    }
+    /***total de carrera, total paralelos, total estudiantes */
+    async findListParalelosaCarrerasEstudiantes(id){
+        return await this.dataSource
+          .getRepository(CarreraAutorizada)
+          .createQueryBuilder("ca")
+          .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
+          .innerJoinAndSelect("ca.carreraTipo", "ct")
+          .innerJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
+          .innerJoinAndSelect("ipec.ofertasCurriculares", "o")
+          .innerJoinAndSelect("o.aulas", "a")
+          .innerJoinAndSelect("ipec.matriculasEstudiantes", "m")
+          .select([
+            "ct.carrera as carrera",
+            "COUNT(distinct(a.id)) as total_aulas",
+            "COUNT(distinct(m.institucionEducativaEstudianteId)) as total_estudiantes",
+          ])
+          .where("s.institucionEducativaId = :id ", { id })
+          .groupBy('ct.carrera')
+          //.addGroupBy('o.planEstudioAsignaturaId')
+          .getRawMany();
+    }
+    async findListAsignaturaParaleloCarreraEstudiante(id){
+        return await this.dataSource
+          .getRepository(CarreraAutorizada)
+          .createQueryBuilder("ca")
+          .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
+          .innerJoinAndSelect("ca.carreraTipo", "ct")
+          .innerJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
+          .innerJoinAndSelect("ipec.ofertasCurriculares", "o")
+          .innerJoinAndSelect("o.institutoEstudianteInscripcions", "iei")
+          .innerJoinAndSelect("o.planEstudioAsignatura", "pea")
+          .innerJoinAndSelect("pea.asignaturaTipo", "a")
+          .select([
+            "ct.carrera as carrera",
+            "a.asignatura as asignatura",
+            "COUNT(iei.matriculaEstudianteId) as total_estudiantes",
+            "COUNT(distinct(iei.aulaId)) as total_paralelos"
+           // "COUNT(distinct(a.id)) as total_aulas",
+           // "COUNT(distinct(m.institucionEducativaEstudianteId)) as total_estudiantes",
+          ])
+          .where("s.institucionEducativaId = :id ", { id })
+          .groupBy('ct.carrera')
+          .addGroupBy('iei.aulaId')
+          .addGroupBy('a.asignatura')
+          //.addGroupBy('o.planEstudioAsignaturaId')
+          .getRawMany();
+    }
+    async findListaAsignaturasParaleloEstudiantes(id){
+        return await this.dataSource
+          .getRepository(CarreraAutorizada)
+          .createQueryBuilder("ca")
+          .innerJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
+          .innerJoinAndSelect("ipec.ofertasCurriculares", "o")
+          .innerJoinAndSelect("o.aulas", "au")
+          .innerJoinAndSelect("au.paraleloTipo", "pt")
+          .innerJoinAndSelect("au.institutoEstudianteInscripcions", "iei")
+          .innerJoinAndSelect("o.planEstudioAsignatura", "pea")
+          .innerJoinAndSelect("pea.asignaturaTipo", "a")
+          .select([
+            "a.asignatura as asignatura",
+            "pt.paralelo as paralelo",
+            "COUNT(iei.matriculaEstudianteId) as total_estudiantes",
+          ])
+          .where("ca.id = :id ", { id })
+          .groupBy('a.asignatura')
+          .addGroupBy('pt.id')
           .getRawMany();
     }
 
@@ -235,6 +333,7 @@ export class CarreraAutorizadaRepository {
           .addGroupBy('igt.intervalo_gestion')
           .getRawMany();
     }
+
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
     }
