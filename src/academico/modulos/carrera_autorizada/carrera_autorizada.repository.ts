@@ -339,4 +339,50 @@ export class CarreraAutorizadaRepository {
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
     }
+
+    async geXlsAllCarrerasByIeId(id){
+      return await this.dataSource
+        .getRepository(CarreraAutorizada)
+        .createQueryBuilder("ca")
+        .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
+        .innerJoinAndSelect("ca.carreraTipo", "ct")
+        .innerJoinAndSelect("ca.areaTipo", "at")
+        //.leftJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
+        .innerJoinAndSelect("ca.resoluciones", "r")
+        .innerJoinAndSelect("r.resolucionTipo", "rt")
+        .innerJoinAndSelect("r.nivelAcademicoTipo", "na")
+        .innerJoinAndSelect("r.intervaloGestionTipo", "ig")
+        .select([         
+          'ct.carrera as "CARRERA"',         
+          'at.area as "AREA"',
+          'r.numero_resolucion as "Nro. RESOLUCION"',
+          'r.fecha_resolucion as "FECHA RESOLUCION"',
+          'r.tiempo_estudio as "TIEMPO ESTUDIO"',
+          'r.carga_horaria as "CARGA HORARIA"',
+          'r.resuelve as "RESOLUCION"',
+          'na.nivel_academico as "NIVEL ACADEMICO"',
+          'ig.intervalo_gestion as "REGIMEN ESTUDIO"',
+          'rt.resolucion_tipo as "TIPO TRAMITE"',
+          //"ipec.id as instituto_plan_estudio_carrera_id",
+        ])
+        .where("s.institucionEducativaId = :id ", { id })
+        .andWhere("ca.areaTipoId > 1 ")
+        .getRawMany();
+  }
+
+  async geXlsAllCarrerasByIeIdNombre(id){
+
+    const res = await this.dataSource.query(`
+
+    SELECT institucion_educativa       
+    FROM
+      institucion_educativa
+      where id = ${id} 
+    `);
+
+    return res[0]['institucion_educativa'];
+
+  }
+
+
 }
