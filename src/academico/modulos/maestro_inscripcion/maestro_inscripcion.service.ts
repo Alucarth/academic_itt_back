@@ -1781,6 +1781,15 @@ export class MaestroInscripcionService {
       };
       });
 
+      //autosize columns
+      sheet.columns.forEach(function (column) {
+        var dataMax = 0;
+        column.eachCell({ includeEmpty: true }, function (cell) {
+          dataMax = cell.value?cell.value.toString().length:0;
+        })
+        column.width = dataMax < 10 ? 15 : dataMax;
+      });
+
 
 
       // write te file
