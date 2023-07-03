@@ -321,6 +321,7 @@ export class CarreraAutorizadaRepository {
           .select([
             "i.institucion_educativa as institucion_educativa",
             "igt.intervalo_gestion as modalidad",
+            "ca.id as carrera_autorizada_id",
             "ct.carrera as carrera",
             "COUNT(distinct(m.institucionEducativaEstudianteId)) as total",
           ])
@@ -329,6 +330,7 @@ export class CarreraAutorizadaRepository {
           .andWhere('e.dependenciaTipoId = :dependencia ', { dependencia })
           .andWhere('up4.id = :lugar ', { lugar })
           .groupBy('ct.carrera')
+          .addGroupBy('ca.id')
           .addGroupBy('i.institucion_educativa')
           .addGroupBy('igt.intervalo_gestion')
           .getRawMany();

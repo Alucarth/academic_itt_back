@@ -1623,6 +1623,41 @@ export class MaestroInscripcionService {
       .addGroupBy('g.id')
       .getRawMany();
 }
+  async findListaDocentesFinanciamiento(lugar, dependencia){
+    return await this.maeRepository
+      .createQueryBuilder("mi")
+      .innerJoinAndSelect("mi.financiamientoTipo", "ft")
+      .innerJoinAndSelect("mi.institucionEducativaSucursal", "s")
+      .innerJoinAndSelect("s.institucionEducativa", "i")
+      .innerJoinAndSelect("i.jurisdiccionGeografica", "h")
+      .innerJoinAndSelect("h.localidadUnidadTerritorial2001", "u1")
+      .innerJoinAndSelect("u1.unidadTerritorialPadre", "up1")
+      .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
+      .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
+      .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
+      .innerJoinAndSelect("i.acreditados", "e")
+      .innerJoin("e.dependenciaTipo", "g")
+      .innerJoin("mi.aulasDocentes", "ad")
+      .innerJoin("ad.aula", "au")
+      .innerJoin("au.ofertaCurricular", "o")
+      .innerJoin("o.institutoPlanEstudioCarrera", "ipec")
+      .innerJoin("ipec.carreraAutorizada", "ca")
+      .innerJoin("ca.carreraTipo", "ct")
+      .select([
+        "i.institucion_educativa as institucion_educativa",
+        "ct.carrera as carrera",
+        "ft.financiamiento",
+        "COUNT(mi.id) as total_financiamiento", 
+      ])
+      .where('i.educacionTipoId in (7,8,9)')
+      .andWhere('ca.areaTipoId > 1')
+      .andWhere('e.dependenciaTipoId = :dependencia ', { dependencia })
+      .andWhere('up4.id = :lugar ', { lugar })
+      .groupBy('ct.carrera')
+      .addGroupBy('i.institucion_educativa')
+      .addGroupBy('ft.financiamiento')
+      .getRawMany();
+}
 
   async getXlsAllDocentesByUeGestion(
     ueId: number,
