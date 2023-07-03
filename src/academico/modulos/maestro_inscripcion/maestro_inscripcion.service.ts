@@ -1597,6 +1597,32 @@ export class MaestroInscripcionService {
     
     return total 
   }
+  async findListaDocentesRegimenDepartamento(){
+    return await this.maeRepository
+      .createQueryBuilder("mi")
+      .innerJoinAndSelect("mi.institucionEducativaSucursal", "s")
+      .innerJoinAndSelect("s.institucionEducativa", "i")
+      .innerJoinAndSelect("i.jurisdiccionGeografica", "h")
+      .innerJoinAndSelect("h.localidadUnidadTerritorial2001", "u1")
+      .innerJoinAndSelect("u1.unidadTerritorialPadre", "up1")
+      .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
+      .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
+      .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
+      .innerJoinAndSelect("i.acreditados", "e")
+      .innerJoin("e.dependenciaTipo", "g")
+      .select([
+        "up4.lugar as departamento",
+        "up4.id as departamento_id",
+        "g.dependencia as dependencia",
+        "g.id as dependencia_id",
+        "COUNT(mi.id) as total", 
+      ])
+      .where('i.educacionTipoId in (7,8,9)')
+      .groupBy('up4.id')
+      .addGroupBy('g.dependencia')
+      .addGroupBy('g.id')
+      .getRawMany();
+}
 
   async getXlsAllDocentesByUeGestion(
     ueId: number,

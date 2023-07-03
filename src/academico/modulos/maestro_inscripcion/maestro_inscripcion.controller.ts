@@ -125,6 +125,11 @@ export class MaestroInscripcionController {
         console.log("total docentes");
         return await this.usersService.getTotalDocentes();
   }
+  @Get('reporte/dependencias')
+  async getTotalEstudiantesDependencia(){
+      console.log("total carreras por departamento y dependencia");
+      return await this.usersService.findListaDocentesRegimenDepartamento();
+}
 
   @Get("/xlsAllDocentesByUeGestion/:ueId/:gestionId/:periodoId")
   @Header("Content-Type", "text/xlsx")
