@@ -13,6 +13,7 @@ import {
   Delete,
   Req,
   Header,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from "express";
@@ -127,9 +128,14 @@ export class MaestroInscripcionController {
   }
   @Get('reporte/dependencias')
   async getTotalEstudiantesDependencia(){
-      console.log("total carreras por departamento y dependencia");
+      console.log("total docentes por departamento y dependencia");
       return await this.usersService.findListaDocentesRegimenDepartamento();
-}
+  }
+  @Get('reporte/carreras-financiamientos/:lugar/:dependencia')
+    async getListaDocentesFinancimiento(@Param("lugar", ParseIntPipe) lugar: number, @Param("dependencia", ParseIntPipe) dependencia: number){
+        console.log("lista carreras, financiamientos de docentes");
+        return await this.usersService.findListaDocentesFinanciamiento(lugar, dependencia);
+  }
 
   @Get("/xlsAllDocentesByUeGestion/:ueId/:gestionId/:periodoId")
   @Header("Content-Type", "text/xlsx")
