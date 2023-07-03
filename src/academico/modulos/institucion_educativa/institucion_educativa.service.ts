@@ -74,8 +74,11 @@ export class InstitucionEducativaService {
         return instituto
     }
 
+    async getCarreraAutorizadaResolucion(carrera_autorizada_id)
+    {
+        return await this.institucionEducativaRepositorio.getCarreraAutorizadaResolution(carrera_autorizada_id)
+    }
 
-    
     
     async getBySieId(id:number){
 

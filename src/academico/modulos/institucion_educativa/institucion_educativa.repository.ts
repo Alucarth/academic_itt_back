@@ -7,6 +7,7 @@ import { CreateInstitucionEducativaDto } from './dto/createInstitucionEducativa.
 import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPlanEstudioCarrera.entity';
 import { InstitutoEstudianteInscripcion } from 'src/academico/entidades/InstitutoEstudianteInscripcion.entity';
 import { MatriculaEstudiante } from 'src/academico/entidades/matriculaEstudiante.entity';
+import { CarreraAutorizadaResolucion } from 'src/academico/entidades/carreraAutorizadaResolucion.entity';
 
 
 @Injectable()
@@ -463,6 +464,18 @@ export class InstitucionEducativaRepository {
     async getCountStudentInsitution(oferta_ids:any){
         return await this.dataSource.getRepository(InstitutoEstudianteInscripcion).countBy({
             ofertaCurricularId: In(oferta_ids) 
+        })
+    }
+
+    async getCarreraAutorizadaResolution(carrera_autorizada_id)
+    {
+        return await this.dataSource.getRepository(CarreraAutorizadaResolucion).findOne({
+            relations:{
+                intervaloGestionTipo:true 
+            },
+            where:{
+                carreraAutorizadaId: carrera_autorizada_id
+            }
         })
     }
 }

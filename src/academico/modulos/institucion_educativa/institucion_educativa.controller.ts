@@ -5,13 +5,15 @@ import { CreateInstitucionEducativaDto } from './dto/createInstitucionEducativa.
 import { InstitucionEducativaService } from './institucion_educativa.service';
 import { MatriculaEstudianteService } from '../mantricula_estudiante/matricula_estudiante.service';
 import { InstitucionEducativaEstudianteService } from '../Institucion_educativa_estudiante/institucion_educativa_estudiante.services';
+const _ = require('lodash');
 @ApiTags('institucion-educativa')
 @Controller('institucion-educativa')
 export class InstitucionEducativaController {
     constructor (
         private readonly institucionEducativaService: InstitucionEducativaService,
         private readonly matriculaEstudianteService: MatriculaEstudianteService,
-        private readonly institucionEducactivaEstudianteService: InstitucionEducativaEstudianteService
+        private readonly institucionEducactivaEstudianteService: InstitucionEducativaEstudianteService,
+     
         ){}
 
     
@@ -98,11 +100,23 @@ export class InstitucionEducativaController {
                 console.log('estudiantes',estudiantes.length)
                 
                 await Promise.all(sucursal.carreras.map(async (carrera)=>{
-                    contador = 0
+                   
                     await Promise.all(carrera.institutosPlanesCarreras.map(async(plan)=>{
                         let matriculas = await this.matriculaEstudianteService.getMatriculadosByPlan(plan.id)
+                        // matriculas.forEach(matricula => {
+                        //     let estudiante = estudiantes.find((o)=>{return matricula.institucionEducativaEstudiante.persona.id === o.persona.id})
+                        //     if(estudiante){
+                        //         console.log('esudiante',estudiante)
+                        //         let index = estudiantes.indexOf(estudiante)
+                        //         estudiantes.splice(index,1)
+                        //         contador++
+                        //     }
+                        // });
+                        //find solution for this bug
+                        contador = 0
                         await Promise.all(matriculas.map(async (matricula)=>{
-                            let estudiante = estudiantes.find((o)=>{return o.persona.id === matricula.institucionEducativaEstudiante.persona.id})
+                            // let estudiante = estudiantes.find((o)=>{return  matricula.institucionEducativaEstudiante.persona.id === o.persona.id })
+                            let estudiante = _.find(estudiantes,(o)=>{return matricula.institucionEducativaEstudiante.persona.id === o.persona.id} )
                             if(estudiante){
                                 console.log('esudiante',estudiante)
                                 let index = estudiantes.indexOf(estudiante)
@@ -110,25 +124,30 @@ export class InstitucionEducativaController {
                                 contador++
                             }
                         }))
-                        
+                        let resolucion = await this.institucionEducativaService.getCarreraAutorizadaResolucion(carrera.id)
+                        // console.log(resolucion)
+                        let career = 
+                                {
+                                    carrera_autorizada_id:carrera.id,
+                                    carrera_tipo_id: carrera.carreraTipo.id,
+                                    modalidad: resolucion.intervaloGestionTipo.intervaloGestion,
+                                    carrera: carrera.carreraTipo.carrera,
+                                    institucion_educativa_id: instituto.institucion_educativa_id,
+                                    institucion_educativa: instituto.institucion_educativa,
+                                    sucursal_nombre: instituto.sucursal_nombre,
+                                    estudiantes: contador
+                                }
+                        insituto_carreras.push(career)
+                        contador = 0
                         // console.log(matriculas)
                         // await Promise.all(matriculas)
                     }))
-                    let career = 
-                            {
-                                carrera_autorizada_id:carrera.id,
-                                carrera_tipo_id: carrera.carreraTipo.id,
-                                carrera: carrera.carreraTipo.carrera,
-                                institucion_educativa_id: instituto.institucion_educativa_id,
-                                institucion_educativa: instituto.institucion_educativa,
-                                sucursal_nombre: instituto.sucursal_nombre,
-                                estudiantes: contador
-                            }
-                    insituto_carreras.push(career)
-                    contador = 0
+                    // let resolucion = await this.carreraAutorizadaResolucionServide.getAll(1)
+                    // console.log(resolucion)
+                   
                 }))
                 //sobra un estudiante raro 
-                // console.log('estudiantes',estudiantes)
+                console.log('estudiantes',estudiantes)
             }))
 
             

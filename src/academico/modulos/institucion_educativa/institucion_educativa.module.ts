@@ -15,6 +15,7 @@ import { InstitucionEducativaEstudianteService } from '../Institucion_educativa_
 
 
 
+
 @Module({
   imports: [
     DatabaseModule, 
@@ -31,6 +32,7 @@ import { InstitucionEducativaEstudianteService } from '../Institucion_educativa_
     MatriculaEstudianteService,
     ...institucionEducativaEstudianteProviders,
     InstitucionEducativaEstudianteService,
+    
     
   ]
 })
