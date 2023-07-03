@@ -17,6 +17,7 @@ import { InstitutoPlanEstudioCarrera } from "./institutoPlanEstudioCarrera.entit
 import { PeriodoTipo } from "./periodoTipo.entity";
 import { PlanEstudioCarrera } from "./planEstudioCarrera.entity";
 
+
 @Index("matricula_estudiante_pk", ["id"], { unique: true })
 @Entity("matricula_estudiante", { schema: "public" })
 export class MatriculaEstudiante {
@@ -63,15 +64,19 @@ export class MatriculaEstudiante {
   @JoinColumn({ name: "gestion_tipo_id", referencedColumnName: "id" })
   gestionTipo: GestionTipo;
 
+  @Column({name: 'institucion_educativa_estudiante_id'})
+  institucionEducativaEstudianteId:number
+
   @ManyToOne(
     () => InstitucionEducativaEstudiante,
-    (institucionEducativaEstudiante) =>
-      institucionEducativaEstudiante.matriculaEstudiantes
+    (institucionEducativaEstudiante) => institucionEducativaEstudiante.matriculaEstudiantes
   )
-  @Column("integer", { name: "institucion_educativa_estudiante_id" })
-  institucionEducativaEstudianteId: number;
+  //se comento por que generaba un error de no encontrar la columna --->"institucionEducativaEstudianteIdId"
+  // @Column("integer", { name: "institucion_educativa_estudiante_id" })
+  // institucionEducativaEstudianteId: number;
+  
   @JoinColumn(
-    { name: "institucion_educativa_estudiante_id", referencedColumnName: "id" },
+    { name: "institucion_educativa_estudiante_id", referencedColumnName: 'id' },
    )
   institucionEducativaEstudiante: InstitucionEducativaEstudiante;
 

@@ -40,6 +40,8 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "dayjs": "^1.11.7",
+    "exceljs": "^4.3.0",
+    "lodash": "^4.17.21",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
