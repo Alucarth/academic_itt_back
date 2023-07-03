@@ -315,8 +315,8 @@ export class CarreraAutorizadaRepository {
           .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
           .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
           .innerJoinAndSelect("ca.carreraTipo", "ct")
-          .innerJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
-          .innerJoinAndSelect("ipec.matriculasEstudiantes", "m")
+          .leftJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
+          .leftJoinAndSelect("ipec.matriculasEstudiantes", "m")
           .innerJoinAndSelect("i.acreditados", "e")
           .select([
             "i.institucion_educativa as institucion_educativa",
@@ -324,6 +324,7 @@ export class CarreraAutorizadaRepository {
             "ca.id as carrera_autorizada_id",
             "ct.carrera as carrera",
             "COUNT(distinct(m.institucionEducativaEstudianteId)) as total",
+            //"COUNT(distinct(iee.id)) as total",
           ])
           .where('i.educacionTipoId in (7,8,9)')
           .andWhere('ca.areaTipoId > 1')
