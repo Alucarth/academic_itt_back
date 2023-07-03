@@ -1754,27 +1754,38 @@ export class InscripcionService {
   ) {
     //TODO: aumentar ueId
 
+    const carrera = await this.inscripcionRepository.query(`
+
+    SELECT
+      carrera_autorizada.id, 
+      carrera_tipo.carrera
+    FROM
+      carrera_autorizada
+      INNER JOIN
+      carrera_tipo
+      ON 
+      carrera_autorizada.carrera_tipo_id = carrera_tipo.id   
+      where carrera_autorizada.id = ${carreraAutorizadaId} 
+
+    `);
+
+    const txtCarrera = carrera[0]['carrera'];
+
     const data = await this.inscripcionRepository.query(`
    
       SELECT
-        carrera_autorizada.id AS carrera_autorizada_id, 
-        carrera_tipo.id AS carrera_tipo_id, 
-        carrera_tipo.carrera, 
-        instituto_plan_estudio_carrera.id AS instituto_plan_estudio_carrera_id, 
-        matricula_estudiante.id AS matricula_estudiante_id, 
-        matricula_estudiante.gestion_tipo_id, 
-        matricula_estudiante.periodo_tipo_id, 
-        matricula_estudiante.doc_matricula, 
-        persona.id AS persona_id, 
-        persona.carnet_identidad, 
-        persona.complemento, 
-        persona.paterno, 
-        persona.materno, 
-        persona.nombre, 
-        institucion_educativa_sucursal.id as institucion_educativa_sucursal_id, 
-        institucion_educativa.id as institucion_educativa_id, 
-        institucion_educativa.institucion_educativa,
-        (select count(matricula_estudiante_id) from instituto_estudiante_inscripcion where matricula_estudiante_id =  matricula_estudiante.id) as inscrito_en_la_gestion 
+       
+        carrera_tipo.carrera as "CARRERA", 
+        (select denominacion from plan_estudio_carrera where id = instituto_plan_estudio_carrera.id ) as "PLAN ESTUDIO",    
+        matricula_estudiante.gestion_tipo_id as "GESTION", 
+        (select periodo from periodo_tipo where id  = matricula_estudiante.periodo_tipo_id) as "PERIODO", 
+        matricula_estudiante.doc_matricula AS "NRO.MATRICULA",        
+        persona.carnet_identidad AS "DOC. IDENTIDAD", 
+        persona.complemento AS "COMPLEMENTO", 
+        persona.paterno AS "APELLIDO PATERNO", 
+        persona.materno AS "APELLIDO MATERNO", 
+        persona.nombre AS "NOMBRES",       
+        institucion_educativa.institucion_educativa AS "INSTITUTO"
       FROM
         carrera_autorizada
         INNER JOIN
@@ -1827,8 +1838,11 @@ export class InscripcionService {
 
       //adding a worksheet to workbook
       let sheet = book.addWorksheet("sheet1");
-      sheet.addRow(["LISTADO DE MATRICULADOS CARRERA BELLEZA INTEGRAL - GESTION 2023"]);
+      sheet.addRow([`LISTADO DE MATRICULADOS CARRERA ${txtCarrera} - GESTION 2023`]);
       sheet.addRow(["Datos al 28/06/2023"]);
+
+      sheet.getRow(1).font = { size: 16, bold: true };
+      sheet.getRow(2).font = { size: 12, bold: true };
 
       sheet.addRow([]);
 
@@ -1837,6 +1851,39 @@ export class InscripcionService {
 
       //add multiple rows
       sheet.addRows(rows);
+
+      sheet.getRow(1).height = 30.5;
+      sheet.getRow(2).height = 30.5;
+
+      [
+        "A4",
+        "B4",
+        "C4",
+        "D4",
+        "E4",
+        "F4",
+        "G4",
+        "H4",
+        "I4",
+        "J4",
+        "K4"       
+      ].map((key) => {
+        sheet.getCell(key).fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "cccccc" },
+        };
+        sheet.getCell(key).font = {
+          bold: true,
+        };
+        sheet.getCell(key).border = {
+          top: {style:'thin'},
+          left: {style:'thin'},
+          bottom: {style:'thin'},
+          right: {style:'thin'}
+      };
+      });
+
 
       // write te file
       let File = await new Promise((resolve, reject) => {
@@ -1868,6 +1915,179 @@ export class InscripcionService {
     
   }
 
+  //xls de inscritos
+  async getXlsAllInscritosByGestion(
+    gestionId: number,
+    periodoId: number,
+    carreraAutorizadaId: number,
+    ieId: number,
+    ipecId: number
+  ) {
+    //TODO: aumentar ueId
+
+    const carrera = await this.inscripcionRepository.query(`
+
+    SELECT
+      carrera_autorizada.id, 
+      carrera_tipo.carrera
+    FROM
+      carrera_autorizada
+      INNER JOIN
+      carrera_tipo
+      ON 
+      carrera_autorizada.carrera_tipo_id = carrera_tipo.id   
+      where carrera_autorizada.id = ${carreraAutorizadaId} 
+
+    `);
+
+    const txtCarrera = carrera[0]['carrera'];
+
+    const data = await this.inscripcionRepository.query(`
+   
+    select 
+      carnet_identidad AS "DOCUMENTO IDENTIDAD", 
+      complemento AS "COMPLEMENTO", 
+      paterno AS "APELLIDO PATERNO", 
+      materno AS "APELLIDO MATERNO", 
+      nombre AS "NOMBRES", 
+      institucion_educativa AS "INSTITUTO"
+      from 
+    (
+    SELECT
+           persona.carnet_identidad , 
+           persona.complemento , 
+           persona.paterno , 
+           persona.materno , 
+           persona.nombre,        
+           institucion_educativa.institucion_educativa,
+           (select count(matricula_estudiante_id) from instituto_estudiante_inscripcion where matricula_estudiante_id =  matricula_estudiante.id) as inscrito_en_la_gestion 
+         FROM
+           carrera_autorizada
+           INNER JOIN
+           instituto_plan_estudio_carrera
+           ON 
+             carrera_autorizada."id" = instituto_plan_estudio_carrera.carrera_autorizada_id
+           INNER JOIN
+           matricula_estudiante
+           ON 
+             instituto_plan_estudio_carrera.id = matricula_estudiante.instituto_plan_estudio_carrera_id
+           INNER JOIN
+           carrera_tipo
+           ON 
+             carrera_autorizada.carrera_tipo_id = carrera_tipo.id
+           INNER JOIN
+           institucion_educativa_estudiante
+           ON 
+             matricula_estudiante.institucion_educativa_estudiante_id = institucion_educativa_estudiante.id
+           INNER JOIN
+           persona
+           ON 
+             institucion_educativa_estudiante.persona_id = persona.id
+           INNER JOIN
+           institucion_educativa_sucursal
+           ON 
+             carrera_autorizada.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id AND
+             institucion_educativa_estudiante.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id
+           INNER JOIN
+           institucion_educativa
+           ON 
+             institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa.id
+         WHERE
+         carrera_autorizada.id = ${carreraAutorizadaId} and 
+         institucion_educativa.id =  ${ieId}  and 
+         matricula_estudiante.periodo_tipo_id = ${periodoId} and 
+         matricula_estudiante.gestion_tipo_id = ${gestionId} and
+         matricula_estudiante.instituto_plan_estudio_carrera_id = ${ipecId}
+           order by paterno, materno, nombre
+         ) as data 
+         where inscrito_en_la_gestion <> 0
+         
+     
+    `);
+
+    console.log("result: ", data);
+
+    let rows = [];
+      data.forEach((doc) => {
+        rows.push(Object.values(doc));
+      });
+
+      //creating a workbook
+      let book = new Workbook();
+
+      //adding a worksheet to workbook
+      let sheet = book.addWorksheet("sheet1");
+      sheet.addRow([`LISTADO DE INSCRITOS CARRERA ${txtCarrera} - GESTION 2023`]);
+      sheet.addRow(["Datos al 28/06/2023"]);
+
+      sheet.getRow(1).font = { size: 16, bold: true };
+      sheet.getRow(2).font = { size: 12, bold: true };
+
+      sheet.addRow([]);
+
+       //add the header
+      rows.unshift(Object.keys(data[0]));
+
+      //add multiple rows
+      sheet.addRows(rows);
+
+      sheet.getRow(1).height = 30.5;
+      sheet.getRow(2).height = 30.5;
+
+      [
+        "A4",
+        "B4",
+        "C4",
+        "D4",
+        "E4",
+        "F4",         
+      ].map((key) => {
+        sheet.getCell(key).fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "cccccc" },
+        };
+        sheet.getCell(key).font = {
+          bold: true,
+        };
+        sheet.getCell(key).border = {
+          top: {style:'thin'},
+          left: {style:'thin'},
+          bottom: {style:'thin'},
+          right: {style:'thin'}
+      };
+      });
+
+
+      // write te file
+      let File = await new Promise((resolve, reject) => {
+        tmp.file(
+          {
+            discardDescriptor: true,
+            prefix: `testXls`,
+            postfix: ".xlsx",
+            mode: parseInt("0600", 8),
+          },
+          async (err, file) => {
+            if (err) throw new BadRequestException(err);
+
+            //write temporary file
+            book.xlsx
+              .writeFile(file)
+              .then((_) => {
+                resolve(file);
+              })
+              .catch((err) => {
+                throw new BadRequestException(err);
+              });
+          }
+        );
+      });
+
+    return File;
+
+    
+  }
 
 
 }
