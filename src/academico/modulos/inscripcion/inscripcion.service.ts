@@ -1837,7 +1837,7 @@ export class InscripcionService {
       let book = new Workbook();
 
       //adding a worksheet to workbook
-      let sheet = book.addWorksheet("sheet1");
+      const sheet = book.addWorksheet('sheet1', {views: [{showGridLines: false}]});
       sheet.addRow([`LISTADO DE MATRICULADOS CARRERA ${txtCarrera} - GESTION 2023`]);
       sheet.addRow(["Datos al 28/06/2023"]);
 
@@ -2025,7 +2025,9 @@ export class InscripcionService {
       let book = new Workbook();
 
       //adding a worksheet to workbook
-      let sheet = book.addWorksheet("sheet1");
+      //let sheet = book.addWorksheet("sheet1");
+      const sheet = book.addWorksheet('sheet1', {views: [{showGridLines: false}]});
+      
       sheet.addRow([]);
       sheet.addRow([`LISTADO DE INSCRITOS CARRERA ${txtCarrera} - GESTION 2023`]);
       sheet.addRow(["Datos al 28/06/2023"]);
@@ -2084,6 +2086,7 @@ export class InscripcionService {
       });
 
       sheet.addImage(imageId2, 'A1:B1');
+      
 
      
      
