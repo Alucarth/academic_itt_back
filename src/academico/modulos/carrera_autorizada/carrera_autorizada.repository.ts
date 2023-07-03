@@ -190,6 +190,7 @@ export class CarreraAutorizadaRepository {
             "COUNT(ca.id) as total",  
         ])
         .where('a.educacionTipoId in (7,8,9)')
+        .andWhere('ca.areaTipoId>1')
         .groupBy('up4.id')
         .addGroupBy('g.dependencia')
         .addGroupBy('g.id')
@@ -277,6 +278,27 @@ export class CarreraAutorizadaRepository {
           //.addGroupBy('o.planEstudioAsignaturaId')
           .getRawMany();
     }
+    async findListaAsignaturasParaleloEstudiantes(id){
+        return await this.dataSource
+          .getRepository(CarreraAutorizada)
+          .createQueryBuilder("ca")
+          .innerJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
+          .innerJoinAndSelect("ipec.ofertasCurriculares", "o")
+          .innerJoinAndSelect("o.aulas", "au")
+          .innerJoinAndSelect("au.paraleloTipo", "pt")
+          .innerJoinAndSelect("au.institutoEstudianteInscripcions", "iei")
+          .innerJoinAndSelect("o.planEstudioAsignatura", "pea")
+          .innerJoinAndSelect("pea.asignaturaTipo", "a")
+          .select([
+            "a.asignatura as asignatura",
+            "pt.paralelo as paralelo",
+            "COUNT(iei.matriculaEstudianteId) as total_estudiantes",
+          ])
+          .where("ca.id = :id ", { id })
+          .groupBy('a.asignatura')
+          .addGroupBy('pt.id')
+          .getRawMany();
+    }
 
     async findListaRegimenCarrerasEstudiantes(lugar,dependencia){
         return await this.dataSource
@@ -299,6 +321,7 @@ export class CarreraAutorizadaRepository {
           .select([
             "i.institucion_educativa as institucion_educativa",
             "igt.intervalo_gestion as modalidad",
+            "ca.id as carrera_autorizada_id",
             "ct.carrera as carrera",
             "COUNT(distinct(m.institucionEducativaEstudianteId)) as total",
           ])
@@ -307,6 +330,7 @@ export class CarreraAutorizadaRepository {
           .andWhere('e.dependenciaTipoId = :dependencia ', { dependencia })
           .andWhere('up4.id = :lugar ', { lugar })
           .groupBy('ct.carrera')
+          .addGroupBy('ca.id')
           .addGroupBy('i.institucion_educativa')
           .addGroupBy('igt.intervalo_gestion')
           .getRawMany();
@@ -315,4 +339,50 @@ export class CarreraAutorizadaRepository {
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
     }
+
+    async geXlsAllCarrerasByIeId(id){
+      return await this.dataSource
+        .getRepository(CarreraAutorizada)
+        .createQueryBuilder("ca")
+        .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
+        .innerJoinAndSelect("ca.carreraTipo", "ct")
+        .innerJoinAndSelect("ca.areaTipo", "at")
+        //.leftJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
+        .innerJoinAndSelect("ca.resoluciones", "r")
+        .innerJoinAndSelect("r.resolucionTipo", "rt")
+        .innerJoinAndSelect("r.nivelAcademicoTipo", "na")
+        .innerJoinAndSelect("r.intervaloGestionTipo", "ig")
+        .select([         
+          'ct.carrera as "CARRERA"',         
+          'at.area as "AREA"',
+          'r.numero_resolucion as "Nro. RESOLUCION"',
+          'r.fecha_resolucion as "FECHA RESOLUCION"',
+          'r.tiempo_estudio as "TIEMPO ESTUDIO"',
+          'r.carga_horaria as "CARGA HORARIA"',
+          'r.resuelve as "RESOLUCION"',
+          'na.nivel_academico as "NIVEL ACADEMICO"',
+          'ig.intervalo_gestion as "REGIMEN ESTUDIO"',
+          'rt.resolucion_tipo as "TIPO TRAMITE"',
+          //"ipec.id as instituto_plan_estudio_carrera_id",
+        ])
+        .where("s.institucionEducativaId = :id ", { id })
+        .andWhere("ca.areaTipoId > 1 ")
+        .getRawMany();
+  }
+
+  async geXlsAllCarrerasByIeIdNombre(id){
+
+    const res = await this.dataSource.query(`
+
+    SELECT institucion_educativa       
+    FROM
+      institucion_educativa
+      where id = ${id} 
+    `);
+
+    return res[0]['institucion_educativa'];
+
+  }
+
+
 }

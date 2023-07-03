@@ -1597,6 +1597,67 @@ export class MaestroInscripcionService {
     
     return total 
   }
+  async findListaDocentesRegimenDepartamento(){
+    return await this.maeRepository
+      .createQueryBuilder("mi")
+      .innerJoinAndSelect("mi.institucionEducativaSucursal", "s")
+      .innerJoinAndSelect("s.institucionEducativa", "i")
+      .innerJoinAndSelect("i.jurisdiccionGeografica", "h")
+      .innerJoinAndSelect("h.localidadUnidadTerritorial2001", "u1")
+      .innerJoinAndSelect("u1.unidadTerritorialPadre", "up1")
+      .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
+      .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
+      .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
+      .innerJoinAndSelect("i.acreditados", "e")
+      .innerJoin("e.dependenciaTipo", "g")
+      .select([
+        "up4.lugar as departamento",
+        "up4.id as departamento_id",
+        "g.dependencia as dependencia",
+        "g.id as dependencia_id",
+        "COUNT(mi.id) as total", 
+      ])
+      .where('i.educacionTipoId in (7,8,9)')
+      .groupBy('up4.id')
+      .addGroupBy('g.dependencia')
+      .addGroupBy('g.id')
+      .getRawMany();
+}
+  async findListaDocentesFinanciamiento(lugar, dependencia){
+    return await this.maeRepository
+      .createQueryBuilder("mi")
+      .innerJoinAndSelect("mi.financiamientoTipo", "ft")
+      .innerJoinAndSelect("mi.institucionEducativaSucursal", "s")
+      .innerJoinAndSelect("s.institucionEducativa", "i")
+      .innerJoinAndSelect("i.jurisdiccionGeografica", "h")
+      .innerJoinAndSelect("h.localidadUnidadTerritorial2001", "u1")
+      .innerJoinAndSelect("u1.unidadTerritorialPadre", "up1")
+      .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
+      .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
+      .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
+      .innerJoinAndSelect("i.acreditados", "e")
+      .innerJoin("e.dependenciaTipo", "g")
+      .innerJoin("mi.aulasDocentes", "ad")
+      .innerJoin("ad.aula", "au")
+      .innerJoin("au.ofertaCurricular", "o")
+      .innerJoin("o.institutoPlanEstudioCarrera", "ipec")
+      .innerJoin("ipec.carreraAutorizada", "ca")
+      .innerJoin("ca.carreraTipo", "ct")
+      .select([
+        "i.institucion_educativa as institucion_educativa",
+        "ct.carrera as carrera",
+        "ft.financiamiento",
+        "COUNT(mi.id) as total_financiamiento", 
+      ])
+      .where('i.educacionTipoId in (7,8,9)')
+      .andWhere('ca.areaTipoId > 1')
+      .andWhere('e.dependenciaTipoId = :dependencia ', { dependencia })
+      .andWhere('up4.id = :lugar ', { lugar })
+      .groupBy('ct.carrera')
+      .addGroupBy('i.institucion_educativa')
+      .addGroupBy('ft.financiamiento')
+      .getRawMany();
+}
 
   async getXlsAllDocentesByUeGestion(
     ueId: number,
@@ -1604,38 +1665,32 @@ export class MaestroInscripcionService {
     periodoId: number
     ){
 
+    const instituto = await this.maeRepository.query(`
+
+    SELECT
+      institucion_educativa
+    FROM
+      institucion_educativa 
+      where id = ${ueId} 
+
+    `);
+
+    const txtInstituto = instituto[0]['institucion_educativa'];
+
       const data = await this.maeRepository.query(`
-        SELECT
-            maestro_inscripcion.id, 
-            persona.paterno, 
-            persona.materno, 
-            persona.nombre, 
-            persona.carnet_identidad, 
-            persona.complemento, 
-            persona.fecha_nacimiento, 
-            persona.genero_tipo_id, 
-            persona.estado_civil_tipo_id, 
-            persona.sangre_tipo_id, 
-            institucion_educativa_sucursal.institucion_educativa_id, 
-            institucion_educativa_sucursal.sucursal_codigo, 
-            institucion_educativa_sucursal.sucursal_nombre, 
-            formacion_tipo.id as formacion_tipo_id, 
-            formacion_tipo.formacion, 
-            financiamiento_tipo.id as financiamiento_tipo_id, 
-            financiamiento_tipo.financiamiento, 
-            cargo_tipo.id as cargo_tipo_id, 
-            cargo_tipo.cargo, 
-            especialidad_tipo.id as especialidad_tipo_id, 
-            especialidad_tipo.especialidad, 
-            maestro_inscripcion.gestion_tipo_id, 
-            maestro_inscripcion.normalista, 
-            maestro_inscripcion.vigente, 
-            maestro_inscripcion.formacion_descripcion, 
-            maestro_inscripcion.braile, 
-            maestro_inscripcion.asignacion_fecha_inicio, 
-            maestro_inscripcion.asignacion_fecha_fin, 
-            maestro_inscripcion.item, 
-            maestro_inscripcion.periodo_tipo_id
+        SELECT           
+            persona.paterno AS "APELLIDO PATERNO", 
+            persona.materno AS "aPELLIDO MATERNO", 
+            persona.nombre AS "NOMBRES", 
+            persona.carnet_identidad AS "DOC.IDENTIAD", 
+            persona.complemento AS "COMPLEMENTO", 
+            persona.fecha_nacimiento AS "FECHA NACIMIENTO",             
+            formacion_tipo.formacion AS "FORMACION",             
+            financiamiento_tipo.financiamiento AS "TIPO FINANCIAMIENTO",            
+            cargo_tipo.cargo AS "CARGO",            
+            especialidad_tipo.especialidad AS "ESPECIALIDAD",            
+            maestro_inscripcion.formacion_descripcion AS "DESCRIPCION", 
+            maestro_inscripcion.item AS "ITEM" 
         FROM
             maestro_inscripcion
             INNER JOIN
@@ -1679,8 +1734,11 @@ export class MaestroInscripcionService {
 
       //adding a worksheet to workbook
       let sheet = book.addWorksheet("sheet1");
-      sheet.addRow(["LISTADO DE DOCENTES Y ADMINISTRATIVOS"]);
+      
+      sheet.addRow([`LISTADO DE DOCENTES Y ADMINISTRATIVOS  ${txtInstituto} - GESTION 2023`]);
       sheet.addRow(["Datos al 28/06/2023"]);
+      sheet.getRow(1).font = { size: 16, bold: true };
+      sheet.getRow(2).font = { size: 12, bold: true };
 
       sheet.addRow([]);
 
@@ -1690,12 +1748,47 @@ export class MaestroInscripcionService {
       //add multiple rows
       sheet.addRows(rows);
 
+      sheet.getRow(1).height = 30.5;
+      sheet.getRow(2).height = 30.5;
+
+      [
+        "A4",
+        "B4",
+        "C4",
+        "D4",
+        "E4",
+        "F4",
+        "G4",
+        "H4",
+        "I4",
+        "J4",
+        "K4",
+        "L4"      
+      ].map((key) => {
+        sheet.getCell(key).fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "cccccc" },
+        };
+        sheet.getCell(key).font = {
+          bold: true,
+        };
+        sheet.getCell(key).border = {
+          top: {style:'thin'},
+          left: {style:'thin'},
+          bottom: {style:'thin'},
+          right: {style:'thin'}
+      };
+      });
+
+
+
       // write te file
       let File = await new Promise((resolve, reject) => {
         tmp.file(
           {
             discardDescriptor: true,
-            prefix: `testXls`,
+            prefix: `Docentes`,
             postfix: ".xlsx",
             mode: parseInt("0600", 8),
           },
