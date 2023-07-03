@@ -226,4 +226,24 @@ export class InscripcionController {
     res.download(`${result}`);
   }
 
+  @Get("/xlsInscritos/:gestionId/:periodoId/:carreraId/:ieId/:ipecId")
+  @Header("Content-Type", "text/xlsx")
+  async getXlsAllInscritosByGestion(
+    @Param("gestionId") gestionId: string,
+    @Param("periodoId") periodoId: string,
+    @Param("carreraId") carreraId: string,
+    @Param("ieId") ieId: string,
+    @Param("ipecId") ipecId: string,
+    @Res() res: Response
+  ) {
+    let result = await  this.inscripcionService.getXlsAllInscritosByGestion(
+      parseInt(gestionId),
+      parseInt(periodoId),
+      parseInt(carreraId),
+      parseInt(ieId),
+      parseInt(ipecId),
+    );
+    res.download(`${result}`);
+  }
+
 }
