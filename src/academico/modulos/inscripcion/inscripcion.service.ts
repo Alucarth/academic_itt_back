@@ -2029,8 +2029,8 @@ export class InscripcionService {
       const sheet = book.addWorksheet('sheet1', {views: [{showGridLines: false}]});
       
       sheet.addRow([]);
-      sheet.addRow([`LISTADO DE INSCRITOS CARRERA ${txtCarrera} - GESTION 2023`]);
-      sheet.addRow(["Datos al 28/06/2023"]);
+      sheet.addRow([`LISTADO DE INSCRITOS CARRERA ${txtCarrera}`]);
+      sheet.addRow(["GESTION 2023"]);
 
       sheet.getRow(1).font = { size: 16, bold: true };
       sheet.getRow(2).font = { size: 12, bold: true };
