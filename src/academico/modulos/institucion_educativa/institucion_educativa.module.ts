@@ -8,6 +8,12 @@ import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { InstitucionEducativaRepository } from './institucion_educativa.repository';
 import { InstitucionEducativaAcreditacionRepository } from '../institucion_educativa_acreditacion/institucion_educativa_acreditacion.repository';
 import { InstitucionEducativaSucursalRepository } from '../institucion_educativa_sucursal/institucion_educativa_sucursal.repository';
+import { matriculaProviders } from '../mantricula_estudiante/matricula_estudiante.providers';
+import { MatriculaEstudianteService } from '../mantricula_estudiante/matricula_estudiante.service';
+import { institucionEducativaEstudianteProviders } from '../Institucion_educativa_estudiante/institucion_educativa_estudiante.providers';
+import { InstitucionEducativaEstudianteService } from '../Institucion_educativa_estudiante/institucion_educativa_estudiante.services';
+
+
 
 @Module({
   imports: [
@@ -20,7 +26,12 @@ import { InstitucionEducativaSucursalRepository } from '../institucion_educativa
     InstitucionEducativaRepository, 
     RespuestaSigedService,
     InstitucionEducativaAcreditacionRepository,
-    InstitucionEducativaSucursalRepository
+    InstitucionEducativaSucursalRepository,
+    ...matriculaProviders,
+    MatriculaEstudianteService,
+    ...institucionEducativaEstudianteProviders,
+    InstitucionEducativaEstudianteService,
+    
   ]
 })
 export class InstitucionEducativaModule {}

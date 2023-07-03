@@ -2,8 +2,11 @@ import { Injectable } from '@nestjs/common'
 import { InstitucionEducativa } from 'src/academico/entidades/institucionEducativa.entity';
 import { InstitucionEducativaCurso } from 'src/academico/entidades/institucionEducativaCurso.entity';
 import { OfertaAcademica } from 'src/academico/entidades/ofertaAcademica.entity';
-import { DataSource, EntityManager } from 'typeorm'
+import { DataSource, EntityManager, In } from 'typeorm'
 import { CreateInstitucionEducativaDto } from './dto/createInstitucionEducativa.dto';
+import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPlanEstudioCarrera.entity';
+import { InstitutoEstudianteInscripcion } from 'src/academico/entidades/InstitutoEstudianteInscripcion.entity';
+import { MatriculaEstudiante } from 'src/academico/entidades/matriculaEstudiante.entity';
 
 
 @Injectable()
@@ -407,5 +410,59 @@ export class InstitucionEducativaRepository {
 
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
+    }
+
+    async getInsititution(institution_id:number)
+    {
+        console.log(institution_id)
+        return await this.dataSource.getRepository(InstitucionEducativa).findOne({
+            relations: {
+                sucursales: {
+                    carreras: {
+                        // institutosPlanesCarreras:{
+                        //     ofertasCurriculares:{
+                        //         aulas:{
+                        //             institutoEstudianteInscripcions:true
+                        //         }
+                        //     }
+                        // }
+                        institutosPlanesCarreras:true,
+                        carreraTipo: true,
+                    }
+                }
+            },
+            where:{
+                id: institution_id
+            }
+        })
+    }
+
+    async getMatriculadosCarrera(plan_estudio_carrera_id: number)
+    {
+        console.log('plan_id',plan_estudio_carrera_id)
+        return await this.dataSource.createQueryBuilder()
+            .select() 
+            .from(MatriculaEstudiante,'matricula_estudiante')
+            .where('matricula_estudiante.instituto_plan_estudio_carrera_id = :id',{id:plan_estudio_carrera_id})
+            .getMany()
+    }   
+
+    async getInstitutoPlanEstudioCarrera(carrera_autorizada_id:number)
+    {
+        console.log('carrera_autorizada_id',carrera_autorizada_id)
+        return await this.dataSource.getRepository(InstitutoPlanEstudioCarrera).find({
+            relations:{
+                ofertasCurriculares:true
+            },
+            where:{
+                carreraAutorizadaId: carrera_autorizada_id
+            }
+        })
+    }
+
+    async getCountStudentInsitution(oferta_ids:any){
+        return await this.dataSource.getRepository(InstitutoEstudianteInscripcion).countBy({
+            ofertaCurricularId: In(oferta_ids) 
+        })
     }
 }

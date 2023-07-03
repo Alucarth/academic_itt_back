@@ -45,6 +45,9 @@ export class InstitucionEducativaEstudiante {
   @Column("integer", { name: "usuario_id" })
   usuarioId: number;
 
+  @Column({name: 'institucion_educativa_sucursal_id'})
+  institucionEducativaSucursalId:number
+  
   @ManyToOne(
     () => InstitucionEducativaSucursal,
     (institucionEducativaSucursal) =>

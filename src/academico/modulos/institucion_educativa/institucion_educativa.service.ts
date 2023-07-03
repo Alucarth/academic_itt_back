@@ -9,6 +9,7 @@ import { CreateInstitucionEducativaDto } from './dto/createInstitucionEducativa.
 import { InstitucionEducativaRepository } from './institucion_educativa.repository';
 
 
+
 @Injectable()
 export class InstitucionEducativaService {
     constructor(
@@ -50,6 +51,31 @@ export class InstitucionEducativaService {
         return lista;
     }
 
+    //para reporte 
+    async getCountCareer(unidad_educativa_id: number)
+    {
+        let instituto = await this.institucionEducativaRepositorio.getInsititution(unidad_educativa_id)
+        
+        return new Promise((resolve)=>{
+            let count = 0
+            instituto.sucursales.forEach(sucursal => {
+                count += sucursal.carreras.length
+            });
+            console.log(count)
+            resolve(count)
+        })
+    }
+
+    //para reporte de carreras ->asignautas estudiantes
+    async getCareersInstitution(unidad_educativa_id:number)
+    {
+        let instituto = await this.institucionEducativaRepositorio.getInsititution(unidad_educativa_id)
+   
+        return instituto
+    }
+
+
+    
     
     async getBySieId(id:number){
 
