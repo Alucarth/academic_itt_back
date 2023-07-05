@@ -4,6 +4,7 @@ import { InstitucionEducativa } from 'src/academico/entidades/institucionEducati
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { EntityManager, Repository } from 'typeorm';
 import { InstitucionEducativaAcreditacionRepository } from '../institucion_educativa_acreditacion/institucion_educativa_acreditacion.repository';
+import { InstitucionEducativaImagenRepository } from '../institucion_educativa_imagen/institucion_educativa_imagen.repository';
 import { InstitucionEducativaSucursalRepository } from '../institucion_educativa_sucursal/institucion_educativa_sucursal.repository';
 import { CreateInstitucionEducativaDto } from './dto/createInstitucionEducativa.dto';
 import { InstitucionEducativaRepository } from './institucion_educativa.repository';
@@ -17,6 +18,7 @@ export class InstitucionEducativaService {
         @Inject(InstitucionEducativaRepository) private institucionEducativaRepositorio: InstitucionEducativaRepository,
         @Inject(InstitucionEducativaAcreditacionRepository) private institucionEducativaAcreditacionRepositorio: InstitucionEducativaAcreditacionRepository,
         @Inject(InstitucionEducativaSucursalRepository) private institucionEducativaSucursalRepositorio: InstitucionEducativaSucursalRepository,
+        @Inject(InstitucionEducativaImagenRepository) private institucionEducativaImagenRepositorio: InstitucionEducativaImagenRepository,
         private _serviceResp: RespuestaSigedService, 
     ){}
 
@@ -39,7 +41,6 @@ export class InstitucionEducativaService {
     }
     async getTotalGeneral(){
         const lista = await this.institucionEducativaRepositorio.findTotalGeneral();
-       
         return lista;
     }
     async getListaInstitutosLugarDependencias(lugar, dependencia){
@@ -160,7 +161,7 @@ export class InstitucionEducativaService {
    }
     
 
-    async createInstitucionEducativa (dto: CreateInstitucionEducativaDto) {
+    async createInstitucionEducativa (dto: CreateInstitucionEducativaDto, file) {
 
         const institucion =  await this.institucionEducativaRepositorio.findInstitucionEducativaLugarNombre(dto.jurisdiccion_geografica_id, dto.institucion_educativa);
         
@@ -177,12 +178,12 @@ export class InstitucionEducativaService {
   
               if(nuevaInstitucion.id){
                   console.log(nuevaInstitucion);    
-                  //Obtener todas las asignaturas
+                  //Obtener la acreditación
                   const acreditacion  = await this.institucionEducativaAcreditacionRepositorio.findAcreditacion(codigo);
                   console.log(acreditacion);   
       
                   if(!acreditacion){
-                      //Crear la oferta academica 
+                      //Crear la acreditación 
                       await this.institucionEducativaAcreditacionRepositorio.createInstitucionEducativaAcreditacion(
                           1, 
                           codigo, 
@@ -191,7 +192,7 @@ export class InstitucionEducativaService {
                       );
                   }
                   
-                  //Obtener todas las asignaturas
+                  //Obtener la sucursal
                   const sucursal  = await this.institucionEducativaSucursalRepositorio.findSucursalBySieVigente(codigo);
                   console.log(sucursal);  
                   if(!sucursal){
@@ -201,13 +202,76 @@ export class InstitucionEducativaService {
                         dto, 
                         transaction
                     );
-                }
+                  }
+                  if(file!=''){ //insertar la imagen
+                    await this.institucionEducativaImagenRepositorio.inhabilitaImagen(nuevaInstitucion.id);
+                    await this.institucionEducativaImagenRepositorio.createInstitucionEducativaImagen(
+                        1, 
+                        nuevaInstitucion.id, 
+                        file,  
+                        transaction
+                        );
+                  }
               }
               return nuevaInstitucion;
             }
   
             const crearResult = await this.institucionEducativaRepositorio.runTransaction(op)
   
+            if(crearResult){
+              return this._serviceResp.respuestaHttp201(
+                  crearResult,
+                  'Registro de Institución Educativa Creado !!',
+                  '',
+              );
+            }
+        }
+            return this._serviceResp.respuestaHttp500(
+              "",
+              'No se pudo guardar la información !!',
+              '',
+          );
+    }
+
+    async updateInstitucionEducativa (id:number,dto: CreateInstitucionEducativaDto, file) {
+
+        const institucion =  await this.institucionEducativaRepositorio.getBySieId(id);
+        if(institucion){
+            const op = async (transaction: EntityManager) => {
+             const institucion =  await this.institucionEducativaRepositorio.updateInstitucionEducativa(
+                id,
+                dto,
+                transaction
+              )
+              const acreditacion  = await this.institucionEducativaAcreditacionRepositorio.findAcreditacion(id);
+                if(acreditacion){
+                await this.institucionEducativaAcreditacionRepositorio.updateInstitucionEducativaAcreditacion(
+                    id,
+                    dto, 
+                    transaction
+                    );
+                }
+                const sucursal  = await this.institucionEducativaSucursalRepositorio.findSucursalBySieVigente(id);
+                 
+                if(sucursal){
+                  await this.institucionEducativaSucursalRepositorio.updateInstitucionEducativaSucursal(
+                      id, 
+                      dto, 
+                      transaction
+                  );
+                }
+                if(file!=''){
+                    await this.institucionEducativaImagenRepositorio.inhabilitaImagen(id);
+                    await this.institucionEducativaImagenRepositorio.createInstitucionEducativaImagen(
+                        1, 
+                        id, 
+                        file,  
+                        transaction
+                        );
+                  }
+              return institucion;
+            }
+            const crearResult = await this.institucionEducativaRepositorio.runTransaction(op)
             if(crearResult){
               return this._serviceResp.respuestaHttp201(
                   crearResult,

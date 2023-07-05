@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { EtapaEducativaAsignatura } from 'src/academico/entidades/etapaEducativaAsignatura.entity';
 import { InstitucionEducativaAcreditacion } from 'src/academico/entidades/institucionEducativaAcreditacion.entity';
-import { DataSource } from 'typeorm'
+import { DataSource, EntityManager } from 'typeorm'
 import { CreateInstitucionEducativaDto } from '../institucion_educativa/dto/createInstitucionEducativa.dto';
 import { CreateInstitucionEducativaCursoDto } from '../institucion_educativa_curso/dto/createInstitucionEducativaCurso.dto';
 
@@ -37,5 +37,22 @@ export class InstitucionEducativaAcreditacionRepository {
           acreditacion.observacion = dto.observacion;         
         return await transaction.getRepository(InstitucionEducativaAcreditacion).save(acreditacion)
     }
-   
+    async updateInstitucionEducativaAcreditacion(
+        id:number,
+        dto:CreateInstitucionEducativaDto,
+        transaction: EntityManager) {
+
+        await transaction.getRepository(InstitucionEducativaAcreditacion)
+              .createQueryBuilder()
+              .update(InstitucionEducativaAcreditacion)
+              .set({
+                dependenciaTipoId : dto.dependencia_tipo_id,
+                numeroResolucion : dto.numero_resolucion,
+                fechaResolucion : dto.fecha_resolucion,
+                observacion : dto.observacion
+              })
+              .where({ institucionEducativaId: id })
+              .execute();
+        
+       }
 }

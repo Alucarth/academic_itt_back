@@ -1,9 +1,11 @@
+import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateInstitucionEducativaDto {
 
   @IsNotEmpty({ message: "Debe ingresar el codigo de la Ubicación Geográfica" })
-  @IsNumber()
+ // @IsString()
+  @Transform(({ value }) => parseInt(value))
   jurisdiccion_geografica_id: number;
 
   @IsNotEmpty({ message: "Debe ingresar el nombre de la Institución Educativa" })
@@ -11,7 +13,8 @@ export class CreateInstitucionEducativaDto {
   institucion_educativa: string;
 
   @IsNotEmpty({ message: "Debe seleccionar la educación Tipo" })
-  @IsNumber()
+  //@IsString()
+  @Transform(({ value }) => parseInt(value))
   educacion_tipo_id: number;
 
   @IsOptional()
@@ -19,7 +22,8 @@ export class CreateInstitucionEducativaDto {
   observacion: string;
 
   @IsNotEmpty({ message: "Debe seleccionar el tipo de dependencia" })
-  @IsNumber()
+  //@IsString()
+  @Transform(({ value }) => parseInt(value))
   dependencia_tipo_id: number;
 
   @IsOptional({ message: "Debe ingresar la fecha de resolución" })
@@ -35,10 +39,14 @@ export class CreateInstitucionEducativaDto {
   sucursal_nombre: string;
 
   @IsOptional()
-  @IsNumber()
+  //@IsString()
+  @Transform(({ value }) => parseInt(value))
   sucursal_codigo: number;
 
   @IsOptional()
   codigo: number;
+
+  @IsOptional()
+  file: string;
 
 }

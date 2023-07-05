@@ -129,4 +129,23 @@ export class InstitucionEducativaSucursalRepository {
         sucursal.gestionTipoId = 2023;//quitar luego         
       return await transaction.getRepository(InstitucionEducativaSucursal).save(sucursal)
   }
+
+  async updateInstitucionEducativaSucursal(
+    id:number,
+    dto:CreateInstitucionEducativaDto,
+    transaction: EntityManager) {
+    await transaction.getRepository(InstitucionEducativaSucursal)
+          .createQueryBuilder()
+          .update(InstitucionEducativaSucursal)
+          .set({
+            jurisdiccionGeograficaId : dto.jurisdiccion_geografica_id,
+            sucursalNombre : dto.sucursal_nombre,
+            sucursalCodigo : dto.sucursal_codigo,
+            observacion : dto.observacion
+          })
+          .where({ institucionEducativaId: id })
+          .execute();
+    
+   }
+
 }

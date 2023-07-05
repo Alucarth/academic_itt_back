@@ -14,6 +14,7 @@ import { EducacionTipo } from './educacionTipo.entity';
 import { EstadoInstitucionEductivaTipo } from './estadoInstitucionEducativaTipo.entity';
 import { InstitucionEducativaAcreditacion } from './institucionEducativaAcreditacion.entity';
 import { InstitucionEducativaAcreditacionEspecialidad } from './institucionEducativaAcreditacionEspecialidad.entity';
+import { InstitucionEducativaImagen } from './institucionEducativaImagen.entity';
 import { InstitucionEducativaSucursal } from './institucionEducativaSucursal.entity';
 import { JurisdiccionGeografica } from './jurisdiccionGeografica.entity';
 import { TramiteInstitucionEducativa } from './tramiteInstitucionEducativa.entity';
@@ -88,5 +89,8 @@ export class InstitucionEducativa {
   
   @OneToMany(() => TramiteInstitucionEducativa, (tramiteInstitucionEducativa) => tramiteInstitucionEducativa.institucionEducativa)
   tramitesInstituciones: TramiteInstitucionEducativa[];
+
+  @OneToMany(() => InstitucionEducativaImagen, (institucionEducativaImagen) => institucionEducativaImagen.institucionEducativa)
+  imagenes: InstitucionEducativaImagen[];
 
 }

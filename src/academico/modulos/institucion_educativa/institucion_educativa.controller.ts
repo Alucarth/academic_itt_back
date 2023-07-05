@@ -1,16 +1,23 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { InstitucionEducativa } from 'src/academico/entidades/institucionEducativa.entity';
 import { CreateInstitucionEducativaDto } from './dto/createInstitucionEducativa.dto';
 import { InstitucionEducativaService } from './institucion_educativa.service';
 import { MatriculaEstudianteService } from '../mantricula_estudiante/matricula_estudiante.service';
 import { InstitucionEducativaEstudianteService } from '../Institucion_educativa_estudiante/institucion_educativa_estudiante.services';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { extname } from 'path';
+import { diskStorage } from 'multer';
+import { fileName, fileFilter } from 'src/common/helpers/file.utils';
+import { InstitucionEducativaImagenService } from '../institucion_educativa_imagen/institucion_educativa_imagen.service';
+
 const _ = require('lodash');
 @ApiTags('institucion-educativa')
 @Controller('institucion-educativa')
 export class InstitucionEducativaController {
     constructor (
         private readonly institucionEducativaService: InstitucionEducativaService,
+        private readonly institucionEducativaImagenService: InstitucionEducativaImagenService,
         private readonly matriculaEstudianteService: MatriculaEstudianteService,
         private readonly institucionEducactivaEstudianteService: InstitucionEducativaEstudianteService,
      
@@ -196,12 +203,44 @@ export class InstitucionEducativaController {
     }
 
     @Post()
-    async createCurso(@Body() dto: CreateInstitucionEducativaDto){
-        console.log('controller insert',dto);
-        
-        //console.log(Math.floor(Math.random() * 1000000000));
-
-        return  await this.institucionEducativaService.createInstitucionEducativa(dto);        
+    @UseInterceptors(
+        FileInterceptor('file', {
+          storage: diskStorage({
+            destination: './uploads',
+            filename:fileName
+          }),
+          fileFilter:fileFilter
+        }),
+      )
+    async createInstituto(@UploadedFile() file: Express.Multer.File,  @Body() dto: CreateInstitucionEducativaDto) {
+        console.log('file', file);
+        console.log('file', file.filename);
+        return  await this.institucionEducativaService.createInstitucionEducativa(dto, file.filename);        
     }
+   
+    @Put()
+    @UseInterceptors(
+        FileInterceptor('file', {
+          storage: diskStorage({
+            destination: './uploads',
+            filename:fileName
+          }),
+          fileFilter:fileFilter
+        }),
+      )
+    async updateInstituto( @Param('id') id: number, @UploadedFile() file: Express.Multer.File,  @Body() dto: CreateInstitucionEducativaDto) {
+        console.log('file', file);
+        console.log('file', file.filename);
+        return  await this.institucionEducativaService.updateInstitucionEducativa(id, dto, file.filename);        
+    }
+
+    @Get('download/:id')
+    async downloadFile(@Res() res, @Param('id', ParseIntPipe) id: number) {
+     const data = await this.institucionEducativaImagenService.getOneActivoBySieId(id);
+     
+      res.download('./uploads/'+data.nombreArchivo)      
+ 
+   }
+   
       
 }
