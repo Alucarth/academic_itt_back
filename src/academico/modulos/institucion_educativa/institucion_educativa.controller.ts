@@ -23,8 +23,6 @@ export class InstitucionEducativaController {
      
         ){}
 
-    
-
     @Get()
     async getAll():Promise<InstitucionEducativa[]>{
         //console.log("ins-educ");
@@ -135,9 +133,10 @@ export class InstitucionEducativaController {
         }),
       )
     async createInstituto(@UploadedFile() file: Express.Multer.File,  @Body() dto: CreateInstitucionEducativaDto) {
+        console.log('dto', dto);
         console.log('file', file);
         console.log('file', file.filename);
-        return  await this.institucionEducativaService.createInstitucionEducativa(dto, file.filename);        
+       // return  await this.institucionEducativaService.createInstitucionEducativa(dto, file.filename);        
     }
    
     @Put()

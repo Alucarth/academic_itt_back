@@ -28,7 +28,6 @@ export class AulaDocenteController {
     }
     @Post()
     async createOfertaCurricular(@Body() dto: CreateAulaDocenteDto[]){
-          
-        return  await this.aulaDocenteService.crearDocenteAula(dto);        
+        return  await this.aulaDocenteService.crearAulaDocente(dto);        
     }
 }

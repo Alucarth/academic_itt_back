@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InstitucionEducativaImagen } from 'src/academico/entidades/institucionEducativaImagen.entity';
-import { DataSource} from 'typeorm'
+import { DataSource, EntityManager} from 'typeorm'
 
 
 @Injectable()
@@ -41,4 +41,8 @@ export class InstitucionEducativaImagenRepository {
         .getOne();
         return imagen;
     }
+    async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
+      return this.dataSource.manager.transaction<T>(op)
+  }
+
 }

@@ -99,10 +99,33 @@ export class AulaDocenteRepository {
           .getRawMany();
     }
 
+    async getDocentesAulaId(id){
+        return  await this.dataSource.getRepository(AulaDocente)
+        .createQueryBuilder("pa")
+        .select([
+            'pa.id as id',
+            'pa.maestroInscripcionId as maestro_inscripcion_id',
+        ])
+        .where('pa.aulaId = :id', {id})
+        .andWhere('pa.bajaTipoId = 0')
+        .getRawMany();
+    }
+    async getOneDocenteByAulaId(aula_id){
+        return  await this.dataSource.getRepository(AulaDocente)
+        .createQueryBuilder("ad")
+        .select([
+            'ad.id as id',
+            'ad.maestroInscripcionId as maestro_inscripcion_id',
+        ])
+        .where('ad.aulaId = :aula_id', {aula_id})
+        //.andWhere('pa.maestroInscripcionId = :docente_id', {docente_id})
+        .andWhere('ad.bajaTipoId = 0')
+        .getRawOne();
+    }
+
     async crearDocentesAulas(idUsuario, aulasDocentes, transaction) {
 
         const planesAsignaturas: AulaDocente[] = aulasDocentes.map((item) => {
-          
             const aulaDocente  = new AulaDocente()
             aulaDocente.aulaId = item.aula_id;
             aulaDocente.maestroInscripcionId = item.maestro_inscripcion_id;
@@ -117,7 +140,6 @@ export class AulaDocenteRepository {
     }
 
     async crearDocenteAula(idUsuario, dto, transaction) {
-
           const aulaDocente  = new AulaDocente()
           aulaDocente.aulaId = dto.aula_id;
           aulaDocente.maestroInscripcionId = dto.maestro_inscripcion_id;
@@ -127,6 +149,29 @@ export class AulaDocenteRepository {
           aulaDocente.usuarioId = idUsuario;
           aulaDocente.observacion = "ASIGNACION";
         return await transaction.getRepository(AulaDocente).save(aulaDocente);
+    }
+
+    async updateDocenteAulaVigencia(id, fecha) {
+        return await this.dataSource
+        .createQueryBuilder()
+        .update(AulaDocente)
+        .set({
+            bajaTipoId : 3,
+            asignacionFechaFin : fecha,
+        })
+        .where({ id: id })
+        .execute(); 
+    }
+    async updateDocenteAula(id, item) {
+        return await this.dataSource
+        .createQueryBuilder()
+        .update(AulaDocente)
+        .set({
+            asignacionFechaFin : item.fecha_fin,
+            asignacionFechaInicio : item.fecha_inicio,
+        })
+        .where({ id: id })
+        .execute(); 
     }
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
