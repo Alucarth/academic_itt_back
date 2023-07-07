@@ -122,6 +122,7 @@ export class InstitucionEducativaRepository {
         .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
         .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
         .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
+        .innerJoinAndSelect("a.imagenes", "img")
         .select([
             'a.id as ie_id',
             'j.id as sucursal_id',
@@ -147,10 +148,12 @@ export class InstitucionEducativaRepository {
             'j.sucursal_nombre as sede_subsede',
             'e.id as acreditacion_id',
             'j.id as sucursal_id',
+            'img.nombreArchivo as file',
         ])
         .where('b.id in (7,8,9,11,12,13)  ')
         .andWhere('a.id = :id ', { id })
         .andWhere('e.vigente = :vigente ', { vigente: 'TRUE'})
+        .andWhere('img.activo = :vigente ', { vigente: 'TRUE'})
         .orderBy('a.id', 'ASC')
         //.getOneOrFail();
         .getRawOne();
@@ -254,21 +257,24 @@ export class InstitucionEducativaRepository {
             console.log("ultimo---reg");
         return result;
     }
-/*
-    async updateCurso(
-        dto: UpdateInstitucionEducativaCursoDto, 
+
+    async updateInstitucionEducativa(
+        id:number,
+        dto: CreateInstitucionEducativaDto, 
         transaction: EntityManager
         ) {
-            return transaction.getRepository(InstitucionEducativaCurso)
+            return transaction.getRepository(InstitucionEducativa)
             .createQueryBuilder()
-            .update(InstitucionEducativaCurso)
+            .update(InstitucionEducativa)
             .set({
-              turnoTipoId: dto.turnoTipoId,
-              paraleloTipoId: dto.paraleloTipoId,
+                jurisdiccionGeograficaId: dto.jurisdiccion_geografica_id,
+                institucionEducativa : dto.institucion_educativa,
+                educacionTipoId : dto.educacion_tipo_id,
+                fechaFundacion : dto.fecha_resolucion
             })
-            .where({ id: dto.id })
-            .execute()
-    }*/
+            .where({ id: id })
+            .execute();
+    }
 /*
     async deleteCursoOferta(
         id: number, 
@@ -345,9 +351,9 @@ export class InstitucionEducativaRepository {
         .andWhere('up4.id = :lugar ', { lugar })
         .groupBy('a.id')
         .addGroupBy('s.sucursalNombre')
-       // .addGroupBy('p.nombre')
-       // .addGroupBy('p.paterno')
-       // .addGroupBy('p.materno')
+      ///// .addGroupBy('p.nombre')
+       ///// .addGroupBy('p.paterno')
+       ///// .addGroupBy('p.materno')
         .getRawMany();
         return list;
     }

@@ -12,6 +12,8 @@ import { matriculaProviders } from '../mantricula_estudiante/matricula_estudiant
 import { MatriculaEstudianteService } from '../mantricula_estudiante/matricula_estudiante.service';
 import { institucionEducativaEstudianteProviders } from '../Institucion_educativa_estudiante/institucion_educativa_estudiante.providers';
 import { InstitucionEducativaEstudianteService } from '../Institucion_educativa_estudiante/institucion_educativa_estudiante.services';
+import { InstitucionEducativaImagenRepository } from '../institucion_educativa_imagen/institucion_educativa_imagen.repository';
+import { InstitucionEducativaImagenService } from '../institucion_educativa_imagen/institucion_educativa_imagen.service';
 
 
 
@@ -28,8 +30,10 @@ import { InstitucionEducativaEstudianteService } from '../Institucion_educativa_
     RespuestaSigedService,
     InstitucionEducativaAcreditacionRepository,
     InstitucionEducativaSucursalRepository,
+    InstitucionEducativaImagenRepository,
     ...matriculaProviders,
     MatriculaEstudianteService,
+    InstitucionEducativaImagenService,
     ...institucionEducativaEstudianteProviders,
     InstitucionEducativaEstudianteService,
     
