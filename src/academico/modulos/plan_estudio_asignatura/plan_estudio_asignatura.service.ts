@@ -86,6 +86,28 @@ export class PlanEstudioAsignaturaService {
         '',
     );
   }
+
+  async getAsignaturasPlanEstudioById(plan_estudio_asignatura_id: number)
+  {
+    let asignatura = await this.planEstudioAsignaturaRepository.getOneById(plan_estudio_asignatura_id)
+    let asignaturas = []
+    if(asignatura)
+    {
+      let list = await this.peaRepository.find({
+        relations:{
+          asignaturaTipo: true
+        },
+        where:{
+          planEstudioCarreraId: asignatura.planEstudioCarreraId
+        }
+      })
+      list.forEach(item => {
+        asignaturas.push({id:item.asignaturaTipo.id,asignatura:item.asignaturaTipo.asignatura,abreviacion:item.asignaturaTipo.abreviacion})
+      });
+
+    }
+    return asignaturas
+  }
   async verificaPlanAsignatura(planes, dto) {
   
     // obtiene los que no fueron actualizados

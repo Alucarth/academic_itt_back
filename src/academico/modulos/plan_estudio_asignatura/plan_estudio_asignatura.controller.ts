@@ -14,6 +14,7 @@ export class PlanEstudioAsignaturaController {
     async getPlanesAsignaturas(){
        return await this.planEstudioAsignaturaService.getAll();
     }
+    
     @Get('plan-regimen/:idplan/:idregimen')
     async getAsignaturasByPlanRegimen(
       @Param('idplan', ParseIntPipe) idplan: number, 
@@ -26,7 +27,6 @@ export class PlanEstudioAsignaturaController {
       @Param('idasignatura', ParseIntPipe) idasignatura: number){
        return await this.planEstudioAsignaturaService.getOneByPlanAsignatura(idplan, idasignatura);
     }
-
     @Get('plan-estudio-carrera/:id')
     async getAsignaturasPrerequisitosByPlan(
       @Param('id', ParseIntPipe) id: number, 
@@ -34,6 +34,12 @@ export class PlanEstudioAsignaturaController {
        return await this.planEstudioAsignaturaService.getAsignaturasPrerequisitosByPlan(id);
     }
 
+    @Get('asignaturas/:plan_estudio_asignatura_id')
+    async getAsignaturasPlanEstudioById( @Param('plan_estudio_asignatura_id',ParseIntPipe) plan_estudio_asignatura_id: number )
+    {
+      console.log(plan_estudio_asignatura_id)
+      return await this.planEstudioAsignaturaService.getAsignaturasPlanEstudioById(plan_estudio_asignatura_id);
+    }
     @Post()
     async addPlanAsignatura(@Body() dto: CreatePlanAsignaturaPrerequisitoDto[]) {
       console.log("-*************-");

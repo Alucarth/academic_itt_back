@@ -109,10 +109,12 @@ export class OfertaCurricularRepository {
           'a.id',
           'a.cupo',
           'pt.paralelo',
+          'pt.id',
           'd.horaInicio',
           'd.horaFin',
           'd.numeroAula',  
-          'dt.dia',  
+          'dt.dia',
+          'dt.id',  
           'do.id',  
           'do.asignacionFechaInicio',  
           'do.asignacionFechaFin',
@@ -195,6 +197,11 @@ export class OfertaCurricularRepository {
     */
         return 1;
       }
+    async editarOferta(request: any)
+    {
+     
+        return request;
+    }
     async deleteOferta(id: number) {
         return await this.dataSource.getRepository(OfertaCurricular).delete(id)
     }
