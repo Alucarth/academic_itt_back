@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Delete, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { AulaService } from './aula.service';
 
 @Controller('aula')
@@ -18,5 +18,9 @@ export class AulaController {
     @Get('calificaciones/:id')
     async getCalificacionesById(@Param("id", ParseIntPipe) id: number){
         return await this.aulaService.getCalificacionesById(id);
+    }
+    @Delete("/:id")
+    async deleteAula(@Param("id") id: string) {
+      return await this.aulaService.deleteAula(parseInt(id));
     }
 }
