@@ -84,6 +84,7 @@ import { ModalidadEvaluacionTipoModule } from './academico/catalogos/modalidad_e
 
 import { TblAuxiliarSie } from "./academico/entidades/tblAuxiliarSie";
 
+//multiple bases
 const defaultOptions = {
   type: 'postgres',
   host: process.env.DB_HOST, //'100.0.101.7',

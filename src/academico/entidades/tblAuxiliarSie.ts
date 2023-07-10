@@ -9,6 +9,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+//generico para conexion SIE
+
 @Entity({ name: 'tbl_auxiliar_sie', schema: 'public' })
 export class TblAuxiliarSie {
   @PrimaryGeneratedColumn()
