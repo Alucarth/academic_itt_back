@@ -150,6 +150,20 @@ export class MaestroInscripcionController {
       periodoId);
     res.download(`${result}`);
   }
+
+  @Get("/xlsAllAdministrativosByUeGestion/:ueId/:gestionId/:periodoId")
+  @Header("Content-Type", "text/xlsx")
+    async getXlsAllAdministrativosByUeGestion(
+      @Param("ueId") ueId: number,
+      @Param("gestionId") gestionId: number,
+      @Param("periodoId") periodoId: number,
+      @Res() res: Response
+    ) {
+    let result = await this.usersService.getXlsAllAdministrativosByUeGestion(ueId,
+      gestionId,
+      periodoId);
+    res.download(`${result}`);
+  }
   
 
 }
