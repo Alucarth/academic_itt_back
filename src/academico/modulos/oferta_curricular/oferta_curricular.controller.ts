@@ -34,7 +34,7 @@ export class OfertaCurricularController {
         @Param('periodo') periodo: number){
         return await this.ofertaCurricularService.getAllAsignaturasByCarreraGestionPeriodoDocente(id,gestion,periodo);
     }
-    
+
     @Post()
     async createOfertaCurricular(@Body() dto: CreateOfertaCurricularDto[]){
        /* console.log('controller insert');
@@ -43,6 +43,16 @@ export class OfertaCurricularController {
      //   return  await this.ofertaCurricularService.createOfertaCurricular(dto);        
         return  await this.ofertaCurricularService.crear(dto);        
     }
+
+    @Post('editar')
+    async EditarOferta(@Body() request: any)
+    {
+        // console.log('entrando a request',request)
+        // let respuesta = 'enviando respouestas'
+        return this.ofertaCurricularService.editar(request)
+    }
+
+
     @Delete("/:id")
     async deleteResolucion(@Param("id") id: string) {
       return await this.ofertaCurricularService.deleteOferta(parseInt(id));

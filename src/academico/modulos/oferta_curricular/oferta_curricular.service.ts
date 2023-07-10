@@ -3,11 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Aula } from 'src/academico/entidades/aula.entity';
 import { OfertaCurricular } from 'src/academico/entidades/ofertaCurricular.entity';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
-import { EntityManager, Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { AulaRepository } from '../aula/aula.repository';
 import { AulaDetalleRepository } from '../aula_detalle/aula_detalle.repository';
 import { CreateOfertaCurricularDto } from './dto/createOfertaCurricular.dto';
 import { OfertaCurricularRepository } from './oferta_curricular.repository';
+import { PlanEstudioAsignatura } from 'src/academico/entidades/planEstudioAsignatura.entity';
 
 @Injectable()
 export class OfertaCurricularService {
@@ -23,6 +24,8 @@ export class OfertaCurricularService {
 
         @Inject(AulaDetalleRepository) 
         private aulaDetalleRepository: AulaDetalleRepository,
+
+        private dataSource: DataSource,
 
         private _serviceResp: RespuestaSigedService, 
         
@@ -85,6 +88,22 @@ export class OfertaCurricularService {
           );
     }
     
+    async editar (request: any)
+    {
+      let plan_estudio_asignatura = request.planEstudioAsignatura
+      let pea = await this.dataSource.getRepository(PlanEstudioAsignatura).findOne({
+        relations:{
+          ofertasCurriculares:{
+            aulas:true 
+          }
+        },
+        where:{
+          id: plan_estudio_asignatura.id
+        }
+      })
+      console.log(pea)
+      return request
+    }
 
     async createOfertaCurricular (dto: CreateOfertaCurricularDto[]) {
      

@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Aula } from 'src/academico/entidades/aula.entity';
+import { AulaDetalle } from 'src/academico/entidades/aulaDetalle.entity';
+import { AulaDocente } from 'src/academico/entidades/aulaDocente.entity';
 import { DataSource, EntityManager } from 'typeorm'
 
 @Injectable()
@@ -44,6 +46,18 @@ constructor(private dataSource: DataSource) {}
             
         ])
         .getRawOne();
+    }
+    async getInscritosByAulaId(id){
+
+        return  await this.dataSource.getRepository(Aula)
+        .createQueryBuilder('a')
+        .innerJoin('a.institutoEstudianteInscripcions', 'iei')
+        .where('a.id = :id', {id})
+        .select([
+            'a.id as aula_id',
+            'iei.id as instituto_estudiante_inscripcion_id',
+        ])
+        .getRawMany();
     }
     async getByAulaId(id:number){
 
@@ -134,6 +148,31 @@ constructor(private dataSource: DataSource) {}
     
         return await transaction.getRepository(Aula).save(det);
     }
+
+    async deleteAula(id: number) {
+        return await this.dataSource.getRepository(Aula).delete(id);
+    }
+    async deleteAulaDetalle(id: number) {
+
+        const result = await this.dataSource.getRepository(Aula)
+        .createQueryBuilder()
+        .delete()
+        .from(AulaDetalle)
+        .where("aulaId = :id", { id })
+        .execute();
+        return result;   
+    }
+    async deleteAulaDocente(id: number) {
+
+        const result = await this.dataSource.getRepository(Aula)
+        .createQueryBuilder()
+        .delete()
+        .from(AulaDocente)
+        .where("aulaId = :id", { id })
+        .execute();
+        return result;
+    }
+
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)
     }
