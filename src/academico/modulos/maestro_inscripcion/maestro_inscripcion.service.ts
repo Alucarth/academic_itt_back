@@ -1834,6 +1834,7 @@ export class MaestroInscripcionService {
 
   }
 
+  //solo administrativos
   async getXlsAllAdministrativosByUeGestion(
     ueId: number,
     gestionId: number,

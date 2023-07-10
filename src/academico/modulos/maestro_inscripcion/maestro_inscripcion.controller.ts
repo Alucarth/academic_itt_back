@@ -151,6 +151,7 @@ export class MaestroInscripcionController {
     res.download(`${result}`);
   }
 
+  //solo administrativos
   @Get("/xlsAllAdministrativosByUeGestion/:ueId/:gestionId/:periodoId")
   @Header("Content-Type", "text/xlsx")
     async getXlsAllAdministrativosByUeGestion(
