@@ -156,4 +156,18 @@ export class PersonaService {
 
 
   }
+
+  async buscadorGestionPeriodo(sie) {
+
+    const datos = await this.personaRepositorio.getBuscadorGestionPeriodo(
+      sie
+    );
+
+    return this._serviceResp.respuestaHttp200(
+      datos,
+      "Datos Encontrados !!",
+      ""
+    );
+
+  }
 }

@@ -46,4 +46,13 @@ export class PersonaController {
         ){
         return await this.personaService.historialPersona(id, sie);
     }
+
+    @Get('/buscadorGestionPeriodo/:sie')
+    async getBuscadorGestionPeriodo(        
+        @Param('sie', ParseIntPipe) sie: number
+        ){
+        return await this.personaService.buscadorGestionPeriodo(sie);
+    }
+
+
 }

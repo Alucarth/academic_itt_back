@@ -319,4 +319,54 @@ export class PersonaRepository {
 
 
   }
+
+
+  async getBuscadorGestionPeriodo(sie) {
+    
+    console.log('here');
+
+    const result = await this.dataSource.query(`
+
+    select distinct gestion_tipo_id, periodo_tipo_id, periodo 
+    from 
+    (
+    SELECT
+      operativo_carrera_autorizada.gestion_tipo_id, 
+      operativo_carrera_autorizada.periodo_tipo_id, 
+      operativo_carrera_autorizada.carrera_autorizada_id, 
+      institucion_educativa_sucursal.institucion_educativa_id, 
+      carrera_tipo."id", 
+      carrera_tipo.carrera, 
+      carrera_autorizada."id", 
+      periodo_tipo.periodo, 
+      periodo_tipo.abreviacion
+    FROM
+      carrera_autorizada
+      INNER JOIN
+      operativo_carrera_autorizada
+      ON 
+        carrera_autorizada."id" = operativo_carrera_autorizada.carrera_autorizada_id
+      INNER JOIN
+      institucion_educativa_sucursal
+      ON 
+        carrera_autorizada.institucion_educativa_sucursal_id = institucion_educativa_sucursal."id"
+      INNER JOIN
+      carrera_tipo
+      ON 
+        carrera_autorizada.carrera_tipo_id = carrera_tipo."id"
+      INNER JOIN
+      periodo_tipo
+      ON 
+        operativo_carrera_autorizada.periodo_tipo_id = periodo_tipo."id"
+    WHERE
+      institucion_educativa_sucursal.institucion_educativa_id = ${sie}
+      ) as data 
+      
+
+    `);
+
+    return result;
+
+
+  }
 }
