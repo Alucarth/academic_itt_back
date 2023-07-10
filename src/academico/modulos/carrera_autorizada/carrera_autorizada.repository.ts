@@ -385,5 +385,67 @@ export class CarreraAutorizadaRepository {
 
   }
 
+  async geAllCarrerasByIeIdGestionPeriodo(id, gestion, periodo){
+    return await this.dataSource.query(`
+    SELECT
+    carrera_autorizada.id, 
+    carrera_tipo.carrera, 
+    carrera_tipo.id, 
+    area_tipo.area as area, 
+    carrera_autorizada_resolucion.numero_resolucion, 
+    carrera_autorizada_resolucion.fecha_resolucion, 
+    carrera_autorizada_resolucion.tiempo_estudio, 
+    carrera_autorizada_resolucion.carga_horaria, 
+    carrera_autorizada_resolucion.resuelve, 
+    nivel_academico_tipo.nivel_academico, 
+    intervalo_gestion_tipo.intervalo_gestion as regimen_estudio, 
+    resolucion_tipo.resolucion_tipo as tipo_tramite, 
+    institucion_educativa_sucursal.id, 
+    institucion_educativa_sucursal.institucion_educativa_id, 
+    carrera_autorizada.area_tipo_id, 
+    operativo_carrera_autorizada.gestion_tipo_id, 
+    operativo_carrera_autorizada.periodo_tipo_id
+  FROM
+    carrera_autorizada
+    INNER JOIN
+    carrera_tipo
+    ON 
+      carrera_autorizada.carrera_tipo_id = carrera_tipo.id
+    INNER JOIN
+    area_tipo
+    ON 
+      carrera_autorizada.area_tipo_id = area_tipo.id
+    INNER JOIN
+    carrera_autorizada_resolucion
+    ON 
+      carrera_autorizada.id = carrera_autorizada_resolucion.carrera_autorizada_id
+    INNER JOIN
+    nivel_academico_tipo
+    ON 
+      carrera_autorizada_resolucion.nivel_academico_tipo_id = nivel_academico_tipo.id
+    INNER JOIN
+    intervalo_gestion_tipo
+    ON 
+      carrera_autorizada_resolucion.intervalo_gestion_tipo_id = intervalo_gestion_tipo.id
+    INNER JOIN
+    resolucion_tipo
+    ON 
+      carrera_autorizada_resolucion.resolucion_tipo_id = resolucion_tipo.id
+    INNER JOIN
+    institucion_educativa_sucursal
+    ON 
+      carrera_autorizada.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id
+    INNER JOIN
+    operativo_carrera_autorizada
+    ON 
+      carrera_autorizada.id = operativo_carrera_autorizada.carrera_autorizada_id
+  WHERE
+    institucion_educativa_sucursal.institucion_educativa_id = ${id}
+    and operativo_carrera_autorizada.gestion_tipo_id = ${gestion}
+    and operativo_carrera_autorizada.periodo_tipo_id = ${periodo}
+    `);
+     
+}
+
 
 }
