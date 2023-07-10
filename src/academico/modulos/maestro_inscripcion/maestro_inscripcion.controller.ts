@@ -165,6 +165,32 @@ export class MaestroInscripcionController {
       periodoId);
     res.download(`${result}`);
   }
+
+  @Get("/getDataDocentesByUeGestion/:ueId/:gestionId/:periodoId")
+  getDataDocentesByUeGestion(
+    @Param("ueId") ueId: number,
+    @Param("gestionId") gestionId: number,
+    @Param("periodoId") periodoId: number
+  ) {
+    return this.usersService.getDataDocentesByUeGestion(
+      ueId,
+      gestionId,
+      periodoId
+    );
+  }
+
+  @Get("/getDataAdministrativosByUeGestion/:ueId/:gestionId/:periodoId")
+  getDataAdministrativosByUeGestion(
+    @Param("ueId") ueId: number,
+    @Param("gestionId") gestionId: number,
+    @Param("periodoId") periodoId: number
+  ) {
+    return this.usersService.getDataAdministrativosByUeGestion(
+      ueId,
+      gestionId,
+      periodoId
+    );
+  }
   
 
 }
