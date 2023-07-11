@@ -17,7 +17,7 @@ export class InstitucionEducativaImagenRepository {
       .createQueryBuilder('im')
       .where('im.institucionEducativaId = :id', {id} )
       .andWhere('im.activo = true' )
-      .getRawOne();
+      .getOne();
       
     }
     async createInstitucionEducativaImagen(idUsuario,id:number,filename, transaction) {

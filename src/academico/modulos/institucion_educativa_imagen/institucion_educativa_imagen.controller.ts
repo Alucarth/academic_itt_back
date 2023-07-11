@@ -43,6 +43,14 @@ export class InstitucionEducativaImagenController {
     async downloadFile(@Res() res, @Param('id', ParseIntPipe) id: number) {
      const data = await this.institucionEducativaImagenService.getById(id);
         console.log(data);
-        res.download('./uploads/'+data.im_nombre_archivo)      
+        
+        res.download('./uploads/'+data.nombreArchivo)      
    }
+
+   @Get('nombre-logo/:id')
+   async getLogo(@Param('id', ParseIntPipe) id: number){
+        const data = await this.institucionEducativaImagenService.getById(id);
+        return data.nombreArchivo;
+   }
+
 }
