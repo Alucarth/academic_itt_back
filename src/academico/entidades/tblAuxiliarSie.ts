@@ -9,13 +9,13 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity({ name: 'tbl_auxiliar_sie', schema: 'public' })
+@Entity({ name: 'bth_cut_ttm_estudiante', schema: 'public' })
 export class TblAuxiliarSie {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'test' })
-  test: string;
+  @Column({ type: 'varchar', name: 'registrosDatos' })
+  registrosDatos: string;
 
  
 }

@@ -155,6 +155,20 @@ export class InscripcionController {
       parseInt(matriculaEstudianteId)
     );
   }
+  @ApiOperation({
+    summary: "Devuelve todos las materias por transitabilidad bth",
+  })
+  @Get("/materiasTransitabilidadByCarreraAutorizadaId/:carreraAutorizadaId/:matriculaEstudianteId")
+  async getMateriasTransitabilidadByCarreraId(
+    @Param("carreraAutorizadaId") carreraAutorizadaId: string,
+    @Param("matriculaEstudianteId") matriculaEstudianteId: string
+
+  ) {
+    return await this.inscripcionService.getAllMateriasInscripcionTransitabilidad(
+      parseInt(carreraAutorizadaId),
+      parseInt(matriculaEstudianteId)
+    );
+  }
 
   @ApiOperation({
     summary: "Devuelve todos las materias alumnos antiguos",
