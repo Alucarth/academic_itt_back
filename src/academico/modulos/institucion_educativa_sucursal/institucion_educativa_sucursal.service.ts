@@ -1,8 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InstitucionEducativaSucursal } from 'src/academico/entidades/institucionEducativaSucursal.entity';
 import { Repository } from 'typeorm';
 import { InstitucionEducativaSucursalRepository } from './institucion_educativa_sucursal.repository';
+
+
+//para exportar a xls
+import { Workbook } from "exceljs";
+import * as tmp from "tmp";
+import { writeFile } from "fs/promises";
 
 @Injectable()
 export class InstitucionEducativaSucursalService {
@@ -39,6 +45,15 @@ export class InstitucionEducativaSucursalService {
         return sucursal;
 
       
+    }
+
+    async getXlsIttSucursales(){
+        const data = await this.institucionEducativaSucursalRepository.getAllIttSucursales();
+        
+        console.log("result xls: ", data);
+
+   
+
     }
     
 }
