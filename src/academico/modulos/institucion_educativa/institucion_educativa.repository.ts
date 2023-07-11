@@ -57,7 +57,7 @@ export class InstitucionEducativaRepository {
         .innerJoinAndSelect("a.educacionTipo", "d")
         .innerJoinAndSelect("a.estadoInstitucionEducativaTipo", "e")
         .where('a.educacionTipo in (7,8,9,11,12,13)')
-        .where('c.id = :id ', { id })
+        .andWhere('c.id = :id ', { id })
         .orderBy('a.id', 'ASC')
         .getOne();
         return itts;
@@ -69,8 +69,8 @@ export class InstitucionEducativaRepository {
         .innerJoinAndSelect("a.educacionTipo", "d")
         .innerJoinAndSelect("a.estadoInstitucionEducativaTipo", "e")
         .where('a.educacionTipo in (7,8,9,11,12,13)')
-        .where('c.id = :id ', { id })
-        .where('a.institucionEducativa = :nombre ', { nombre })
+        .andWhere('c.id = :id ', { id })
+        .andWhere('a.institucionEducativa = :nombre ', { nombre })
         .orderBy('a.id', 'ASC')
         .getOne();
         return itts;
@@ -87,7 +87,7 @@ export class InstitucionEducativaRepository {
         .leftJoinAndSelect("e.acreditacionTipo", "h")
         .select(["a","c","d","e","f","g","h"])
         .where('a.educacionTipo in (7,8,9)  ')
-        .where('a.id = :id ', { id })
+        .andWhere('a.id = :id ', { id })
         .orderBy('a.id', 'ASC')
         .getMany();
         return itts;
