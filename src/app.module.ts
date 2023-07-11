@@ -84,6 +84,7 @@ import { ModalidadEvaluacionTipoModule } from './academico/catalogos/modalidad_e
 
 import { TblAuxiliarSie } from "./academico/entidades/tblAuxiliarSie";
 import { MulterModule } from '@nestjs/platform-express';
+import { InstitucionEducativaImagenModule } from './academico/modulos/institucion_educativa_imagen/institucion_educativa_imagen.module';
 
 //multiple bases
 const defaultOptions = {
@@ -193,7 +194,6 @@ const defaultOptionsSie = {
 
     ResolucionTipoModule,
 
-
     CarreraAutorizadaResolucionModule,
 
     PlanEstudioResolucionModule,
@@ -234,6 +234,7 @@ const defaultOptionsSie = {
 
     ModalidadEvaluacionTipoModule,
 
+    InstitucionEducativaImagenModule,
 
   ]
 })
