@@ -220,7 +220,160 @@ export class PersonaRepository {
         );
         
     }
-
     
+  }
+
+  async getHistorialById(personaId, sie) {
+    
+    console.log('here');
+
+    const datosgrales = await this.dataSource.query(`
+    SELECT
+      persona.id, 
+      persona.carnet_identidad, 
+      persona.complemento, 
+      persona.paterno, 
+      persona.materno, 
+      persona.nombre, 
+      persona.fecha_nacimiento, 
+      persona.codigo_rude, 
+      persona.email, 
+      institucion_educativa.id, 
+      institucion_educativa.institucion_educativa, 
+      institucion_educativa_sucursal.id, 
+      institucion_educativa_sucursal.sucursal_codigo, 
+      institucion_educativa_sucursal.sucursal_nombre
+    FROM
+      persona
+      INNER JOIN
+      institucion_educativa_estudiante
+      ON 
+        persona.id = institucion_educativa_estudiante.persona_id
+      INNER JOIN
+      institucion_educativa_sucursal
+      ON 
+        institucion_educativa_estudiante.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id
+      INNER JOIN
+      institucion_educativa
+      ON 
+        institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa.id        
+      where persona.id = ${personaId} and institucion_educativa.id = ${sie}
+    `);
+
+    if(datosgrales.length == 0){
+      return false;
+    }
+   
+    return {
+      persona: personaId,
+      nombre: datosgrales[0]['paterno'] + ' ' + datosgrales[0]['materno'] + ' ' + datosgrales[0]['nombre'] ,
+      ci: datosgrales[0]['carnet_identidad'],
+      sie: sie,
+      ue: datosgrales[0]['institucion_educativa'],
+      carrera: 'BELLEZA INTEGRAL',
+      gestiones: [
+       
+        {
+          gestion: 2023,
+          periodoId:54,
+          periodo: 'Semestre I/2023',
+          materias: [
+            {
+              asignatura: 'asignatura 1',
+              paralelo: 'A',
+              nota_final:75,
+              estado_matricula: 'APROBADO'
+            },
+            {
+              asignatura: 'asignatura 2',
+              paralelo: 'A',
+              nota_final:50,
+              estado_matricula: 'REPROBADO'
+            }
+          ]
+        },
+        
+        {
+          gestion: 2023,
+          periodoId:55,
+          periodo: 'Semestre II/2023',
+          materias: [
+            {
+              asignatura: 'asignatura AA',
+              paralelo: 'B',
+              nota_final:75,
+              estado_matricula: 'APROBADO'
+            },
+            {
+              asignatura: 'asignatura BB',
+              paralelo: 'C',
+              nota_final:50,
+              estado_matricula: 'REPROBADO'
+            }
+          ]
+        }
+
+      ]
+    };
+
+
+
+  }
+
+
+  async getBuscadorGestionPeriodo(sie) {
+    
+    console.log('here');
+
+    const result = await this.dataSource.query(`
+
+    select distinct gestion_tipo_id, periodo_tipo_id, periodo, institucion_educativa as nombre 
+    from 
+    (
+    SELECT
+	operativo_carrera_autorizada.gestion_tipo_id, 
+	operativo_carrera_autorizada.periodo_tipo_id, 
+	operativo_carrera_autorizada.carrera_autorizada_id, 
+	institucion_educativa_sucursal.institucion_educativa_id,
+	carrera_tipo."id", 
+	carrera_tipo.carrera, 
+	carrera_autorizada."id", 
+	periodo_tipo.periodo, 
+	periodo_tipo.abreviacion, 
+	institucion_educativa.institucion_educativa, 
+	institucion_educativa."id"
+FROM
+	carrera_autorizada
+	INNER JOIN
+	operativo_carrera_autorizada
+	ON 
+		carrera_autorizada."id" = operativo_carrera_autorizada.carrera_autorizada_id
+	INNER JOIN
+	institucion_educativa_sucursal
+	ON 
+		carrera_autorizada.institucion_educativa_sucursal_id = institucion_educativa_sucursal."id"
+	INNER JOIN
+	carrera_tipo
+	ON 
+		carrera_autorizada.carrera_tipo_id = carrera_tipo."id"
+	INNER JOIN
+	periodo_tipo
+	ON 
+		operativo_carrera_autorizada.periodo_tipo_id = periodo_tipo."id"
+	INNER JOIN
+	institucion_educativa
+	ON 
+		institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa."id"
+WHERE
+	institucion_educativa_sucursal.institucion_educativa_id = ${sie}
+    
+		) as data
+      
+
+    `);
+
+    return result;
+
+
   }
 }

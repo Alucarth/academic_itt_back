@@ -142,4 +142,32 @@ export class PersonaService {
       );
     }
   }
+
+  
+  async historialPersona(personaId, sie) {
+
+    const historial = await this.personaRepositorio.getHistorialById(personaId, sie);
+
+    return this._serviceResp.respuestaHttp200(
+      historial,
+      "Datos Encontrados !!",
+      ""
+    );
+
+
+  }
+
+  async buscadorGestionPeriodo(sie) {
+
+    const datos = await this.personaRepositorio.getBuscadorGestionPeriodo(
+      sie
+    );
+
+    return this._serviceResp.respuestaHttp200(
+      datos,
+      "Datos Encontrados !!",
+      ""
+    );
+
+  }
 }

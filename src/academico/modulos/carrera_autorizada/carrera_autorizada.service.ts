@@ -205,4 +205,22 @@ export class CarreraAutorizadaService {
   
 
       }
+
+      async getCarrerasByIeIdGestionPeriodo(id: number, gestion: number, periodo: number) {
+        const carreras = await this.carreraAutorizadaRepositorio.geAllCarrerasByIeIdGestionPeriodo(id, gestion, periodo);
+        if(carreras.length>0){
+            return this._serviceResp.respuestaHttp201(
+                carreras,
+                "Datos Encontrados !!",
+                ""
+              );    
+        }
+        return this._serviceResp.respuestaHttp404(
+            "",
+            'No se encontraron resultados !!',
+            '',
+        );
+      }
+
+
 }

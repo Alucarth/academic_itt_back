@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 
 @Entity({ name: 'bth_cut_ttm_estudiante', schema: 'public' })
+
 export class TblAuxiliarSie {
   @PrimaryGeneratedColumn()
   id: number;

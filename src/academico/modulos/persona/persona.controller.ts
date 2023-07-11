@@ -38,4 +38,21 @@ export class PersonaController {
         //console.log('controller update',dto);
         return  await this.personaService.updatePersona(dto);        
     }
+
+    @Get('/historialAcademico/:id/:sie')
+    async getHistorialPersonaById(
+        @Param('id', ParseIntPipe) id: number,
+        @Param('sie', ParseIntPipe) sie: number
+        ){
+        return await this.personaService.historialPersona(id, sie);
+    }
+
+    @Get('/buscadorGestionPeriodo/:sie')
+    async getBuscadorGestionPeriodo(        
+        @Param('sie', ParseIntPipe) sie: number
+        ){
+        return await this.personaService.buscadorGestionPeriodo(sie);
+    }
+
+
 }
