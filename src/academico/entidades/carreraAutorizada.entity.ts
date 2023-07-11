@@ -64,7 +64,6 @@ export class CarreraAutorizada {
   @ManyToOne(() => AreaTipo, (areaTipo) => areaTipo.carreras, { nullable: false, cascade: true })
   @JoinColumn({ name: 'area_tipo_id', referencedColumnName: 'id'})
   areaTipo: AreaTipo;
-  
 
   @OneToMany(() => CarreraAutorizadaResolucion, (carreraAutorizadaResolucion) => carreraAutorizadaResolucion.carreraAutorizada)
   resoluciones: CarreraAutorizadaResolucion[];
@@ -75,5 +74,7 @@ export class CarreraAutorizada {
   @OneToMany(() => OperativoCarreraAutorizada, (operativoCarreraAutorizada) => operativoCarreraAutorizada.carreraAutorizada)
   operativosCarreras: OperativoCarreraAutorizada[];
 
+  @Column({ name: 'especialidad_tecnico_humanistico_tipo_id', nullable:true })
+  especialidadTecnicoHumanisticoTipoId: number;
 
 }

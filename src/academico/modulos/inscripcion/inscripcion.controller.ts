@@ -48,6 +48,12 @@ export class InscripcionController {
     const res = await this.inscripcionService.createMatriculaLote(dtos);
     return res;
   }
+  
+  @Post("/nuevo-transitabilidad")
+  async createInscriptionTransitabilidad(@Body() dto: CreateInscriptionNuevoDto[]) {
+    const res = await this.inscripcionService.createInscriptionTransitabilidad(dto);
+    return res;
+  }
 
   @ApiOperation({
     summary:
@@ -151,6 +157,20 @@ export class InscripcionController {
 
   ) {
     return await this.inscripcionService.getAllMateriasInscripcionNuevo(
+      parseInt(carreraAutorizadaId),
+      parseInt(matriculaEstudianteId)
+    );
+  }
+  @ApiOperation({
+    summary: "Devuelve todos las materias por transitabilidad bth",
+  })
+  @Get("/materiasTransitabilidadByCarreraAutorizadaId/:carreraAutorizadaId/:matriculaEstudianteId")
+  async getMateriasTransitabilidadByCarreraId(
+    @Param("carreraAutorizadaId") carreraAutorizadaId: string,
+    @Param("matriculaEstudianteId") matriculaEstudianteId: string
+
+  ) {
+    return await this.inscripcionService.getAllMateriasInscripcionTransitabilidad(
       parseInt(carreraAutorizadaId),
       parseInt(matriculaEstudianteId)
     );

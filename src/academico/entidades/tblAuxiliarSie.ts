@@ -9,15 +9,14 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-//generico para conexion SIE
+@Entity({ name: 'bth_cut_ttm_estudiante', schema: 'public' })
 
-@Entity({ name: 'tbl_auxiliar_sie', schema: 'public' })
 export class TblAuxiliarSie {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'test' })
-  test: string;
+  @Column({ type: 'varchar', name: 'registrosDatos' })
+  registrosDatos: string;
 
  
 }

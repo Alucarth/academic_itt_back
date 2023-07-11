@@ -83,6 +83,7 @@ import { EventoTipoModule } from './academico/catalogos/evento_tipo/evento_tipo.
 import { ModalidadEvaluacionTipoModule } from './academico/catalogos/modalidad_evaluacion_tipo/modalidad_evaluacion_tipo.module';
 
 import { TblAuxiliarSie } from "./academico/entidades/tblAuxiliarSie";
+import { MulterModule } from '@nestjs/platform-express';
 
 //multiple bases
 const defaultOptions = {
@@ -126,7 +127,9 @@ const defaultOptionsSie = {
       name: 'siedb',
       entities: [TblAuxiliarSie],
     } as any),
-
+    MulterModule.register({
+      dest: './uploads',
+    }),
     UsersModule,
     AuthModule,
     ProductsModule,

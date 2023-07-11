@@ -28,10 +28,15 @@ import { OperativoCarreraAutorizadaService } from "../operativo_carrera_autoriza
 import { Workbook } from "exceljs";
 import * as tmp from "tmp";
 import { writeFile } from "fs/promises";
+import { TblAuxiliarSie } from "src/academico/entidades/tblAuxiliarSie";
 
 @Injectable()
 export class InscripcionService {
   constructor(
+    
+    @InjectRepository(TblAuxiliarSie, "siedb")
+    private sieRepository: Repository<TblAuxiliarSie>,
+    
     @InjectRepository(MatriculaEstudiante)
     private matriculaRepository: Repository<MatriculaEstudiante>,
     @InjectRepository(InstitucionEducativaEstudiante)
@@ -542,6 +547,145 @@ export class InscripcionService {
     }
   }
 
+  async createInscriptionTransitabilidad(dtos: CreateInscriptionNuevoDto[]) {
+    //valida los parametros
+    for (let index = 0; index < dtos.length; index++) {
+      let dto = dtos[index];
+
+      console.log("index: ", index);
+      console.log(dto);
+
+      //1: existe matricula ?
+      const matriculaEstudiante = await this.matriculaRepository.findOne({
+        where: {
+          id: dto.matriculaEstudianteId,
+        },
+      });
+      if (!matriculaEstudiante) {
+        return this._serviceResp.respuestaHttp404(
+          "0",
+          "Matricula No Encontrado !!",
+          ""
+        );
+      }
+
+      //2: existe aula ?
+      const aula = await this.aulaRepository.findOne({
+        where: {
+          id: dto.aulaId,
+        },
+      });
+      if (!aula) {
+        return this._serviceResp.respuestaHttp404(
+          dto.aulaId,
+          "aulaId No Encontrado !!",
+          ""
+        );
+      }
+
+      //: existe oferta curricular?
+      const ofertaCurricular = await this.ofertaCurricularRepository.findOne({
+        where: {
+          id: dto.ofertaCurricularId,
+        },
+      });
+      if (!ofertaCurricular) {
+        return this._serviceResp.respuestaHttp404(
+          dto.ofertaCurricularId,
+          "ofertaCurricular No Encontrado !!",
+          ""
+        );
+      }
+    }
+
+    //existe todo, se inserta uno a uno
+    let insertados = [];
+    try {
+      for (let index = 0; index < dtos.length; index++) {
+        let dto = dtos[index];
+
+        const existe = await this.inscripcionRepository.query(`
+        select count(*) as existe 
+        from instituto_estudiante_inscripcion 
+        where 
+        matricula_estudiante_id = ${dto.matriculaEstudianteId}  and 
+        aula_id = ${dto.aulaId} and 
+        estadomatricula_tipo_id = 1 and 
+        estadomatricula_inicio_tipo_id = 0 and 
+        oferta_curricular_id = ${dto.ofertaCurricularId}  
+        `);
+
+        // inserta solo si es que NO existe
+        if (parseInt(existe[0].existe) == 0) {
+          const aula = await this.aulaRepository.findOne({
+            where: {
+              id: dto.aulaId,
+            },
+          });
+
+          const ofertaCurricular =
+            await this.ofertaCurricularRepository.findOne({
+              where: {
+                id: dto.ofertaCurricularId,
+              },
+            });
+
+          const matriculaEstudiante = await this.matriculaRepository.findOne({
+            where: {
+              id: dto.matriculaEstudianteId,
+            },
+          });
+
+          const estadoMatriculaTipo =
+            await this.estadoMatriculaRepository.findOne({
+              where: {
+                id: 1,
+              },
+            });
+
+          const res = await this.inscripcionRepository
+            .createQueryBuilder()
+            .insert()
+            .into(InstitutoEstudianteInscripcion)
+            .values([
+              {
+                observacion: "Inscrito Nuevo por transitabilidad BTH",
+                usuarioId: 0,
+                estadoMatriculaInicioTipoId: 90, //TRANSITABILIDAD BTH
+                aula: aula,
+                ofertaCurricular: ofertaCurricular,
+                estadoMatriculaTipo: estadoMatriculaTipo,
+                matriculaEstudiante: matriculaEstudiante,
+              },
+            ])
+            .returning("id")
+            .execute();
+
+          console.log("res:", res);
+          let inscripcionId = res.identifiers[0].id;
+          insertados.push(inscripcionId);
+        }
+      }
+      // ha insertado todos los que no existian
+      return this._serviceResp.respuestaHttp201(
+        insertados,
+        "Registro Creado !!",
+        ""
+      );
+    } catch (error) {
+      console.log("Error insertar inscripcion: ", error);
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: `Error insertar Matricula: ${error.message}`,
+        },
+        HttpStatus.ACCEPTED,
+        {
+          cause: error,
+        }
+      );
+    }
+  }
 
   async getAllMatriculadosByGestionOLD(
     gestionId: number,
@@ -932,11 +1076,7 @@ export class InscripcionService {
       ""
     );
   }
-
-  async getAllMateriasInscripcionNuevo(carreraAutorizadaId: number, matriculaEstudianteId: number) {
-    // semestral ? anual ?
-    const matricula_estudiante = matriculaEstudianteId; //62;
-
+  async getDatoCarreraAutorizada(carreraAutorizadaId:number) {
     const intervaloGestion = await this.inscripcionRepository.query(`
       SELECT
         carrera_autorizada.id as carrera_autorizada_id, 
@@ -944,7 +1084,9 @@ export class InscripcionService {
         carrera_autorizada_resolucion.descripcion, 
         carrera_autorizada_resolucion.numero_resolucion, 
         intervalo_gestion_tipo.id as intervalo_gestion_tipo_id, 
-        intervalo_gestion_tipo.intervalo_gestion
+        intervalo_gestion_tipo.intervalo_gestion,
+        carrera_tipo.carrera,
+        carrera_tipo.especialidad_tecnico_humanistico_tipo_id
       FROM
         carrera_autorizada
         INNER JOIN
@@ -955,21 +1097,16 @@ export class InscripcionService {
         intervalo_gestion_tipo
         ON 
           carrera_autorizada_resolucion.intervalo_gestion_tipo_id = intervalo_gestion_tipo.id
+        INNER JOIN
+        carrera_tipo
+        ON 
+          carrera_tipo.id =  carrera_autorizada.carrera_tipo_id
         where carrera_autorizada.id = ${carreraAutorizadaId}
     `);
+  return intervaloGestion
+  }
 
-    let regimen_grado_tipo_id = 0;
-    if (intervaloGestion[0].intervalo_gestion_tipo_id === 1) {
-      // es semestral, el primer semestre es 1
-      regimen_grado_tipo_id = 1;
-    }
-    if (intervaloGestion[0].intervalo_gestion_tipo_id === 4) {
-      // es anual, el primer año es 7
-      regimen_grado_tipo_id = 7;
-    }
-
-    console.log('intervaloGestion : ', intervaloGestion);
-    console.log('regimen_grado_tipo_id : ', regimen_grado_tipo_id);
+  async getListaParalelosRegimenGrado(carreraAutorizadaId:number, regimenGrado:number, matricula_estudiante:number) {
 
     const result = await this.inscripcionRepository.query(`
       SELECT
@@ -1031,12 +1168,8 @@ export class InscripcionService {
           plan_estudio_asignatura.regimen_grado_tipo_id = regimen_grado_tipo.id
       WHERE
         carrera_autorizada.id = ${carreraAutorizadaId} AND      
-        regimen_grado_tipo.id = ${regimen_grado_tipo_id}
+        regimen_grado_tipo.id = ${regimenGrado}
     `);
-
-    console.log('result : ', result);
-
-
     for (let i = 0; i < result.length; i++) {
       console.log('i :', i);
       console.log('oferta_curricular.id', result[i].oferta_curricular_id);
@@ -1123,40 +1256,35 @@ export class InscripcionService {
 
       }
 
-
-
       let array_paralelos = res_paralelos;
       result[i].paralelos = array_paralelos;
     }
+  return result
+  }
 
-    /*result.forEach(async element => {
-     //console.log(element.oferta_curricular_id);
-      let res_paralelos = await this.inscripcionRepository.query(`
-        SELECT
-          oferta_curricular.id, 
-          aula.id, 
-          paralelo_tipo.id, 
-          paralelo_tipo.paralelo, 
-          aula.activo
-        FROM
-          oferta_curricular
-          INNER JOIN
-          aula
-          ON 
-            oferta_curricular.id = aula.oferta_curricular_id
-          INNER JOIN
-          paralelo_tipo
-          ON 
-            aula.paralelo_tipo_id = paralelo_tipo.id
-          where 
-          oferta_curricular.id = 32
-      `);
+  
+  async getAllMateriasInscripcionNuevo(carreraAutorizadaId: number, matriculaEstudianteId: number) {
+    // semestral ? anual ?
+    const matricula_estudiante = matriculaEstudianteId; //62;
 
-     let array_paralelos = ['A', 'B'];
-     element.paralelos = array_paralelos
-    });*/
+    const intervaloGestion = await this.getDatoCarreraAutorizada(carreraAutorizadaId);
 
-    //console.log("result: ", result);
+    let regimen_grado_tipo_id = 0;
+    if (intervaloGestion[0].intervalo_gestion_tipo_id === 1) {
+      // es semestral, el primer semestre es 1
+      regimen_grado_tipo_id = 1;
+    }
+    if (intervaloGestion[0].intervalo_gestion_tipo_id === 4) {
+      // es anual, el primer año es 7
+      regimen_grado_tipo_id = 7;
+    }
+
+    console.log('intervaloGestion : ', intervaloGestion);
+    console.log('regimen_grado_tipo_id : ', regimen_grado_tipo_id);
+    
+    const result = await this.getListaParalelosRegimenGrado(carreraAutorizadaId, regimen_grado_tipo_id, matricula_estudiante);
+
+    console.log('result : ', result);
 
     return this._serviceResp.respuestaHttp200(
       result,
@@ -1165,6 +1293,85 @@ export class InscripcionService {
     );
   }
 
+
+  async getAllMateriasInscripcionTransitabilidad(carreraAutorizadaId: number, matriculaEstudianteId: number) {
+    // semestral ? anual ?
+    const matricula_estudiante = matriculaEstudianteId; //62;
+
+    const intervaloGestion = await this.getDatoCarreraAutorizada(carreraAutorizadaId);
+
+    let regimen_grado_tipo_id = 0;
+    if (intervaloGestion[0].intervalo_gestion_tipo_id === 1) { //semestral
+      // es semestral, al tercer semestre
+      regimen_grado_tipo_id = 3;
+    }
+    if (intervaloGestion[0].intervalo_gestion_tipo_id === 4) { //anual
+      // es anual, al segundo año
+      regimen_grado_tipo_id = 8;
+    }
+
+    let especialidad_bth_id = intervaloGestion[0].especialidad_tecnico_humanistico_tipo_id;
+
+    console.log('intervaloGestion : ', intervaloGestion);
+    console.log('regimen_grado_tipo_id : ', regimen_grado_tipo_id);
+    console.log('especialidad : ', especialidad_bth_id);
+
+      //validar que el estudiante corresponde a BTH de esa carrera
+      const datoPersona = await this.matriculaRepository
+      .createQueryBuilder("me")
+      .innerJoin("me.institucionEducativaEstudiante", "iee")
+      .innerJoin("iee.persona", "p")
+      .select([
+          "p.carnetIdentidad as carnet_identidad",
+          "p.id as id",
+      ])
+      .where('me.id = :matriculaEstudianteId',{matriculaEstudianteId})
+      .getRawOne();
+      console.log("dato persona");
+      console.log(datoPersona);
+
+      //consulta SIGED
+      //verificamos si el estudiante es BTH y la carrera corresponde
+      const bth = await this.sieRepository.query(`
+      SELECT
+        bth_cut_ttm_estudiante.*
+      FROM
+        bth_cut_ttm_estudiante
+        INNER JOIN estudiante_inscripcion_humnistico_tecnico eiht on bth_cut_ttm_estudiante.estudiante_inscripcion_id = eiht.estudiante_inscripcion_id
+        INNER JOIN especialidad_tecnico_humanistico_tipo etht on etht.id = eiht.especialidad_tecnico_humanistico_tipo_id 
+        INNER JOIN
+        estudiante_inscripcion
+        ON 
+          estudiante_inscripcion.id = bth_cut_ttm_estudiante.estudiante_inscripcion_id  
+        INNER JOIN
+          estudiante
+        ON 
+        estudiante.id = estudiante_inscripcion.estudiante_id 
+        WHERE estudiante.carnet_identidad = '${datoPersona.carnet_identidad}'
+        AND etht.id = ${especialidad_bth_id}
+    `);
+
+    console.log("aqui el bth");
+    console.log(bth);
+    if(bth.length == 0){
+      return this._serviceResp.respuestaHttp404(
+        '',
+        "El estudiante no corresponde a BTH de la ESPECIALIDAD/CARRERA seleccionada !!",
+        ""
+      );
+
+    }
+
+    const result = await this.getListaParalelosRegimenGrado(carreraAutorizadaId, regimen_grado_tipo_id, matricula_estudiante );
+
+    console.log('result : ', result);
+
+    return this._serviceResp.respuestaHttp200(
+      result,
+      "Registro Encontrado !!",
+      ""
+    );
+  }
 
   /**
    * esta version es SIN NOTAS, solo muestra las materias segun corresponda semestre o anual
