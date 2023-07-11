@@ -191,6 +191,18 @@ export class MaestroInscripcionController {
       periodoId
     );
   }
+
+  //solo maestros por carrera autorizada
+  @Get("/xlsAllDocentesByCarreraAutorizada/:id/:ueId")
+  @Header("Content-Type", "text/xlsx")
+    async getXlsAllDocentesByCarreraAutorizada(
+      @Param("id") id: number,  
+      @Param("ueId") ueId: number,    
+      @Res() res: Response
+    ) {
+    let result = await this.usersService.getXlsAllDocentesByCarreraAutorizada(id,ueId);
+    res.download(`${result}`);
+  }
   
 
 }
