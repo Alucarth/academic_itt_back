@@ -58,5 +58,8 @@ export class CarreraTipo {
   @JoinColumn({ name: 'carrera_grupo_tipo_id', referencedColumnName: 'id'})
   carreraGrupoTipo: CarreraGrupoTipo;
 
-  
+  @Column({ name: 'especialidad_tecnico_humanistico_tipo_id', nullable:false })
+  especialidadTecnicoHumanisticoTipoId: number;
+
+
 }

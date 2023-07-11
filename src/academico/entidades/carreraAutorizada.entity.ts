@@ -74,7 +74,6 @@ export class CarreraAutorizada {
   @OneToMany(() => OperativoCarreraAutorizada, (operativoCarreraAutorizada) => operativoCarreraAutorizada.carreraAutorizada)
   operativosCarreras: OperativoCarreraAutorizada[];
 
-  @Column({ name: 'especialidad_tecnico_humanistico_tipo_id', nullable:true })
-  especialidadTecnicoHumanisticoTipoId: number;
+  
 
 }
