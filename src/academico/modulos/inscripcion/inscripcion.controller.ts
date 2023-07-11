@@ -48,6 +48,12 @@ export class InscripcionController {
     const res = await this.inscripcionService.createMatriculaLote(dtos);
     return res;
   }
+  
+  @Post("/nuevo-transitabilidad")
+  async createInscriptionTransitabilidad(@Body() dto: CreateInscriptionNuevoDto[]) {
+    const res = await this.inscripcionService.createInscriptionTransitabilidad(dto);
+    return res;
+  }
 
   @ApiOperation({
     summary:
