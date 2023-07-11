@@ -28,18 +28,21 @@ export class InstitucionEducativaImagenController {
           }),
           fileFilter:fileFilter
         }),
-      )
+    )
+
     async createInstitutoImagen(@UploadedFile() file: Express.Multer.File,  @Body() dto: CreateInstitucionEducativaImagenDto) {
+
+        console.log("subiendo imagen")
         console.log('dto', dto);
         console.log('file', file);
         console.log('filename', file.filename);
         return  await this.institucionEducativaImagenService.createInstitucionEducativaImagen(dto, file.filename);        
     }
+
     @Get('download-logo/:id')
     async downloadFile(@Res() res, @Param('id', ParseIntPipe) id: number) {
      const data = await this.institucionEducativaImagenService.getById(id);
-     
-      res.download('./uploads/'+data.nombreArchivo)      
- 
+        console.log(data);
+        res.download('./uploads/'+data.im_nombre_archivo)      
    }
 }
