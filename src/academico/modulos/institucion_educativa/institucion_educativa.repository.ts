@@ -309,7 +309,7 @@ export class InstitucionEducativaRepository {
             "up4.id as departamento_id",
             "g.dependencia as dependencia",
             "g.id as dependencia_id",
-            "COUNT(e.dependenciaTipoId) as total",  
+            "COUNT(distinct(a.id)) as total",  
         ])
         .where('a.educacionTipoId in (7,8,9)')
         .groupBy('up4.id')
