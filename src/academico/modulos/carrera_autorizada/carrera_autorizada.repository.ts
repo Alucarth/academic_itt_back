@@ -198,7 +198,7 @@ export class CarreraAutorizadaRepository {
         //.getMany();
         return list;
     }
-    async findListaCarreras(){
+    async findListaCarreras(){ // las TOP 20
         const carreras = await this.dataSource.getRepository(CarreraAutorizada)
         .createQueryBuilder("ca")
         .innerJoin("ca.carreraTipo", "c")
@@ -208,8 +208,9 @@ export class CarreraAutorizadaRepository {
             'COUNT(ca.carreraTipoId) as total'
         ])
         .where('ca.area_tipo_id>1')
+        .limit(20)
         .groupBy('c.carrera')
-        .orderBy('c.carrera')
+        .orderBy('total', 'DESC')
         .getRawMany();
        // console.log(carreras);
         return carreras;
