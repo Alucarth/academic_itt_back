@@ -144,9 +144,9 @@ export class PersonaService {
   }
 
   
-  async historialPersona(personaId, sie) {
+  async historialPersona(personaId, sie, caId) {
 
-    const historial = await this.personaRepositorio.getHistorialById(personaId, sie);
+    const historial = await this.personaRepositorio.getHistorialById(personaId, sie, caId);
 
     return this._serviceResp.respuestaHttp200(
       historial,

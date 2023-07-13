@@ -15,6 +15,15 @@ export class InstitucionEducativaSucursalController {
     async getAllIttSucursales():Promise<InstitucionEducativaSucursal[]>{
         return await this.institucionEducativaSucursalService.getAllIttSucursales();
     }
+
+    @Get('xlsitts')
+    @Header("Content-Type", "text/xlsx")
+    async getXlsAllIttSucursales(@Res() res: Response){
+        let result = await this.institucionEducativaSucursalService.getXlsAllIttSucursales();
+        res.download(`${result}`);
+    }
+
+
     @Get(':sie')
     async getBySie(@Param('sie', ParseIntPipe) sie: number):Promise<InstitucionEducativaSucursal[]>{
         return await this.institucionEducativaSucursalService.findSucursalBySie(sie);
@@ -33,6 +42,9 @@ export class InstitucionEducativaSucursalController {
     async getEspecialidadesById(@Param('id', ParseIntPipe) id: number):Promise<InstitucionEducativaSucursal[]>{
         return await this.institucionEducativaSucursalService.findEspecialidadesBySucursal(id);
     }
+
+    
+   
 
    
 }

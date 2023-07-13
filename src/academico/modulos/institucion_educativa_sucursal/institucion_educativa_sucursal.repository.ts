@@ -148,4 +148,37 @@ export class InstitucionEducativaSucursalRepository {
     
    }
 
+   async getXlsAllIttSucursales(){
+    const sucursales = await this.dataSource.getRepository(InstitucionEducativaSucursal)
+    .createQueryBuilder("a")
+    .innerJoinAndSelect("a.institucionEducativa", "b")
+    .innerJoinAndSelect("a.jurisdiccionGeografica", "c")
+    .innerJoinAndSelect("b.educacionTipo", "d")
+    .innerJoinAndSelect("a.estadoInstitucionEducativaTipo", "e")
+    .innerJoinAndSelect("c.localidadUnidadTerritorial2001", "u1")
+    .innerJoinAndSelect("u1.unidadTerritorialPadre", "up1")
+    .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
+    .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
+    .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
+    .innerJoinAndSelect("b.acreditados", "s")
+    .innerJoinAndSelect("s.dependenciaTipo", "dt")
+    .select([
+        'a.id as "SUCURSAL"',
+        'b.id as "RITT"',        
+        'b.institucionEducativa as "INSTITUCION EDUCATIVA"',
+        'up4.lugar as "DEPARTAMENTO"',
+        'd.educacion as "TIPO INSTITUCION"',
+        's.numeroResolucion as "NRO.RESOLUCION"',
+        'dt.dependencia as "CARÁCTER JURÍDICO"',
+        'a.sucursal_nombre as "SEDE/SUBSEDE"',      
+      ])
+    .where('d.id in (7,8,9,11,12,13)  ')
+    .andWhere('e.id = 10 ')
+    .andWhere('s.vigente = true ')
+    .orderBy('a.id', 'ASC')
+    .getRawMany();
+    console.log(sucursales);
+    return sucursales;
+}
+
 }
