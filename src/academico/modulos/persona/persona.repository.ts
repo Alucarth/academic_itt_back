@@ -392,9 +392,6 @@ export class PersonaRepository {
       gestiones.push(data);
 
     }
-
-
-
    
     return {
       persona: personaId,
@@ -403,6 +400,7 @@ export class PersonaRepository {
       sie: sie,
       ue: datosgrales[0]['institucion_educativa'],
       carrera: datosca[0]['carrera'],
+      nivel: 'TÉCNICO SUPERIOR',
       area: datosca[0]['area'],
       gestiones: gestiones
     };
