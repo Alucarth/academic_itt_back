@@ -296,7 +296,7 @@ export class PersonaRepository {
 
    
     console.log('verificando gestiones');
-    /*const datosges = await this.dataSource.query(`
+    const datosges = await this.dataSource.query(`
     select distinct gestion_tipo_id, periodo_tipo_id, matricula_estudiante_id,periodo 
     from 
     (
@@ -341,9 +341,9 @@ export class PersonaRepository {
       and 
       instituto_plan_estudio_carrera.carrera_autorizada_id =   ${caId}       
       ) as data 
-    `);*/
+    `);
 
-    const datosges = await this.dataSource.query(`    
+    /*const datosges = await this.dataSource.query(`    
     SELECT
       institucion_educativa_estudiante."id", 
       institucion_educativa_estudiante.observacion, 
@@ -385,7 +385,7 @@ export class PersonaRepository {
       and 
       instituto_plan_estudio_carrera.carrera_autorizada_id =   ${caId}       
       
-    `);
+    `);*/
 
     let gestiones = []
     for (let index = 0; index < datosges.length; index++) {      
