@@ -54,7 +54,7 @@ export class InstitucionEducativaSucursalService {
     }
 
     async getXlsAllIttSucursales(){
-        const data = await this.institucionEducativaSucursalRepository.getAllIttSucursales();
+        const data = await this.institucionEducativaSucursalRepository.getXlsAllIttSucursales();
         
         let rows = [];
         data.forEach((doc) => {
@@ -69,9 +69,10 @@ export class InstitucionEducativaSucursalService {
         
         sheet.addRow([]);
         sheet.addRow([`LISTADO DE CARRERAS `]);
-        sheet.addRow([]);
+        sheet.addRow([`SISTEMA ACADÉMICO DE INSTITUTOS TÉCNICO TECNOLÓGICOS`]);
         sheet.getRow(1).font = { size: 16, bold: true };
         sheet.getRow(2).font = { size: 12, bold: true };
+        sheet.getRow(3).font = { size: 12, bold: true };
   
         sheet.addRow([]);
   
@@ -92,14 +93,7 @@ export class InstitucionEducativaSucursalService {
           "E5",
           "F5",
           "G5",
-          "H5",
-          "I5",
-          "J5",
-          "K5",
-          "L5",      
-          "M5",      
-          "N5",      
-          "O5",      
+          "H5",          
         ].map((key) => {
           sheet.getCell(key).fill = {
             type: "pattern",
@@ -123,7 +117,7 @@ export class InstitucionEducativaSucursalService {
           column.eachCell({ includeEmpty: true }, function (cell) {
             dataMax = cell.value?cell.value.toString().length:0;
           })
-          column.width = dataMax < 10 ? 15 : dataMax;
+          column.width = dataMax < 10 ? 20 : dataMax;
         });
   
         //para la imagen
