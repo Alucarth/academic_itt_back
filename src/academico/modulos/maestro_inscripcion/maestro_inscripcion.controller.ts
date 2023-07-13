@@ -203,6 +203,12 @@ export class MaestroInscripcionController {
     let result = await this.usersService.getXlsAllDocentesByCarreraAutorizada(id,ueId);
     res.download(`${result}`);
   }
+
+  @Get('crear-usuarios-estudiantes')
+  async createUsuariosEstudiantes(){
+      console.log("total docentes por departamento y dependencia");
+      //return await this.usersService.crearUsuariosEstudiantes();
+  }
   
 
 }
