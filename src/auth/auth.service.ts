@@ -113,6 +113,8 @@ export class AuthService {
         maestro_inscripcion.persona_id = ${result[0].persona_id} 
       `);
 
+     
+
       let arrayData = []
       let arrayInstitutos = []
       for (let index = 0; index < institutos.length; index++) {     
@@ -153,6 +155,44 @@ export class AuthService {
       }
       
       //arrayData.push(arrayInstitutos);
+
+      //si es alumno
+      const alumnosinstitutos = await this.userRepository.query(`
+      SELECT
+        institucion_educativa_estudiante.id, 
+        institucion_educativa.id as institucion_educativa_id, 
+        institucion_educativa_estudiante.institucion_educativa_sucursal_id, 
+        institucion_educativa_estudiante.persona_id, 
+        institucion_educativa_sucursal.sucursal_codigo, 
+        institucion_educativa.institucion_educativa
+      FROM
+        institucion_educativa_sucursal
+        INNER JOIN
+        institucion_educativa
+        ON 
+          institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa."id"
+        INNER JOIN
+        institucion_educativa_estudiante
+        ON 
+          institucion_educativa_sucursal."id" = institucion_educativa_estudiante.institucion_educativa_sucursal_id
+        where institucion_educativa_estudiante.persona_id = ${result[0].persona_id} 
+      
+      `);
+      
+      for (let index = 0; index < alumnosinstitutos.length; index++) {     
+        let arrayRoles = []
+        arrayRoles.push({rol_tipo_id: 7, rol: 'ESTUDIANTE'});
+
+        arrayData.push(
+          {
+            ie_id:  alumnosinstitutos[index]['institucion_educativa_id'],
+	          ie_sid:  alumnosinstitutos[index]['institucion_educativa_sucursal_id'],
+            ie_nombre: alumnosinstitutos[index]['institucion_educativa'],
+            roles: arrayRoles
+          }
+        )
+
+      }
       
 
 
