@@ -296,7 +296,7 @@ export class PersonaRepository {
 
    
     console.log('verificando gestiones');
-    const datosges = await this.dataSource.query(`
+    /*const datosges = await this.dataSource.query(`
     select distinct gestion_tipo_id, periodo_tipo_id, matricula_estudiante_id,periodo 
     from 
     (
@@ -341,6 +341,50 @@ export class PersonaRepository {
       and 
       instituto_plan_estudio_carrera.carrera_autorizada_id =   ${caId}       
       ) as data 
+    `);*/
+
+    const datosges = await this.dataSource.query(`    
+    SELECT
+      institucion_educativa_estudiante."id", 
+      institucion_educativa_estudiante.observacion, 
+      institucion_educativa_estudiante.persona_id, 
+      matricula_estudiante.id as matricula_estudiante_id, 
+      matricula_estudiante.gestion_tipo_id, 
+      matricula_estudiante.periodo_tipo_id, 
+      matricula_estudiante.doc_matricula, 
+      matricula_estudiante.fecha_registro, 
+      instituto_plan_estudio_carrera.plan_estudio_carrera_id, 
+      instituto_plan_estudio_carrera.carrera_autorizada_id, 
+      instituto_plan_estudio_carrera.observacion, 
+      periodo_tipo.periodo, 
+      instituto_estudiante_inscripcion."id", 
+      instituto_estudiante_inscripcion.aula_id, 
+      instituto_estudiante_inscripcion.estadomatricula_tipo_id, 
+      instituto_estudiante_inscripcion.observacion, 
+      instituto_estudiante_inscripcion.fecha_inscripcion
+    FROM
+      institucion_educativa_estudiante
+      INNER JOIN
+      matricula_estudiante
+      ON 
+        institucion_educativa_estudiante."id" = matricula_estudiante.institucion_educativa_estudiante_id
+      INNER JOIN
+      instituto_plan_estudio_carrera
+      ON 
+        matricula_estudiante.instituto_plan_estudio_carrera_id = instituto_plan_estudio_carrera."id"
+      INNER JOIN
+      periodo_tipo
+      ON 
+        matricula_estudiante.periodo_tipo_id = periodo_tipo."id"
+      INNER JOIN
+      instituto_estudiante_inscripcion
+      ON 
+        matricula_estudiante."id" = instituto_estudiante_inscripcion.matricula_estudiante_id
+    WHERE
+      institucion_educativa_estudiante.persona_id = ${personaId}
+      and 
+      instituto_plan_estudio_carrera.carrera_autorizada_id =   ${caId}       
+      
     `);
 
     let gestiones = []
