@@ -264,9 +264,10 @@ export class PersonaRepository {
 
     const datosca = await this.dataSource.query(`
     SELECT
-      carrera_autorizada.id, 	
-      carrera_tipo.carrera as carrera, 
-      area_tipo.area
+      carrera_autorizada.id, 
+      carrera_tipo.carrera AS carrera, 
+      area_tipo.area, 
+      nivel_academico_tipo.nivel_academico
     FROM
       carrera_autorizada
       INNER JOIN
@@ -277,7 +278,15 @@ export class PersonaRepository {
       area_tipo
       ON 
         carrera_autorizada.area_tipo_id = area_tipo.id
-      where 
+      INNER JOIN
+      carrera_autorizada_resolucion
+      ON 
+        carrera_autorizada.id = carrera_autorizada_resolucion.carrera_autorizada_id
+      INNER JOIN
+      nivel_academico_tipo
+      ON 
+        carrera_autorizada_resolucion.nivel_academico_tipo_id = nivel_academico_tipo.id
+    WHERE   
         carrera_autorizada.id  =  ${caId}
     `);
 
@@ -344,7 +353,10 @@ export class PersonaRepository {
         aula.id, 
         asignatura_tipo.asignatura, 
         asignatura_tipo.abreviacion, 
-        asignatura_tipo.id
+        asignatura_tipo.id,
+        coalesce((select sum(cuantitativa) from instituto_estudiante_inscripcion_docente_calificacion where modalidad_evaluacion_tipo_id = 7 and instituto_estudiante_inscripcion_id = instituto_estudiante_inscripcion.id  ),0) as nota,
+        (select estado_matricula from estado_matricula_tipo where id = instituto_estudiante_inscripcion.estadomatricula_tipo_id ) as estado ,
+        (select horas from plan_estudio_asignatura where id in (select plan_estudio_asignatura_id from oferta_curricular where id = aula.oferta_curricular_id)) as horas 
       FROM
         instituto_estudiante_inscripcion
         INNER JOIN
@@ -373,8 +385,9 @@ export class PersonaRepository {
           let datamaterias = {
             asignatura: datosinscripcion[index2]['asignatura'],
             abreviacion: datosinscripcion[index2]['abreviacion'],
-            nota: 36,
-            estado: 'REPROBADO',
+            cargaHoraria: datosinscripcion[index2]['horas'],
+            nota: datosinscripcion[index2]['nota'],
+            estado: datosinscripcion[index2]['estado'],
           }
 
           materias.push(datamaterias);
@@ -400,7 +413,7 @@ export class PersonaRepository {
       sie: sie,
       ue: datosgrales[0]['institucion_educativa'],
       carrera: datosca[0]['carrera'],
-      nivel: 'TÉCNICO SUPERIOR',
+      nivel: datosca[0]['nivel_academico'],
       area: datosca[0]['area'],
       gestiones: gestiones
     };
@@ -420,40 +433,40 @@ export class PersonaRepository {
     from 
     (
     SELECT
-	operativo_carrera_autorizada.gestion_tipo_id, 
-	operativo_carrera_autorizada.periodo_tipo_id, 
-	operativo_carrera_autorizada.carrera_autorizada_id, 
-	institucion_educativa_sucursal.institucion_educativa_id,
-	carrera_tipo."id", 
-	carrera_tipo.carrera, 
-	carrera_autorizada."id", 
-	periodo_tipo.periodo, 
-	periodo_tipo.abreviacion, 
-	institucion_educativa.institucion_educativa, 
-	institucion_educativa."id"
-FROM
-	carrera_autorizada
-	INNER JOIN
-	operativo_carrera_autorizada
-	ON 
-		carrera_autorizada."id" = operativo_carrera_autorizada.carrera_autorizada_id
-	INNER JOIN
-	institucion_educativa_sucursal
-	ON 
-		carrera_autorizada.institucion_educativa_sucursal_id = institucion_educativa_sucursal."id"
-	INNER JOIN
-	carrera_tipo
-	ON 
-		carrera_autorizada.carrera_tipo_id = carrera_tipo."id"
-	INNER JOIN
-	periodo_tipo
-	ON 
-		operativo_carrera_autorizada.periodo_tipo_id = periodo_tipo."id"
-	INNER JOIN
-	institucion_educativa
-	ON 
-		institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa."id"
-WHERE
+      operativo_carrera_autorizada.gestion_tipo_id, 
+      operativo_carrera_autorizada.periodo_tipo_id, 
+      operativo_carrera_autorizada.carrera_autorizada_id, 
+      institucion_educativa_sucursal.institucion_educativa_id,
+      carrera_tipo."id", 
+      carrera_tipo.carrera, 
+      carrera_autorizada."id", 
+      periodo_tipo.periodo, 
+      periodo_tipo.abreviacion, 
+      institucion_educativa.institucion_educativa, 
+      institucion_educativa."id"
+    FROM
+      carrera_autorizada
+      INNER JOIN
+      operativo_carrera_autorizada
+      ON 
+        carrera_autorizada."id" = operativo_carrera_autorizada.carrera_autorizada_id
+      INNER JOIN
+      institucion_educativa_sucursal
+      ON 
+        carrera_autorizada.institucion_educativa_sucursal_id = institucion_educativa_sucursal."id"
+      INNER JOIN
+      carrera_tipo
+      ON 
+        carrera_autorizada.carrera_tipo_id = carrera_tipo."id"
+      INNER JOIN
+      periodo_tipo
+      ON 
+        operativo_carrera_autorizada.periodo_tipo_id = periodo_tipo."id"
+      INNER JOIN
+      institucion_educativa
+      ON 
+        institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa."id"
+    WHERE
 	institucion_educativa_sucursal.institucion_educativa_id = ${sie}
     
 		) as data
