@@ -223,10 +223,8 @@ export class PersonaRepository {
     
   }
 
-  async getHistorialById(personaId, sie) {
+  async getHistorialById(personaId, sie, caId) {
     
-    console.log('here');
-
     const datosgrales = await this.dataSource.query(`
     SELECT
       persona.id, 
@@ -263,6 +261,140 @@ export class PersonaRepository {
     if(datosgrales.length == 0){
       return false;
     }
+
+    const datosca = await this.dataSource.query(`
+    SELECT
+      carrera_autorizada.id, 	
+      carrera_tipo.carrera as carrera, 
+      area_tipo.area
+    FROM
+      carrera_autorizada
+      INNER JOIN
+      carrera_tipo
+      ON 
+        carrera_autorizada.carrera_tipo_id = carrera_tipo.id
+      INNER JOIN
+      area_tipo
+      ON 
+        carrera_autorizada.area_tipo_id = area_tipo.id
+      where 
+        carrera_autorizada.id  =  ${caId}
+    `);
+
+    if(datosca.length == 0){
+      return false;
+    }
+
+    console.log('verificando gestiones');
+    const datosges = await this.dataSource.query(`
+    SELECT
+      institucion_educativa_estudiante."id", 
+      institucion_educativa_estudiante.observacion, 
+      institucion_educativa_estudiante.persona_id, 
+      matricula_estudiante.id as matricula_estudiante_id, 
+      matricula_estudiante.gestion_tipo_id, 
+      matricula_estudiante.periodo_tipo_id, 
+      matricula_estudiante.doc_matricula, 
+      matricula_estudiante.fecha_registro, 
+      instituto_plan_estudio_carrera.plan_estudio_carrera_id, 
+      instituto_plan_estudio_carrera.carrera_autorizada_id, 
+      instituto_plan_estudio_carrera.observacion, 
+      periodo_tipo.periodo, 
+      instituto_estudiante_inscripcion."id", 
+      instituto_estudiante_inscripcion.aula_id, 
+      instituto_estudiante_inscripcion.estadomatricula_tipo_id, 
+      instituto_estudiante_inscripcion.observacion, 
+      instituto_estudiante_inscripcion.fecha_inscripcion
+    FROM
+      institucion_educativa_estudiante
+      INNER JOIN
+      matricula_estudiante
+      ON 
+        institucion_educativa_estudiante."id" = matricula_estudiante.institucion_educativa_estudiante_id
+      INNER JOIN
+      instituto_plan_estudio_carrera
+      ON 
+        matricula_estudiante.instituto_plan_estudio_carrera_id = instituto_plan_estudio_carrera."id"
+      INNER JOIN
+      periodo_tipo
+      ON 
+        matricula_estudiante.periodo_tipo_id = periodo_tipo."id"
+      INNER JOIN
+      instituto_estudiante_inscripcion
+      ON 
+        matricula_estudiante."id" = instituto_estudiante_inscripcion.matricula_estudiante_id
+    WHERE
+      institucion_educativa_estudiante.persona_id = ${personaId}
+      and 
+      instituto_plan_estudio_carrera.carrera_autorizada_id =   ${caId}        
+    `);
+
+    let gestiones = []
+    for (let index = 0; index < datosges.length; index++) {      
+
+      //por cada gestion ver sus materias inscritas
+      let datosinscripcion = await this.dataSource.query(`
+      SELECT
+        instituto_estudiante_inscripcion.id, 
+        instituto_estudiante_inscripcion.matricula_estudiante_id, 
+        instituto_estudiante_inscripcion.aula_id, 
+        instituto_estudiante_inscripcion.estadomatricula_tipo_id, 
+        instituto_estudiante_inscripcion.estadomatricula_inicio_tipo_id, 
+        instituto_estudiante_inscripcion.observacion, 
+        aula.id, 
+        asignatura_tipo.asignatura, 
+        asignatura_tipo.abreviacion, 
+        asignatura_tipo.id
+      FROM
+        instituto_estudiante_inscripcion
+        INNER JOIN
+        aula
+        ON 
+          instituto_estudiante_inscripcion.aula_id = aula.id
+        INNER JOIN
+        oferta_curricular
+        ON 
+          aula.oferta_curricular_id = oferta_curricular.id
+        INNER JOIN
+        plan_estudio_asignatura
+        ON 
+          oferta_curricular.plan_estudio_asignatura_id = plan_estudio_asignatura.id
+        INNER JOIN
+        asignatura_tipo
+        ON 
+          plan_estudio_asignatura.asignatura_tipo_id = asignatura_tipo.id
+      WHERE
+        matricula_estudiante_id = ${datosges[index]['matricula_estudiante_id']}
+      `);
+
+      let materias = [];
+      for (let index2= 0; index2 < datosinscripcion.length; index2++) {
+
+          let datamaterias = {
+            asignatura: datosinscripcion[index2]['asignatura'],
+            abreviacion: datosinscripcion[index2]['abreviacion'],
+            nota: 36,
+            estado: 'REPROBADO',
+          }
+
+          materias.push(datamaterias);
+      }
+
+
+
+      let data = {
+        gestion : datosges[index]['gestion_tipo_id'],
+        periodoId : datosges[index]['periodo_tipo_id'],
+        periodo: datosges[index]['periodo'],
+        materias: materias
+      }
+      console.log('data:', data)
+      gestiones.push(data);
+
+    }
+
+
+
    
     return {
       persona: personaId,
@@ -270,50 +402,9 @@ export class PersonaRepository {
       ci: datosgrales[0]['carnet_identidad'],
       sie: sie,
       ue: datosgrales[0]['institucion_educativa'],
-      carrera: 'BELLEZA INTEGRAL',
-      gestiones: [
-       
-        {
-          gestion: 2023,
-          periodoId:54,
-          periodo: 'Semestre I/2023',
-          materias: [
-            {
-              asignatura: 'asignatura 1',
-              paralelo: 'A',
-              nota_final:75,
-              estado_matricula: 'APROBADO'
-            },
-            {
-              asignatura: 'asignatura 2',
-              paralelo: 'A',
-              nota_final:50,
-              estado_matricula: 'REPROBADO'
-            }
-          ]
-        },
-        
-        {
-          gestion: 2023,
-          periodoId:55,
-          periodo: 'Semestre II/2023',
-          materias: [
-            {
-              asignatura: 'asignatura AA',
-              paralelo: 'B',
-              nota_final:75,
-              estado_matricula: 'APROBADO'
-            },
-            {
-              asignatura: 'asignatura BB',
-              paralelo: 'C',
-              nota_final:50,
-              estado_matricula: 'REPROBADO'
-            }
-          ]
-        }
-
-      ]
+      carrera: datosca[0]['carrera'],
+      area: datosca[0]['area'],
+      gestiones: gestiones
     };
 
 

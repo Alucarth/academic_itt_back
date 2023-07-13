@@ -39,12 +39,13 @@ export class PersonaController {
         return  await this.personaService.updatePersona(dto);        
     }
 
-    @Get('/historialAcademico/:id/:sie')
+    @Get('/historialAcademico/:id/:sie/:caId')
     async getHistorialPersonaById(
         @Param('id', ParseIntPipe) id: number,
-        @Param('sie', ParseIntPipe) sie: number
+        @Param('sie', ParseIntPipe) sie: number,
+        @Param('caId', ParseIntPipe) caId: number,
         ){
-        return await this.personaService.historialPersona(id, sie);
+        return await this.personaService.historialPersona(id, sie, caId);
     }
 
     @Get('/buscadorGestionPeriodo/:sie')
