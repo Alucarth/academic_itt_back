@@ -537,20 +537,21 @@ export class PersonaRepository {
       
     SELECT
       institucion_educativa_estudiante.persona_id, 
-      institucion_educativa_estudiante.id as institucion_educativa_estudiante_id, 
-      institucion_educativa_estudiante.observacion, 	
+      institucion_educativa_estudiante.id AS institucion_educativa_estudiante_id, 
+      institucion_educativa_estudiante.observacion, 
       institucion_educativa_estudiante.fecha_registro, 
       matricula_estudiante.gestion_tipo_id, 
       matricula_estudiante.periodo_tipo_id, 
       matricula_estudiante.doc_matricula, 
-      matricula_estudiante.fecha_registro as fecha_matricula, 
-      institucion_educativa_sucursal.id as institucion_educativa_sucursal_id, 
-      institucion_educativa.id as institucion_educativa_id, 
-      institucion_educativa.institucion_educativa, 	
-      carrera_autorizada.id as carrera_autorizada_id, 
+      matricula_estudiante.fecha_registro AS fecha_matricula, 
+      institucion_educativa_sucursal.id AS institucion_educativa_sucursal_id, 
+      institucion_educativa.id AS institucion_educativa_id, 
+      institucion_educativa.institucion_educativa, 
+      carrera_autorizada.id AS carrera_autorizada_id, 
       carrera_autorizada.carrera_tipo_id, 
       carrera_tipo.carrera, 
-      area_tipo.area
+      area_tipo.area, 
+      periodo_tipo.periodo
     FROM
       institucion_educativa_estudiante
       INNER JOIN
@@ -581,7 +582,11 @@ export class PersonaRepository {
       area_tipo
       ON 
         carrera_autorizada.area_tipo_id = area_tipo.id
-      where 
+      INNER JOIN
+      periodo_tipo
+      ON 
+        matricula_estudiante.periodo_tipo_id = periodo_tipo.id
+    WHERE
       institucion_educativa_estudiante.persona_id = ${id}
 
     `);
