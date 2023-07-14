@@ -240,7 +240,8 @@ export class PersonaRepository {
       institucion_educativa.institucion_educativa, 
       institucion_educativa_sucursal.id, 
       institucion_educativa_sucursal.sucursal_codigo, 
-      institucion_educativa_sucursal.sucursal_nombre
+      institucion_educativa_sucursal.sucursal_nombre,
+      (select nombre_archivo from institucion_educativa_imagen where institucion_educativa_id =  ${sie} and activo = true ) as imagen
     FROM
       persona
       INNER JOIN
@@ -459,8 +460,10 @@ export class PersonaRepository {
       persona: personaId,
       nombre: datosgrales[0]['paterno'] + ' ' + datosgrales[0]['materno'] + ' ' + datosgrales[0]['nombre'] ,
       ci: datosgrales[0]['carnet_identidad'],
+      fechaNacimiento: datosgrales[0]['fecha_nacimiento'],
       sie: sie,
       ue: datosgrales[0]['institucion_educativa'],
+      imagen: datosgrales[0]['imagen'],
       carrera: datosca[0]['carrera'],
       nivel: datosca[0]['nivel_academico'],
       area: datosca[0]['area'],
