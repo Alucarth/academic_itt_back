@@ -27,7 +27,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionController {
     
     @Get('promedios/aula-periodo/:id/:periodo')
     async getAllPromedioCalificacionByAulaId(@Param('id') id: number, @Param('periodo') periodo: number){
-        return await this.inscripcionDocenteCalificacionService.createUpdatePromedioCalificacionByAulaId(id, periodo);
+        return await this.inscripcionDocenteCalificacionService.createUpdatePromedioCalificacionByAulaId(id, periodo,0);
     }
     @Get('estados-finales/aula/:id')
     async getAllEstadosFinalesByAulaId(@Param('id') id: number){

@@ -104,11 +104,11 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
 
     }
    
-    async createUpdatePromedioCalificacionByAulaId (id:number, periodo:number) {
+    async createUpdatePromedioCalificacionByAulaId (id:number, periodo:number, docente:number) {
       
         //const datoAulaRegimen = await this.aulaRepository.getDatoAulaPeriodo(id);
         //sacamos el ultimo docente del aula
-        const docente = await this.aulaRepository.getDatoAulaDocente(id);
+        //const docente = await this.aulaRepository.getDatoAulaDocente(id);
         const resultado = [];
         if(periodo==55){ //anual
             
@@ -116,7 +116,11 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             for(const item of promediosAnuales)
              {
                 //console.log(item);
-                const datoPromedio = await this.inscDocenteCalificacionRepositorio.findPromedioByDato(item,8);
+                const datoPromedio = await this.inscDocenteCalificacionRepositorio.findPromedioByDato(
+                    item.nota_tipo_id, 
+                    item.periodo_tipo_id, 
+                    item.instituto_estudiante_inscripcion_id,
+                8);
            
                 const op = async (transaction: EntityManager) => {
                 //console.log(datoCalificacion);
@@ -133,7 +137,8 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                                 1,
                                 item,
                                 8,
-                                docente.aula_docente_id,
+                                docente,
+                                item.nota_tipo_id,
                                 transaction
                             );
                             resultado.push(nuevos);
@@ -141,6 +146,8 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                 }
                 await this.inscDocenteCalificacionRepositorio.runTransaction(op);
              }
+             if(resultado.length>0)
+                await this.createUpdateSumaCalificacionByAulaId(id, 7,docente);
         }
 
         if(periodo<55){ //semestral
@@ -149,7 +156,11 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             
             for(const item of promediosSemestrales)
             {
-                const datoPromedio = await this.inscDocenteCalificacionRepositorio.findPromedioByDato(item,7);
+                const datoPromedio = await this.inscDocenteCalificacionRepositorio.findPromedioByDato(
+                    item.nota_tipo_id, 
+                    item.periodo_tipo_id, 
+                    item.instituto_estudiante_inscripcion_id,
+                8);
                 
                 const op = async (transaction: EntityManager) => {
                 //console.log(datoCalificacion);
@@ -168,7 +179,8 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                                 1,
                                 item,
                                 7,
-                                docente.aula_docente_id,
+                                docente,
+                                item.nota_tipo_id,
                                 transaction
                             );
                         resultado.push(nuevos);
@@ -176,7 +188,68 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                 }
                     await this.inscDocenteCalificacionRepositorio.runTransaction(op);
              }
+             if(resultado.length>0)
+                await this.createUpdateSumaCalificacionByAulaId(id, 8,docente);
         }
+
+        return resultado;
+    }   
+
+    async createUpdateSumaCalificacionByAulaId (id:number, modalidad:number, docente:number) {
+      
+        //const datoAulaRegimen = await this.aulaRepository.getDatoAulaPeriodo(id);
+        //sacamos el ultimo docente del aula
+      //  const docente = await this.aulaRepository.getDatoAulaDocente(id);
+        //let modalidad_tipo = 0;
+        /*switch (modalidad) {
+            case (1): modalidad_tipo = 9; break;
+            case (2): modalidad_tipo = 10; break;
+            case (3): modalidad_tipo = 12; break;
+            case (4): modalidad_tipo = 13; break;
+            case (5): modalidad_tipo = 14; break;
+            case (6): modalidad_tipo = 15; break;
+            case (7): modalidad_tipo = 11; break;
+            case (8): modalidad_tipo = 16; break;
+          }*/
+          let modalidad_tipo = modalidad;
+        const resultado = [];
+        //ontenemos la suma de las notas de todos los estudiantes de esa aula bajo la modalidad
+        const sumaPromedios = await this.inscDocenteCalificacionRepositorio.findAllSubtotalByAulaId(id, modalidad);
+        for(const item of sumaPromedios)
+        {
+           //console.log(item);
+           const dato = await this.inscDocenteCalificacionRepositorio.findPromedioByDato(
+            7, 
+            item.periodo_tipo_id, 
+            item.instituto_estudiante_inscripcion_id,
+            modalidad_tipo);
+      
+           const op = async (transaction: EntityManager) => {
+           //console.log(datoCalificacion);
+               if(dato){
+                    const actualizados =  await this.inscDocenteCalificacionRepositorio.actualizarDatosCalificaciones(
+                       dato.id,
+                       item,
+                       transaction
+                   )
+                   resultado.push(actualizados);
+               }
+               if(!dato){
+                
+                   const nuevos = await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
+                           1,
+                           item,
+                           modalidad_tipo,
+                           docente,
+                           7,
+                           transaction
+                       );
+                       resultado.push(nuevos);
+                }
+           }
+           await this.inscDocenteCalificacionRepositorio.runTransaction(op);
+        }
+
         return resultado;
     }   
 
@@ -250,6 +323,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                           item,
                           item.modalidad_evaluacion_tipo_id,
                           item.aula_docente_id,
+                          item.nota_tipo_id,
                           transaction
                       );
                }
@@ -269,6 +343,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
            );
      
  }
+ //modulo para insertar las notas
  async crearNotasModalidad (dto: CreateInstitutoInscripcionDocenteCalificacionDto[]) {
         console.log("calificaciones");
         const resultado = [];
@@ -291,6 +366,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                           item,
                           item.modalidad_evaluacion_tipo_id,
                           item.aula_docente_id,
+                          item.nota_tipo_id,
                           transaction
                       );
                   resultado.push(nuevos);
@@ -299,14 +375,20 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
           }
             await this.inscDocenteCalificacionRepositorio.runTransaction(op);
        }
+       if(resultado.length>0){
+        //insertamos la suma
+            await this.createUpdateSumaCalificacionByAulaId(dto[0].aula_id, dto[0].modalidad_evaluacion_tipo_id,dto[0].aula_docente_id);
+       }
        console.log(resultado.length)
+
        return resultado;
         
  }
  async crearInscripcionDocenteCalificacionGlobal (dto: CreateInstitutoInscripcionDocenteCalificacionDto[]) {
      
-          const notas = await this.crearNotasModalidad(dto);
-          const promedios = await this.createUpdatePromedioCalificacionByAulaId(dto[0].aula_id,dto[0].periodo_tipo_id );
+          const notas = await this.crearNotasModalidad(dto); //registramos las calificaciones remitidos por array
+          //const subtotales = await this.createUpdateSumaCalificacionByAulaId(dto[0].aula_id, dto[0].modalidad_evaluacion_tipo_id);
+          const promedios = await this.createUpdatePromedioCalificacionByAulaId(dto[0].aula_id, dto[0].periodo_tipo_id, dto[0].aula_docente_id );
           await this.updateEstadosFinalesByAulaId(dto[0].aula_id);
          if(notas.length>0){
             if(promedios.length>0){
