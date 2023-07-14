@@ -170,4 +170,14 @@ export class PersonaService {
     );
 
   }
+
+  async getCarrerasByPersonaId(id: number){
+    const dato = await this.personaRepositorio.getCarrerasByPersonaId(id);
+
+      return this._serviceResp.respuestaHttp200(
+        dato,
+        "Datos Encontrados !!",
+        ""
+      );
+  }
 }
