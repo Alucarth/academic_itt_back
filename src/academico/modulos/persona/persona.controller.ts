@@ -55,5 +55,12 @@ export class PersonaController {
         return await this.personaService.buscadorGestionPeriodo(sie);
     }
 
+    @Get('/getCarrerasByPersonaId/:id')
+    async getCarrerasByPersonaById(
+        @Param('id', ParseIntPipe) id: number,        
+        ){
+        return await this.personaService.getCarrerasByPersonaId(id);
+    }
+
 
 }
