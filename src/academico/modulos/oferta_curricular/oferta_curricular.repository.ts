@@ -94,12 +94,12 @@ export class OfertaCurricularRepository {
       .innerJoinAndSelect("a.paraleloTipo", "pt")       
       .innerJoinAndSelect("a.aulasDetalles", "d")       
       .innerJoinAndSelect("d.diaTipo", "dt")       
-      .innerJoinAndSelect("a.aulasDocentes", "do")       
-      .innerJoinAndSelect("do.maestroInscripcion", "m")       
-      .innerJoinAndSelect("m.persona", "p")       
+      .leftJoinAndSelect("a.aulasDocentes", "do")       
+      .leftJoinAndSelect("do.maestroInscripcion", "m")       
+      .leftJoinAndSelect("m.persona", "p")       
       .select([
           'o.id',
-          //'o.institutoPlanEstudioCarreraId',
+          'o.institutoPlanEstudioCarreraId',
           'pa.id',
           'pa.horas',
           'at.id',
