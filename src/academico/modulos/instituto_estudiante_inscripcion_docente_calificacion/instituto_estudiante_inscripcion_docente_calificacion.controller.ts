@@ -20,6 +20,10 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionController {
     async getAllCalificacionesByInscripcionId(@Param('id') id: number,){
         return await this.inscripcionDocenteCalificacionService.getAllCalificacionesByInscripcionId(id);
     }
+    @Get('inscripcion-modalidad/:id/:modalidad')
+    async getAllCalificacionesByInscripcionModalidadId(@Param('id') id: number,@Param('modalidad') modalidad: number){
+        return await this.inscripcionDocenteCalificacionService.getAllCalificacionesByInscripcionModalidadId(id, modalidad);
+    }
     
     @Get('promedios/aula-periodo/:id/:periodo')
     async getAllPromedioCalificacionByAulaId(@Param('id') id: number, @Param('periodo') periodo: number){

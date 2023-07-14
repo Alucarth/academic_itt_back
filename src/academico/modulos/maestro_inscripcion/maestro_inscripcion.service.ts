@@ -1593,6 +1593,7 @@ export class MaestroInscripcionService {
     .innerJoin("me.institucionEducativaSucursal", "s")
     .innerJoin("s.institucionEducativa", "i")
     .where('i.educacionTipoId in (7,8,9)')
+    .andWhere('i.estadoInstitucionEducativaTipoId in (10)') //abierta
     .getCount();
     
     return total 
@@ -1615,9 +1616,10 @@ export class MaestroInscripcionService {
         "up4.id as departamento_id",
         "g.dependencia as dependencia",
         "g.id as dependencia_id",
-        "COUNT(mi.id) as total", 
+        "COUNT(distinct(mi.id)) as total", 
       ])
       .where('i.educacionTipoId in (7,8,9)')
+      .andWhere('i.estadoInstitucionEducativaTipoId in (10)') //abierta
       .groupBy('up4.id')
       .addGroupBy('g.dependencia')
       .addGroupBy('g.id')
@@ -1651,6 +1653,7 @@ export class MaestroInscripcionService {
       ])
       .where('i.educacionTipoId in (7,8,9)')
       .andWhere('ca.areaTipoId > 1')
+      .andWhere('i.estadoInstitucionEducativaTipoId in (10)') //abierta
       .andWhere('e.dependenciaTipoId = :dependencia ', { dependencia })
       .andWhere('up4.id = :lugar ', { lugar })
       .groupBy('ct.carrera')

@@ -112,6 +112,23 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
           .where("ad.institutoEstudianteInscripcionId = :id ", { id })
           .getRawMany();
     }
+    async findAllCalificacionesByInscripcionModalidadId(id,modalidad){
+        return  await this.dataSource.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
+        .createQueryBuilder("ad")
+        .innerJoinAndSelect("ad.notaTipo", "n")
+        .innerJoinAndSelect("ad.modalidadEvaluacionTipo", "me")
+        .select([
+            'ad.id as id',
+            'ad.cuantitativa as cuantitativa',
+            'n.nota as nota_tipo',
+            'me.modalidadEvaluacion as modalidad_evaluacion',
+            'me.id as modalidad_id',
+            'n.id as nota_tipo_id',
+        ])
+          .where("ad.institutoEstudianteInscripcionId = :id ", { id })
+          .andWhere("ad.modalidadEvaluacionTipoId = :modalidad ", { modalidad })
+          .getRawMany();
+    }
 
     async crearInscripcionDocenteCalificacion(idUsuario, notas, transaction) {
 
