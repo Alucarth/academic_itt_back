@@ -551,7 +551,14 @@ export class PersonaRepository {
       carrera_autorizada.carrera_tipo_id, 
       carrera_tipo.carrera, 
       area_tipo.area, 
-      periodo_tipo.periodo
+      periodo_tipo.periodo, 
+      carrera_autorizada_resolucion.id as carrera_autorizada_resolucion_id, 
+      carrera_autorizada_resolucion.descripcion, 
+      carrera_autorizada_resolucion.numero_resolucion, 
+      carrera_autorizada_resolucion.fecha_resolucion, 
+      carrera_autorizada_resolucion.resuelve, 
+      resolucion_tipo.resolucion_tipo, 
+      nivel_academico_tipo.nivel_academico
     FROM
       institucion_educativa_estudiante
       INNER JOIN
@@ -586,6 +593,18 @@ export class PersonaRepository {
       periodo_tipo
       ON 
         matricula_estudiante.periodo_tipo_id = periodo_tipo.id
+      INNER JOIN
+      carrera_autorizada_resolucion
+      ON 
+        carrera_autorizada.id = carrera_autorizada_resolucion.carrera_autorizada_id
+      INNER JOIN
+      resolucion_tipo
+      ON 
+        carrera_autorizada_resolucion.resolucion_tipo_id = resolucion_tipo.id
+      INNER JOIN
+      nivel_academico_tipo
+      ON 
+        carrera_autorizada_resolucion.nivel_academico_tipo_id = nivel_academico_tipo.id
     WHERE
       institucion_educativa_estudiante.persona_id = ${id}
 
