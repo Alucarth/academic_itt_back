@@ -54,6 +54,22 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
         );
 
     }
+    async getAllCalificacionesByInscripcionModalidadId(id:number,modalidad:number){
+        const aulas = await this.inscDocenteCalificacionRepositorio.findAllCalificacionesByInscripcionModalidadId(id, modalidad);
+        if(aulas.length > 0){
+            return this._serviceResp.respuestaHttp201(
+                aulas,
+                'Existen resultados encontrados !!',
+                '',
+            );
+        }
+        return this._serviceResp.respuestaHttp404(
+            "",
+            'No se encontraron resultados!!',
+            '',
+        );
+
+    }
     
     async getAllCalificacionesPromedioAnualByAulaId(id:number){
         const notas = await this.inscDocenteCalificacionRepositorio.findAllPromedioAnualByAulaId(id);
