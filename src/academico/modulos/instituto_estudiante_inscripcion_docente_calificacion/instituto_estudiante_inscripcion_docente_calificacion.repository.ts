@@ -39,12 +39,12 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         });
         
     }
-    async findPromedioByDato(item, modalidad){
+    async findPromedioByDato(nota_tipo,periodo,id, modalidad){
         return  await this.dataSource.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion).findOneBy(
             {'modalidadEvaluacionTipoId':modalidad,
-             'notaTipoId':item.nota_tipo_id,
-             'periodoTipoId':item.periodo_tipo_id,
-             'institutoEstudianteInscripcionId':item.instituto_estudiante_inscripcion_id,
+             'notaTipoId':nota_tipo,
+             'periodoTipoId':periodo,
+             'institutoEstudianteInscripcionId':id,
         });
         
     }
@@ -190,6 +190,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
       item, 
       modalidad, 
       docente, 
+      nota_tipo,
       transaction) {
 
       return   await transaction
@@ -201,9 +202,9 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         aulaDocenteId : docente,
         periodoTipoId : item.periodo_tipo_id,
         cuantitativa : item.cuantitativa,
-        cualitativa : item.cualitativa,
+        cualitativa : '',
         valoracionTipoId : 1, //nota normal
-        notaTipoId : item.nota_tipo_id,
+        notaTipoId : nota_tipo,
         modalidadEvaluacionTipoId :modalidad,
         usuarioId : idUsuario,
       })
@@ -343,6 +344,32 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
     
         return result;
       }
+
+      async findAllSubtotalByAulaId(id: number, modalidad: number ) {
+        
+        const result = await this.dataSource.query(`
+        SELECT 
+        c.instituto_estudiante_inscripcion_id, 
+        SUM(c.cuantitativa) as cuantitativa,
+        c.periodo_tipo_id 
+        FROM 
+        instituto_estudiante_inscripcion_docente_calificacion c, 
+        instituto_estudiante_inscripcion i 
+        WHERE 
+        i.aula_id = ${id}  
+        AND i.id = c.instituto_estudiante_inscripcion_id 
+        AND c.modalidad_evaluacion_tipo_id = ${modalidad}
+        AND nota_tipo_id <>7
+        GROUP BY 
+        c.instituto_estudiante_inscripcion_id,
+        c.periodo_tipo_id
+        ORDER BY 
+        c.instituto_estudiante_inscripcion_id
+        `);
+        console.log("resultSuma: ", result);
+        return result;
+      }
+
       async findAllEstadosFinalesByAulaId(id: number) {
         
         const result = await this.dataSource.query(`
@@ -365,9 +392,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         ORDER BY 
         c.instituto_estudiante_inscripcion_id
         `);
-    
         console.log("resultEstados= ", result);
-    
         return result;
       }
 
