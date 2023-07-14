@@ -375,9 +375,9 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         const result = await this.dataSource.query(`
         SELECT 
         c.instituto_estudiante_inscripcion_id, 
-        sum(c.cuantitativa) as total ,
+        c.cuantitativa as total ,
        case
-       	when sum(c.cuantitativa) >60 then 30
+       	when c.cuantitativa >60 then 30
        	else 43
        end as estado
          FROM 
@@ -387,8 +387,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         i.aula_id = ${id} 
         AND i.id = c.instituto_estudiante_inscripcion_id 
         AND c.modalidad_evaluacion_tipo_id in (7,8) 
-        GROUP BY 
-        c.instituto_estudiante_inscripcion_id, c.modalidad_evaluacion_tipo_id, c.periodo_tipo_id
+        AND c.nota_tipo_id=7
         ORDER BY 
         c.instituto_estudiante_inscripcion_id
         `);
