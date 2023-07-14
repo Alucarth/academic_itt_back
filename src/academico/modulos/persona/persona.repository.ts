@@ -530,4 +530,67 @@ export class PersonaRepository {
 
 
   }
+
+  async getCarrerasByPersonaId(id){
+
+    const result = await this.dataSource.query(`
+      
+    SELECT
+      institucion_educativa_estudiante.persona_id, 
+      institucion_educativa_estudiante.id, 
+      institucion_educativa_estudiante.observacion, 
+      institucion_educativa_estudiante.persona_id, 
+      institucion_educativa_estudiante.fecha_registro, 
+      matricula_estudiante.gestion_tipo_id, 
+      matricula_estudiante.periodo_tipo_id, 
+      matricula_estudiante.doc_matricula, 
+      matricula_estudiante.fecha_registro, 
+      institucion_educativa_sucursal.id, 
+      institucion_educativa.id, 
+      institucion_educativa.institucion_educativa, 
+      instituto_plan_estudio_carrera.carrera_autorizada_id, 
+      carrera_autorizada.id, 
+      carrera_autorizada.carrera_tipo_id, 
+      carrera_tipo.carrera, 
+      area_tipo.area
+    FROM
+      institucion_educativa_estudiante
+      INNER JOIN
+      matricula_estudiante
+      ON 
+        institucion_educativa_estudiante.id = matricula_estudiante.institucion_educativa_estudiante_id
+      INNER JOIN
+      institucion_educativa_sucursal
+      ON 
+        institucion_educativa_estudiante.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id
+      INNER JOIN
+      institucion_educativa
+      ON 
+        institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa.id
+      INNER JOIN
+      instituto_plan_estudio_carrera
+      ON 
+        matricula_estudiante.instituto_plan_estudio_carrera_id = instituto_plan_estudio_carrera.id
+      INNER JOIN
+      carrera_autorizada
+      ON 
+        instituto_plan_estudio_carrera.carrera_autorizada_id = carrera_autorizada.id
+      INNER JOIN
+      carrera_tipo
+      ON 
+        carrera_autorizada.carrera_tipo_id = carrera_tipo.id
+      INNER JOIN
+      area_tipo
+      ON 
+        carrera_autorizada.area_tipo_id = area_tipo.id
+      where 
+      institucion_educativa_estudiante.persona_id = ${id}
+
+    `);
+    return result
+
+  }
+
+
+
 }
