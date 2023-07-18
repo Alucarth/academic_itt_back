@@ -534,7 +534,9 @@ export class PersonaRepository {
   async getCarrerasByPersonaId(id){
 
     const result = await this.dataSource.query(`
-      
+    select distinct persona_id, institucion_educativa_estudiante_id, institucion_educativa_sucursal_id, institucion_educativa_id,institucion_educativa, carrera_autorizada_id, carrera_tipo_id, carrera, area, numero_resolucion, fecha_resolucion, resolucion_tipo, nivel_academico
+    from 
+    (
     SELECT
       institucion_educativa_estudiante.persona_id, 
       institucion_educativa_estudiante.id AS institucion_educativa_estudiante_id, 
@@ -607,6 +609,7 @@ export class PersonaRepository {
         carrera_autorizada_resolucion.nivel_academico_tipo_id = nivel_academico_tipo.id
     WHERE
       institucion_educativa_estudiante.persona_id = ${id}
+    ) as data
 
     `);
     return result
