@@ -404,7 +404,7 @@ export class PersonaRepository {
         asignatura_tipo.asignatura, 
         asignatura_tipo.abreviacion, 
         asignatura_tipo.id,
-        coalesce((select sum(cuantitativa) from instituto_estudiante_inscripcion_docente_calificacion where modalidad_evaluacion_tipo_id in (7,8) and instituto_estudiante_inscripcion_id = instituto_estudiante_inscripcion.id  ),0) as nota,
+        coalesce((select sum(cuantitativa) from instituto_estudiante_inscripcion_docente_calificacion where modalidad_evaluacion_tipo_id in (7,8) and nota_tipo_id = 7 and instituto_estudiante_inscripcion_id = instituto_estudiante_inscripcion.id  ),0) as nota,
         (select estado_matricula from estado_matricula_tipo where id = instituto_estudiante_inscripcion.estadomatricula_tipo_id ) as estado ,
         (select horas from plan_estudio_asignatura where id in (select plan_estudio_asignatura_id from oferta_curricular where id = aula.oferta_curricular_id)) as horas 
       FROM
