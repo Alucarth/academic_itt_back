@@ -404,7 +404,7 @@ export class PersonaRepository {
         asignatura_tipo.asignatura, 
         asignatura_tipo.abreviacion, 
         asignatura_tipo.id,
-        coalesce((select sum(cuantitativa) from instituto_estudiante_inscripcion_docente_calificacion where modalidad_evaluacion_tipo_id = 7 and instituto_estudiante_inscripcion_id = instituto_estudiante_inscripcion.id  ),0) as nota,
+        coalesce((select sum(cuantitativa) from instituto_estudiante_inscripcion_docente_calificacion where modalidad_evaluacion_tipo_id in (7,8) and nota_tipo_id = 7 and instituto_estudiante_inscripcion_id = instituto_estudiante_inscripcion.id  ),0) as nota,
         (select estado_matricula from estado_matricula_tipo where id = instituto_estudiante_inscripcion.estadomatricula_tipo_id ) as estado ,
         (select horas from plan_estudio_asignatura where id in (select plan_estudio_asignatura_id from oferta_curricular where id = aula.oferta_curricular_id)) as horas 
       FROM
@@ -534,23 +534,33 @@ export class PersonaRepository {
   async getCarrerasByPersonaId(id){
 
     const result = await this.dataSource.query(`
-      
+    select distinct persona_id, institucion_educativa_estudiante_id, institucion_educativa_sucursal_id, institucion_educativa_id,institucion_educativa, carrera_autorizada_id, carrera_tipo_id, carrera, area, numero_resolucion, fecha_resolucion, resolucion_tipo, nivel_academico
+    from 
+    (
     SELECT
       institucion_educativa_estudiante.persona_id, 
-      institucion_educativa_estudiante.id as institucion_educativa_estudiante_id, 
-      institucion_educativa_estudiante.observacion, 	
+      institucion_educativa_estudiante.id AS institucion_educativa_estudiante_id, 
+      institucion_educativa_estudiante.observacion, 
       institucion_educativa_estudiante.fecha_registro, 
       matricula_estudiante.gestion_tipo_id, 
       matricula_estudiante.periodo_tipo_id, 
       matricula_estudiante.doc_matricula, 
-      matricula_estudiante.fecha_registro as fecha_matricula, 
-      institucion_educativa_sucursal.id as institucion_educativa_sucursal_id, 
-      institucion_educativa.id as institucion_educativa_id, 
-      institucion_educativa.institucion_educativa, 	
-      carrera_autorizada.id as carrera_autorizada_id, 
+      matricula_estudiante.fecha_registro AS fecha_matricula, 
+      institucion_educativa_sucursal.id AS institucion_educativa_sucursal_id, 
+      institucion_educativa.id AS institucion_educativa_id, 
+      institucion_educativa.institucion_educativa, 
+      carrera_autorizada.id AS carrera_autorizada_id, 
       carrera_autorizada.carrera_tipo_id, 
       carrera_tipo.carrera, 
-      area_tipo.area
+      area_tipo.area, 
+      periodo_tipo.periodo, 
+      carrera_autorizada_resolucion.id as carrera_autorizada_resolucion_id, 
+      carrera_autorizada_resolucion.descripcion, 
+      carrera_autorizada_resolucion.numero_resolucion, 
+      carrera_autorizada_resolucion.fecha_resolucion, 
+      carrera_autorizada_resolucion.resuelve, 
+      resolucion_tipo.resolucion_tipo, 
+      nivel_academico_tipo.nivel_academico
     FROM
       institucion_educativa_estudiante
       INNER JOIN
@@ -581,8 +591,25 @@ export class PersonaRepository {
       area_tipo
       ON 
         carrera_autorizada.area_tipo_id = area_tipo.id
-      where 
+      INNER JOIN
+      periodo_tipo
+      ON 
+        matricula_estudiante.periodo_tipo_id = periodo_tipo.id
+      INNER JOIN
+      carrera_autorizada_resolucion
+      ON 
+        carrera_autorizada.id = carrera_autorizada_resolucion.carrera_autorizada_id
+      INNER JOIN
+      resolucion_tipo
+      ON 
+        carrera_autorizada_resolucion.resolucion_tipo_id = resolucion_tipo.id
+      INNER JOIN
+      nivel_academico_tipo
+      ON 
+        carrera_autorizada_resolucion.nivel_academico_tipo_id = nivel_academico_tipo.id
+    WHERE
       institucion_educativa_estudiante.persona_id = ${id}
+    ) as data
 
     `);
     return result
