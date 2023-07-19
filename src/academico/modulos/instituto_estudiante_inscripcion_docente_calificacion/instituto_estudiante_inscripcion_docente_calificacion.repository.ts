@@ -191,6 +191,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
       modalidad, 
       docente, 
       nota_tipo,
+      valoracion,
       transaction) {
 
       return   await transaction
@@ -203,7 +204,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         periodoTipoId : item.periodo_tipo_id,
         cuantitativa : item.cuantitativa,
         cualitativa : '',
-        valoracionTipoId : 1, //nota normal
+        valoracionTipoId : valoracion, //nota normal
         notaTipoId : nota_tipo,
         modalidadEvaluacionTipoId :modalidad,
         usuarioId : idUsuario,
@@ -280,6 +281,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         i.aula_id = ${id}  
         AND i.id = c.instituto_estudiante_inscripcion_id 
         AND c.modalidad_evaluacion_tipo_id in (1,2) 
+        AND c.valoracion_tipo_id = 1
         GROUP BY 
         c.instituto_estudiante_inscripcion_id, c.nota_tipo_id, c.periodo_tipo_id
         HAVING
@@ -307,6 +309,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         i.aula_id = ${id}  
         AND i.id = c.instituto_estudiante_inscripcion_id 
         AND c.modalidad_evaluacion_tipo_id in (3,4,5,6) 
+        AND c.valoracion_tipo_id = 1
         GROUP BY 
         c.instituto_estudiante_inscripcion_id, c.nota_tipo_id, c.periodo_tipo_id
         HAVING
@@ -360,6 +363,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         AND i.id = c.instituto_estudiante_inscripcion_id 
         AND c.modalidad_evaluacion_tipo_id = ${modalidad}
         AND nota_tipo_id <>7
+        -- AND valoracion_tipo_id = 1
         GROUP BY 
         c.instituto_estudiante_inscripcion_id,
         c.periodo_tipo_id
@@ -388,6 +392,28 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         AND i.id = c.instituto_estudiante_inscripcion_id 
         AND c.modalidad_evaluacion_tipo_id in (7,8) 
         AND c.nota_tipo_id=7
+        ORDER BY 
+        c.instituto_estudiante_inscripcion_id
+        `);
+        console.log("resultEstados= ", result);
+        return result;
+      }
+      async findAllRecuperatotiosByAulaId(id: number) {
+        
+        const result = await this.dataSource.query(`
+        SELECT 
+        c.instituto_estudiante_inscripcion_id, 
+        c.cuantitativa as total,
+        c.periodo_tipo_id
+         FROM 
+        instituto_estudiante_inscripcion_docente_calificacion c, 
+        instituto_estudiante_inscripcion i 
+        WHERE 
+        i.aula_id = ${id} 
+        AND i.id = c.instituto_estudiante_inscripcion_id 
+        AND c.modalidad_evaluacion_tipo_id = 9
+        AND c.nota_tipo_id = 6
+        AND c.valoracion_tipo_id = 5 
         ORDER BY 
         c.instituto_estudiante_inscripcion_id
         `);
