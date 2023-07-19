@@ -432,12 +432,53 @@ export class PersonaRepository {
       let materias = [];
       for (let index2= 0; index2 < datosinscripcion.length; index2++) {
 
+          //POR CADA PERSONA VEMOS TODAS SUS NOTAS, BIMESTRALES O SEMESTRALES Y LA ULTIMA SI EXISTEN
+
+          let notas = await this.dataSource.query(`
+          SELECT
+            instituto_estudiante_inscripcion_docente_calificacion.id, 
+            instituto_estudiante_inscripcion_docente_calificacion.instituto_estudiante_inscripcion_id, 	
+            periodo_tipo.periodo, 
+            periodo_tipo.abreviacion as periodo_tipo_abreviacion, 
+            instituto_estudiante_inscripcion_docente_calificacion.cuantitativa, 
+            instituto_estudiante_inscripcion_docente_calificacion.cualitativa, 
+            periodo_tipo.intervalo_gestion_tipo_id, 
+            nota_tipo.nota, 
+            nota_tipo.abreviacion as nota_tipo_abreviacion, 
+            modalidad_evaluacion_tipo.modalidad_evaluacion, 
+            modalidad_evaluacion_tipo.abreviacion as modalidad_evaluacion_tipo_abreviacion,
+            nota_tipo.id AS nota_tipo_id, 
+            periodo_tipo.id AS periodo_tipo_id, 
+            modalidad_evaluacion_tipo.id AS modalidad_evaluacion_tipo_id
+          FROM
+            instituto_estudiante_inscripcion_docente_calificacion
+            INNER JOIN
+            periodo_tipo
+            ON 
+              instituto_estudiante_inscripcion_docente_calificacion.periodo_tipo_id = periodo_tipo.id
+            INNER JOIN
+            nota_tipo
+            ON 
+              instituto_estudiante_inscripcion_docente_calificacion.nota_tipo_id = nota_tipo.id
+            INNER JOIN
+            modalidad_evaluacion_tipo
+            ON 
+              instituto_estudiante_inscripcion_docente_calificacion.modalidad_evaluacion_tipo_id = modalidad_evaluacion_tipo.id
+              where nota_tipo_id = 7 and instituto_estudiante_inscripcion_id = 2453
+            order by modalidad_evaluacion_tipo
+        
+          `);
+
+          //${datosinscripcion[index2]['id']}
+
+
           let datamaterias = {
             asignatura: datosinscripcion[index2]['asignatura'],
             abreviacion: datosinscripcion[index2]['abreviacion'],
             cargaHoraria: datosinscripcion[index2]['horas'],
-            nota: datosinscripcion[index2]['nota'],
+            //nota: datosinscripcion[index2]['nota'],
             estado: datosinscripcion[index2]['estado'],
+            notas
           }
 
           materias.push(datamaterias);
