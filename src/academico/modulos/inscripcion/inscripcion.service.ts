@@ -871,11 +871,126 @@ export class InscripcionService {
       ""
     );
   }
+  async getAllReprobadosByAulaId(id: number) {
+    const result = await this.inscripcionRepository
+      .createQueryBuilder("i")
+      .innerJoinAndSelect("i.aula", "a")
+      .innerJoinAndSelect("a.aulasDocentes", "d")
+      .innerJoinAndSelect("i.matriculaEstudiante", "me")
+      .innerJoinAndSelect("me.institutoEstudianteInscripcions", "iei")
+      .innerJoinAndSelect("me.institucionEducativaEstudiante", "ie")
+      .innerJoinAndSelect("ie.persona", "p")
+      .select([
+        "i.id as instituto_estudiante_inscripcion_id",
+        "a.id as aula_id",
+        "p.paterno as paterno",
+        "p.materno as materno",
+        "p.nombre as nombre",
+        "p.carnetIdentidad as carnet_identidad",
+        "d.id as aula_docente_id",
+      ])
+      .where("i.aulaId = :id", { id })
+      .andWhere("iei.estadoMatriculaTipoId = 43 ")
+      .andWhere("d.bajaTipoId = 0")
+      .getRawMany();
+    console.log("result: ", result);
+
+    return this._serviceResp.respuestaHttp200(
+      result,
+      "Registro Encontrado !!",
+      ""
+    );
+  }
+
+  async getAllReprobadosRecuperatorioByAulaId2(id: number) {
+  
+
+  const result = await this.inscripcionRepository
+    .createQueryBuilder("i")
+    .innerJoinAndSelect("i.aula", "a")
+    .innerJoinAndSelect("a.aulasDocentes", "d")
+    .innerJoinAndSelect("i.matriculaEstudiante", "me")
+  //  .innerJoinAndSelect("me.institutoEstudianteInscripcions", "iei")
+    .innerJoinAndSelect("i.inscripcionesDocentesCalificaciones", "ca")
+    .innerJoinAndSelect("me.institucionEducativaEstudiante", "ie")
+    .innerJoinAndSelect("ie.persona", "p")
+    .select([
+      "i.id as instituto_estudiante_inscripcion_id",
+      "a.id as aula_id",
+      "me.id as matricula_id",
+      "p.paterno as paterno",
+      "p.materno as materno",
+      "p.nombre as nombre",
+      "p.carnetIdentidad as carnet_identidad",
+      "d.id as aula_docente_id",
+      "ca.cuantitativa"
+    ])
+    .where("i.aulaId = :id", { id })
+    .andWhere("i.estadoMatriculaTipoId = 43 ")
+    .andWhere("d.bajaTipoId = 0")
+    .andWhere("ca.notaTipoId = 7")
+    .andWhere("ca.modalidadEvaluacionTipoId = 7")
+    .andWhere("ca.cuantitativa >= 40")
+    .andWhere((qb) =>
+    qb
+      .select('count(iei.matriculaEstudianteId)')
+      .from(InstitucionEducativaEstudiante, 'iei')
+      .where('iei.matriculaEstudianteId = i.matriculaEstudianteId')
+      .andWhere('iei.estadoMatriculaTipoId = 43')
+      .getQuery())
+    .getRawMany();
+  console.log("result: ", result);
+
+  return this._serviceResp.respuestaHttp200(
+    result,
+    "Registro Encontrado !!",
+    ""
+  );
+}
+
+  async getAllReprobadosRecuperatorioByAulaId(id: number, regimen: number) {
+
+    let maximo = 2;
+    if(regimen==55) //anual
+      maximo = 3; //maximo 3 asignaturas
+      const result = await  this.inscripcionRepository.query(`
+      SELECT cal.cuantitativa  as total, i.id as instituto_estudiante_inscripcion_id,a.id as aula_id, 
+      i.matricula_estudiante_id  as matricula_id,
+      p.paterno, p.paterno, p.nombre, p.carnet_identidad, d.id as aula_docente_id,
+      (select count(iei.matricula_estudiante_id) from instituto_estudiante_inscripcion iei 
+      WHERE iei.matricula_estudiante_id = i.matricula_estudiante_id and  iei.estadomatricula_tipo_id  = 43       
+      HAVING COUNT(iei.matricula_estudiante_id)<=${maximo}
+      ) as total_materias_reprobadas
+      
+      from instituto_estudiante_inscripcion i , aula a, aula_docente d, matricula_estudiante m ,
+      instituto_estudiante_inscripcion_docente_calificacion cal,institucion_educativa_estudiante iee, persona p
+      where 
+      i.aula_id = ${id}
+      and i.aula_id = a.id and d.aula_id=a.id 
+      and d.baja_tipo_id = 0
+      and i.matricula_estudiante_id =m.id
+      and cal.instituto_estudiante_inscripcion_id =i.id
+      and iee.id =m.institucion_educativa_estudiante_id
+      and iee.persona_id = p.id 
+      and cal.nota_tipo_id = 7
+      and cal.modalidad_evaluacion_tipo_id  = 7
+      and cal.cuantitativa >=40
+      and i.estadomatricula_tipo_id  = 43
+
+      `);
+
+    return this._serviceResp.respuestaHttp200(
+      result,
+      "Registro Encontrado !!",
+      ""
+    );
+  }
   async getAllInscritosCalificacionByAulaId(id: number) {
     console.log("calificaciones", id);
     const result = await this.inscripcionRepository
       .createQueryBuilder("i")
       .innerJoinAndSelect("i.aula", "a")
+      .innerJoinAndSelect("i.estadoMatriculaTipo", "emt")
       .innerJoinAndSelect("a.aulasDocentes", "d")
       .innerJoinAndSelect("i.matriculaEstudiante", "me")
       .innerJoinAndSelect("me.institucionEducativaEstudiante", "ie")
@@ -885,6 +1000,7 @@ export class InscripcionService {
       .leftJoinAndSelect("dc.modalidadEvaluacionTipo", "m")
       .select([
         "i.id",
+        "emt.estadoMatricula",
         "d.id",
         "me.id",
         "ie.id",
@@ -901,6 +1017,7 @@ export class InscripcionService {
         "m.modalidadEvaluacion"
       ])
       .where("i.aulaId = :id", { id })
+      .orderBy("p.paterno")
       .getMany();
     console.log("result: ", result);
 
@@ -910,6 +1027,7 @@ export class InscripcionService {
       ""
     );
   }
+
   async getAllInscritosByGestion(
     gestionId: number,
     periodoId: number,

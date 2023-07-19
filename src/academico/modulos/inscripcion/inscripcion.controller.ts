@@ -99,6 +99,19 @@ export class InscripcionController {
   ) {
     return await this.inscripcionService.getAllInscritosByAulaId(id);
   }
+  @Get("reprobadosByAulaId/:id")
+  async getAllReprobadosByAulaId(
+    @Param("id") id: number
+  ) {
+    return await this.inscripcionService.getAllReprobadosByAulaId(id);
+  }
+  @Get("reprobados-recuperatorio/ByAulaId/:id/:regimen")
+  async getAllReprobadosRecuperatorioByAulaId(
+    @Param("id") id: number,
+    @Param("regimen") regimen: number
+  ) {
+    return await this.inscripcionService.getAllReprobadosRecuperatorioByAulaId(id, regimen);
+  }
 
   @Get("calificaciones/aula/:id")
   async getAllInscritosCalificacionByAulaId(

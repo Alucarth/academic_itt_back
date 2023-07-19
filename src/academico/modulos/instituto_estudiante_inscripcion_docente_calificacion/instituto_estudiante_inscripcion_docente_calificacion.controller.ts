@@ -34,8 +34,8 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionController {
         return await this.inscripcionDocenteCalificacionService.updateEstadosFinalesByAulaId(id);
     }
     @Post()
-    async createInscripcionDocenteCalificacionGlobal(@Body() dto: CreateInstitutoInscripcionDocenteCalificacionDto[]){
+    async insertDocenteCalificacionGlobal(@Body() dto: CreateInstitutoInscripcionDocenteCalificacionDto[]){
         return  await this.inscripcionDocenteCalificacionService.crearInscripcionDocenteCalificacionGlobal(dto);        
     }
-
+    
 }

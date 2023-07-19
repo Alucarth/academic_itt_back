@@ -190,6 +190,7 @@ export class CarreraAutorizadaRepository {
             "COUNT(ca.id) as total",  
         ])
         .where('a.educacionTipoId in (7,8,9)')
+        .andWhere('a.estadoInstitucionEducativaTipoId in (10)') //abierta
         .andWhere('ca.areaTipoId > 1')
         .groupBy('up4.id')
         .addGroupBy('g.dependencia')

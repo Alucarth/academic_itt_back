@@ -106,9 +106,6 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
    
     async createUpdatePromedioCalificacionByAulaId (id:number, periodo:number, docente:number) {
       
-        //const datoAulaRegimen = await this.aulaRepository.getDatoAulaPeriodo(id);
-        //sacamos el ultimo docente del aula
-        //const docente = await this.aulaRepository.getDatoAulaDocente(id);
         const resultado = [];
         if(periodo==55){ //anual
             
@@ -133,12 +130,17 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                         resultado.push(actualizados);
                     }
                     if(!datoPromedio){
+                        let valoracion = 1;
+                        if(item.modalidad_evaluacion_tipo_id==9){ //cuando es recuperacion
+                            valoracion = 5;
+                        }
                         const nuevos = await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
                                 1,
                                 item,
-                                8,
+                                7,
                                 docente,
                                 item.nota_tipo_id,
+                                valoracion,
                                 transaction
                             );
                             resultado.push(nuevos);
@@ -146,8 +148,6 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                 }
                 await this.inscDocenteCalificacionRepositorio.runTransaction(op);
              }
-             if(resultado.length>0)
-                await this.createUpdateSumaCalificacionByAulaId(id, 7,docente);
         }
 
         if(periodo<55){ //semestral
@@ -174,6 +174,10 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                         resultado.push(actualizados);
                     }
                     if(!datoPromedio){
+                        let valoracion = 1;
+                        if(item.modalidad_evaluacion_tipo_id==9){ //cuando es recuperacion
+                            valoracion = 5;
+                        }
                         
                         const nuevos =  await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
                                 1,
@@ -181,6 +185,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                                 7,
                                 docente,
                                 item.nota_tipo_id,
+                                valoracion,
                                 transaction
                             );
                         resultado.push(nuevos);
@@ -188,44 +193,28 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                 }
                     await this.inscDocenteCalificacionRepositorio.runTransaction(op);
              }
-             if(resultado.length>0)
-                await this.createUpdateSumaCalificacionByAulaId(id, 8,docente);
         }
-
+            await this.createUpdateSumaCalificacionByAulaId(id, 7,docente); // insertamos nota final
         return resultado;
     }   
-
-    async createUpdateSumaCalificacionByAulaId (id:number, modalidad:number, docente:number) {
-      
-        //const datoAulaRegimen = await this.aulaRepository.getDatoAulaPeriodo(id);
-        //sacamos el ultimo docente del aula
-      //  const docente = await this.aulaRepository.getDatoAulaDocente(id);
-        //let modalidad_tipo = 0;
-        /*switch (modalidad) {
-            case (1): modalidad_tipo = 9; break;
-            case (2): modalidad_tipo = 10; break;
-            case (3): modalidad_tipo = 12; break;
-            case (4): modalidad_tipo = 13; break;
-            case (5): modalidad_tipo = 14; break;
-            case (6): modalidad_tipo = 15; break;
-            case (7): modalidad_tipo = 11; break;
-            case (8): modalidad_tipo = 16; break;
-          }*/
-          let modalidad_tipo = modalidad;
+    async createUpdateRecuperatorioFinalByAulaId (id:number, periodo_tipo:number, modalidad:number, docente:number) {
         const resultado = [];
-        //ontenemos la suma de las notas de todos los estudiantes de esa aula bajo la modalidad
-        const sumaPromedios = await this.inscDocenteCalificacionRepositorio.findAllSubtotalByAulaId(id, modalidad);
-        for(const item of sumaPromedios)
+        const recuperatorios = await this.inscDocenteCalificacionRepositorio.findAllRecuperatotiosByAulaId(id);
+
+        for(const item of recuperatorios)
         {
-           //console.log(item);
+           //console.log(item); actualizamos la nota promedio poniendole el minimo de 61
            const dato = await this.inscDocenteCalificacionRepositorio.findPromedioByDato(
             7, 
             item.periodo_tipo_id, 
             item.instituto_estudiante_inscripcion_id,
-            modalidad_tipo);
-      
+            7);
+          
            const op = async (transaction: EntityManager) => {
            //console.log(datoCalificacion);
+           let item = {
+            'cuantitativa' : 61
+           }
                if(dato){
                     const actualizados =  await this.inscDocenteCalificacionRepositorio.actualizarDatosCalificaciones(
                        dato.id,
@@ -234,22 +223,9 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                    )
                    resultado.push(actualizados);
                }
-               if(!dato){
-                
-                   const nuevos = await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
-                           1,
-                           item,
-                           modalidad_tipo,
-                           docente,
-                           7,
-                           transaction
-                       );
-                       resultado.push(nuevos);
-                }
            }
            await this.inscDocenteCalificacionRepositorio.runTransaction(op);
         }
-
         return resultado;
     }   
 
@@ -267,9 +243,6 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
         }
         return resultado;
     }   
-    
-    
-   
     
     //Registro de calificaciones en formato de array
     async crearInscripcionDocenteCalificacionArray (dto: CreateInstitutoInscripcionDocenteCalificacionDto[]) {
@@ -298,51 +271,55 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
     }
    
 
-   async crearInscripcionDocenteCalificacion (dto: CreateInstitutoInscripcionDocenteCalificacionDto[]) {
-     
-    console.log("calificaciones");
+ //modulo para sumar las notas parcilas de teoria y practica
+ async createUpdateSumaCalificacionByAulaId (id:number, modalidad_tipo:number, docente:number) {
     const resultado = [];
 
-        for (const item of dto) {
-        
-          //console.log(item);
-          const datoCalificacion = await this.inscDocenteCalificacionRepositorio.findCalificacionesByDato(item);
-     
-          const op = async (transaction: EntityManager) => {
-          //console.log(datoCalificacion);
-              if(datoCalificacion){
-                  await this.inscDocenteCalificacionRepositorio.actualizarDatosCalificaciones(
-                      datoCalificacion.id,
-                      item,
-                      transaction
-                  )
-              }
-              if(!datoCalificacion){
-                 await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
-                              1,
-                          item,
-                          item.modalidad_evaluacion_tipo_id,
-                          item.aula_docente_id,
-                          item.nota_tipo_id,
-                          transaction
-                      );
-               }
-            
-          }
-            const crearResult = await this.inscDocenteCalificacionRepositorio.runTransaction(op);
-            ///revisamos los promedios de los estudiantes en la ultima calificación
-            console.log(crearResult);
-           
-       }
+    //obtenemos la suma de las notas de todos los estudiantes de esa aula bajo la modalidad
+    const sumaPromedios = await this.inscDocenteCalificacionRepositorio.findAllSubtotalByAulaId(id, modalidad_tipo);
 
-        console.log(resultado);
-           return this._serviceResp.respuestaHttp201(
-               dto,
-               'Calificaciones creado y/o actualizado correctamente !!',
-               '',
-           );
-     
- }
+    for(const item of sumaPromedios)
+    {
+       //console.log(item);
+       const dato = await this.inscDocenteCalificacionRepositorio.findPromedioByDato(
+        7, 
+        item.periodo_tipo_id, 
+        item.instituto_estudiante_inscripcion_id,
+        modalidad_tipo);
+  
+       const op = async (transaction: EntityManager) => {
+       //console.log(datoCalificacion);
+           if(dato){
+                const actualizados =  await this.inscDocenteCalificacionRepositorio.actualizarDatosCalificaciones(
+                   dato.id,
+                   item,
+                   transaction
+               )
+               resultado.push(actualizados);
+           }
+           if(!dato){
+            let valoracion = 1; //nota normal
+            if(item.modalidad_evaluacion_tipo_id == 9){ //cuando es recuperacion
+                valoracion = 5; // nota 
+            }
+            
+               const nuevos = await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
+                       1,
+                       item,
+                       modalidad_tipo,
+                       docente,
+                       7,
+                       valoracion,
+                       transaction
+                   );
+                   resultado.push(nuevos);
+            }
+       }
+       await this.inscDocenteCalificacionRepositorio.runTransaction(op);
+    }
+
+    return resultado;
+} 
  //modulo para insertar las notas
  async crearNotasModalidad (dto: CreateInstitutoInscripcionDocenteCalificacionDto[]) {
         console.log("calificaciones");
@@ -361,12 +338,17 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                   resultado.push(actualizados);
               }
               if(!datoCalificacion){
+                let valoracion = 1;
+                if(item.modalidad_evaluacion_tipo_id == 9){ //cuando es recuperacion
+                    valoracion = 5;
+                }
                 const nuevos =  await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
                               1,
                           item,
                           item.modalidad_evaluacion_tipo_id,
                           item.aula_docente_id,
                           item.nota_tipo_id,
+                          valoracion,
                           transaction
                       );
                   resultado.push(nuevos);
@@ -376,34 +358,32 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             await this.inscDocenteCalificacionRepositorio.runTransaction(op);
        }
        if(resultado.length>0){
-        //insertamos la suma
+        //insertamos la suma de las notas parciales normales
             await this.createUpdateSumaCalificacionByAulaId(dto[0].aula_id, dto[0].modalidad_evaluacion_tipo_id,dto[0].aula_docente_id);
        }
        console.log(resultado.length)
-
        return resultado;
-        
  }
+
+
  async crearInscripcionDocenteCalificacionGlobal (dto: CreateInstitutoInscripcionDocenteCalificacionDto[]) {
      
-          const notas = await this.crearNotasModalidad(dto); //registramos las calificaciones remitidos por array
-          //const subtotales = await this.createUpdateSumaCalificacionByAulaId(dto[0].aula_id, dto[0].modalidad_evaluacion_tipo_id);
-          const promedios = await this.createUpdatePromedioCalificacionByAulaId(dto[0].aula_id, dto[0].periodo_tipo_id, dto[0].aula_docente_id );
+          const notas = await this.crearNotasModalidad(dto); //registramos las calificaciones y sus sumas remitido por array
+
+            if ( dto[0].modalidad_evaluacion_tipo_id == 9){ //si son notas recuperatorias
+                await this.createUpdateRecuperatorioFinalByAulaId(dto[0].aula_id, dto[0].periodo_tipo_id, dto[0].modalidad_evaluacion_tipo_id, dto[0].aula_docente_id );
+            }else{ // si son notas normales
+                await this.createUpdatePromedioCalificacionByAulaId(dto[0].aula_id, dto[0].periodo_tipo_id, dto[0].aula_docente_id );
+            }
+           
           await this.updateEstadosFinalesByAulaId(dto[0].aula_id);
+
          if(notas.length>0){
-            if(promedios.length>0){
                 return this._serviceResp.respuestaHttp201(
                     notas,
                     'Calificaciones y Promedios  actualizados correctamente !!',
                     '',
                 );
-            }else{
-                return this._serviceResp.respuestaHttp201(
-                    notas,
-                    'Calificaciones registrados/actualizados correctamente !!',
-                    '',
-                );
-            }
         }
         return this._serviceResp.respuestaHttp500(
             "",

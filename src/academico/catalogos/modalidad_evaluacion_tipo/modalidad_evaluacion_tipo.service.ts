@@ -17,11 +17,19 @@ export class ModalidadEvaluacionTipoService {
         return modalidad
     }
     async getAllByRegimen(id:number){
-        const modalidad = await this.modalidadEvaluacionTipoRepository.findBy({
-            intervaloGestionTipoId:id,
-            
-            }
-        )
-        return modalidad
+        if(id==4){
+           return await this.modalidadEvaluacionTipoRepository
+            .createQueryBuilder('m')
+            .where('id in (3,4,5,6,7,9)')
+            .getMany();
+        }
+
+        if(id==1){
+           return await this.modalidadEvaluacionTipoRepository
+        .createQueryBuilder('m')
+        .where('id in (1,2,7,9)')
+        .getMany();
+        }
+        
     }
 }
