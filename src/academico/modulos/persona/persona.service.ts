@@ -180,4 +180,18 @@ export class PersonaService {
         ""
       );
   }
+
+  async historialPersonaAll(personaId, sie, caId) {
+
+    const historial = await this.personaRepositorio.getHistorialAllById(personaId, sie, caId);
+
+    return this._serviceResp.respuestaHttp200(
+      historial,
+      "Datos Encontrados !!",
+      ""
+    );
+
+
+  }
+
 }
