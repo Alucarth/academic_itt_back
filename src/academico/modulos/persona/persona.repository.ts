@@ -861,7 +861,7 @@ export class PersonaRepository {
             ON 
               instituto_estudiante_inscripcion_docente_calificacion.modalidad_evaluacion_tipo_id = modalidad_evaluacion_tipo.id
               where nota_tipo_id = 7 and instituto_estudiante_inscripcion_id = 2453
-            order by modalidad_evaluacion_tipo
+            order by modalidad_evaluacion_tipo.ordinal
         
           `);
 
