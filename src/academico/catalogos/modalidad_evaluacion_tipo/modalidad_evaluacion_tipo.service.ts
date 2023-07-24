@@ -32,4 +32,20 @@ export class ModalidadEvaluacionTipoService {
         }
         
     }
+    async getAllByRegistroRegimen(id:number){
+        if(id==4){
+           return await this.modalidadEvaluacionTipoRepository
+            .createQueryBuilder('m')
+            .where('id in (3,4,5,6,9)')
+            .getMany();
+        }
+
+        if(id==1){
+           return await this.modalidadEvaluacionTipoRepository
+        .createQueryBuilder('m')
+        .where('id in (1,2,9)')
+        .getMany();
+        }
+        
+    }
 }

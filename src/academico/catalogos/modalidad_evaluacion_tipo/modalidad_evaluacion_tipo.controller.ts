@@ -15,4 +15,8 @@ export class ModalidadEvaluacionTipoController {
     async getAllByRegimen(@Param('id', ParseIntPipe) id: number){
         return await this.modalidadEvaluacionTipoService.getAllByRegimen(id);
     }
+    @Get('registro-regimen/:id')
+    async getAllByRegistroRegimen(@Param('id', ParseIntPipe) id: number){
+        return await this.modalidadEvaluacionTipoService.getAllByRegistroRegimen(id);
+    }
 }
