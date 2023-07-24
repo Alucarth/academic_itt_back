@@ -62,5 +62,15 @@ export class PersonaController {
         return await this.personaService.getCarrerasByPersonaId(id);
     }
 
+    //bimestres, trimestres + nota fial + recuperatorio
+    @Get('/historialAcademicoAll/:id/:sie/:caId')
+    async geAlltHistorialPersonaById(
+        @Param('id', ParseIntPipe) id: number,
+        @Param('sie', ParseIntPipe) sie: number,
+        @Param('caId', ParseIntPipe) caId: number,
+        ){
+        return await this.personaService.historialPersonaAll(id, sie, caId);
+    }
+
 
 }
