@@ -33,7 +33,7 @@ export class CarreraTipoController {
   async getOneById(@Param("id") id: string) {
     return await this.carreraTipoService.getOneById(parseInt(id));
   }
-
+  
   @Post()
   async addCarreraTipo(@Body() body) {
     return await this.carreraTipoService.insertRecord(body);

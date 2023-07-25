@@ -85,6 +85,8 @@ import { ModalidadEvaluacionTipoModule } from './academico/catalogos/modalidad_e
 import { TblAuxiliarSie } from "./academico/entidades/tblAuxiliarSie";
 import { MulterModule } from '@nestjs/platform-express';
 import { InstitucionEducativaImagenModule } from './academico/modulos/institucion_educativa_imagen/institucion_educativa_imagen.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 //multiple bases
 const defaultOptions = {
@@ -130,6 +132,9 @@ const defaultOptionsSie = {
     } as any),
     MulterModule.register({
       dest: './uploads',
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
     }),
     UsersModule,
     AuthModule,

@@ -10,6 +10,7 @@ import { PlanEstudioCarreraService } from '../plan_estudio_carrera/plan_estudio_
 import { CreatePlanEstudioResolucionDto } from './dto/createPlanEstudioResolucion.dto';
 import { CreateResolucionDto } from './dto/createResolucion.dto';
 import { PlanEstudioResolucionRepository } from './plan_estudio_resolucion.repository';
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 @Injectable()
 export class PlanEstudioResolucionService {
@@ -60,7 +61,7 @@ export class PlanEstudioResolucionService {
         const cursos = await this.planEstudioResolucionRepository.getAll()
         return cursos
     }
-    async createNewResolucion(dto: CreateResolucionDto) {
+    async createNewResolucion(dto: CreateResolucionDto,user: UserEntity) {
         //1:BUSCAR resolucion
         let datoResolucion = await this.planEstudioResolucionRepository.getByDato(dto);
           console.log("resolucion : ", datoResolucion);
@@ -74,7 +75,7 @@ export class PlanEstudioResolucionService {
 
         const op = async (transaction: EntityManager) => {
             return await this.planEstudioResolucionRepository.crearNuevaResolucion(
-                1,
+                user.id,
                 dto,
                 transaction
               )
@@ -98,14 +99,14 @@ export class PlanEstudioResolucionService {
     }
 
 
-    async crear(dto: CreatePlanEstudioResolucionDto) {
+    async crear(dto: CreatePlanEstudioResolucionDto,  user: UserEntity) {
         
         // verificar la carrera ya existe
     const carreraAutorizada =await this.carreraAutorizadaRepository.getCarreraAutorizadaById(dto.carrera_autorizada_id);
     
         const op = async (transaction: EntityManager) => {
 
-            const planResolucion = await this.createNewResolucion(dto);
+            const planResolucion = await this.createNewResolucion(dto, user);
             if(planResolucion.data?.id){ 
                 console.log("creoResol");
                 //crear plan estudio carrera
@@ -119,7 +120,7 @@ export class PlanEstudioResolucionService {
                     intervalo_gestion_tipo_id: carreraAutorizada.intervalo_gestion_tipo_id,
                     denominacion: dto.denominacion,
                 }   
-                const planCarrera = await this.servicePlanEstudioCarrera.crearPlanEstudioCarrera(datos);
+                const planCarrera = await this.servicePlanEstudioCarrera.crearPlanEstudioCarrera(datos, user);
                 
                 if(planCarrera?.data.id ){
                     console.log("creoPlanCarrera");
@@ -127,7 +128,7 @@ export class PlanEstudioResolucionService {
                         plan_estudio_carrera_id:planCarrera.data.id,
                         carrera_autorizada_id:carreraAutorizada.carrera_autorizada_id
                     }
-                    await this.serviceInstitutoPlanEstudioCarrera.createInstitutoPlan(datopc);
+                    await this.serviceInstitutoPlanEstudioCarrera.createInstitutoPlan(datopc, user);
                 }
 
               return planResolucion;

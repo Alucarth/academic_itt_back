@@ -10,11 +10,13 @@ import {
   Query,
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { JwtAuthGuard } from "../../../auth/guards/jwt-auth.guard";
+
 import { AsignaturaTipoService } from "./asignatura_tipo.service";
 import { CreateAsignaturaTipoDto } from "./dto/createAsignaturaTipo.dto";
-import { AuthGuard } from "@nestjs/passport";
 
+import { Auth } from "src/auth/decorator/auth.decorator";
+import { Users } from 'src/users/decorator/user.decorator';
+import { User as UserEntity } from 'src/users/entity/users.entity';
 @ApiTags("Crud Catalogo Asignatura Tipo")
 @Controller("asignatura-tipo")
 export class AsignaturaTipoController {
@@ -34,7 +36,7 @@ export class AsignaturaTipoController {
   @Get('search')
   async search(@Query() subject: any)
   {
-    // console.log('search', subject)
+     //console.log('search', subject)
     let result = await this.asignaturaTipoService.searchSubject(subject.query)
     let data = []
     result.forEach(element => {
@@ -44,12 +46,13 @@ export class AsignaturaTipoController {
     return data
   }
 
+  @Auth()
   @Post("")
   @ApiOperation({
     summary: "Crea un asignatura",
   })
-  create(@Body() createAsignaturaTipoDto: CreateAsignaturaTipoDto) {
-    return this.asignaturaTipoService.create(createAsignaturaTipoDto);
+  create(@Body() createAsignaturaTipoDto: CreateAsignaturaTipoDto, @Users() user: UserEntity) {
+    return this.asignaturaTipoService.create(createAsignaturaTipoDto, user);
   }
 
   @Put("")

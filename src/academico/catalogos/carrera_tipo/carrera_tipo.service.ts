@@ -3,7 +3,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { RespuestaSigedService } from "../../../shared/respuesta.service";
 import { Repository } from "typeorm";
 import { DataSource, EntityManager } from "typeorm";
-
 import { CarreraTipo } from "src/academico/entidades/carrerraTipo.entity";
 import { CarreraGrupoTipo } from "src/academico/entidades/carreraGrupoTipo.entity";
 

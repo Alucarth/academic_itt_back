@@ -3,6 +3,9 @@ import { PlanEstudioResolucion } from 'src/academico/entidades/planEstudioResolu
 import { CreatePlanEstudioResolucionDto } from './dto/createPlanEstudioResolucion.dto';
 import { CreateResolucionDto } from './dto/createResolucion.dto';
 import { PlanEstudioResolucionService } from './plan_estudio_resolucion.service';
+import { Auth } from "src/auth/decorator/auth.decorator";
+import { Users } from 'src/users/decorator/user.decorator';
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 @Controller('plan-estudio-resolucion')
 export class PlanEstudioResolucionController {
@@ -22,16 +25,17 @@ export class PlanEstudioResolucionController {
     async getPlanesResolucionesOfertas(@Param('id') id: number){
        return await this.planEstudioResolucionService.getCarrerasOfertasById(id);
     }
-
+    @Auth()
     @Post()
-    async addPlanCarreraAutorizada(@Body() dto: CreatePlanEstudioResolucionDto) {
+    async addPlanCarreraAutorizada(@Body() dto: CreatePlanEstudioResolucionDto, @Users() user: UserEntity) {
       console.log("-*************-");
-      return await this.planEstudioResolucionService.crear(dto);
+      return await this.planEstudioResolucionService.crear(dto, user);
     }
+    @Auth()
     @Post('resolucion')
-    async addResolucion(@Body() dto: CreateResolucionDto) {
+    async addResolucion(@Body() dto: CreateResolucionDto, @Users() user: UserEntity) {
       console.log("-*************- RESOLUCION");
-      return await this.planEstudioResolucionService.createNewResolucion(dto);
+      return await this.planEstudioResolucionService.createNewResolucion(dto, user);
     }
     @Put(':id')
     async editDatoResolucion(@Param('id') id: number, @Body() dto: CreateResolucionDto) {

@@ -4,10 +4,14 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { ConfigService } from '@nestjs/config';
+import { JWT_SECRET } from './config/constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {cors : true});
   const logger = new Logger('Bootstrap');
+  const config = app.get(ConfigService);
+  const secret = config.get<string>(JWT_SECRET);
+  logger.log(secret);
    // Global Guards (see https://docs.nestjs.com/guards#global-guards)
    const reflector = app.get(Reflector);
    app.useGlobalGuards(new RolesGuard(reflector));

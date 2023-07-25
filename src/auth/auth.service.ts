@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entity/users.entity';
 import * as bcrypt from 'bcrypt';
+
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -17,11 +18,26 @@ export class AuthService {
     @InjectRepository(User)private userRepository: Repository<User>  
   ) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
-    return await this.usersService.findOne(email, password);
+  async validateUser(username: string, password: string): Promise<any> {
+    console.log("password.........",password);
+    const user = await this.usersService.findOne(username, password);
+    return user;
   }
 
-  async login(user: any) {
+  singUp(user: User) {
+    console.log("usuario de auth service es:",user)
+    const { id, ...rest } = user;
+    const payload = { sub: id };
+
+    return {
+      user,
+      accessToken: this.jwtService.sign(payload),
+    };
+  }
+
+ async login(user: User) {
+  console.log("userrrr",user);
+  //async login(user: User) {
     //try {
       /*const payload = { email: user.email, sub: user.id, role: user.role };
       return {
@@ -66,7 +82,7 @@ export class AuthService {
           "error": "Credenciales No Coinciden !!"
         });
       }
-
+/*
       //se encontro el usuario, se comprueba el password
       const password_db = result[0].password;
       console.log('password_db: ',password_db);
@@ -78,14 +94,14 @@ export class AuthService {
         return ({
           "statusCode": 404,
           "message": [
-            "Credenciales No Coinciden !!"
+            "Password  No Coinciden !!"
           ],
           "data": 0,
-          "error": "Credenciales No Coinciden !!"
+          "error": "Password  No Coinciden !!"
         });
 
       }
-
+*/
       const institutos = await this.userRepository.query(`
       SELECT
         maestro_inscripcion.id AS maestro_inscripcion_id, 
