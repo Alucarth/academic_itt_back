@@ -20,8 +20,8 @@ export class Aula {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'cupo' })
-  cupo: string;
+  @Column({ type: 'integer', name: 'cupo' })
+  cupo: number;
 
   @Column({ type: 'boolean', name: 'activo' })
   activo: boolean;

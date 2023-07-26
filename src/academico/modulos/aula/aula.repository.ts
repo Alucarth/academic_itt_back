@@ -19,6 +19,13 @@ constructor(private dataSource: DataSource) {}
             },
         });
     }
+    async getDatoAulaById(id:number){
+
+        return  await this.dataSource.getRepository(Aula).findOne({where:{
+            id:id,
+            },
+        });
+    }
     async getDatoAulaPeriodo(id){
 
         return  await this.dataSource.getRepository(Aula)
@@ -128,15 +135,19 @@ constructor(private dataSource: DataSource) {}
     }
    
     async createAula(aula, transaction) {
-          
         const au  = new Aula();
         au.ofertaCurricularId = aula.oferta_curricular_id;
         au.activo = true;
         au.cupo = aula.cupo;
         au.paraleloTipoId = aula.paralelo_tipo_id;
         au.usuarioId = aula.usuario_id;
-        
       return await transaction.getRepository(Aula).save(au);
+    }
+    async updateAula(aula, transaction) {
+        const dAula = await this.getDatoAulaById(aula.id);
+        dAula.cupo = aula.cupo;
+        dAula.paraleloTipoId = aula.paralelo_tipo_id;
+      return await transaction.getRepository(Aula).save(dAula);
     }
     async crearAulaArray(idUsuario, id, aulas, transaction) {
 
