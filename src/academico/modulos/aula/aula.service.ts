@@ -7,6 +7,7 @@ import { EntityManager, Repository } from 'typeorm';
 import { AulaDetalle } from 'src/academico/entidades/aulaDetalle.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Aula } from 'src/academico/entidades/aula.entity';
+import { AulaDetalleService } from '../aula_detalle/aula_detalle.service';
 
 @Injectable()
 export class AulaService {
@@ -15,6 +16,7 @@ export class AulaService {
         @Inject(AulaRepository) 
         private aulaRepository: AulaRepository,
         private ofertaService: OfertaCurricularService,
+        private aulaDetalleService: AulaDetalleService,
         private _serviceResp: RespuestaSigedService, 
 
         @InjectRepository(AulaDetalle)
@@ -38,9 +40,7 @@ export class AulaService {
 
     async deleteAula(id: number)
     {
-        const estudiantes = await this.aulaRepository.getInscritosByAulaId(id);
-
-     
+      const estudiantes = await this.aulaRepository.getInscritosByAulaId(id);
       if(estudiantes.length>0){
         return this._serviceResp.respuestaHttp500(
             "",
@@ -49,26 +49,24 @@ export class AulaService {
           );
       }
       const resultDetalle = await this.aulaRepository.deleteAulaDetalle(id);
-
       const resultDocente = await this.aulaRepository.deleteAulaDocente(id);
-    if(resultDetalle || resultDocente){
-        const result = await this.aulaRepository.deleteAula(id);
-        console.log("resultado",result);
-        if (result.affected === 0) {
-          throw new NotFoundException("registro no encontrado !");
-        }
-        return this._serviceResp.respuestaHttp203(
-            result,
-            "Registro Eliminado !!",
-            ""
-          );
-          
-    }
-    if (resultDetalle.affected === 0 ) {
+      if(resultDetalle || resultDocente){
+          const result = await this.aulaRepository.deleteAula(id);
+          console.log("resultado",result);
+          /*if (result.affected === 0) {
+            throw new NotFoundException("registro no encontrado !");
+          }*/
+          return this._serviceResp.respuestaHttp203(
+              result,
+              "Registro Eliminado !!",
+              ""
+            );
+      }
+      if (resultDetalle.affected === 0 ) {
         throw new NotFoundException("registro no encontrado !");
       }
      
-    }
+  }
 
     async createUpdateAulaDetalle (dto: CreateAulaDto) {
       const resultado = [];
@@ -83,26 +81,32 @@ export class AulaService {
 
           for(const item of dto.aulas){
             let aulaId = 0;
-            if(item.id ==0){
-              const resAula = await this.adRepository
-              .createQueryBuilder()
-              .insert()
-              .into(Aula)
-              .values([
-                {
-                    ofertaCurricularId: ofertaId,
-                    activo: true,
-                    cupo: item.cupo,
-                    paraleloTipoId: item.paralelo_tipo_id,
-                    usuarioId: 1,
-                },
-              ])
-              .returning("id")
-              .execute();
-              aulaId = resAula.identifiers[0].id;
+            if(item.id == 0){
+              const datoAula =  await this.aulaRepository.getDatoAula(
+                ofertaId,
+                item.paralelo_tipo_id
+            );
+              if(!datoAula){
+                  const resAula = await this.adRepository
+                  .createQueryBuilder()
+                  .insert()
+                  .into(Aula)
+                  .values([
+                    {
+                        ofertaCurricularId: ofertaId,
+                        activo: true,
+                        cupo: item.cupo,
+                        paraleloTipoId: item.paralelo_tipo_id,
+                        usuarioId: 1,
+                    },
+                  ])
+                  .returning("id")
+                  .execute();
+                  aulaId = resAula.identifiers[0].id;
+              }
             }
             if(item.id>0){
-              const resAula = await this.adRepository
+               await this.adRepository
               .createQueryBuilder()
               .update(Aula)
               .set(
@@ -117,23 +121,31 @@ export class AulaService {
             }
 
             for(const itemd of item.detalles){
-              if(itemd.id ==0){
-                await this.adRepository
-                .createQueryBuilder()
-                .insert()
-                .into(AulaDetalle)
-                .values([
-                  {
-                      aulaId: aulaId,
-                      diaTipoId : itemd.dia_tipo_id,
-                      horaInicio : itemd.hora_inicio,
-                      horaFin : itemd.hora_fin,
-                      numeroAula : itemd.numero_aula,
-                      usuarioId : 1,
-                  },
-                ])
-                .returning("id")
-                .execute();
+              if(itemd.id ==0 && aulaId!=0){
+                const datoDetalle =  await this.aulaDetalleService.getDatoAulaDetalle(
+                  aulaId,
+                  itemd.dia_tipo_id,
+                  itemd.hora_inicio,
+                  itemd.hora_fin
+                );
+                if(!datoDetalle){
+                  await this.adRepository
+                  .createQueryBuilder()
+                  .insert()
+                  .into(AulaDetalle)
+                  .values([
+                    {
+                        aulaId: aulaId,
+                        diaTipoId : itemd.dia_tipo_id,
+                        horaInicio : itemd.hora_inicio,
+                        horaFin : itemd.hora_fin,
+                        numeroAula : itemd.numero_aula,
+                        usuarioId : 1,
+                    },
+                  ])
+                  .returning("id")
+                  .execute();
+                }
               }
               if(itemd.id >0){
                 await this.adRepository
@@ -151,6 +163,12 @@ export class AulaService {
                 .execute();
               }
 
+            } 
+            for(const itemea of dto.eliminado_aulas){
+              await this.deleteAula(itemea.id);
+            } 
+            for(const itemed of dto.eliminado_detalles){
+              await this.aulaDetalleService.deleteDetalle(itemed.id);
             } 
             
           }

@@ -163,6 +163,7 @@ constructor(private dataSource: DataSource) {}
     async deleteAula(id: number) {
         return await this.dataSource.getRepository(Aula).delete(id);
     }
+    
     async deleteAulaDetalle(id: number) {
 
         const result = await this.dataSource.getRepository(Aula)
@@ -173,6 +174,7 @@ constructor(private dataSource: DataSource) {}
         .execute();
         return result;   
     }
+
     async deleteAulaDocente(id: number) {
 
         const result = await this.dataSource.getRepository(Aula)

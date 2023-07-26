@@ -46,6 +46,16 @@ class Aula {
     @IsString()
     observacion: string;
   }
+  class EliminadoAulas {
+    @IsOptional({ message: " el id es requerido" })
+    @IsNumber()
+    id: number;
+  }
+  class EliminadoDetalles {
+    @IsOptional({ message: " el id es requerido" })
+    @IsNumber()
+    id: number;
+  }
   export class CreateAulaDto {
     @IsNotEmpty({ message: " el dato de identificacion es requerido" })
     @IsNumber()
@@ -66,6 +76,16 @@ class Aula {
     @ValidateNested({ each: true })
     @Type(() => Aula)
     aulas: Aula[];
+
+    @ValidateNested({ each: true })
+    @Type(() => EliminadoAulas)
+    eliminado_aulas: EliminadoAulas[];
+
+    @ValidateNested({ each: true })
+    @Type(() => EliminadoDetalles)
+    eliminado_detalles: EliminadoDetalles[];
+
+
     //aulas: Aula[];
 
 }
