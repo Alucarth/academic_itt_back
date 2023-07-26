@@ -8,6 +8,7 @@ import { AulaDetalle } from 'src/academico/entidades/aulaDetalle.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Aula } from 'src/academico/entidades/aula.entity';
 import { AulaDetalleService } from '../aula_detalle/aula_detalle.service';
+import { OfertaCurricular } from 'src/academico/entidades/ofertaCurricular.entity';
 
 @Injectable()
 export class AulaService {
@@ -70,6 +71,7 @@ export class AulaService {
 
     async createUpdateAulaDetalle (dto: CreateAulaDto) {
       const resultado = [];
+      let ofertaId = 0;
         try {
           const oferta = await this.ofertaService.getOfertaByPlanAsignaturaGestionPeriodo(
             dto.instituto_plan_estudio_carrera_id,
@@ -77,7 +79,30 @@ export class AulaService {
             dto.periodo_tipo_id,
             dto.plan_estudio_asignatura_id
         );
-          let ofertaId = oferta.id;
+        if(!oferta){
+            console.log("no existe oferta ingresa");
+            const res = await this.adRepository
+            .createQueryBuilder()
+            .insert()
+            .into(OfertaCurricular)
+            .values([
+                {
+                    institutoPlanEstudioCarreraId: dto.instituto_plan_estudio_carrera_id,
+                    gestionTipoId: dto.gestion_tipo_id,
+                    periodoTipoId: dto.periodo_tipo_id,
+                    planEstudioAsignaturaId: dto.plan_estudio_asignatura_id,
+                    usuarioId: 1,
+                },
+            ])
+            .returning("id")
+            .execute();
+            
+            console.log("res:", res);
+            ofertaId = res.identifiers[0].id;
+        }
+        else{
+            ofertaId = oferta.id;
+        }
 
           for(const item of dto.aulas){
             let aulaId = 0;
