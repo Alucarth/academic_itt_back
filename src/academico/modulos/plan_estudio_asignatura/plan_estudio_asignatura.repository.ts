@@ -107,7 +107,8 @@ export class PlanEstudioAsignaturaRepository {
           planAsignatura.regimenGradoTipoId =asignatura.regimen_grado_tipo_id;
           planAsignatura.asignaturaTipoId =asignatura.asignatura_tipo_id;
           planAsignatura.horas =asignatura.horas;
-          planAsignatura.usuarioId =idUsuario;
+         // planAsignatura.usuarioId =idUsuario;
+          planAsignatura.usuarioId = 1;
         //  return planAsignatura;
 //});
     

@@ -75,7 +75,8 @@ export class PlanEstudioResolucionService {
 
         const op = async (transaction: EntityManager) => {
             return await this.planEstudioResolucionRepository.crearNuevaResolucion(
-                user.id,
+                //user.id,
+                1,
                 dto,
                 transaction
               )
