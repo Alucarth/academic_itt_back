@@ -1287,6 +1287,7 @@ export class InscripcionService {
       WHERE
         carrera_autorizada.id = ${carreraAutorizadaId} AND      
         regimen_grado_tipo.id = ${regimenGrado}
+
     `);
     for (let i = 0; i < result.length; i++) {
       console.log('i :', i);
@@ -1331,6 +1332,8 @@ export class InscripcionService {
             maestro_inscripcion.persona_id = persona.id
           where 
           oferta_curricular.id = ${result[i].oferta_curricular_id}
+          and maestro_inscripcion.vigente = TRUE
+          and aula_docente.baja_tipo_id = 0
       `);
 
       
