@@ -25,13 +25,13 @@ export class PlanEstudioResolucionController {
     async getPlanesResolucionesOfertas(@Param('id') id: number){
        return await this.planEstudioResolucionService.getCarrerasOfertasById(id);
     }
-    @Auth()
+    /////////@Auth()
     @Post()
     async addPlanCarreraAutorizada(@Body() dto: CreatePlanEstudioResolucionDto, @Users() user: UserEntity) {
       console.log("-*************-");
       return await this.planEstudioResolucionService.crear(dto, user);
     }
-    @Auth()
+    /////////@Auth()
     @Post('resolucion')
     async addResolucion(@Body() dto: CreateResolucionDto, @Users() user: UserEntity) {
       console.log("-*************- RESOLUCION");

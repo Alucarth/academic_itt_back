@@ -30,24 +30,6 @@ export class AuthController {
     summary: 'Login as a user',
   })
 
-  @UseGuards(LocalAuthGuard)
-  //@UseGuards(AuthGuard('local'))
-  @Post('/loginCris')
-  async loginCris(@Body() loginDto: LoginDto, @Users() user: UserEntity) {
-    //console.log("login cristina");
-    //console.log(user);
-    //return req.user;
-    //return user;
-    return await this.authService.singUp(user);
-  }
-
-  //@UseGuards(JwtAuthGuard)
-  @UseGuards(AuthGuard('jwt'))
-  @Get('profile')
-  async profile() {
-    console.log("profile");
-  }
-
   //@UsePipes(ValidationPipe)
   //@UseGuards(LocalAuthGuard)
   @UseGuards(LocalAuthGuard)
@@ -56,6 +38,7 @@ export class AuthController {
     console.log('login:', req.body);
     return await this.authService.login(req.body);
   }
+
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   async login(@Req() req: Request, @Users() user: UserEntity) {

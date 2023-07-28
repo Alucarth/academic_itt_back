@@ -122,7 +122,8 @@ export class PlanEstudioCarreraService {
 
         const op = async (transaction: EntityManager) => {
             return await this.planEstudioCarreraRepository.crearPlanCarrera(
-                user.id,
+                //user.id,
+                1,
                 dto,
                 transaction
               )

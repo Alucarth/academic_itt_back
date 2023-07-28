@@ -155,7 +155,8 @@ export class PlanEstudioAsignaturaService {
                     }
                     if(!planAsignatura){
                       const nuevos = await this.planEstudioAsignaturaRepository.crearOnePlanEstudioAsignatura(
-                                user.id,
+                                //user.id,
+                                1,
                                 item,
                                 transaction
                             );
@@ -259,7 +260,8 @@ export class PlanEstudioAsignaturaService {
                     planEstudioAsignaturaId: plan.id,
                     anteriorPlanEstudioAsignaturaId: anterior.id,
                     activo:true,
-                    usuarioId: user.id,
+                    //usuarioId: user.id,
+                    usuarioId: 1
                 },
               ])
               .returning("id")
@@ -357,7 +359,8 @@ export class PlanEstudioAsignaturaService {
                   planEstudioAsignaturaId: dato.id,
                   anteriorPlanEstudioAsignaturaId: anterior.id,
                   activo:true,
-                  usuarioId: user.id,
+                  //usuarioId: user.id,
+                  usuarioId: 1,
               },
             ])
             .returning("id")

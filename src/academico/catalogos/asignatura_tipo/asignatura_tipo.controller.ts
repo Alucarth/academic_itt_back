@@ -46,7 +46,7 @@ export class AsignaturaTipoController {
     return data
   }
 
-  @Auth()
+  /////////@Auth()
   @Post("")
   @ApiOperation({
     summary: "Crea un asignatura",

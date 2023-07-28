@@ -86,7 +86,8 @@ export class AsignaturaTipoService {
             abreviacion: dto.abreviacion,
             comentario: dto.comentario,
             asignaturaId: asignaturaTipoCero,
-            usuarioId: user.id,
+           // usuarioId: user.id,
+            usuarioId: 1,
           },
         ])
         .execute();
