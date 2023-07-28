@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Aula } from 'src/academico/entidades/aula.entity';
 import { AulaDetalleService } from '../aula_detalle/aula_detalle.service';
 import { OfertaCurricular } from 'src/academico/entidades/ofertaCurricular.entity';
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 @Injectable()
 export class AulaService {
@@ -69,7 +70,7 @@ export class AulaService {
      
   }
 
-    async createUpdateAulaDetalle (dto: CreateAulaDto) {
+    async createUpdateAulaDetalle (dto: CreateAulaDto, user:UserEntity) {
       const resultado = [];
       let ofertaId = 0;
         try {
@@ -91,7 +92,7 @@ export class AulaService {
                     gestionTipoId: dto.gestion_tipo_id,
                     periodoTipoId: dto.periodo_tipo_id,
                     planEstudioAsignaturaId: dto.plan_estudio_asignatura_id,
-                    usuarioId: 1,
+                    usuarioId: user.id,
                 },
             ])
             .returning("id")
@@ -122,7 +123,7 @@ export class AulaService {
                         activo: true,
                         cupo: item.cupo,
                         paraleloTipoId: item.paralelo_tipo_id,
-                        usuarioId: 1,
+                        usuarioId: user.id,
                     },
                   ])
                   .returning("id")
@@ -165,7 +166,7 @@ export class AulaService {
                         horaInicio : itemd.hora_inicio,
                         horaFin : itemd.hora_fin,
                         numeroAula : itemd.numero_aula,
-                        usuarioId : 1,
+                        usuarioId : user.id,
                     },
                   ])
                   .returning("id")

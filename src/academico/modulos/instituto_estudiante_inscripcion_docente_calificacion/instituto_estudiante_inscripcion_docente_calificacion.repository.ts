@@ -99,6 +99,8 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
     async findAllCalificacionesByInscripcionId(id){
         return  await this.dataSource.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
         .createQueryBuilder("ad")
+        .innerJoinAndSelect("ad.institutoEstudianteInscripcion", "iei")
+        .innerJoinAndSelect("iei.estadoMatriculaTipo", "em")
         .innerJoinAndSelect("ad.notaTipo", "n")
         .innerJoinAndSelect("ad.modalidadEvaluacionTipo", "me")
         .select([
@@ -108,6 +110,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
             'me.modalidadEvaluacion as modalidad_evaluacion',
             'me.id as modalidad_id',
             'n.id as nota_tipo_id',
+            'em.estadoMatricula as estado_matricula',
         ])
           .where("ad.institutoEstudianteInscripcionId = :id ", { id })
           .getRawMany();

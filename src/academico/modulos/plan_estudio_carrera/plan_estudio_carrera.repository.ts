@@ -146,7 +146,6 @@ export class PlanEstudioCarreraRepository {
 
     async crearPlanCarrera(
         idUsuario:number,
-       // dto: CreatePlanEstudioResolucionDto,
         datos: CreatePlanEstudioCarreraDto,
         transaction: EntityManager,
         ) {
