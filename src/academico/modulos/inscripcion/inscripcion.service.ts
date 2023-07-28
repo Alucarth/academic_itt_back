@@ -2088,6 +2088,40 @@ export class InscripcionService {
     return lista;
 }
 
+async updateEstadoNoSePresento(id:number) {
+  
+  try {
+    const result = await this.ieeRepository
+      .createQueryBuilder()
+      .update(InstitutoEstudianteInscripcion)
+      .set({
+        estadoMatriculaTipoId: 49,
+        observacion: 'NO SE PRESENTO',
+      })
+      .where("id = :id", { id: id })
+      .execute();
+
+    return this._serviceResp.respuestaHttp202(
+      result,
+      "Registro Actualizado !!",
+      ""
+    );
+  } catch (error) {
+    console.log("Error al actualizar: ", error);
+    throw new HttpException(
+      {
+        status: HttpStatus.CONFLICT,
+        error: `Error insertar asignaturatipo: ${error.message}`,
+      },
+      HttpStatus.ACCEPTED,
+      {
+        cause: error,
+      }
+    );
+  }
+  
+}
+
   //xls de matriculados
   async getXlsAllMatriculadosByGestion(
     gestionId: number,
