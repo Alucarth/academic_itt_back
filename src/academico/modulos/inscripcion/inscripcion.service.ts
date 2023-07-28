@@ -461,70 +461,99 @@ export class InscripcionService {
     //existe todo, se inserta uno a uno
     let insertados = [];
     try {
+
       for (let index = 0; index < dtos.length; index++) {
+
         let dto = dtos[index];
 
-        const existe = await this.inscripcionRepository.query(`
-        select count(*) as existe 
+        const tieneOferta = await this.inscripcionRepository.query(`
+        select id
         from instituto_estudiante_inscripcion 
         where 
         matricula_estudiante_id = ${dto.matriculaEstudianteId}  and 
-        aula_id = ${dto.aulaId} and 
         estadomatricula_tipo_id = 1 and 
         estadomatricula_inicio_tipo_id = 0 and 
         oferta_curricular_id = ${dto.ofertaCurricularId}  
         `);
 
-        // inserta solo si es que NO existe
-        if (parseInt(existe[0].existe) == 0) {
-          const aula = await this.aulaRepository.findOne({
-            where: {
-              id: dto.aulaId,
-            },
-          });
+        if (parseInt(tieneOferta.length) == 0) {
+          const existe = await this.inscripcionRepository.query(`
+          select count(*) as existe 
+          from instituto_estudiante_inscripcion 
+          where 
+          matricula_estudiante_id = ${dto.matriculaEstudianteId}  and 
+          aula_id = ${dto.aulaId} and 
+          estadomatricula_tipo_id = 1 and 
+          estadomatricula_inicio_tipo_id = 0 and 
+          oferta_curricular_id = ${dto.ofertaCurricularId}  
+          `);
 
-          const ofertaCurricular =
-            await this.ofertaCurricularRepository.findOne({
-              where: {
-                id: dto.ofertaCurricularId,
-              },
-            });
+          // inserta solo si es que NO existe
+            if (parseInt(existe[0].existe) == 0) {
+              const aula = await this.aulaRepository.findOne({
+                where: {
+                  id: dto.aulaId,
+                },
+              });
 
-          const matriculaEstudiante = await this.matriculaRepository.findOne({
-            where: {
-              id: dto.matriculaEstudianteId,
-            },
-          });
+              const ofertaCurricular =
+                await this.ofertaCurricularRepository.findOne({
+                  where: {
+                    id: dto.ofertaCurricularId,
+                  },
+                });
 
-          const estadoMatriculaTipo =
-            await this.estadoMatriculaRepository.findOne({
-              where: {
-                id: 1,
-              },
-            });
+              const matriculaEstudiante = await this.matriculaRepository.findOne({
+                where: {
+                  id: dto.matriculaEstudianteId,
+                },
+              });
 
-          const res = await this.inscripcionRepository
-            .createQueryBuilder()
-            .insert()
-            .into(InstitutoEstudianteInscripcion)
-            .values([
-              {
-                observacion: "Inscrito Nuevo - Gestion 2023",
-                usuarioId: 0,
-                estadoMatriculaInicioTipoId: 0,
-                aula: aula,
-                ofertaCurricular: ofertaCurricular,
-                estadoMatriculaTipo: estadoMatriculaTipo,
-                matriculaEstudiante: matriculaEstudiante,
-              },
-            ])
-            .returning("id")
-            .execute();
+              const estadoMatriculaTipo =
+                await this.estadoMatriculaRepository.findOne({
+                  where: {
+                    id: 1,
+                  },
+                });
 
-          console.log("res:", res);
-          let inscripcionId = res.identifiers[0].id;
-          insertados.push(inscripcionId);
+              const res = await this.inscripcionRepository
+                .createQueryBuilder()
+                .insert()
+                .into(InstitutoEstudianteInscripcion)
+                .values([
+                  {
+                    observacion: "Inscrito Nuevo",
+                    usuarioId: 0,
+                    estadoMatriculaInicioTipoId: 0,
+                    aula: aula,
+                    ofertaCurricular: ofertaCurricular,
+                    estadoMatriculaTipo: estadoMatriculaTipo,
+                    matriculaEstudiante: matriculaEstudiante,
+                  },
+                ])
+                .returning("id")
+                .execute();
+
+              console.log("res:", res);
+              let inscripcionId = res.identifiers[0].id;
+              insertados.push(inscripcionId);
+            }
         }
+        //si existe editaremos el paralelo de inscripcion del estudiante
+        if (parseInt(tieneOferta.length) >= 1 && dto.aulaId!=tieneOferta[0].aula_id) {
+          await this.inscripcionRepository
+          .createQueryBuilder()
+          .update(InstitutoEstudianteInscripcion)
+          .set(
+            {
+              observacion: "Cambio de aula ..",
+              aulaId: dto.aulaId,
+            },
+          )
+          .where({id: tieneOferta[0].id})
+          .execute();
+        }
+
       }
       // ha insertado todos los que no existian
       return this._serviceResp.respuestaHttp201(
@@ -2057,6 +2086,40 @@ export class InscripcionService {
     .getRawMany();
     
     return lista;
+}
+
+async updateEstadoNoSePresento(id:number) {
+  
+  try {
+    const result = await this.ieeRepository
+      .createQueryBuilder()
+      .update(InstitutoEstudianteInscripcion)
+      .set({
+        estadoMatriculaTipoId: 49,
+        observacion: 'NO SE PRESENTO',
+      })
+      .where("id = :id", { id: id })
+      .execute();
+
+    return this._serviceResp.respuestaHttp202(
+      result,
+      "Registro Actualizado !!",
+      ""
+    );
+  } catch (error) {
+    console.log("Error al actualizar: ", error);
+    throw new HttpException(
+      {
+        status: HttpStatus.CONFLICT,
+        error: `Error insertar asignaturatipo: ${error.message}`,
+      },
+      HttpStatus.ACCEPTED,
+      {
+        cause: error,
+      }
+    );
+  }
+  
 }
 
   //xls de matriculados

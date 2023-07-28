@@ -5,6 +5,7 @@ import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { EntityManager, Repository } from 'typeorm';
 import { AulaDocenteRepository } from './aula_docente.repository';
 import { CreateAulaDocenteDto } from './dto/createAulaDocente.dto';
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 @Injectable()
 export class AulaDocenteService {
@@ -64,7 +65,7 @@ export class AulaDocenteService {
         );
       }
    
-      async crearAulaDocente (dto: CreateAulaDocenteDto[]) {
+      async crearAulaDocente (dto: CreateAulaDocenteDto[], user:UserEntity) {
           console.log("lista array inicio");
           console.log(dto);
           console.log(dto.length);
@@ -85,7 +86,7 @@ export class AulaDocenteService {
                   if(!docente || docente.maestro_inscripcion_id!=item.maestro_inscripcion_id){
                     console.log("inserta");
                     const nuevos = await this.aulaDocenteRepositorio.crearDocenteAula(
-                                  1,
+                              user.id,
                               item,
                               transaction
                           );

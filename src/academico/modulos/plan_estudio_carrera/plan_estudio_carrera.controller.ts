@@ -48,7 +48,7 @@ export class PlanEstudioCarreraController {
        return await this.planEstudioCarreraService.getResolucionesByCarreraAutorizadaId(id);
     }
     
-    /////////@@Auth()
+    @Auth()
     @Post()
     async addPlanEstudioCarrera(@Body() dto: CreatePlanEstudioCarreraDto, @Users() user: UserEntity) {
       console.log("-*************-");

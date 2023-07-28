@@ -278,5 +278,9 @@ export class InscripcionController {
     );
     res.download(`${result}`);
   }
+  @Put('cambia-estado/:id')
+  async updateEstadoNoSePresento( @Param('id') id: number) {
+      return  await this.inscripcionService.updateEstadoNoSePresento(id);        
+  }
 
 }

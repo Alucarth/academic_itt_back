@@ -1,6 +1,9 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { AulaService } from './aula.service';
 import { CreateAulaDto } from './dto/createAula.dto';
+import { Auth } from "src/auth/decorator/auth.decorator";
+import { Users } from 'src/users/decorator/user.decorator';
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 @Controller('aula')
 export class AulaController {
@@ -20,9 +23,11 @@ export class AulaController {
     async getCalificacionesById(@Param("id", ParseIntPipe) id: number){
         return await this.aulaService.getCalificacionesById(id);
     }
+
+    @Auth()
     @Post('crea-actualiza')
-    async createUpdateAulaDetalle(@Body() dto: CreateAulaDto) {
-      return await this.aulaService.createUpdateAulaDetalle(dto);
+    async createUpdateAulaDetalle(@Body() dto: CreateAulaDto,  @Users() user: UserEntity) {
+      return await this.aulaService.createUpdateAulaDetalle(dto, user);
     }
 
     @Delete("/:id")

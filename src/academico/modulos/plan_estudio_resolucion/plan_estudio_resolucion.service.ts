@@ -68,15 +68,14 @@ export class PlanEstudioResolucionService {
           if (datoResolucion) {
             return this._serviceResp.respuestaHttp409(
                 datoResolucion,
-                  'Registro de resol ya existe !!',
-                  '',
+                'Registro de resol ya existe !!',
+                '',
               );
-        }
+          }
 
         const op = async (transaction: EntityManager) => {
             return await this.planEstudioResolucionRepository.crearNuevaResolucion(
-                //user.id,
-                1,
+                user.id,
                 dto,
                 transaction
               )
@@ -103,7 +102,7 @@ export class PlanEstudioResolucionService {
     async crear(dto: CreatePlanEstudioResolucionDto,  user: UserEntity) {
         
         // verificar la carrera ya existe
-    const carreraAutorizada =await this.carreraAutorizadaRepository.getCarreraAutorizadaById(dto.carrera_autorizada_id);
+      const carreraAutorizada =await this.carreraAutorizadaRepository.getCarreraAutorizadaById(dto.carrera_autorizada_id);
     
         const op = async (transaction: EntityManager) => {
 
@@ -166,7 +165,7 @@ export class PlanEstudioResolucionService {
       );
 
     }
-    async getById(id: number){
+  async getById(id: number){
       const resolucion = await this.planEstudioResolucionRepository.getOneById(id);
           return resolucion;
   }
