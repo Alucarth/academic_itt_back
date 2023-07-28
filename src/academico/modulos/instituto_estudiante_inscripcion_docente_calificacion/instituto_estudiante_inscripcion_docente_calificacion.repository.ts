@@ -110,7 +110,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
             'me.modalidadEvaluacion as modalidad_evaluacion',
             'me.id as modalidad_id',
             'n.id as nota_tipo_id',
-            'em.estadoMatricula as estado_matricula',
+            'em.estadoMatricula as estado_final',
         ])
           .where("ad.institutoEstudianteInscripcionId = :id ", { id })
           .getRawMany();
