@@ -18,7 +18,6 @@ import { MatriculaEstudiante } from './matriculaEstudiante.entity';
 import { NivelAcademicoTipo } from './nivelAcademicoTipo.entity';
 import { PlanEstudioAsignatura } from './planEstudioAsignatura.entity';
 import { PlanEstudioResolucion } from './planEstudioResolucion.entity';
-import { RegimenGradoTipo } from './regimenGradoTipo.entity';
 
 @Entity({ name: 'plan_estudio_carrera', schema: 'public' })
 export class PlanEstudioCarrera {

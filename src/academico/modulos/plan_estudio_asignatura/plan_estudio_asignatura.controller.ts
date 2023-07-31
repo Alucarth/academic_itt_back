@@ -49,14 +49,14 @@ export class PlanEstudioAsignaturaController {
       console.log("-*************-");
       return await this.planEstudioAsignaturaService.crearPlanAsignatura(dto, user);
     }
-    
+
     @Auth()
     @Post('prerequisito')
     async addPlanEstudioAsignaturaPrerequisito(@Body() dto: CreatePlanAsignaturaPrerequisitoDto[], @Users() user: UserEntity) {
       console.log("-*************-");
       return await this.planEstudioAsignaturaService.crearPlanAsignaturaPrerequisito(dto,user);
-      //return await this.planEstudioAsignaturaService.createPlanAsignaturaPre(dto);
     }
+    
    @Auth()
     @Put(':id')
     async editOperativoCarrera(@Param('id') id: number, @Body() dto: UpdatePlanEstudioAsignaturaDto, @Users() user: UserEntity){
