@@ -20,6 +20,7 @@ import { InstitucionEducativaSucursalRepository } from "../institucion_educativa
 import { UpdateMaestroInscripcionDatoDto } from "./dto/updateMaestroInscripcionDato.dto";
 import { UsersService } from '../../../users/users.service'
 import { JwtService } from "@nestjs/jwt";
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 //para exportar a xls
 import { Workbook } from "exceljs";
@@ -977,10 +978,10 @@ export class MaestroInscripcionService {
 
   async createUpdateMaestroInscripcion(
     dto: CreateMaestroInscripcionDto,
-    request
+    user:UserEntity
   ) {
     //0: validar token
-    let user_id = 0;
+    let user_id = user.id;
     //console.log("updateUser:", request.headers["token"]);
     /*try {
       const payload = await this.jwtService.decode(request.headers["token"]);

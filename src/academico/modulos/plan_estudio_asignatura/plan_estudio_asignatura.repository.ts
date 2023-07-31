@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common'
-import { InstitucionEducativaCurso } from 'src/academico/entidades/institucionEducativaCurso.entity';
 import { PlanEstudioAsignatura } from 'src/academico/entidades/planEstudioAsignatura.entity';
-import { PlanEstudioCarrera } from 'src/academico/entidades/planEstudioCarrera.entity';
-import { PlanEstudioResolucion } from 'src/academico/entidades/planEstudioResolucion.entity';
 import { DataSource, EntityManager } from 'typeorm'
 import { UpdatePlanEstudioAsignaturaDto } from './dto/updatePlanEstudioAsignatura.dto';
-
-
 @Injectable()
 export class PlanEstudioAsignaturaRepository {
     
@@ -101,16 +96,14 @@ export class PlanEstudioAsignaturaRepository {
     async crearOnePlanEstudioAsignatura(idUsuario, asignatura, transaction) {
 
        // const planesAsignaturas: PlanEstudioAsignatura[] = asignaturas.map((item) => {
-          
           const planAsignatura  = new PlanEstudioAsignatura()
           planAsignatura.planEstudioCarreraId =asignatura.plan_estudio_carrera_id;
           planAsignatura.regimenGradoTipoId =asignatura.regimen_grado_tipo_id;
           planAsignatura.asignaturaTipoId =asignatura.asignatura_tipo_id;
           planAsignatura.horas =asignatura.horas;
-         // planAsignatura.usuarioId =idUsuario;
-          planAsignatura.usuarioId = 1;
+          planAsignatura.usuarioId =idUsuario;
         //  return planAsignatura;
-//});
+        //});
     
         return await transaction.getRepository(PlanEstudioAsignatura).save(planAsignatura)
     }

@@ -45,7 +45,7 @@ export class InstitutoPlanEstudioCarreraController {
         return await this.institutoPlanEstudioCarreraService.getAsignaturasGradosById(id, grado);
     }
 
-    /////////@Auth()
+    @Auth()
     @Post()
     async createCurso(@Body() dto: CreateInstitutoPlanEstudioCarreraDto, @Users() user: UserEntity){
         console.log('controller insert',dto);

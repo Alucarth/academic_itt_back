@@ -22,7 +22,7 @@ export class CarreraAutorizadaResolucionRepository {
     }
    
   async crearCarreraResolucion(
-    usuario,
+    usuarioId,
     id,
     dto: CreateCarreraAutorizadaResolucionDto, 
     transaction: EntityManager,
@@ -41,8 +41,7 @@ export class CarreraAutorizadaResolucionRepository {
     car.nivelAcademicoTipoId = dto.nivel_academico_tipo_id;
     car.intervaloGestionTipoId = dto.intervalo_gestion_tipo_id;
     car.descripcion =  dto.descripcion;
-    
-    //curso.usuarioId = 1;// dto.usuarioId;
+    car.usuarioId = usuarioId;// dto.usuarioId;
 
     const result = await transaction.getRepository(CarreraAutorizadaResolucion).save(car);
    

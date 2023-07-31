@@ -1,13 +1,7 @@
 import {
-  IsBoolean,
   IsNotEmpty,
   IsNumber,
   IsOptional,
-  IsString,
-  Matches,
-  MaxLength,
-  MinLength,
-  isNumber,
 } from "class-validator";
 
 export class CreateAsignaturaTipoDto {
@@ -20,9 +14,9 @@ export class CreateAsignaturaTipoDto {
   })
   asignatura: string;
 
-  @IsString()
+  @IsOptional()
   abreviacion: string;
 
-  @IsString()
+  @IsOptional()
   comentario: string;
 }

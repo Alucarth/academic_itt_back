@@ -8,7 +8,7 @@ import { InstitucionEducativaImagenRepository } from '../institucion_educativa_i
 import { InstitucionEducativaSucursalRepository } from '../institucion_educativa_sucursal/institucion_educativa_sucursal.repository';
 import { CreateInstitucionEducativaDto } from './dto/createInstitucionEducativa.dto';
 import { InstitucionEducativaRepository } from './institucion_educativa.repository';
-
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 
 @Injectable()
@@ -161,7 +161,7 @@ export class InstitucionEducativaService {
    }
     
 
-    async createInstitucionEducativa (dto: CreateInstitucionEducativaDto, file, user) {
+    async createInstitucionEducativa (dto: CreateInstitucionEducativaDto, file, user:UserEntity) {
 
         const institucion =  await this.institucionEducativaRepositorio.findInstitucionEducativaLugarNombre(dto.jurisdiccion_geografica_id, dto.institucion_educativa);
         

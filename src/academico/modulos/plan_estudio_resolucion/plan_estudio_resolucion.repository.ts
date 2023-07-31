@@ -7,6 +7,7 @@ import { CreateCarreraAutorizadaResolucionDto } from '../carrera_autorizada_reso
 import { CreatePlanEstudioResolucionDto } from './dto/createPlanEstudioResolucion.dto';
 import { CreateResolucionDto } from './dto/createResolucion.dto';
 
+
 @Injectable()
 export class PlanEstudioResolucionRepository {
     createQueryBuilder() {
@@ -40,12 +41,17 @@ export class PlanEstudioResolucionRepository {
         .innerJoinAndSelect("p.planesAsignaturas", "pa")
         .innerJoinAndSelect("pa.regimenGradoTipo", "rg")
         .innerJoinAndSelect("pa.asignaturaTipo", "at")
-        //.leftJoinAndSelect("a.planesAsignaturasReglas", "pr")
+        .leftJoinAndSelect("pa.planesAsignaturasReglas", "re")       
+        .leftJoinAndSelect("re.anteriorPlanEstudioAsignatura", "an")       
+        .leftJoinAndSelect("an.asignaturaTipo", "a2")   
+        .innerJoinAndSelect("p.institutosPlanesCarreras", "ipc")
         .select([
             'r.id',
             'r.numeroResolucion',
             'r.fechaResolucion',
             'p.id',
+            'p.tiempoEstudio',
+            'p.cargaHoraria',
             'a.area',
             't.carrera',
             'n.nivelAcademico',
@@ -56,8 +62,12 @@ export class PlanEstudioResolucionRepository {
             'at.asignatura',
             'at.abreviacion',
             'rg.regimenGrado',
-           // 'pr.id',
+            're.id',
+            'an.id',
+            'a2.abreviacion',
+            'ipc.id',
         ])
+        .where('r.activo = TRUE')
         .getMany()
 
     }

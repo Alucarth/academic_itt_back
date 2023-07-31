@@ -13,6 +13,9 @@ import { InscripcionService } from "./inscripcion.service";
 import { CreateInscriptionDto } from "./dto/createInscription.dto";
 import { CreateMatriculaDto } from "./dto/createMatricula.dto";
 import { CreateInscriptionNuevoDto } from "./dto/createInscriptionNuevo.dto";
+import { Auth } from "src/auth/decorator/auth.decorator";
+import { Users } from 'src/users/decorator/user.decorator';
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 import { Response } from "express";
 import { Res } from "@nestjs/common";
@@ -22,24 +25,27 @@ import { Res } from "@nestjs/common";
 export class InscripcionController {
   constructor(private readonly inscripcionService: InscripcionService) {}
 
+  @Auth()
   @ApiOperation({
     summary: "Crea Inscripcion",
   })
   @Post("/nuevo")
-  async createInscription(@Body() dto: CreateInscriptionNuevoDto[]) {
-    const res = await this.inscripcionService.createInscriptionNuevo(dto);
+  async createInscription(@Body() dto: CreateInscriptionNuevoDto[],  @Users() user: UserEntity) {
+    const res = await this.inscripcionService.createInscriptionNuevo(dto, user);
     return res;
   }
 
+  @Auth()
   @ApiOperation({
     summary: "Crea Matricula",
   })
   @Post("/matricula")
-  async create(@Body() dto: CreateMatriculaDto) {
-    const res = await this.inscripcionService.createMatricula(dto);
+  async create(@Body() dto: CreateMatriculaDto,  @Users() user: UserEntity) {
+    const res = await this.inscripcionService.createMatricula(dto, user);
     return res;
   }
 
+  
   @ApiOperation({
     summary: "Crea Matriculas en Lote",
   })
@@ -49,9 +55,10 @@ export class InscripcionController {
     return res;
   }
   
+  @Auth()
   @Post("/nuevo-transitabilidad")
-  async createInscriptionTransitabilidad(@Body() dto: CreateInscriptionNuevoDto[]) {
-    const res = await this.inscripcionService.createInscriptionTransitabilidad(dto);
+  async createInscriptionTransitabilidad(@Body() dto: CreateInscriptionNuevoDto[], @Users() user: UserEntity) {
+    const res = await this.inscripcionService.createInscriptionTransitabilidad(dto, user);
     return res;
   }
 

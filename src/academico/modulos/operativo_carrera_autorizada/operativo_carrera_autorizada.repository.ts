@@ -95,7 +95,7 @@ export class OperativoCarreraAutorizadaRepository {
         
     }
 
-    async createOperativoCarrera(dto: CreateOperativoCarreraAutorizadaDto, transaction) {
+    async createOperativoCarrera(usuarioId, dto: CreateOperativoCarreraAutorizadaDto, transaction) {
        
         const operativo  = new OperativoCarreraAutorizada();
         operativo.gestionTipoId = dto.gestion_tipo_id;
@@ -106,7 +106,7 @@ export class OperativoCarreraAutorizadaRepository {
         operativo.fechaInicio = dto.fecha_inicio;
         operativo.fechaFin = dto.fecha_fin;
         operativo.activo = true;
-        operativo.usuarioId = 1;
+        operativo.usuarioId = usuarioId;
         operativo.observacion = dto.observacion;
        
         return await transaction.getRepository(OperativoCarreraAutorizada).save(operativo);

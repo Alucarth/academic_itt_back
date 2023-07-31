@@ -220,7 +220,6 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         item:any,
         transaction: EntityManager
       ) {
-        
         return await transaction
           .createQueryBuilder()
           .update(InstitutoEstudianteInscripcionDocenteCalificacion)
@@ -237,7 +236,6 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         item:any,
  
       ) {
-        
         return await this.dataSource.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
           .createQueryBuilder()
           .update(InstitutoEstudianteInscripcionDocenteCalificacion)
