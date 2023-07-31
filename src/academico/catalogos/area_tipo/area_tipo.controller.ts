@@ -54,6 +54,7 @@ export class AreaTipoController {
 
   @Put()
   async updateAreaTipo(@Body() body) {
+    console.log('area?',body)
     return await this.areaTipoService.updateRecord(body);
   }
 

@@ -97,7 +97,7 @@ export class AreaTipoService {
         .createQueryBuilder()
         .update(AreaTipo)
         .set({
-          area: body.areaFormacion,
+          area: body.area,
         })
         .where("id = :id", { id: body.id })
         .execute();
