@@ -52,10 +52,11 @@ export class AsignaturaTipoController {
     summary: "Crea un asignatura",
   })
   create(@Body() createAsignaturaTipoDto: CreateAsignaturaTipoDto, @Users() user: UserEntity) {
+    console.log('objeto',createAsignaturaTipoDto)
     return this.asignaturaTipoService.create(createAsignaturaTipoDto, user);
   }
 
-  @Put("")
+  @Put()
   @ApiOperation({
     summary: "Actualiza un asignatura",
   })
