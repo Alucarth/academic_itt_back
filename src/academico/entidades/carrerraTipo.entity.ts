@@ -40,10 +40,9 @@ export class CarreraTipo {
     default: () => 'CURRENT_TIMESTAMP',
   })
   fechaModificacion: Date;
-
-  //no existe esta columna
-  /*@Column({ type: 'integer', name: 'usuario_id' })
-  usuarioId: number;*/
+  
+  @Column({ type: 'integer', name: 'usuario_id' })
+  usuarioId: number;
 
   @OneToMany(() => CarreraAutorizada, (carreraAutorizada) => carreraAutorizada.carreraTipo)
   carreras: CarreraAutorizada[];

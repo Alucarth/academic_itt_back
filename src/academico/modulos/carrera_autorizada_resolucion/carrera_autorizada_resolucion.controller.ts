@@ -1,7 +1,9 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { CarreraAutorizadaResolucionService } from './carrera_autorizada_resolucion.service';
 import { CreateCarreraAutorizadaResolucionDto } from './dto/createCarreraAutorizadaResolucion.dto';
-import { UpdateCarreraAutorizadaResolucionDto } from './dto/updateCarreraAutorizadaResolucion.dto';
+import { Auth } from "src/auth/decorator/auth.decorator";
+import { Users } from 'src/users/decorator/user.decorator';
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 @Controller('carrera-autorizada-resolucion')
 
@@ -15,12 +17,11 @@ export class CarreraAutorizadaResolucionController {
       return await this.carreraAutorizadaResolucionService.getOneById(id);
     }
 
-     //create carrera_autorizada_resolucion
-   // @UseGuards(JwtAuthGuard, CasbinGuard)
+    @Auth()
     @Post()
-    async crear( @Body() dto: CreateCarreraAutorizadaResolucionDto) {
+    async crear( @Body() dto: CreateCarreraAutorizadaResolucionDto, @Users() user: UserEntity) {
        console.log("crear" + dto);
-        return await this.carreraAutorizadaResolucionService.crear(dto);
+        return await this.carreraAutorizadaResolucionService.crear(dto, user);
        
     }
     /*

@@ -5,7 +5,7 @@ import { Repository } from "typeorm";
 import { DataSource, EntityManager } from "typeorm";
 import { CarreraTipo } from "src/academico/entidades/carrerraTipo.entity";
 import { CarreraGrupoTipo } from "src/academico/entidades/carreraGrupoTipo.entity";
-
+import { User, User as UserEntity } from 'src/users/entity/users.entity';
 @Injectable()
 export class CarreraTipoService {
   constructor(
@@ -119,7 +119,7 @@ export class CarreraTipoService {
     );
   }
 
-  async insertRecord(body) {
+  async insertRecord(body, user:UserEntity) {
     //TODO:validar si existe carreraGrupo
     const carreraGrupo = await this.carreraGrupoRepository.find({
       where: {
@@ -143,6 +143,7 @@ export class CarreraTipoService {
           {
             carrera: body.carrera,
             carreraGrupoTipo: carreraGrupo[0],
+            usuarioId: user.id,
           },
         ])
         .returning("id")

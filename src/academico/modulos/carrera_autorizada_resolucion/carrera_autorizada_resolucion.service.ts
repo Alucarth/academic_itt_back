@@ -4,6 +4,7 @@ import { EntityManager } from 'typeorm';
 import { CarreraAutorizadaRepository } from '../carrera_autorizada/carrera_autorizada.repository';
 import { CarreraAutorizadaResolucionRepository } from './carrera_autorizada_resolucion.repository';
 import { CreateCarreraAutorizadaResolucionDto } from './dto/createCarreraAutorizadaResolucion.dto';
+import { User as UserEntity } from 'src/users/entity/users.entity';
 @Injectable()
 export class CarreraAutorizadaResolucionService {
     constructor(
@@ -25,14 +26,17 @@ export class CarreraAutorizadaResolucionService {
         return carrera;
       }
 
-      async crear(dto: CreateCarreraAutorizadaResolucionDto) {
+      async crear(dto: CreateCarreraAutorizadaResolucionDto, user:UserEntity) {
         // verificar la carrera ya existe
     
         const op = async (transaction: EntityManager) => {
-            const nuevaCarreraAutorizada = await this.carreraAutorizadaRepositorio.createAutorizada(dto, transaction);
+            const nuevaCarreraAutorizada = await this.carreraAutorizadaRepositorio.createAutorizada(
+              user.id,
+              dto, 
+              transaction);
             if(nuevaCarreraAutorizada?.id){
                 await this.carreraAutorizadaResolucionRepositorio.crearCarreraResolucion(
-                  1, 
+                  user.id, 
                   nuevaCarreraAutorizada?.id, 
                   dto,
                   transaction

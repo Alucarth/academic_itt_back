@@ -46,10 +46,10 @@ export class AreaTipoController {
     return await this.areaTipoService.getOneById(parseInt(id));
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Auth()
   @Post()
-  async addAreaTipo(@Body() body, @Req() request: Request) {
-    return await this.areaTipoService.insertRecord(body, request);
+  async addAreaTipo(@Body() body, @Users() user: UserEntity) {
+    return await this.areaTipoService.insertRecord(body, user);
   }
 
   @Put()

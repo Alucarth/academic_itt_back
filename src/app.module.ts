@@ -87,6 +87,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { InstitucionEducativaImagenModule } from './academico/modulos/institucion_educativa_imagen/institucion_educativa_imagen.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { CarreraGrupoTipoModule } from './academico/catalogos/carrera_grupo_tipo/carrera_grupo_tipo.module';
 
 //multiple bases
 const defaultOptions = {
@@ -240,6 +241,8 @@ const defaultOptionsSie = {
     ModalidadEvaluacionTipoModule,
 
     InstitucionEducativaImagenModule,
+
+    CarreraGrupoTipoModule,
 
   ]
 })
