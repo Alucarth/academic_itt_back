@@ -208,7 +208,7 @@ export class PlanEstudioAsignaturaService {
         for(const item of dto){
           const plan = await this.getOneByPlanAsignatura( item.plan_estudio_carrera_id, item.asignatura_tipo_id);
           const anterior = await this.getOneByPlanAsignatura( item.plan_estudio_carrera_id, item.prerequisito_id);
-          if(item.prerequisito_id>0){
+          if(item.prerequisito_id > 0){
             const regla = await this.pearRepository.findOneBy({
               'planEstudioAsignaturaId':plan.id,
             });
@@ -245,8 +245,6 @@ export class PlanEstudioAsignaturaService {
                 reglas.push(borr);
               }
           }
-          //console.log("para el nuevo");
-          //console.log(item.prerequisito_id);
           //console.log(regla);
             if(item.prerequisito_id>0 && !regla){
               console.log("insert");

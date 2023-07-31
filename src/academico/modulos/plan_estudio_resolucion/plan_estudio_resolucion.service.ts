@@ -57,6 +57,15 @@ export class PlanEstudioResolucionService {
           );
         
     }
+    async getListaCarrerasResoluciones(){
+        const result = await this.planEstudioResolucionRepository.findListaResoluciones()
+        return this._serviceResp.respuestaHttp200(
+            result,
+            "",
+            "Registros Encontrados !!"
+          );
+        
+    }
     async getAll(){
         const cursos = await this.planEstudioResolucionRepository.getAll()
         return cursos

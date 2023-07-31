@@ -49,6 +49,7 @@ export class PlanEstudioAsignaturaController {
       console.log("-*************-");
       return await this.planEstudioAsignaturaService.crearPlanAsignatura(dto, user);
     }
+    
     @Auth()
     @Post('prerequisito')
     async addPlanEstudioAsignaturaPrerequisito(@Body() dto: CreatePlanAsignaturaPrerequisitoDto[], @Users() user: UserEntity) {

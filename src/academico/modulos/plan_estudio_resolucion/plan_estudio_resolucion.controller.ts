@@ -17,6 +17,11 @@ export class PlanEstudioResolucionController {
     async getResoluciones(){
        return await this.planEstudioResolucionService.getOnlyResoluciones();
     }
+    @Get('lista-carreras')
+    async getListaPlanesResoluciones(){
+       return await this.planEstudioResolucionService.getListaCarrerasResoluciones();
+    }
+
     @Get('detalle')
     async getPlanesResoluciones(){
        return await this.planEstudioResolucionService.getResolucionesAll();
@@ -25,6 +30,7 @@ export class PlanEstudioResolucionController {
     async getPlanesResolucionesOfertas(@Param('id') id: number){
        return await this.planEstudioResolucionService.getCarrerasOfertasById(id);
     }
+
     @Auth()
     @Post()
     async addPlanCarreraAutorizada(@Body() dto: CreatePlanEstudioResolucionDto, @Users() user: UserEntity) {
@@ -37,7 +43,7 @@ export class PlanEstudioResolucionController {
       console.log("-*************- RESOLUCION");
       return await this.planEstudioResolucionService.createNewResolucion(dto, user);
     }
-    
+
     @Put(':id')
     async editDatoResolucion(@Param('id') id: number, @Body() dto: CreateResolucionDto) {
       console.log("-*************- EDIT RESOLUCION");
