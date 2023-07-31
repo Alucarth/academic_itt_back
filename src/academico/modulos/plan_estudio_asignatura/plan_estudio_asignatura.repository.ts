@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common'
-import { InstitucionEducativaCurso } from 'src/academico/entidades/institucionEducativaCurso.entity';
 import { PlanEstudioAsignatura } from 'src/academico/entidades/planEstudioAsignatura.entity';
-import { PlanEstudioCarrera } from 'src/academico/entidades/planEstudioCarrera.entity';
-import { PlanEstudioResolucion } from 'src/academico/entidades/planEstudioResolucion.entity';
 import { DataSource, EntityManager } from 'typeorm'
 import { UpdatePlanEstudioAsignaturaDto } from './dto/updatePlanEstudioAsignatura.dto';
-
-
 @Injectable()
 export class PlanEstudioAsignaturaRepository {
     

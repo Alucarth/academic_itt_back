@@ -26,7 +26,7 @@ import { JWT_SECRET } from 'src/config/constants';
        // privateKey: configService.get("JWT_SECRET"),
         //secret: configService.get("JWT_SECRET"),
         signOptions: {
-          expiresIn: 3600,
+          expiresIn: 28800, //3600
         },
       }),
       
