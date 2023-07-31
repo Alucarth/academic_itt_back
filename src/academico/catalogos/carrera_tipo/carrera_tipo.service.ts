@@ -171,11 +171,14 @@ export class CarreraTipoService {
 
   async updateRecord(body) {
 
+    //el resultado deberia ser un objeto y no un array para validar si la respuesta es null y no tomar indices dado que esto generar error en caso de eque el array este vacio 
+    //verificar otros modulos y validar codigo
     const carreraGrupo = await this.carreraGrupoRepository.find({
       where: {
-        id: body.carreraGrupoTipoId,
+        id: body.carreraGrupoTipo.id,
       },
     });
+    console.log(carreraGrupo)
     if (carreraGrupo.length == 0) {
       return this._serviceResp.respuestaHttp404(
         body.carreraGrupoTipoId,

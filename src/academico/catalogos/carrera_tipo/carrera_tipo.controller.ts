@@ -44,6 +44,7 @@ export class CarreraTipoController {
 
   @Put()
   async updateCarreraTipo(@Body() body) {
+    console.log('actualizando XD',body)
     return await this.carreraTipoService.updateRecord(body);
   }
 
