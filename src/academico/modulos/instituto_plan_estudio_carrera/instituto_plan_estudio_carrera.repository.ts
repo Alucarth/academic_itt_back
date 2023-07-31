@@ -168,7 +168,7 @@ export class InstitutoPlanEstudioCarreraRepository {
         institutoPlan.carreraAutorizadaId = dto.carrera_autorizada_id;
         institutoPlan.activo = true;
         institutoPlan.observacion = 'ASIGNACION';
-        institutoPlan.usuarioId = 1;
+        institutoPlan.usuarioId = idUsuario;
         
         
       return await transaction.getRepository(InstitutoPlanEstudioCarrera).save(institutoPlan)

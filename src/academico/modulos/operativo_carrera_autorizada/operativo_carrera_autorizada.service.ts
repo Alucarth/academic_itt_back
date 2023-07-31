@@ -5,7 +5,7 @@ import { EntityManager } from 'typeorm';
 import { CreateOperativoCarreraAutorizadaDto } from './dto/createOperativoCarreraAutorizada.dto';
 import { UpdateOperativoCarreraAutorizadaDto } from './dto/updateOperativoCarreraAutorizada.dto';
 import { OperativoCarreraAutorizadaRepository } from './operativo_carrera_autorizada.repository';
-
+import { User as UserEntity } from 'src/users/entity/users.entity';
 @Injectable()
 export class OperativoCarreraAutorizadaService {
     constructor(
@@ -71,7 +71,7 @@ export class OperativoCarreraAutorizadaService {
 
     }
 
-    async createOperativoCarrera (dto: CreateOperativoCarreraAutorizadaDto) {
+    async createOperativoCarrera (dto: CreateOperativoCarreraAutorizadaDto, user:UserEntity) {
         //actualizacion de todos los esatados  a falso
        const estado = await this.editEstado(dto.carrera_autorizada_id, dto.gestion_tipo_id);
 
@@ -80,6 +80,7 @@ export class OperativoCarreraAutorizadaService {
        if(!operativo){
             const op = async (transaction: EntityManager) => {
             const nuevoOperativo =  await this.operativoCarreraAutorizadaRepositorio.createOperativoCarrera(
+                user.id,
                 dto,
                 transaction
               );

@@ -29,6 +29,7 @@ import { Workbook } from "exceljs";
 import * as tmp from "tmp";
 import { writeFile } from "fs/promises";
 import { TblAuxiliarSie } from "src/academico/entidades/tblAuxiliarSie";
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 @Injectable()
 export class InscripcionService {
@@ -63,9 +64,10 @@ export class InscripcionService {
     private _servicePersona: PersonaService,
     private readonly usersService: UsersService,
     private readonly opeCarreraService: OperativoCarreraAutorizadaService
+
   ) { }
 
-  async createMatricula(dto: CreateMatriculaDto) {
+  async createMatricula(dto: CreateMatriculaDto, user:UserEntity) {
     const persona = await this._servicePersona.findPersona(dto.personaId);
     if (persona.length == 0) {
       //no existe la,persona
@@ -150,7 +152,7 @@ export class InscripcionService {
           persona: personaAux,
           institucionEducativaSucursal: institucionEducativaSucursal,
           codigoEstudiante: dto.codigoEstudiante,
-          usuarioId: 0,
+          usuarioId: user.id,
         });
         await this.ieeRepository.save(institucionEducativaEstudiante);
 
@@ -166,7 +168,7 @@ export class InscripcionService {
           .values([
             {
               docMatricula: dto.docMatricula,
-              usuarioId: 0,
+              usuarioId: user.id,
               gestionTipo: gestionTipo,
               periodoTipo: periodoTipo,
               institutoPlanEstudioCarrera: institutoPlanEstudioCarrera,
@@ -229,7 +231,7 @@ export class InscripcionService {
             .values([
               {
                 docMatricula: dto.docMatricula,
-                usuarioId: 0,
+                usuarioId: user.id,
                 gestionTipo: gestionTipo,
                 periodoTipo: periodoTipo,
                 institutoPlanEstudioCarrera: institutoPlanEstudioCarrera,
@@ -407,7 +409,7 @@ export class InscripcionService {
     }
   }
 
-  async createInscriptionNuevo(dtos: CreateInscriptionNuevoDto[]) {
+  async createInscriptionNuevo(dtos: CreateInscriptionNuevoDto[], user:UserEntity) {
     //valida los parametros
     for (let index = 0; index < dtos.length; index++) {
       let dto = dtos[index];
@@ -523,7 +525,7 @@ export class InscripcionService {
                 .values([
                   {
                     observacion: "Inscrito Nuevo",
-                    usuarioId: 0,
+                    usuarioId: user.id,
                     estadoMatriculaInicioTipoId: 0,
                     aula: aula,
                     ofertaCurricular: ofertaCurricular,
@@ -576,7 +578,7 @@ export class InscripcionService {
     }
   }
 
-  async createInscriptionTransitabilidad(dtos: CreateInscriptionNuevoDto[]) {
+  async createInscriptionTransitabilidad(dtos: CreateInscriptionNuevoDto[], user:UserEntity) {
     //valida los parametros
     for (let index = 0; index < dtos.length; index++) {
       let dto = dtos[index];
@@ -679,7 +681,7 @@ export class InscripcionService {
             .values([
               {
                 observacion: "Inscrito Nuevo por transitabilidad BTH",
-                usuarioId: 0,
+                usuarioId: user.id,
                 estadoMatriculaInicioTipoId: 90, //TRANSITABILIDAD BTH
                 aula: aula,
                 ofertaCurricular: ofertaCurricular,

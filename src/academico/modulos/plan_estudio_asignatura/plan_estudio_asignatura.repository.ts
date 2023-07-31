@@ -101,16 +101,14 @@ export class PlanEstudioAsignaturaRepository {
     async crearOnePlanEstudioAsignatura(idUsuario, asignatura, transaction) {
 
        // const planesAsignaturas: PlanEstudioAsignatura[] = asignaturas.map((item) => {
-          
           const planAsignatura  = new PlanEstudioAsignatura()
           planAsignatura.planEstudioCarreraId =asignatura.plan_estudio_carrera_id;
           planAsignatura.regimenGradoTipoId =asignatura.regimen_grado_tipo_id;
           planAsignatura.asignaturaTipoId =asignatura.asignatura_tipo_id;
           planAsignatura.horas =asignatura.horas;
-         // planAsignatura.usuarioId =idUsuario;
-          planAsignatura.usuarioId = 1;
+          planAsignatura.usuarioId =idUsuario;
         //  return planAsignatura;
-//});
+        //});
     
         return await transaction.getRepository(PlanEstudioAsignatura).save(planAsignatura)
     }

@@ -6,7 +6,7 @@ import { EntityManager, Repository } from 'typeorm';
 import { AulaRepository } from '../aula/aula.repository';
 import { CreateInstitutoInscripcionDocenteCalificacionDto } from './dto/createInstitutoInscripcionDocenteCalificacion.dto';
 import { InstitutoEstudianteInscripcionDocenteCalificacionRepository } from './instituto_estudiante_inscripcion_docente_calificacion.repository';
-
+import { User as UserEntity } from 'src/users/entity/users.entity';
 @Injectable()
 export class InstitutoEstudianteInscripcionDocenteCalificacionService {
     constructor(
@@ -104,7 +104,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
 
     }
    
-    async createUpdatePromedioCalificacionByAulaId (id:number, periodo:number, docente:number) {
+    async createUpdatePromedioCalificacionByAulaId (id:number, periodo:number, docente:number, user:UserEntity) {
       
         const resultado = [];
         if(periodo==55){ //anual
@@ -135,7 +135,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                             valoracion = 5;
                         }
                         const nuevos = await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
-                                1,
+                                user.id,
                                 item,
                                 7,
                                 docente,
@@ -180,7 +180,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                         }
                         
                         const nuevos =  await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
-                                1,
+                                user.id,
                                 item,
                                 7,
                                 docente,
@@ -194,7 +194,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                     await this.inscDocenteCalificacionRepositorio.runTransaction(op);
              }
         }
-            await this.createUpdateSumaCalificacionByAulaId(id, 7,docente); // insertamos nota final
+            await this.createUpdateSumaCalificacionByAulaId(id, 7,docente, user.id); // insertamos nota final
         return resultado;
     }   
     async createUpdateRecuperatorioFinalByAulaId (id:number, periodo_tipo:number, modalidad:number, docente:number) {
@@ -272,7 +272,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
    
 
  //modulo para sumar las notas parcilas de teoria y practica
- async createUpdateSumaCalificacionByAulaId (id:number, modalidad_tipo:number, docente:number) {
+ async createUpdateSumaCalificacionByAulaId (id:number, modalidad_tipo:number, docente:number, usuarioId:number) {
     const resultado = [];
 
     //obtenemos la suma de las notas de todos los estudiantes de esa aula bajo la modalidad
@@ -304,7 +304,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             }
             
                const nuevos = await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
-                       1,
+                       usuarioId,
                        item,
                        modalidad_tipo,
                        docente,
@@ -321,7 +321,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
     return resultado;
 } 
  //modulo para insertar las notas
- async crearNotasModalidad (dto: CreateInstitutoInscripcionDocenteCalificacionDto[]) {
+ async crearNotasModalidad (dto: CreateInstitutoInscripcionDocenteCalificacionDto[], user:UserEntity) {
         console.log("calificaciones");
         const resultado = [];
          for (const item of dto) {
@@ -343,7 +343,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                     valoracion = 5;
                 }
                 const nuevos =  await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
-                              1,
+                          user.id,
                           item,
                           item.modalidad_evaluacion_tipo_id,
                           item.aula_docente_id,
@@ -359,21 +359,25 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
        }
        if(resultado.length>0){
         //insertamos la suma de las notas parciales normales
-            await this.createUpdateSumaCalificacionByAulaId(dto[0].aula_id, dto[0].modalidad_evaluacion_tipo_id,dto[0].aula_docente_id);
+            await this.createUpdateSumaCalificacionByAulaId(
+                dto[0].aula_id, 
+                dto[0].modalidad_evaluacion_tipo_id,
+                dto[0].aula_docente_id, 
+                user.id);
        }
        console.log(resultado.length)
        return resultado;
  }
 
 
- async crearInscripcionDocenteCalificacionGlobal (dto: CreateInstitutoInscripcionDocenteCalificacionDto[]) {
+ async crearInscripcionDocenteCalificacionGlobal (dto: CreateInstitutoInscripcionDocenteCalificacionDto[], user:UserEntity) {
      
-          const notas = await this.crearNotasModalidad(dto); //registramos las calificaciones y sus sumas remitido por array
+          const notas = await this.crearNotasModalidad(dto, user); //registramos las calificaciones y sus sumas remitido por array
 
             if ( dto[0].modalidad_evaluacion_tipo_id == 9){ //si son notas recuperatorias
                 await this.createUpdateRecuperatorioFinalByAulaId(dto[0].aula_id, dto[0].periodo_tipo_id, dto[0].modalidad_evaluacion_tipo_id, dto[0].aula_docente_id );
             }else{ // si son notas normales
-                await this.createUpdatePromedioCalificacionByAulaId(dto[0].aula_id, dto[0].periodo_tipo_id, dto[0].aula_docente_id );
+                await this.createUpdatePromedioCalificacionByAulaId(dto[0].aula_id, dto[0].periodo_tipo_id, dto[0].aula_docente_id, user );
             }
            
           await this.updateEstadosFinalesByAulaId(dto[0].aula_id);

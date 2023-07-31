@@ -96,8 +96,6 @@ export class InstitutoPlanEstudioCarreraService {
             ""
           );
         }
-
-  
             const op = async (transaction: EntityManager) => {
               const nuevoInstitutoPlan =  await this.institutoPlanEstudioCarreraRepository.createInstitutoPlanEstudioCarrera(
                 user.id,

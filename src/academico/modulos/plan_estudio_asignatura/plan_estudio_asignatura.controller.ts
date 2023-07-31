@@ -41,7 +41,7 @@ export class PlanEstudioAsignaturaController {
     async getAsignaturasPlanEstudioById( @Param('plan_estudio_asignatura_id',ParseIntPipe) plan_estudio_asignatura_id: number )
     {
       console.log(plan_estudio_asignatura_id)
-      //return await this.planEstudioAsignaturaService.getAsignaturasPlanEstudioById(plan_estudio_asignatura_id);
+      return await this.planEstudioAsignaturaService.getAsignaturasPlanEstudioById(plan_estudio_asignatura_id);
     }
     @Auth()
     @Post()
@@ -56,7 +56,7 @@ export class PlanEstudioAsignaturaController {
       return await this.planEstudioAsignaturaService.crearPlanAsignaturaPrerequisito(dto,user);
       //return await this.planEstudioAsignaturaService.createPlanAsignaturaPre(dto);
     }
-    @Auth()
+   @Auth()
     @Put(':id')
     async editOperativoCarrera(@Param('id') id: number, @Body() dto: UpdatePlanEstudioAsignaturaDto, @Users() user: UserEntity){
         const data = await this.planEstudioAsignaturaService.editPlanEstudioAsignaturaById(id,dto, user);

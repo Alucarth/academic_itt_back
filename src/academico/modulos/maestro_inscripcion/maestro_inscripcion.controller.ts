@@ -23,6 +23,9 @@ import { MaestroInscripcionService } from '../maestro_inscripcion/maestro_inscri
 import { CreateMaestroInscripcionDto } from './dto/createMaestroInscripcion.dto';
 import { UpdateMaestroInscripcionDto } from './dto/updateMaestroInscripcion.dto';
 import { JwtAuthGuard } from "../../../auth/guards/jwt-auth.guard";
+import { Auth } from "src/auth/decorator/auth.decorator";
+import { Users } from 'src/users/decorator/user.decorator';
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 @ApiTags("maestro-inscripcion")
 @Controller("maestro-inscripcion")
@@ -98,14 +101,15 @@ export class MaestroInscripcionController {
   }
 
   //@UseGuards(JwtAuthGuard)
+  @Auth()
   @Post("/")
   async addMaestroInscripciom(
     @Body() body: CreateMaestroInscripcionDto,
-    @Req() request: Request
+    @Users() user: UserEntity
+
   ) {
     //console.log("POST addMaestroInscripciom", body);
-
-    return await this.usersService.createUpdateMaestroInscripcion(body, request);
+    return await this.usersService.createUpdateMaestroInscripcion(body, user);
   }
 
   @Put("/")
