@@ -120,7 +120,9 @@ export class OfertaCurricularRepository {
           'do.id',  
           'do.asignacionFechaInicio',  
           'do.asignacionFechaFin',
+          'do.bajaTipoId',
           'm.id',  
+          'm.vigente',  
           'p.paterno',  
           'p.materno',  
           'p.nombre',  
@@ -130,8 +132,12 @@ export class OfertaCurricularRepository {
       .where('o.institutoPlanEstudioCarreraId = :id ', { id })
       .andWhere('o.gestionTipoId = :gestion ', { gestion })
       .andWhere('o.periodoTipoId = :periodo ', { periodo })
+      .orderBy('a.id', 'ASC')
+      .orderBy('do.id', 'DESC')
+      .orderBy('o.id', 'ASC')
+      .orderBy('pa.id', 'ASC')
       .orderBy('at.id', 'ASC')
-      //.orderBy('a.id', 'ASC')
+    
       //.getRawMany();
       .getMany();
       return ofertas;

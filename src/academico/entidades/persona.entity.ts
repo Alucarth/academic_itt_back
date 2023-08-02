@@ -165,7 +165,7 @@ export class Persona {
   @JoinColumn({ name: "materno_idioma_tipo_id", referencedColumnName: "id" })
   maternoIdiomaTipo: IdiomaTipo;
 
-  @Column({ name: "expedido_unidad_territorial_id", nullable: false })
+  @Column({ name: "expedido_unidad_territorial_id", nullable: true })
   expedidoUnidadTerritorialId: number;
 
   @ManyToOne(
