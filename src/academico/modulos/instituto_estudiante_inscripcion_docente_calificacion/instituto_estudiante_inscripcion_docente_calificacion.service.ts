@@ -117,7 +117,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                     item.nota_tipo_id, 
                     item.periodo_tipo_id, 
                     item.instituto_estudiante_inscripcion_id,
-                8);
+                    7);
            
                 const op = async (transaction: EntityManager) => {
                 //console.log(datoCalificacion);
@@ -160,7 +160,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                     item.nota_tipo_id, 
                     item.periodo_tipo_id, 
                     item.instituto_estudiante_inscripcion_id,
-                8);
+                7);
                 
                 const op = async (transaction: EntityManager) => {
                 //console.log(datoCalificacion);
@@ -197,6 +197,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             await this.createUpdateSumaCalificacionByAulaId(id, 7,docente, user.id); // insertamos nota final
         return resultado;
     }   
+    
     async createUpdateRecuperatorioFinalByAulaId (id:number, periodo_tipo:number, modalidad:number, docente:number) {
         const resultado = [];
         const recuperatorios = await this.inscDocenteCalificacionRepositorio.findAllRecuperatotiosByAulaId(id);

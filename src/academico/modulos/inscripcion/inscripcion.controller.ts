@@ -172,15 +172,16 @@ export class InscripcionController {
   })
   @Get("/materiasNuevoByCarreraAutorizadaId/:carreraAutorizadaId/:matriculaEstudianteId")
   async getMateriasNuevoByCarreraId(
-    @Param("carreraAutorizadaId") carreraAutorizadaId: string,
-    @Param("matriculaEstudianteId") matriculaEstudianteId: string
+      @Param("carreraAutorizadaId") carreraAutorizadaId: string,
+      @Param("matriculaEstudianteId") matriculaEstudianteId: string
 
   ) {
-    return await this.inscripcionService.getAllMateriasInscripcionNuevo(
-      parseInt(carreraAutorizadaId),
-      parseInt(matriculaEstudianteId)
-    );
+      return await this.inscripcionService.getAllMateriasInscripcionNuevo(
+        parseInt(carreraAutorizadaId),
+        parseInt(matriculaEstudianteId)
+      );
   }
+  
   @ApiOperation({
     summary: "Devuelve todos las materias por transitabilidad bth",
   })

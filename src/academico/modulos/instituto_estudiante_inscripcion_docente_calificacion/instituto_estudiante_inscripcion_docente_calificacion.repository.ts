@@ -300,7 +300,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         SELECT 
         c.instituto_estudiante_inscripcion_id, 
         c.nota_tipo_id , 
-        SUM(c.cuantitativa)/4 as cuantitativa,
+        ROUND(SUM(c.cuantitativa)/4,0) as cuantitativa,
         COUNT(c.modalidad_evaluacion_tipo_id) as cantidad,
         c.periodo_tipo_id
         FROM 
