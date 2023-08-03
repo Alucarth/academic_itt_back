@@ -300,7 +300,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         SELECT 
         c.instituto_estudiante_inscripcion_id, 
         c.nota_tipo_id , 
-        ROUND(SUM(c.cuantitativa)/4,0) as cuantitativa,
+        SUM(c.cuantitativa)/4 as cuantitativa,
         COUNT(c.modalidad_evaluacion_tipo_id) as cantidad,
         c.periodo_tipo_id
         FROM 
@@ -354,7 +354,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         const result = await this.dataSource.query(`
         SELECT 
         c.instituto_estudiante_inscripcion_id, 
-        SUM(c.cuantitativa) as cuantitativa,
+        ROUND(SUM(c.cuantitativa),0) as cuantitativa,
         c.periodo_tipo_id 
         FROM 
         instituto_estudiante_inscripcion_docente_calificacion c, 

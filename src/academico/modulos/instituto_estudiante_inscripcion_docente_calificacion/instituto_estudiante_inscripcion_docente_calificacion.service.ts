@@ -110,6 +110,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
         if(periodo==55){ //anual
             
             const promediosAnuales = await this.inscDocenteCalificacionRepositorio.findAllPromedioAnualByAulaId(id);
+            
             for(const item of promediosAnuales)
              {
                 //console.log(item);
@@ -122,12 +123,15 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                 const op = async (transaction: EntityManager) => {
                 //console.log(datoCalificacion);
                     if(datoPromedio){
+                        
                          const actualizados =  await this.inscDocenteCalificacionRepositorio.actualizarDatosCalificaciones(
                             datoPromedio.id,
                             item,
                             transaction
                         )
+
                         resultado.push(actualizados);
+
                     }
                     if(!datoPromedio){
                         let valoracion = 1;
@@ -197,7 +201,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             await this.createUpdateSumaCalificacionByAulaId(id, 7,docente, user.id); // insertamos nota final
         return resultado;
     }   
-    
+
     async createUpdateRecuperatorioFinalByAulaId (id:number, periodo_tipo:number, modalidad:number, docente:number) {
         const resultado = [];
         const recuperatorios = await this.inscDocenteCalificacionRepositorio.findAllRecuperatotiosByAulaId(id);
