@@ -1,6 +1,10 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CreatePlanEstudioCarreraDto } from './dto/createPlanEstudioCarrera.dto';
 import { PlanEstudioCarreraService } from './plan_estudio_carrera.service';
+import { Auth } from "src/auth/decorator/auth.decorator";
+import { Users } from 'src/users/decorator/user.decorator';
+import { User as UserEntity } from 'src/users/entity/users.entity';
+
 
 @Controller('plan-estudio-carrera')
 export class PlanEstudioCarreraController {
@@ -43,9 +47,11 @@ export class PlanEstudioCarreraController {
     async getResolucionesCarreraAutorizadaId(@Param('id') id: number){
        return await this.planEstudioCarreraService.getResolucionesByCarreraAutorizadaId(id);
     }
+    
+    @Auth()
     @Post()
-    async addPlanEstudioCarrera(@Body() dto: CreatePlanEstudioCarreraDto) {
+    async addPlanEstudioCarrera(@Body() dto: CreatePlanEstudioCarreraDto, @Users() user: UserEntity) {
       console.log("-*************-");
-      return await this.planEstudioCarreraService.crearPlanEstudioCarrera(dto);
+      return await this.planEstudioCarreraService.crearPlanEstudioCarrera(dto, user);
     }
 }

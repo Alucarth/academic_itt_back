@@ -59,17 +59,30 @@ export class UsersService {
     }
   }
 
-  async findOne(email: string, password: string): Promise<User | undefined> {
+  async getOne(id: number, userEntity?: User) {
+    const user = await this.userRepository.findOneBy({'id':id})
+      .then(u => (!userEntity ? u : !!u && userEntity.id === u.id ? u : null));
+    console.log("usuario es", user)
+    if (!user)
+      throw new NotFoundException('Usuario no existe o no esta autorizado');
+
+    return user;
+  }
+
+  async findOne(username: string, password: string): Promise<User | undefined> {
+    console.log("findOne");
     try {
-      let id = 100;
-      const user = await this.userRepository.findOne({
-        where: { id },
-      });
+      //let id = 100;
+      const user = await this.userRepository.findOneBy({'username': username});
+      if(!user){
+        throw new Error(`Nombre de Usuario no existe`);
+      }
+      //console.log(user);
       const isMatch = await bcrypt.compare(password, user.password);
       if (user && isMatch) {
         return user;
       } else {
-        throw new Error(`User not found`);
+        throw new Error(`Contraseña no coinciden`);
       }
     } catch (err) {
       throw new Error(`Error finding ${err} user ${err.message}`);

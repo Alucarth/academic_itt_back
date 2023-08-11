@@ -6,17 +6,31 @@ import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { AulaController } from './aula.controller';
 import { AulaRepository } from './aula.repository';
 import { AulaService } from './aula.service';
+import { OfertaCurricularService } from '../oferta_curricular/oferta_curricular.service';
+import { AulaDetalle } from 'src/academico/entidades/aulaDetalle.entity';
+import { AulaDetalleRepository } from '../aula_detalle/aula_detalle.repository';
+import { OfertaCurricular } from 'src/academico/entidades/ofertaCurricular.entity';
+import { OfertaCurricularRepository } from '../oferta_curricular/oferta_curricular.repository';
+import { AulaDetalleService } from '../aula_detalle/aula_detalle.service';
 
 @Module({
   imports:[
     DatabaseModule, TypeOrmModule.forFeature([
-         Aula 
+         Aula,
+         AulaDetalle,
+         OfertaCurricular
+
         ]),
     ],
   controllers: [AulaController],
-  providers: [AulaService,
+  providers: [
     AulaRepository, 
-    RespuestaSigedService
+    AulaService, 
+    RespuestaSigedService,
+    OfertaCurricularService,
+    OfertaCurricularRepository,
+    AulaDetalleService,
+    AulaDetalleRepository,
   ]
 })
 export class AulaModule {}

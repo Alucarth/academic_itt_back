@@ -38,4 +38,39 @@ export class PersonaController {
         //console.log('controller update',dto);
         return  await this.personaService.updatePersona(dto);        
     }
+
+    @Get('/historialAcademico/:id/:sie/:caId')
+    async getHistorialPersonaById(
+        @Param('id', ParseIntPipe) id: number,
+        @Param('sie', ParseIntPipe) sie: number,
+        @Param('caId', ParseIntPipe) caId: number,
+        ){
+        return await this.personaService.historialPersona(id, sie, caId);
+    }
+
+    @Get('/buscadorGestionPeriodo/:sie')
+    async getBuscadorGestionPeriodo(        
+        @Param('sie', ParseIntPipe) sie: number
+        ){
+        return await this.personaService.buscadorGestionPeriodo(sie);
+    }
+
+    @Get('/getCarrerasByPersonaId/:id')
+    async getCarrerasByPersonaById(
+        @Param('id', ParseIntPipe) id: number,        
+        ){
+        return await this.personaService.getCarrerasByPersonaId(id);
+    }
+
+    //bimestres, trimestres + nota fial + recuperatorio
+    @Get('/historialAcademicoAll/:id/:sie/:caId')
+    async geAlltHistorialPersonaById(
+        @Param('id', ParseIntPipe) id: number,
+        @Param('sie', ParseIntPipe) sie: number,
+        @Param('caId', ParseIntPipe) caId: number,
+        ){
+        return await this.personaService.historialPersonaAll(id, sie, caId);
+    }
+
+
 }

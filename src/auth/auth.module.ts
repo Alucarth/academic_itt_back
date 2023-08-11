@@ -11,20 +11,25 @@ import { AuthController } from './auth.controller';
 import { RolesGuard } from './guards/roles.guard';
 import { User } from '../users/entity/users.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { config } from 'process';
+import { JWT_SECRET } from 'src/config/constants';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
     PassportModule,
     JwtModule.registerAsync({
-      imports: [ConfigModule],
+      inject: [ConfigService],
+      //imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        privateKey: configService.get("JWT_SECRET"),
+        secret: configService.get<string>(JWT_SECRET),
+       // privateKey: configService.get("JWT_SECRET"),
+        //secret: configService.get("JWT_SECRET"),
         signOptions: {
-          expiresIn: 3600,
+          expiresIn: 28800, //3600
         },
       }),
-      inject: [ConfigService],
+      
     }),
     forwardRef(() => UsersModule),
   ],

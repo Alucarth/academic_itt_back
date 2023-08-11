@@ -39,12 +39,12 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         });
         
     }
-    async findPromedioByDato(item, modalidad){
+    async findPromedioByDato(nota_tipo,periodo,id, modalidad){
         return  await this.dataSource.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion).findOneBy(
             {'modalidadEvaluacionTipoId':modalidad,
-             'notaTipoId':item.nota_tipo_id,
-             'periodoTipoId':item.periodo_tipo_id,
-             'institutoEstudianteInscripcionId':item.instituto_estudiante_inscripcion_id,
+             'notaTipoId':nota_tipo,
+             'periodoTipoId':periodo,
+             'institutoEstudianteInscripcionId':id,
         });
         
     }
@@ -99,6 +99,25 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
     async findAllCalificacionesByInscripcionId(id){
         return  await this.dataSource.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
         .createQueryBuilder("ad")
+        .innerJoinAndSelect("ad.institutoEstudianteInscripcion", "iei")
+        .innerJoinAndSelect("iei.estadoMatriculaTipo", "em")
+        .innerJoinAndSelect("ad.notaTipo", "n")
+        .innerJoinAndSelect("ad.modalidadEvaluacionTipo", "me")
+        .select([
+            'ad.id as id',
+            'ad.cuantitativa as cuantitativa',
+            'n.nota as nota_tipo',
+            'me.modalidadEvaluacion as modalidad_evaluacion',
+            'me.id as modalidad_id',
+            'n.id as nota_tipo_id',
+            'em.estadoMatricula as estado_final',
+        ])
+          .where("ad.institutoEstudianteInscripcionId = :id ", { id })
+          .getRawMany();
+    }
+    async findAllCalificacionesByInscripcionModalidadId(id,modalidad){
+        return  await this.dataSource.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
+        .createQueryBuilder("ad")
         .innerJoinAndSelect("ad.notaTipo", "n")
         .innerJoinAndSelect("ad.modalidadEvaluacionTipo", "me")
         .select([
@@ -110,6 +129,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
             'n.id as nota_tipo_id',
         ])
           .where("ad.institutoEstudianteInscripcionId = :id ", { id })
+          .andWhere("ad.modalidadEvaluacionTipoId = :modalidad ", { modalidad })
           .getRawMany();
     }
 
@@ -173,6 +193,8 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
       item, 
       modalidad, 
       docente, 
+      nota_tipo,
+      valoracion,
       transaction) {
 
       return   await transaction
@@ -184,9 +206,9 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         aulaDocenteId : docente,
         periodoTipoId : item.periodo_tipo_id,
         cuantitativa : item.cuantitativa,
-        cualitativa : item.cualitativa,
-        valoracionTipoId : 1, //nota normal
-        notaTipoId : item.nota_tipo_id,
+        cualitativa : '',
+        valoracionTipoId : valoracion, //nota normal
+        notaTipoId : nota_tipo,
         modalidadEvaluacionTipoId :modalidad,
         usuarioId : idUsuario,
       })
@@ -198,7 +220,6 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         item:any,
         transaction: EntityManager
       ) {
-        
         return await transaction
           .createQueryBuilder()
           .update(InstitutoEstudianteInscripcionDocenteCalificacion)
@@ -215,7 +236,6 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         item:any,
  
       ) {
-        
         return await this.dataSource.getRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
           .createQueryBuilder()
           .update(InstitutoEstudianteInscripcionDocenteCalificacion)
@@ -262,6 +282,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         i.aula_id = ${id}  
         AND i.id = c.instituto_estudiante_inscripcion_id 
         AND c.modalidad_evaluacion_tipo_id in (1,2) 
+        AND c.valoracion_tipo_id = 1
         GROUP BY 
         c.instituto_estudiante_inscripcion_id, c.nota_tipo_id, c.periodo_tipo_id
         HAVING
@@ -289,6 +310,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         i.aula_id = ${id}  
         AND i.id = c.instituto_estudiante_inscripcion_id 
         AND c.modalidad_evaluacion_tipo_id in (3,4,5,6) 
+        AND c.valoracion_tipo_id = 1
         GROUP BY 
         c.instituto_estudiante_inscripcion_id, c.nota_tipo_id, c.periodo_tipo_id
         HAVING
@@ -326,14 +348,41 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
     
         return result;
       }
+
+      async findAllSubtotalByAulaId(id: number, modalidad: number ) {
+        
+        const result = await this.dataSource.query(`
+        SELECT 
+        c.instituto_estudiante_inscripcion_id, 
+        ROUND(SUM(c.cuantitativa),0) as cuantitativa,
+        c.periodo_tipo_id 
+        FROM 
+        instituto_estudiante_inscripcion_docente_calificacion c, 
+        instituto_estudiante_inscripcion i 
+        WHERE 
+        i.aula_id = ${id}  
+        AND i.id = c.instituto_estudiante_inscripcion_id 
+        AND c.modalidad_evaluacion_tipo_id = ${modalidad}
+        AND nota_tipo_id <>7
+        -- AND valoracion_tipo_id = 1
+        GROUP BY 
+        c.instituto_estudiante_inscripcion_id,
+        c.periodo_tipo_id
+        ORDER BY 
+        c.instituto_estudiante_inscripcion_id
+        `);
+        console.log("resultSuma: ", result);
+        return result;
+      }
+
       async findAllEstadosFinalesByAulaId(id: number) {
         
         const result = await this.dataSource.query(`
         SELECT 
         c.instituto_estudiante_inscripcion_id, 
-        sum(c.cuantitativa) as total ,
+        c.cuantitativa as total ,
        case
-       	when sum(c.cuantitativa) >60 then 30
+       	when c.cuantitativa >60 then 30
        	else 43
        end as estado
          FROM 
@@ -343,14 +392,33 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
         i.aula_id = ${id} 
         AND i.id = c.instituto_estudiante_inscripcion_id 
         AND c.modalidad_evaluacion_tipo_id in (7,8) 
-        GROUP BY 
-        c.instituto_estudiante_inscripcion_id, c.modalidad_evaluacion_tipo_id, c.periodo_tipo_id
+        AND c.nota_tipo_id=7
         ORDER BY 
         c.instituto_estudiante_inscripcion_id
         `);
-    
         console.log("resultEstados= ", result);
-    
+        return result;
+      }
+      async findAllRecuperatotiosByAulaId(id: number) {
+        
+        const result = await this.dataSource.query(`
+        SELECT 
+        c.instituto_estudiante_inscripcion_id, 
+        c.cuantitativa as total,
+        c.periodo_tipo_id
+         FROM 
+        instituto_estudiante_inscripcion_docente_calificacion c, 
+        instituto_estudiante_inscripcion i 
+        WHERE 
+        i.aula_id = ${id} 
+        AND i.id = c.instituto_estudiante_inscripcion_id 
+        AND c.modalidad_evaluacion_tipo_id = 9
+        AND c.nota_tipo_id = 6
+        AND c.valoracion_tipo_id = 5 
+        ORDER BY 
+        c.instituto_estudiante_inscripcion_id
+        `);
+        console.log("resultEstados= ", result);
         return result;
       }
 

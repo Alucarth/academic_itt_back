@@ -220,7 +220,696 @@ export class PersonaRepository {
         );
         
     }
-
     
   }
+
+  async getHistorialById(personaId, sie, caId) {
+    
+    const datosgrales = await this.dataSource.query(`
+    SELECT
+      persona.id, 
+      persona.carnet_identidad, 
+      persona.complemento, 
+      persona.paterno, 
+      persona.materno, 
+      persona.nombre, 
+      persona.fecha_nacimiento, 
+      persona.codigo_rude, 
+      persona.email, 
+      institucion_educativa.id, 
+      institucion_educativa.institucion_educativa, 
+      institucion_educativa_sucursal.id, 
+      institucion_educativa_sucursal.sucursal_codigo, 
+      institucion_educativa_sucursal.sucursal_nombre,
+      (select nombre_archivo from institucion_educativa_imagen where institucion_educativa_id =  ${sie} and activo = true ) as imagen
+    FROM
+      persona
+      INNER JOIN
+      institucion_educativa_estudiante
+      ON 
+        persona.id = institucion_educativa_estudiante.persona_id
+      INNER JOIN
+      institucion_educativa_sucursal
+      ON 
+        institucion_educativa_estudiante.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id
+      INNER JOIN
+      institucion_educativa
+      ON 
+        institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa.id        
+      where persona.id = ${personaId} and institucion_educativa.id = ${sie}
+    `);
+
+    if(datosgrales.length == 0){
+      return false;
+    }
+
+    const datosca = await this.dataSource.query(`
+    SELECT
+      carrera_autorizada.id, 
+      carrera_tipo.carrera AS carrera, 
+      area_tipo.area, 
+      nivel_academico_tipo.nivel_academico
+    FROM
+      carrera_autorizada
+      INNER JOIN
+      carrera_tipo
+      ON 
+        carrera_autorizada.carrera_tipo_id = carrera_tipo.id
+      INNER JOIN
+      area_tipo
+      ON 
+        carrera_autorizada.area_tipo_id = area_tipo.id
+      INNER JOIN
+      carrera_autorizada_resolucion
+      ON 
+        carrera_autorizada.id = carrera_autorizada_resolucion.carrera_autorizada_id
+      INNER JOIN
+      nivel_academico_tipo
+      ON 
+        carrera_autorizada_resolucion.nivel_academico_tipo_id = nivel_academico_tipo.id
+    WHERE   
+        carrera_autorizada.id  =  ${caId}
+    `);
+
+    if(datosca.length == 0){
+      return false;
+    }
+
+   
+    console.log('verificando gestiones');
+    const datosges = await this.dataSource.query(`
+    select distinct gestion_tipo_id, periodo_tipo_id, matricula_estudiante_id,periodo 
+    from 
+    (
+    SELECT
+      institucion_educativa_estudiante."id", 
+      institucion_educativa_estudiante.observacion, 
+      institucion_educativa_estudiante.persona_id, 
+      matricula_estudiante.id as matricula_estudiante_id, 
+      matricula_estudiante.gestion_tipo_id, 
+      matricula_estudiante.periodo_tipo_id, 
+      matricula_estudiante.doc_matricula, 
+      matricula_estudiante.fecha_registro, 
+      instituto_plan_estudio_carrera.plan_estudio_carrera_id, 
+      instituto_plan_estudio_carrera.carrera_autorizada_id, 
+      instituto_plan_estudio_carrera.observacion, 
+      periodo_tipo.periodo, 
+      instituto_estudiante_inscripcion."id", 
+      instituto_estudiante_inscripcion.aula_id, 
+      instituto_estudiante_inscripcion.estadomatricula_tipo_id, 
+      instituto_estudiante_inscripcion.observacion, 
+      instituto_estudiante_inscripcion.fecha_inscripcion
+    FROM
+      institucion_educativa_estudiante
+      INNER JOIN
+      matricula_estudiante
+      ON 
+        institucion_educativa_estudiante."id" = matricula_estudiante.institucion_educativa_estudiante_id
+      INNER JOIN
+      instituto_plan_estudio_carrera
+      ON 
+        matricula_estudiante.instituto_plan_estudio_carrera_id = instituto_plan_estudio_carrera."id"
+      INNER JOIN
+      periodo_tipo
+      ON 
+        matricula_estudiante.periodo_tipo_id = periodo_tipo."id"
+      INNER JOIN
+      instituto_estudiante_inscripcion
+      ON 
+        matricula_estudiante."id" = instituto_estudiante_inscripcion.matricula_estudiante_id
+    WHERE
+      institucion_educativa_estudiante.persona_id = ${personaId}
+      and 
+      instituto_plan_estudio_carrera.carrera_autorizada_id =   ${caId}       
+      ) as data 
+    `);
+
+    /*const datosges = await this.dataSource.query(`    
+    SELECT
+      institucion_educativa_estudiante."id", 
+      institucion_educativa_estudiante.observacion, 
+      institucion_educativa_estudiante.persona_id, 
+      matricula_estudiante.id as matricula_estudiante_id, 
+      matricula_estudiante.gestion_tipo_id, 
+      matricula_estudiante.periodo_tipo_id, 
+      matricula_estudiante.doc_matricula, 
+      matricula_estudiante.fecha_registro, 
+      instituto_plan_estudio_carrera.plan_estudio_carrera_id, 
+      instituto_plan_estudio_carrera.carrera_autorizada_id, 
+      instituto_plan_estudio_carrera.observacion, 
+      periodo_tipo.periodo, 
+      instituto_estudiante_inscripcion."id", 
+      instituto_estudiante_inscripcion.aula_id, 
+      instituto_estudiante_inscripcion.estadomatricula_tipo_id, 
+      instituto_estudiante_inscripcion.observacion, 
+      instituto_estudiante_inscripcion.fecha_inscripcion
+    FROM
+      institucion_educativa_estudiante
+      INNER JOIN
+      matricula_estudiante
+      ON 
+        institucion_educativa_estudiante."id" = matricula_estudiante.institucion_educativa_estudiante_id
+      INNER JOIN
+      instituto_plan_estudio_carrera
+      ON 
+        matricula_estudiante.instituto_plan_estudio_carrera_id = instituto_plan_estudio_carrera."id"
+      INNER JOIN
+      periodo_tipo
+      ON 
+        matricula_estudiante.periodo_tipo_id = periodo_tipo."id"
+      INNER JOIN
+      instituto_estudiante_inscripcion
+      ON 
+        matricula_estudiante."id" = instituto_estudiante_inscripcion.matricula_estudiante_id
+    WHERE
+      institucion_educativa_estudiante.persona_id = ${personaId}
+      and 
+      instituto_plan_estudio_carrera.carrera_autorizada_id =   ${caId}       
+      
+    `);*/
+
+    let gestiones = []
+    for (let index = 0; index < datosges.length; index++) {      
+
+      //por cada gestion ver sus materias inscritas
+      let datosinscripcion = await this.dataSource.query(`
+      SELECT
+        instituto_estudiante_inscripcion.id, 
+        instituto_estudiante_inscripcion.matricula_estudiante_id, 
+        instituto_estudiante_inscripcion.aula_id, 
+        instituto_estudiante_inscripcion.estadomatricula_tipo_id, 
+        instituto_estudiante_inscripcion.estadomatricula_inicio_tipo_id, 
+        instituto_estudiante_inscripcion.observacion, 
+        aula.id, 
+        asignatura_tipo.asignatura, 
+        asignatura_tipo.abreviacion, 
+        asignatura_tipo.id,
+        coalesce((select sum(cuantitativa) from instituto_estudiante_inscripcion_docente_calificacion where modalidad_evaluacion_tipo_id in (7,8) and nota_tipo_id = 7 and instituto_estudiante_inscripcion_id = instituto_estudiante_inscripcion.id  ),0) as nota,
+        (select estado_matricula from estado_matricula_tipo where id = instituto_estudiante_inscripcion.estadomatricula_tipo_id ) as estado ,
+        (select horas from plan_estudio_asignatura where id in (select plan_estudio_asignatura_id from oferta_curricular where id = aula.oferta_curricular_id)) as horas 
+      FROM
+        instituto_estudiante_inscripcion
+        INNER JOIN
+        aula
+        ON 
+          instituto_estudiante_inscripcion.aula_id = aula.id
+        INNER JOIN
+        oferta_curricular
+        ON 
+          aula.oferta_curricular_id = oferta_curricular.id
+        INNER JOIN
+        plan_estudio_asignatura
+        ON 
+          oferta_curricular.plan_estudio_asignatura_id = plan_estudio_asignatura.id
+        INNER JOIN
+        asignatura_tipo
+        ON 
+          plan_estudio_asignatura.asignatura_tipo_id = asignatura_tipo.id
+      WHERE
+        matricula_estudiante_id = ${datosges[index]['matricula_estudiante_id']}
+      `);
+
+      let materias = [];
+      for (let index2= 0; index2 < datosinscripcion.length; index2++) {
+
+
+          let datamaterias = {
+            asignatura: datosinscripcion[index2]['asignatura'],
+            abreviacion: datosinscripcion[index2]['abreviacion'],
+            cargaHoraria: datosinscripcion[index2]['horas'],
+            nota: datosinscripcion[index2]['nota'],
+            estado: datosinscripcion[index2]['estado'],            
+          }
+
+          materias.push(datamaterias);
+      }
+
+
+
+      let data = {
+        gestion : datosges[index]['gestion_tipo_id'],
+        periodoId : datosges[index]['periodo_tipo_id'],
+        periodo: datosges[index]['periodo'],
+        materias: materias
+      }
+      console.log('data:', data)
+      gestiones.push(data);
+
+    }
+   
+    return {
+      persona: personaId,
+      nombre: datosgrales[0]['paterno'] + ' ' + datosgrales[0]['materno'] + ' ' + datosgrales[0]['nombre'] ,
+      ci: datosgrales[0]['carnet_identidad'],
+      fechaNacimiento: datosgrales[0]['fecha_nacimiento'],
+      sie: sie,
+      ue: datosgrales[0]['institucion_educativa'],
+      imagen: datosgrales[0]['imagen'],
+      carrera: datosca[0]['carrera'],
+      nivel: datosca[0]['nivel_academico'],
+      area: datosca[0]['area'],
+      gestiones: gestiones
+    };
+
+
+
+  }
+
+
+  async getBuscadorGestionPeriodo(sie) {
+    
+    console.log('here');
+
+    const result = await this.dataSource.query(`
+
+    select distinct gestion_tipo_id, periodo_tipo_id, periodo, institucion_educativa as nombre 
+    from 
+    (
+    SELECT
+      operativo_carrera_autorizada.gestion_tipo_id, 
+      operativo_carrera_autorizada.periodo_tipo_id, 
+      operativo_carrera_autorizada.carrera_autorizada_id, 
+      institucion_educativa_sucursal.institucion_educativa_id,
+      carrera_tipo."id", 
+      carrera_tipo.carrera, 
+      carrera_autorizada."id", 
+      periodo_tipo.periodo, 
+      periodo_tipo.abreviacion, 
+      institucion_educativa.institucion_educativa, 
+      institucion_educativa."id"
+    FROM
+      carrera_autorizada
+      INNER JOIN
+      operativo_carrera_autorizada
+      ON 
+        carrera_autorizada."id" = operativo_carrera_autorizada.carrera_autorizada_id
+      INNER JOIN
+      institucion_educativa_sucursal
+      ON 
+        carrera_autorizada.institucion_educativa_sucursal_id = institucion_educativa_sucursal."id"
+      INNER JOIN
+      carrera_tipo
+      ON 
+        carrera_autorizada.carrera_tipo_id = carrera_tipo."id"
+      INNER JOIN
+      periodo_tipo
+      ON 
+        operativo_carrera_autorizada.periodo_tipo_id = periodo_tipo."id"
+      INNER JOIN
+      institucion_educativa
+      ON 
+        institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa."id"
+    WHERE
+	institucion_educativa_sucursal.institucion_educativa_id = ${sie}
+    
+		) as data
+      
+
+    `);
+
+    return result;
+
+
+  }
+
+  async getCarrerasByPersonaId(id){
+
+    const result = await this.dataSource.query(`
+    select distinct persona_id, institucion_educativa_estudiante_id, institucion_educativa_sucursal_id, institucion_educativa_id,institucion_educativa, carrera_autorizada_id, carrera_tipo_id, carrera, area, numero_resolucion, fecha_resolucion, resolucion_tipo, nivel_academico
+    from 
+    (
+    SELECT
+      institucion_educativa_estudiante.persona_id, 
+      institucion_educativa_estudiante.id AS institucion_educativa_estudiante_id, 
+      institucion_educativa_estudiante.observacion, 
+      institucion_educativa_estudiante.fecha_registro, 
+      matricula_estudiante.gestion_tipo_id, 
+      matricula_estudiante.periodo_tipo_id, 
+      matricula_estudiante.doc_matricula, 
+      matricula_estudiante.fecha_registro AS fecha_matricula, 
+      institucion_educativa_sucursal.id AS institucion_educativa_sucursal_id, 
+      institucion_educativa.id AS institucion_educativa_id, 
+      institucion_educativa.institucion_educativa, 
+      carrera_autorizada.id AS carrera_autorizada_id, 
+      carrera_autorizada.carrera_tipo_id, 
+      carrera_tipo.carrera, 
+      area_tipo.area, 
+      periodo_tipo.periodo, 
+      carrera_autorizada_resolucion.id as carrera_autorizada_resolucion_id, 
+      carrera_autorizada_resolucion.descripcion, 
+      carrera_autorizada_resolucion.numero_resolucion, 
+      carrera_autorizada_resolucion.fecha_resolucion, 
+      carrera_autorizada_resolucion.resuelve, 
+      resolucion_tipo.resolucion_tipo, 
+      nivel_academico_tipo.nivel_academico
+    FROM
+      institucion_educativa_estudiante
+      INNER JOIN
+      matricula_estudiante
+      ON 
+        institucion_educativa_estudiante.id = matricula_estudiante.institucion_educativa_estudiante_id
+      INNER JOIN
+      institucion_educativa_sucursal
+      ON 
+        institucion_educativa_estudiante.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id
+      INNER JOIN
+      institucion_educativa
+      ON 
+        institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa.id
+      INNER JOIN
+      instituto_plan_estudio_carrera
+      ON 
+        matricula_estudiante.instituto_plan_estudio_carrera_id = instituto_plan_estudio_carrera.id
+      INNER JOIN
+      carrera_autorizada
+      ON 
+        instituto_plan_estudio_carrera.carrera_autorizada_id = carrera_autorizada.id
+      INNER JOIN
+      carrera_tipo
+      ON 
+        carrera_autorizada.carrera_tipo_id = carrera_tipo.id
+      INNER JOIN
+      area_tipo
+      ON 
+        carrera_autorizada.area_tipo_id = area_tipo.id
+      INNER JOIN
+      periodo_tipo
+      ON 
+        matricula_estudiante.periodo_tipo_id = periodo_tipo.id
+      INNER JOIN
+      carrera_autorizada_resolucion
+      ON 
+        carrera_autorizada.id = carrera_autorizada_resolucion.carrera_autorizada_id
+      INNER JOIN
+      resolucion_tipo
+      ON 
+        carrera_autorizada_resolucion.resolucion_tipo_id = resolucion_tipo.id
+      INNER JOIN
+      nivel_academico_tipo
+      ON 
+        carrera_autorizada_resolucion.nivel_academico_tipo_id = nivel_academico_tipo.id
+    WHERE
+      institucion_educativa_estudiante.persona_id = ${id}
+    ) as data
+
+    `);
+    return result
+
+  }
+
+
+  //con bimestres, trimestres fial y recupratorio
+  async getHistorialAllById(personaId, sie, caId) {
+    
+    const datosgrales = await this.dataSource.query(`
+    SELECT
+      persona.id, 
+      persona.carnet_identidad, 
+      persona.complemento, 
+      persona.paterno, 
+      persona.materno, 
+      persona.nombre, 
+      persona.fecha_nacimiento, 
+      persona.codigo_rude, 
+      persona.email, 
+      institucion_educativa.id, 
+      institucion_educativa.institucion_educativa, 
+      institucion_educativa_sucursal.id, 
+      institucion_educativa_sucursal.sucursal_codigo, 
+      institucion_educativa_sucursal.sucursal_nombre,
+      (select nombre_archivo from institucion_educativa_imagen where institucion_educativa_id =  ${sie} and activo = true ) as imagen
+    FROM
+      persona
+      INNER JOIN
+      institucion_educativa_estudiante
+      ON 
+        persona.id = institucion_educativa_estudiante.persona_id
+      INNER JOIN
+      institucion_educativa_sucursal
+      ON 
+        institucion_educativa_estudiante.institucion_educativa_sucursal_id = institucion_educativa_sucursal.id
+      INNER JOIN
+      institucion_educativa
+      ON 
+        institucion_educativa_sucursal.institucion_educativa_id = institucion_educativa.id        
+      where persona.id = ${personaId} and institucion_educativa.id = ${sie}
+    `);
+
+    if(datosgrales.length == 0){
+      return false;
+    }
+
+    const datosca = await this.dataSource.query(`
+    SELECT
+      carrera_autorizada.id, 
+      carrera_tipo.carrera AS carrera, 
+      area_tipo.area, 
+      nivel_academico_tipo.nivel_academico
+    FROM
+      carrera_autorizada
+      INNER JOIN
+      carrera_tipo
+      ON 
+        carrera_autorizada.carrera_tipo_id = carrera_tipo.id
+      INNER JOIN
+      area_tipo
+      ON 
+        carrera_autorizada.area_tipo_id = area_tipo.id
+      INNER JOIN
+      carrera_autorizada_resolucion
+      ON 
+        carrera_autorizada.id = carrera_autorizada_resolucion.carrera_autorizada_id
+      INNER JOIN
+      nivel_academico_tipo
+      ON 
+        carrera_autorizada_resolucion.nivel_academico_tipo_id = nivel_academico_tipo.id
+    WHERE   
+        carrera_autorizada.id  =  ${caId}
+    `);
+
+    if(datosca.length == 0){
+      return false;
+    }
+
+   
+    console.log('verificando gestiones');
+    const datosges = await this.dataSource.query(`
+    select distinct gestion_tipo_id, periodo_tipo_id, matricula_estudiante_id,periodo 
+    from 
+    (
+    SELECT
+      institucion_educativa_estudiante."id", 
+      institucion_educativa_estudiante.observacion, 
+      institucion_educativa_estudiante.persona_id, 
+      matricula_estudiante.id as matricula_estudiante_id, 
+      matricula_estudiante.gestion_tipo_id, 
+      matricula_estudiante.periodo_tipo_id, 
+      matricula_estudiante.doc_matricula, 
+      matricula_estudiante.fecha_registro, 
+      instituto_plan_estudio_carrera.plan_estudio_carrera_id, 
+      instituto_plan_estudio_carrera.carrera_autorizada_id, 
+      instituto_plan_estudio_carrera.observacion, 
+      periodo_tipo.periodo, 
+      instituto_estudiante_inscripcion."id", 
+      instituto_estudiante_inscripcion.aula_id, 
+      instituto_estudiante_inscripcion.estadomatricula_tipo_id, 
+      instituto_estudiante_inscripcion.observacion, 
+      instituto_estudiante_inscripcion.fecha_inscripcion
+    FROM
+      institucion_educativa_estudiante
+      INNER JOIN
+      matricula_estudiante
+      ON 
+        institucion_educativa_estudiante."id" = matricula_estudiante.institucion_educativa_estudiante_id
+      INNER JOIN
+      instituto_plan_estudio_carrera
+      ON 
+        matricula_estudiante.instituto_plan_estudio_carrera_id = instituto_plan_estudio_carrera."id"
+      INNER JOIN
+      periodo_tipo
+      ON 
+        matricula_estudiante.periodo_tipo_id = periodo_tipo."id"
+      INNER JOIN
+      instituto_estudiante_inscripcion
+      ON 
+        matricula_estudiante."id" = instituto_estudiante_inscripcion.matricula_estudiante_id
+    WHERE
+      institucion_educativa_estudiante.persona_id = ${personaId}
+      and 
+      instituto_plan_estudio_carrera.carrera_autorizada_id =   ${caId}       
+      ) as data 
+    `);
+
+    /*const datosges = await this.dataSource.query(`    
+    SELECT
+      institucion_educativa_estudiante."id", 
+      institucion_educativa_estudiante.observacion, 
+      institucion_educativa_estudiante.persona_id, 
+      matricula_estudiante.id as matricula_estudiante_id, 
+      matricula_estudiante.gestion_tipo_id, 
+      matricula_estudiante.periodo_tipo_id, 
+      matricula_estudiante.doc_matricula, 
+      matricula_estudiante.fecha_registro, 
+      instituto_plan_estudio_carrera.plan_estudio_carrera_id, 
+      instituto_plan_estudio_carrera.carrera_autorizada_id, 
+      instituto_plan_estudio_carrera.observacion, 
+      periodo_tipo.periodo, 
+      instituto_estudiante_inscripcion."id", 
+      instituto_estudiante_inscripcion.aula_id, 
+      instituto_estudiante_inscripcion.estadomatricula_tipo_id, 
+      instituto_estudiante_inscripcion.observacion, 
+      instituto_estudiante_inscripcion.fecha_inscripcion
+    FROM
+      institucion_educativa_estudiante
+      INNER JOIN
+      matricula_estudiante
+      ON 
+        institucion_educativa_estudiante."id" = matricula_estudiante.institucion_educativa_estudiante_id
+      INNER JOIN
+      instituto_plan_estudio_carrera
+      ON 
+        matricula_estudiante.instituto_plan_estudio_carrera_id = instituto_plan_estudio_carrera."id"
+      INNER JOIN
+      periodo_tipo
+      ON 
+        matricula_estudiante.periodo_tipo_id = periodo_tipo."id"
+      INNER JOIN
+      instituto_estudiante_inscripcion
+      ON 
+        matricula_estudiante."id" = instituto_estudiante_inscripcion.matricula_estudiante_id
+    WHERE
+      institucion_educativa_estudiante.persona_id = ${personaId}
+      and 
+      instituto_plan_estudio_carrera.carrera_autorizada_id =   ${caId}       
+      
+    `);*/
+
+    let gestiones = []
+    for (let index = 0; index < datosges.length; index++) {      
+
+      //por cada gestion ver sus materias inscritas
+      let datosinscripcion = await this.dataSource.query(`
+      SELECT
+        instituto_estudiante_inscripcion.id, 
+        instituto_estudiante_inscripcion.matricula_estudiante_id, 
+        instituto_estudiante_inscripcion.aula_id, 
+        instituto_estudiante_inscripcion.estadomatricula_tipo_id, 
+        instituto_estudiante_inscripcion.estadomatricula_inicio_tipo_id, 
+        instituto_estudiante_inscripcion.observacion, 
+        aula.id, 
+        asignatura_tipo.asignatura, 
+        asignatura_tipo.abreviacion, 
+        asignatura_tipo.id,
+        coalesce((select sum(cuantitativa) from instituto_estudiante_inscripcion_docente_calificacion where modalidad_evaluacion_tipo_id in (7,8) and nota_tipo_id = 7 and instituto_estudiante_inscripcion_id = instituto_estudiante_inscripcion.id  ),0) as nota,
+        (select estado_matricula from estado_matricula_tipo where id = instituto_estudiante_inscripcion.estadomatricula_tipo_id ) as estado ,
+        (select horas from plan_estudio_asignatura where id in (select plan_estudio_asignatura_id from oferta_curricular where id = aula.oferta_curricular_id)) as horas 
+      FROM
+        instituto_estudiante_inscripcion
+        INNER JOIN
+        aula
+        ON 
+          instituto_estudiante_inscripcion.aula_id = aula.id
+        INNER JOIN
+        oferta_curricular
+        ON 
+          aula.oferta_curricular_id = oferta_curricular.id
+        INNER JOIN
+        plan_estudio_asignatura
+        ON 
+          oferta_curricular.plan_estudio_asignatura_id = plan_estudio_asignatura.id
+        INNER JOIN
+        asignatura_tipo
+        ON 
+          plan_estudio_asignatura.asignatura_tipo_id = asignatura_tipo.id
+      WHERE
+        matricula_estudiante_id = ${datosges[index]['matricula_estudiante_id']}
+      `);
+
+      let materias = [];
+      for (let index2= 0; index2 < datosinscripcion.length; index2++) {
+
+          //POR CADA PERSONA VEMOS TODAS SUS NOTAS, BIMESTRALES O SEMESTRALES Y LA ULTIMA SI EXISTEN
+
+          let notas = await this.dataSource.query(`
+          SELECT
+            instituto_estudiante_inscripcion_docente_calificacion.id, 
+            instituto_estudiante_inscripcion_docente_calificacion.instituto_estudiante_inscripcion_id, 	
+            periodo_tipo.periodo, 
+            periodo_tipo.abreviacion as periodo_tipo_abreviacion, 
+            instituto_estudiante_inscripcion_docente_calificacion.cuantitativa, 
+            instituto_estudiante_inscripcion_docente_calificacion.cualitativa, 
+            periodo_tipo.intervalo_gestion_tipo_id, 
+            nota_tipo.nota, 
+            nota_tipo.abreviacion as nota_tipo_abreviacion, 
+            modalidad_evaluacion_tipo.modalidad_evaluacion, 
+            modalidad_evaluacion_tipo.abreviacion as modalidad_evaluacion_tipo_abreviacion,
+            nota_tipo.id AS nota_tipo_id, 
+            periodo_tipo.id AS periodo_tipo_id, 
+            modalidad_evaluacion_tipo.id AS modalidad_evaluacion_tipo_id
+          FROM
+            instituto_estudiante_inscripcion_docente_calificacion
+            INNER JOIN
+            periodo_tipo
+            ON 
+              instituto_estudiante_inscripcion_docente_calificacion.periodo_tipo_id = periodo_tipo.id
+            INNER JOIN
+            nota_tipo
+            ON 
+              instituto_estudiante_inscripcion_docente_calificacion.nota_tipo_id = nota_tipo.id
+            INNER JOIN
+            modalidad_evaluacion_tipo
+            ON 
+              instituto_estudiante_inscripcion_docente_calificacion.modalidad_evaluacion_tipo_id = modalidad_evaluacion_tipo.id
+              where nota_tipo_id = 7 and instituto_estudiante_inscripcion_id = 2453
+            order by modalidad_evaluacion_tipo.ordinal
+        
+          `);
+
+          //${datosinscripcion[index2]['id']}
+
+
+          let datamaterias = {
+            asignatura: datosinscripcion[index2]['asignatura'],
+            abreviacion: datosinscripcion[index2]['abreviacion'],
+            cargaHoraria: datosinscripcion[index2]['horas'],
+            //nota: datosinscripcion[index2]['nota'],
+            estado: datosinscripcion[index2]['estado'],
+            notas
+          }
+
+          materias.push(datamaterias);
+      }
+
+
+
+      let data = {
+        gestion : datosges[index]['gestion_tipo_id'],
+        periodoId : datosges[index]['periodo_tipo_id'],
+        periodo: datosges[index]['periodo'],
+        materias: materias
+      }
+      console.log('data:', data)
+      gestiones.push(data);
+
+    }
+   
+    return {
+      persona: personaId,
+      nombre: datosgrales[0]['paterno'] + ' ' + datosgrales[0]['materno'] + ' ' + datosgrales[0]['nombre'] ,
+      ci: datosgrales[0]['carnet_identidad'],
+      fechaNacimiento: datosgrales[0]['fecha_nacimiento'],
+      sie: sie,
+      ue: datosgrales[0]['institucion_educativa'],
+      imagen: datosgrales[0]['imagen'],
+      carrera: datosca[0]['carrera'],
+      nivel: datosca[0]['nivel_academico'],
+      area: datosca[0]['area'],
+      gestiones: gestiones
+    };
+
+
+
+  }
+
+
 }

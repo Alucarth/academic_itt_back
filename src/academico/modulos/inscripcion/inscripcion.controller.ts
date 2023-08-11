@@ -13,6 +13,9 @@ import { InscripcionService } from "./inscripcion.service";
 import { CreateInscriptionDto } from "./dto/createInscription.dto";
 import { CreateMatriculaDto } from "./dto/createMatricula.dto";
 import { CreateInscriptionNuevoDto } from "./dto/createInscriptionNuevo.dto";
+import { Auth } from "src/auth/decorator/auth.decorator";
+import { Users } from 'src/users/decorator/user.decorator';
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 import { Response } from "express";
 import { Res } from "@nestjs/common";
@@ -22,30 +25,40 @@ import { Res } from "@nestjs/common";
 export class InscripcionController {
   constructor(private readonly inscripcionService: InscripcionService) {}
 
+  @Auth()
   @ApiOperation({
     summary: "Crea Inscripcion",
   })
   @Post("/nuevo")
-  async createInscription(@Body() dto: CreateInscriptionNuevoDto[]) {
-    const res = await this.inscripcionService.createInscriptionNuevo(dto);
+  async createInscription(@Body() dto: CreateInscriptionNuevoDto[],  @Users() user: UserEntity) {
+    const res = await this.inscripcionService.createInscriptionNuevo(dto, user);
     return res;
   }
 
+  @Auth()
   @ApiOperation({
     summary: "Crea Matricula",
   })
   @Post("/matricula")
-  async create(@Body() dto: CreateMatriculaDto) {
-    const res = await this.inscripcionService.createMatricula(dto);
+  async create(@Body() dto: CreateMatriculaDto,  @Users() user: UserEntity) {
+    const res = await this.inscripcionService.createMatricula(dto, user);
     return res;
   }
 
+  
   @ApiOperation({
     summary: "Crea Matriculas en Lote",
   })
   @Post("/matriculaLote")
   async createMatriculaLote(@Body() dtos: CreateMatriculaDto[]) {
     const res = await this.inscripcionService.createMatriculaLote(dtos);
+    return res;
+  }
+  
+  @Auth()
+  @Post("/nuevo-transitabilidad")
+  async createInscriptionTransitabilidad(@Body() dto: CreateInscriptionNuevoDto[], @Users() user: UserEntity) {
+    const res = await this.inscripcionService.createInscriptionTransitabilidad(dto, user);
     return res;
   }
 
@@ -92,6 +105,19 @@ export class InscripcionController {
     @Param("id") id: number
   ) {
     return await this.inscripcionService.getAllInscritosByAulaId(id);
+  }
+  @Get("reprobadosByAulaId/:id")
+  async getAllReprobadosByAulaId(
+    @Param("id") id: number
+  ) {
+    return await this.inscripcionService.getAllReprobadosByAulaId(id);
+  }
+  @Get("reprobados-recuperatorio/ByAulaId/:id/:regimen")
+  async getAllReprobadosRecuperatorioByAulaId(
+    @Param("id") id: number,
+    @Param("regimen") regimen: number
+  ) {
+    return await this.inscripcionService.getAllReprobadosRecuperatorioByAulaId(id, regimen);
   }
 
   @Get("calificaciones/aula/:id")
@@ -146,11 +172,26 @@ export class InscripcionController {
   })
   @Get("/materiasNuevoByCarreraAutorizadaId/:carreraAutorizadaId/:matriculaEstudianteId")
   async getMateriasNuevoByCarreraId(
+      @Param("carreraAutorizadaId") carreraAutorizadaId: string,
+      @Param("matriculaEstudianteId") matriculaEstudianteId: string
+
+  ) {
+      return await this.inscripcionService.getAllMateriasInscripcionNuevo(
+        parseInt(carreraAutorizadaId),
+        parseInt(matriculaEstudianteId)
+      );
+  }
+  
+  @ApiOperation({
+    summary: "Devuelve todos las materias por transitabilidad bth",
+  })
+  @Get("/materiasTransitabilidadByCarreraAutorizadaId/:carreraAutorizadaId/:matriculaEstudianteId")
+  async getMateriasTransitabilidadByCarreraId(
     @Param("carreraAutorizadaId") carreraAutorizadaId: string,
     @Param("matriculaEstudianteId") matriculaEstudianteId: string
 
   ) {
-    return await this.inscripcionService.getAllMateriasInscripcionNuevo(
+    return await this.inscripcionService.getAllMateriasInscripcionTransitabilidad(
       parseInt(carreraAutorizadaId),
       parseInt(matriculaEstudianteId)
     );
@@ -244,6 +285,10 @@ export class InscripcionController {
       parseInt(ipecId),
     );
     res.download(`${result}`);
+  }
+  @Put('cambia-estado/:id')
+  async updateEstadoNoSePresento( @Param('id') id: number) {
+      return  await this.inscripcionService.updateEstadoNoSePresento(id);        
   }
 
 }

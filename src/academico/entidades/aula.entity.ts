@@ -11,7 +11,6 @@ import {
 } from 'typeorm';
 import { AulaDetalle } from './aulaDetalle.entity';
 import { AulaDocente } from './aulaDocente.entity';
-import { DiaTipo } from './diaTipo.entity';
 import { InstitutoEstudianteInscripcion } from './InstitutoEstudianteInscripcion.entity';
 import { OfertaCurricular } from './ofertaCurricular.entity';
 import { ParaleloTipo } from './paraleloTipo.entity';
@@ -21,8 +20,8 @@ export class Aula {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'cupo' })
-  cupo: string;
+  @Column({ type: 'integer', name: 'cupo' })
+  cupo: number;
 
   @Column({ type: 'boolean', name: 'activo' })
   activo: boolean;

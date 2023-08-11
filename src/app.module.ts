@@ -82,7 +82,33 @@ import { PlanEstudioAsignaturaReglaModule } from './academico/modulos/plan_estud
 import { EventoTipoModule } from './academico/catalogos/evento_tipo/evento_tipo.module';
 import { ModalidadEvaluacionTipoModule } from './academico/catalogos/modalidad_evaluacion_tipo/modalidad_evaluacion_tipo.module';
 
+import { TblAuxiliarSie } from "./academico/entidades/tblAuxiliarSie";
+import { MulterModule } from '@nestjs/platform-express';
+import { InstitucionEducativaImagenModule } from './academico/modulos/institucion_educativa_imagen/institucion_educativa_imagen.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { CarreraGrupoTipoModule } from './academico/catalogos/carrera_grupo_tipo/carrera_grupo_tipo.module';
 
+//multiple bases
+const defaultOptions = {
+  type: 'postgres',
+  host: process.env.DB_HOST, //'100.0.101.7',
+  port: parseInt(process.env.DB_PORT), //5436,
+  username: process.env.DB_USER,//'dcastillo', 
+  database: process.env.DATABASE, 
+  password: process.env.DB_PASSWORD,
+  synchronize: false,
+};
+
+const defaultOptionsSie = {
+  type: 'postgres',
+  host: process.env.DBSIE_HOST, 
+  port: parseInt(process.env.DBSIE_PORT),
+  username:  process.env.DBSIE_USER, 
+  database: process.env.DATABASESIE, 
+  password: process.env.DBSIE_PASSWORD, 
+  synchronize: false,
+};
 
 @Module({
   imports: [
@@ -91,9 +117,25 @@ import { ModalidadEvaluacionTipoModule } from './academico/catalogos/modalidad_e
       load: [config],
     }),
     //TypeOrmModule.forRoot(typeOrmConfig),
-    TypeOrmModule.forRootAsync({
+    /*TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useClass: DatabaseConfig,
+    }),*/
+
+    TypeOrmModule.forRoot({
+      ...defaultOptions,     
+      entities: ['dist/**/*.entity.js'],
+    } as any),
+    TypeOrmModule.forRoot({
+      ...defaultOptionsSie,      
+      name: 'siedb',
+      entities: [TblAuxiliarSie],
+    } as any),
+    MulterModule.register({
+      dest: './uploads',
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
     }),
     UsersModule,
     AuthModule,
@@ -158,7 +200,6 @@ import { ModalidadEvaluacionTipoModule } from './academico/catalogos/modalidad_e
 
     ResolucionTipoModule,
 
-
     CarreraAutorizadaResolucionModule,
 
     PlanEstudioResolucionModule,
@@ -199,6 +240,9 @@ import { ModalidadEvaluacionTipoModule } from './academico/catalogos/modalidad_e
 
     ModalidadEvaluacionTipoModule,
 
+    InstitucionEducativaImagenModule,
+
+    CarreraGrupoTipoModule,
 
   ]
 })

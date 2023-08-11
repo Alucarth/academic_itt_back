@@ -19,7 +19,48 @@ export class InstitutoPlanEstudioCarreraRepository {
         const dato = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera).findOneBy({'id':id});
         return dato;
     }
+    async findGradosBy(id){
+        //const dato = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera).findGradosBy({'id':id});
+        const dato = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera)
+        .createQueryBuilder("ip")
+        .innerJoinAndSelect("ip.planEstudioCarrera", "pe")    
+        .innerJoinAndSelect("pe.planesAsignaturas", "pa")    
+        .innerJoinAndSelect("pa.asignaturaTipo", "a")    
+        .innerJoinAndSelect("pa.regimenGradoTipo", "r")
+        .select([
+            'r.id as id',      
+            'r.regimenGrado as regimen_grado'      
+        ])
+        .where('ip.id = :id ', { id })
+        .groupBy('r.id')
+        .orderBy('r.id','ASC')
+        .getRawMany() 
+        return dato;
+    }
+
+    async findAsignaturasGradoBy(id, grado){
+        //const dato = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera).findGradosBy({'id':id});
+        const dato = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera)
+        .createQueryBuilder("ip")
+        .innerJoinAndSelect("ip.planEstudioCarrera", "pe")    
+        .innerJoinAndSelect("pe.planesAsignaturas", "pa")    
+        .innerJoinAndSelect("pa.asignaturaTipo", "a")    
+        .innerJoinAndSelect("pa.regimenGradoTipo", "r")
+        .select([
+            'pa.id as plan_estudio_asignatura_id',      
+            'a.asignatura as asignatura',      
+            'a.abreviacion as abreviacion',      
+            'a.id as asignatura_tipo_id'      
+        ])
+        .where('ip.id = :id ', { id })
+        .andWhere('pa.regimenGradoTipoId = :grado ', { grado })
+        .orderBy('pa.id','ASC')
+        .getRawMany() 
+        return dato;
+    }
+
     async findOneByPlanCarrera(plan_id, carrera_id){
+        
         const dato = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera).findOneBy(
             {
                 'planEstudioCarreraId':plan_id,
@@ -127,7 +168,7 @@ export class InstitutoPlanEstudioCarreraRepository {
         institutoPlan.carreraAutorizadaId = dto.carrera_autorizada_id;
         institutoPlan.activo = true;
         institutoPlan.observacion = 'ASIGNACION';
-        institutoPlan.usuarioId = 1;
+        institutoPlan.usuarioId = idUsuario;
         
         
       return await transaction.getRepository(InstitutoPlanEstudioCarrera).save(institutoPlan)

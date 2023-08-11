@@ -21,6 +21,7 @@ import { OfertaCurricular } from "../../entidades/ofertaCurricular.entity";
 import { UsersModule } from "../../../users/users.module";
 import { InstitutoPlanEstudioCarrera } from "../../entidades/institutoPlanEstudioCarrera.entity";
 import { OperativoCarreraAutorizadaModule } from "../operativo_carrera_autorizada/operativo_carrera_autorizada.module"
+import { TblAuxiliarSie } from 'src/academico/entidades/tblAuxiliarSie';
 @Module({
   imports: [
     OperativoCarreraAutorizadaModule,
@@ -38,8 +39,10 @@ import { OperativoCarreraAutorizadaModule } from "../operativo_carrera_autorizad
     TypeOrmModule.forFeature([Aula]),
     TypeOrmModule.forFeature([OfertaCurricular]),
     TypeOrmModule.forFeature([InstitutoPlanEstudioCarrera]),
+    TypeOrmModule.forFeature([TblAuxiliarSie], "siedb"),
   ],
   controllers: [InscripcionController],
-  providers: [InscripcionService, RespuestaSigedService],
+  providers: [InscripcionService,
+     RespuestaSigedService],
 })
 export class InscripcionModule {}

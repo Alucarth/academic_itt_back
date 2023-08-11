@@ -66,7 +66,7 @@ export class OfertaCurricularRepository {
           'd.horaInicio',
           'd.horaFin',
           'd.numeroAula',  
-          'dt.dia',  
+          'dt.dia'
 
       ])
       .where('o.institutoPlanEstudioCarreraId = :id ', { id })
@@ -85,20 +85,21 @@ export class OfertaCurricularRepository {
       console.log(periodo);
       const ofertas = await this.dataSource.getRepository(OfertaCurricular)
       .createQueryBuilder("o")
-      .innerJoinAndSelect("o.planEstudioAsignatura", "pa")       
-      .innerJoinAndSelect("pa.planEstudioCarrera", "pe")       
-      .innerJoinAndSelect("pa.regimenGradoTipo", "rg")     
-      .innerJoinAndSelect("pa.asignaturaTipo", "at")       
-      .innerJoinAndSelect("o.aulas", "a")       
-      .innerJoinAndSelect("a.paraleloTipo", "pt")       
-      .innerJoinAndSelect("a.aulasDetalles", "d")       
-      .innerJoinAndSelect("d.diaTipo", "dt")       
-      .innerJoinAndSelect("a.aulasDocentes", "do")       
-      .innerJoinAndSelect("do.maestroInscripcion", "m")       
-      .innerJoinAndSelect("m.persona", "p")       
+      .leftJoinAndSelect("o.planEstudioAsignatura", "pa")       
+      .leftJoinAndSelect("pa.planEstudioCarrera", "pe")       
+      .leftJoinAndSelect("pa.regimenGradoTipo", "rg")     
+      .leftJoinAndSelect("pa.asignaturaTipo", "at")       
+      .leftJoinAndSelect("o.aulas", "a")       
+      .leftJoinAndSelect("a.institutoEstudianteInscripcions", "iei")       
+      .leftJoinAndSelect("a.paraleloTipo", "pt")       
+      .leftJoinAndSelect("a.aulasDetalles", "d")       
+      .leftJoinAndSelect("d.diaTipo", "dt")       
+      .leftJoinAndSelect("a.aulasDocentes", "do")       
+      .leftJoinAndSelect("do.maestroInscripcion", "m")       
+      .leftJoinAndSelect("m.persona", "p")       
       .select([
           'o.id',
-          //'o.institutoPlanEstudioCarreraId',
+          'o.institutoPlanEstudioCarreraId',
           'pa.id',
           'pa.horas',
           'at.id',
@@ -108,29 +109,35 @@ export class OfertaCurricularRepository {
           'rg.regimenGrado',
           'a.id',
           'a.cupo',
-          'pt.paralelo',
           'pt.id',
+          'pt.paralelo',
+          'd.id',
           'd.horaInicio',
           'd.horaFin',
           'd.numeroAula',  
-          'dt.dia',
           'dt.id',  
+          'dt.dia',  
           'do.id',  
           'do.asignacionFechaInicio',  
           'do.asignacionFechaFin',
+          'do.bajaTipoId',
           'm.id',  
+          'm.vigente',  
           'p.paterno',  
           'p.materno',  
           'p.nombre',  
           'p.carnetIdentidad',  
-
-
+          'iei.id',  
       ])
       .where('o.institutoPlanEstudioCarreraId = :id ', { id })
       .andWhere('o.gestionTipoId = :gestion ', { gestion })
       .andWhere('o.periodoTipoId = :periodo ', { periodo })
+      .orderBy('a.id', 'ASC')
+      .orderBy('do.id', 'DESC')
+      .orderBy('o.id', 'ASC')
+      .orderBy('pa.id', 'ASC')
       .orderBy('at.id', 'ASC')
-      //.orderBy('a.id', 'ASC')
+    
       //.getRawMany();
       .getMany();
       return ofertas;
@@ -197,11 +204,6 @@ export class OfertaCurricularRepository {
     */
         return 1;
       }
-    async editarOferta(request: any)
-    {
-     
-        return request;
-    }
     async deleteOferta(id: number) {
         return await this.dataSource.getRepository(OfertaCurricular).delete(id)
     }

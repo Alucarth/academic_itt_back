@@ -17,16 +17,23 @@ import { AreaTipoService } from "./area_tipo.service";
 import { ApiTags } from "@nestjs/swagger";
 import { ApiOperation } from "@nestjs/swagger";
 import { AuthGuard } from "@nestjs/passport";
-import { JwtAuthGuard } from "../../../auth/guards/jwt-auth.guard";
+
+import { Auth } from "src/auth/decorator/auth.decorator";
+import { Users } from 'src/users/decorator/user.decorator';
+import { User as UserEntity } from 'src/users/entity/users.entity';
+import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 
 @ApiTags("Crud Catalogo Area Tipo")
 @Controller("area-tipo")
 export class AreaTipoController {
   constructor(private readonly areaTipoService: AreaTipoService) {}
 
-  @UseGuards(JwtAuthGuard)
+  
+ 
+  @Auth()
   @Get()
-  async getAll() {
+  async getAll(@Users() user: UserEntity) {
+    console.log("usuario-----autenticado-------",user)
     return await this.areaTipoService.getAll();
   }
   @Get("cursos")
@@ -39,14 +46,15 @@ export class AreaTipoController {
     return await this.areaTipoService.getOneById(parseInt(id));
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Auth()
   @Post()
-  async addAreaTipo(@Body() body, @Req() request: Request) {
-    return await this.areaTipoService.insertRecord(body, request);
+  async addAreaTipo(@Body() body, @Users() user: UserEntity) {
+    return await this.areaTipoService.insertRecord(body, user);
   }
 
   @Put()
   async updateAreaTipo(@Body() body) {
+    console.log('area?',body)
     return await this.areaTipoService.updateRecord(body);
   }
 

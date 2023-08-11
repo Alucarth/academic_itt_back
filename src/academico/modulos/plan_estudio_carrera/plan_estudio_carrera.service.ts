@@ -4,7 +4,7 @@ import { EntityManager } from 'typeorm';
 import { CarreraAutorizadaRepository } from '../carrera_autorizada/carrera_autorizada.repository';
 import { CreatePlanEstudioCarreraDto } from './dto/createPlanEstudioCarrera.dto';
 import { PlanEstudioCarreraRepository } from './plan_estudio_carrera.repository';
-
+import { User as UserEntity } from 'src/users/entity/users.entity';
 @Injectable()
 export class PlanEstudioCarreraService {
     constructor(
@@ -101,7 +101,7 @@ export class PlanEstudioCarreraService {
           );
     }
 
-    async crearPlanEstudioCarrera(dto: CreatePlanEstudioCarreraDto) {
+    async crearPlanEstudioCarrera(dto: CreatePlanEstudioCarreraDto, user:UserEntity) {
         //1:BUSCAR resolucion
         const dato = await this.getByResolucionData( 
             dto.plan_estudio_resolucion_id,
@@ -122,7 +122,7 @@ export class PlanEstudioCarreraService {
 
         const op = async (transaction: EntityManager) => {
             return await this.planEstudioCarreraRepository.crearPlanCarrera(
-                1,
+                user.id,
                 dto,
                 transaction
               )

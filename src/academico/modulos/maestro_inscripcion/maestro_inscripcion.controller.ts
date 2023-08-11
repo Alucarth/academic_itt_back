@@ -23,6 +23,9 @@ import { MaestroInscripcionService } from '../maestro_inscripcion/maestro_inscri
 import { CreateMaestroInscripcionDto } from './dto/createMaestroInscripcion.dto';
 import { UpdateMaestroInscripcionDto } from './dto/updateMaestroInscripcion.dto';
 import { JwtAuthGuard } from "../../../auth/guards/jwt-auth.guard";
+import { Auth } from "src/auth/decorator/auth.decorator";
+import { Users } from 'src/users/decorator/user.decorator';
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 @ApiTags("maestro-inscripcion")
 @Controller("maestro-inscripcion")
@@ -98,14 +101,15 @@ export class MaestroInscripcionController {
   }
 
   //@UseGuards(JwtAuthGuard)
+  @Auth()
   @Post("/")
   async addMaestroInscripciom(
     @Body() body: CreateMaestroInscripcionDto,
-    @Req() request: Request
+    @Users() user: UserEntity
+
   ) {
     //console.log("POST addMaestroInscripciom", body);
-
-    return await this.usersService.createUpdateMaestroInscripcion(body, request);
+    return await this.usersService.createUpdateMaestroInscripcion(body, user);
   }
 
   @Put("/")
@@ -149,6 +153,65 @@ export class MaestroInscripcionController {
       gestionId,
       periodoId);
     res.download(`${result}`);
+  }
+
+  //solo administrativos
+  @Get("/xlsAllAdministrativosByUeGestion/:ueId/:gestionId/:periodoId")
+  @Header("Content-Type", "text/xlsx")
+    async getXlsAllAdministrativosByUeGestion(
+      @Param("ueId") ueId: number,
+      @Param("gestionId") gestionId: number,
+      @Param("periodoId") periodoId: number,
+      @Res() res: Response
+    ) {
+    let result = await this.usersService.getXlsAllAdministrativosByUeGestion(ueId,
+      gestionId,
+      periodoId);
+    res.download(`${result}`);
+  }
+
+  @Get("/getDataDocentesByUeGestion/:ueId/:gestionId/:periodoId")
+  getDataDocentesByUeGestion(
+    @Param("ueId") ueId: number,
+    @Param("gestionId") gestionId: number,
+    @Param("periodoId") periodoId: number
+  ) {
+    return this.usersService.getDataDocentesByUeGestion(
+      ueId,
+      gestionId,
+      periodoId
+    );
+  }
+
+  @Get("/getDataAdministrativosByUeGestion/:ueId/:gestionId/:periodoId")
+  getDataAdministrativosByUeGestion(
+    @Param("ueId") ueId: number,
+    @Param("gestionId") gestionId: number,
+    @Param("periodoId") periodoId: number
+  ) {
+    return this.usersService.getDataAdministrativosByUeGestion(
+      ueId,
+      gestionId,
+      periodoId
+    );
+  }
+
+  //solo maestros por carrera autorizada
+  @Get("/xlsAllDocentesByCarreraAutorizada/:id/:ueId")
+  @Header("Content-Type", "text/xlsx")
+    async getXlsAllDocentesByCarreraAutorizada(
+      @Param("id") id: number,  
+      @Param("ueId") ueId: number,    
+      @Res() res: Response
+    ) {
+    let result = await this.usersService.getXlsAllDocentesByCarreraAutorizada(id,ueId);
+    res.download(`${result}`);
+  }
+
+  @Get('crear-usuarios-estudiantes')
+  async createUsuariosEstudiantes(){
+      console.log("total docentes por departamento y dependencia");
+      //return await this.usersService.crearUsuariosEstudiantes();
   }
   
 

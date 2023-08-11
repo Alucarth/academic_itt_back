@@ -1,8 +1,9 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Header, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { InstitucionEducativaSucursal } from 'src/academico/entidades/institucionEducativaSucursal.entity';
 import { InstitucionEducativaSucursalService } from './institucion_educativa_sucursal.service';
-
+import { Response } from "express";
+import { Res } from "@nestjs/common";
 @ApiTags('institucion-educativa-sucursal')
 @Controller('institucion-educativa-sucursal')
 export class InstitucionEducativaSucursalController {
@@ -14,6 +15,15 @@ export class InstitucionEducativaSucursalController {
     async getAllIttSucursales():Promise<InstitucionEducativaSucursal[]>{
         return await this.institucionEducativaSucursalService.getAllIttSucursales();
     }
+
+    @Get('xlsitts')
+    @Header("Content-Type", "text/xlsx")
+    async getXlsAllIttSucursales(@Res() res: Response){
+        let result = await this.institucionEducativaSucursalService.getXlsAllIttSucursales();
+        res.download(`${result}`);
+    }
+
+
     @Get(':sie')
     async getBySie(@Param('sie', ParseIntPipe) sie: number):Promise<InstitucionEducativaSucursal[]>{
         return await this.institucionEducativaSucursalService.findSucursalBySie(sie);
@@ -32,6 +42,11 @@ export class InstitucionEducativaSucursalController {
     async getEspecialidadesById(@Param('id', ParseIntPipe) id: number):Promise<InstitucionEducativaSucursal[]>{
         return await this.institucionEducativaSucursalService.findEspecialidadesBySucursal(id);
     }
+
+    
+   
+
+   
 }
 
 

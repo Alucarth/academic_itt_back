@@ -5,7 +5,7 @@ import { NotFoundException, HttpException } from "@nestjs/common";
 import { RespuestaSigedService } from "../../../shared/respuesta.service";
 import { CreateAsignaturaTipoDto } from "./dto/createAsignaturaTipo.dto";
 import { AsignaturaTipo} from "../../entidades/asignaturaTipo.entity"
-
+import { User as UserEntity } from 'src/users/entity/users.entity';
 @Injectable()
 export class AsignaturaTipoService {
   constructor(
@@ -34,12 +34,16 @@ export class AsignaturaTipoService {
   {
     if(search)
     {
-      return await this.asignaturaTipoRepository.findBy({asignatura:Like(`%${search}%`) })
+     return await this.asignaturaTipoRepository
+      .createQueryBuilder('a')
+      .where("a.asignatura like :search", {search:`%${search}%`})
+      .orWhere("a.abreviacion like :search", {search:`%${search}%`})
+      .getMany();
     }
     return await this.asignaturaTipoRepository.find()
   }
 
-  async create(dto: CreateAsignaturaTipoDto) {
+  async create(dto: CreateAsignaturaTipoDto, user: UserEntity) {
     //TODO: en la tabla actual el campo asignatura_id todo esta con CERO
     //existe el area tipo = 0 ?
     const asignaturaTipoCero = await this.asignaturaTipoRepository.findOne({
@@ -82,6 +86,7 @@ export class AsignaturaTipoService {
             abreviacion: dto.abreviacion,
             comentario: dto.comentario,
             asignaturaId: asignaturaTipoCero,
+            usuarioId: user.id,
           },
         ])
         .execute();

@@ -11,6 +11,15 @@ export class InstitucionEducativaImagenRepository {
     async getAll(){
         return  await this.dataSource.getRepository(InstitucionEducativaImagen).find();
     }
+    async findOneInstitutoLogo(id:number) {
+          
+      return await this.dataSource.getRepository(InstitucionEducativaImagen)
+      .createQueryBuilder('im')
+      .where('im.institucionEducativaId = :id', {id} )
+      .andWhere('im.activo = true' )
+      .getOne();
+      
+    }
     async createInstitucionEducativaImagen(idUsuario,id:number,filename, transaction) {
           
         const imagen  = new InstitucionEducativaImagen()

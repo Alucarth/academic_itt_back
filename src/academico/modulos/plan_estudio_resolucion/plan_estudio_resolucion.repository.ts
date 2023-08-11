@@ -7,6 +7,7 @@ import { CreateCarreraAutorizadaResolucionDto } from '../carrera_autorizada_reso
 import { CreatePlanEstudioResolucionDto } from './dto/createPlanEstudioResolucion.dto';
 import { CreateResolucionDto } from './dto/createResolucion.dto';
 
+
 @Injectable()
 export class PlanEstudioResolucionRepository {
     createQueryBuilder() {
@@ -40,12 +41,17 @@ export class PlanEstudioResolucionRepository {
         .innerJoinAndSelect("p.planesAsignaturas", "pa")
         .innerJoinAndSelect("pa.regimenGradoTipo", "rg")
         .innerJoinAndSelect("pa.asignaturaTipo", "at")
-        //.leftJoinAndSelect("a.planesAsignaturasReglas", "pr")
+        .leftJoinAndSelect("pa.planesAsignaturasReglas", "re")       
+        .leftJoinAndSelect("re.anteriorPlanEstudioAsignatura", "an")       
+        .leftJoinAndSelect("an.asignaturaTipo", "a2")   
+        .innerJoinAndSelect("p.institutosPlanesCarreras", "ipc")
         .select([
             'r.id',
             'r.numeroResolucion',
             'r.fechaResolucion',
             'p.id',
+            'p.tiempoEstudio',
+            'p.cargaHoraria',
             'a.area',
             't.carrera',
             'n.nivelAcademico',
@@ -56,11 +62,41 @@ export class PlanEstudioResolucionRepository {
             'at.asignatura',
             'at.abreviacion',
             'rg.regimenGrado',
-           // 'pr.id',
+            're.id',
+            'an.id',
+            'a2.abreviacion',
+            'ipc.id',
         ])
+        .where('r.activo = TRUE')
         .getMany()
 
     }
+    async findListaResoluciones(){
+        //  return  await this.dataSource.getRepository(PlanEstudioResolucion).find();
+          return  await this.dataSource.getRepository(PlanEstudioResolucion)
+          .createQueryBuilder("r")
+          .innerJoinAndSelect("r.planesCarreras", "p")
+          .innerJoinAndSelect("p.carreraTipo", "t")
+          .innerJoinAndSelect("p.nivelAcademicoTipo", "n")
+          .innerJoinAndSelect("p.areaTipo", "a")
+          .innerJoinAndSelect("p.intervaloGestionTipo", "i")
+          .select([
+              'r.id as plan_estudio_resolucion_id',
+              'r.numeroResolucion as numero_resolucion',
+              'r.fechaResolucion as fecha_resolucion',
+              'p.id as plan_estudio_carrera_id',
+              'p.tiempoEstudio as tiempo_estudio',
+              'p.cargaHoraria as carga_horaria',
+              'a.area as area',
+              't.carrera as carrera',
+              'n.nivelAcademico as nivel_academico',
+              'i.intervaloGestion as intervalo_gestion'
+          ])
+          .where('r.activo = TRUE')
+          .orderBy('t.carrera', 'ASC')
+          .getRawMany()
+  
+      }
 
     async findCarrerasByResolucionesId(id:number){
         //  return  await this.dataSource.getRepository(PlanEstudioResolucion).find();
@@ -136,7 +172,7 @@ export class PlanEstudioResolucionRepository {
             resolucion.fechaResolucion = dto.fecha_resolucion;
             resolucion.descripcion = dto.descripcion;
             resolucion.activo = true;
-            resolucion.usuarioId = 1;
+            resolucion.usuarioId = idUsuario;
             const result = await transaction.getRepository(PlanEstudioResolucion).save(resolucion);
        
         return result;

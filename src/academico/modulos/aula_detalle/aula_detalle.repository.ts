@@ -9,13 +9,13 @@ constructor(private dataSource: DataSource) {}
     async getAll(){
         return  await this.dataSource.getRepository(AulaDetalle).find();
     }
-    async getDatoAulaDetalle(id, cupo, paralelo){
+    async getDatoAulaDetalle(id, dia_tipo_id, hora_inicio, hora_fin){
 
         return  await this.dataSource.getRepository(AulaDetalle).findOne({where:{
             aulaId:id,
-            diaTipoId:id,
-            horaInicio:id,
-            horaFin:id,
+            diaTipoId:dia_tipo_id,
+            horaInicio:hora_inicio,
+            horaFin:hora_fin,
             
             },
         });
@@ -50,6 +50,10 @@ constructor(private dataSource: DataSource) {}
           return det;
         });
         return await this.dataSource.getRepository(AulaDetalle).save(det);
+    }
+    async deleteDetalle(id: number) {
+        console.log("borrar id:",id);
+        return await this.dataSource.getRepository(AulaDetalle).delete(id)
     }
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {
         return this.dataSource.manager.transaction<T>(op)

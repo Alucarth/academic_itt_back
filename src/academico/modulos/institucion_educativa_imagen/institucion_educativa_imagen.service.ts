@@ -18,6 +18,11 @@ export class InstitucionEducativaImagenService {
     async getOneActivoBySieId(id:number){
         return await this.institucionEducativaImagenRepositorio.getActivoById(id);
     }
+    
+    async getById(id: number){
+        const file = await this.institucionEducativaImagenRepositorio.findOneInstitutoLogo(id)
+        return file
+    }
     async createInstitucionEducativaImagen(dto:CreateInstitucionEducativaImagenDto, file){
         if(file!=''){ //insertar la imagen
             console.log("guardar");

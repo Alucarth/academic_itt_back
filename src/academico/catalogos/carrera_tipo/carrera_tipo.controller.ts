@@ -9,7 +9,9 @@ import {
 } from "@nestjs/common";
 import { CarreraTipoService } from "./carrera_tipo.service";
 import { ApiTags } from "@nestjs/swagger";
-import { ApiOperation } from "@nestjs/swagger";
+import { Auth } from "src/auth/decorator/auth.decorator";
+import { Users } from 'src/users/decorator/user.decorator';
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 @ApiTags("Crud Catalogo Carrera Tipo")
 @Controller("carrera-tipo")
@@ -33,14 +35,16 @@ export class CarreraTipoController {
   async getOneById(@Param("id") id: string) {
     return await this.carreraTipoService.getOneById(parseInt(id));
   }
-
+  
+  @Auth()
   @Post()
-  async addCarreraTipo(@Body() body) {
-    return await this.carreraTipoService.insertRecord(body);
+  async addCarreraTipo(@Body() body,  @Users() user: UserEntity) {
+    return await this.carreraTipoService.insertRecord(body, user);
   }
 
   @Put()
   async updateCarreraTipo(@Body() body) {
+    console.log('actualizando XD',body)
     return await this.carreraTipoService.updateRecord(body);
   }
 

@@ -9,6 +9,7 @@ import { CreatePlanAsignaturaPrerequisitoDto } from './dto/createPlanAsignaturaP
 import { CreatePlanEstudioAsignaturaDto } from './dto/createPlanEstudioAsignatura.dto';
 import { UpdatePlanEstudioAsignaturaDto } from './dto/updatePlanEstudioAsignatura.dto';
 import { PlanEstudioAsignaturaRepository } from './plan_estudio_asignatura.repository';
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 @Injectable()
 export class PlanEstudioAsignaturaService {
@@ -138,7 +139,7 @@ export class PlanEstudioAsignaturaService {
     };
   }
 
-    async crearPlanAsignatura (dto: CreatePlanAsignaturaPrerequisitoDto[]) {
+    async crearPlanAsignatura (dto: CreatePlanAsignaturaPrerequisitoDto[],  user:UserEntity) {
       const resultado = [];
       //actualizamos e insertamos
         for(const item of dto){
@@ -154,7 +155,7 @@ export class PlanEstudioAsignaturaService {
                     }
                     if(!planAsignatura){
                       const nuevos = await this.planEstudioAsignaturaRepository.crearOnePlanEstudioAsignatura(
-                                    1,
+                                user.id,
                                 item,
                                 transaction
                             );
@@ -202,12 +203,12 @@ export class PlanEstudioAsignaturaService {
           return eliminar;
        }
 
-       async crudReglaPlanEstudioAsignaturaById( dto){
+       async crudReglaPlanEstudioAsignaturaById( dto, user){
         const reglas = [];
         for(const item of dto){
           const plan = await this.getOneByPlanAsignatura( item.plan_estudio_carrera_id, item.asignatura_tipo_id);
           const anterior = await this.getOneByPlanAsignatura( item.plan_estudio_carrera_id, item.prerequisito_id);
-          if(item.prerequisito_id>0){
+          if(item.prerequisito_id > 0){
             const regla = await this.pearRepository.findOneBy({
               'planEstudioAsignaturaId':plan.id,
             });
@@ -244,8 +245,6 @@ export class PlanEstudioAsignaturaService {
                 reglas.push(borr);
               }
           }
-          //console.log("para el nuevo");
-          //console.log(item.prerequisito_id);
           //console.log(regla);
             if(item.prerequisito_id>0 && !regla){
               console.log("insert");
@@ -258,7 +257,8 @@ export class PlanEstudioAsignaturaService {
                     planEstudioAsignaturaId: plan.id,
                     anteriorPlanEstudioAsignaturaId: anterior.id,
                     activo:true,
-                    usuarioId: 1,
+                    usuarioId: user.id,
+                    
                 },
               ])
               .returning("id")
@@ -270,52 +270,15 @@ export class PlanEstudioAsignaturaService {
         }
         return reglas;
     }
-/*
-      async crearPlanAsignatura222222 (dto: CreatePlanAsignaturaPrerequisitoDto[]) {
-       
-        const planesAsignaturas = await this.planEstudioAsignaturaRepository.getAsignaturasByPLanEstudioId(dto[0].plan_estudio_carrera_id);
-
-        const { nuevosdto, nuevosp, existentes, inexistentes} = await this.verificaPlanAsignatura(
-            planesAsignaturas,
-            dto
-          )
-          console.log("los nuevos");
-          console.log(nuevosdto);
-          console.log(nuevosp);
-          console.log(existentes);
-          console.log(inexistentes);
-          console.log("fin--------------");
-            const op = async (transaction: EntityManager) => {
-
-                const nuevoArray = await this.planEstudioAsignaturaRepository.crearPlanEstudioAsignatura(
-                    1, 
-                    nuevosp, 
-                    transaction
-                );
-              return nuevoArray;
-            }
-  
-            const crearResult = await this.planEstudioAsignaturaRepository.runTransaction(op);
-  
-            if(crearResult.length>0){
-              return crearResult;
-                 
-            }
-            return this._serviceResp.respuestaHttp500(
-              nuevosp,
-              'No se pudo guardar la información !!',
-              '',
-          );
-      }*/
     
-      async crearPlanAsignaturaPrerequisito(dto: CreatePlanAsignaturaPrerequisitoDto[]) {
+      async crearPlanAsignaturaPrerequisito(dto: CreatePlanAsignaturaPrerequisitoDto[], user:UserEntity) {
              
              //creamos los planes estudio asignatura de todo el DTO
-           const planesNuevos = await this.crearPlanAsignatura(dto);
+           const planesNuevos = await this.crearPlanAsignatura(dto, user);
               //eliminamos los no reportados tanto plan_estudio_asignatura como  la regla
            const eliminados = await this.eliminarPlanAsignatura(dto);
               //insertamos actualizamos o borramos las reglas
-           const reglas = await this.crudReglaPlanEstudioAsignaturaById(dto);
+           const reglas = await this.crudReglaPlanEstudioAsignaturaById(dto, user);
 
            if(planesNuevos.length>0 ){
               return this._serviceResp.respuestaHttp201(
@@ -346,7 +309,7 @@ export class PlanEstudioAsignaturaService {
       }
 
    //actualizacion individual de un plan_estudio_asignatura
-      async editPlanEstudioAsignaturaById(id: number, dto:UpdatePlanEstudioAsignaturaDto)
+      async editPlanEstudioAsignaturaById(id: number, dto:UpdatePlanEstudioAsignaturaDto,  user:UserEntity)
       {
           const dato = await this.getById(id);
         if(dato){
@@ -393,7 +356,7 @@ export class PlanEstudioAsignaturaService {
                   planEstudioAsignaturaId: dato.id,
                   anteriorPlanEstudioAsignaturaId: anterior.id,
                   activo:true,
-                  usuarioId: 1,
+                  usuarioId: user.id
               },
             ])
             .returning("id")

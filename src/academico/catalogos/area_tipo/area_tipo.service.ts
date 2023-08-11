@@ -4,6 +4,7 @@ import { AreaTipo } from "src/academico/entidades/areaTipo.entity";
 import { In, Repository } from "typeorm";
 import { RespuestaSigedService } from "../../../shared/respuesta.service";
 import { JwtService } from "@nestjs/jwt";
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 @Injectable()
 export class AreaTipoService {
@@ -54,22 +55,8 @@ export class AreaTipoService {
     );
   }
 
-  async insertRecord(body, request) {
+  async insertRecord(body, user:UserEntity) {
     //0: validar token
-    let user_id = 0;
-    console.log("updateUser:", request.headers["token"]);
-    try {
-      const payload = await this.jwtService.decode(request.headers["token"]);
-      console.log("payload:", payload["id"]);
-      if (!payload) {
-        throw new UnauthorizedException();
-      }
-      user_id = parseInt(payload["id"]) + 0;
-    } catch {
-      throw new UnauthorizedException();
-    }
-    console.log("updateUserId:", user_id);
-
     try {
       const newRecord = await this.areaTipoRepository
         .createQueryBuilder()
@@ -78,7 +65,7 @@ export class AreaTipoService {
         .values([
           {
             area: body.areaFormacion,
-            usuarioId: user_id,
+            usuarioId: user.id,
           },
         ])
         .returning("id")
@@ -110,7 +97,7 @@ export class AreaTipoService {
         .createQueryBuilder()
         .update(AreaTipo)
         .set({
-          area: body.areaFormacion,
+          area: body.area,
         })
         .where("id = :id", { id: body.id })
         .execute();

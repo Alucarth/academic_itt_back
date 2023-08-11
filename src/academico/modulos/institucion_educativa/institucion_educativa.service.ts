@@ -8,7 +8,7 @@ import { InstitucionEducativaImagenRepository } from '../institucion_educativa_i
 import { InstitucionEducativaSucursalRepository } from '../institucion_educativa_sucursal/institucion_educativa_sucursal.repository';
 import { CreateInstitucionEducativaDto } from './dto/createInstitucionEducativa.dto';
 import { InstitucionEducativaRepository } from './institucion_educativa.repository';
-
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 
 @Injectable()
@@ -161,7 +161,7 @@ export class InstitucionEducativaService {
    }
     
 
-    async createInstitucionEducativa (dto: CreateInstitucionEducativaDto, file) {
+    async createInstitucionEducativa (dto: CreateInstitucionEducativaDto, file, user:UserEntity) {
 
         const institucion =  await this.institucionEducativaRepositorio.findInstitucionEducativaLugarNombre(dto.jurisdiccion_geografica_id, dto.institucion_educativa);
         
@@ -185,7 +185,7 @@ export class InstitucionEducativaService {
                   if(!acreditacion){
                       //Crear la acreditación 
                       await this.institucionEducativaAcreditacionRepositorio.createInstitucionEducativaAcreditacion(
-                          1, 
+                          user.id,
                           codigo, 
                           dto, 
                           transaction
@@ -197,7 +197,7 @@ export class InstitucionEducativaService {
                   console.log(sucursal);  
                   if(!sucursal){
                     await this.institucionEducativaSucursalRepositorio.createInstitucionEducativaSucursal(
-                        1, 
+                        user.id,
                         codigo, 
                         dto, 
                         transaction
@@ -206,7 +206,7 @@ export class InstitucionEducativaService {
                   if(file!=''){ //insertar la imagen
                     await this.institucionEducativaImagenRepositorio.inhabilitaImagen(nuevaInstitucion.id);
                     await this.institucionEducativaImagenRepositorio.createInstitucionEducativaImagen(
-                        1, 
+                        user.id,
                         nuevaInstitucion.id, 
                         file,  
                         transaction

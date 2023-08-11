@@ -142,4 +142,56 @@ export class PersonaService {
       );
     }
   }
+
+  
+  async historialPersona(personaId, sie, caId) {
+
+    const historial = await this.personaRepositorio.getHistorialById(personaId, sie, caId);
+
+    return this._serviceResp.respuestaHttp200(
+      historial,
+      "Datos Encontrados !!",
+      ""
+    );
+
+
+  }
+
+  async buscadorGestionPeriodo(sie) {
+
+    const datos = await this.personaRepositorio.getBuscadorGestionPeriodo(
+      sie
+    );
+
+    return this._serviceResp.respuestaHttp200(
+      datos,
+      "Datos Encontrados !!",
+      ""
+    );
+
+  }
+
+  async getCarrerasByPersonaId(id: number){
+    const dato = await this.personaRepositorio.getCarrerasByPersonaId(id);
+
+      return this._serviceResp.respuestaHttp200(
+        dato,
+        "Datos Encontrados !!",
+        ""
+      );
+  }
+
+  async historialPersonaAll(personaId, sie, caId) {
+
+    const historial = await this.personaRepositorio.getHistorialAllById(personaId, sie, caId);
+
+    return this._serviceResp.respuestaHttp200(
+      historial,
+      "Datos Encontrados !!",
+      ""
+    );
+
+
+  }
+
 }

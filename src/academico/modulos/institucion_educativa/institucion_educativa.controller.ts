@@ -104,6 +104,7 @@ export class InstitucionEducativaController {
     }
     @Get('itt/:sie')
     async getOneIttBySie(@Param('sie', ParseIntPipe) sie: number):Promise<InstitucionEducativa>{
+        console.log('sie',sie)
         return await this.institucionEducativaService.findOneAcreditadoBySie(sie);
     }
 

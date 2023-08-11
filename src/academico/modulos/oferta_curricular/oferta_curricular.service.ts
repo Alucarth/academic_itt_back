@@ -9,7 +9,7 @@ import { AulaDetalleRepository } from '../aula_detalle/aula_detalle.repository';
 import { CreateOfertaCurricularDto } from './dto/createOfertaCurricular.dto';
 import { OfertaCurricularRepository } from './oferta_curricular.repository';
 import { PlanEstudioAsignatura } from 'src/academico/entidades/planEstudioAsignatura.entity';
-
+import { User as UserEntity } from 'src/users/entity/users.entity';
 @Injectable()
 export class OfertaCurricularService {
     constructor(
@@ -177,7 +177,7 @@ export class OfertaCurricularService {
         
     }
 
-    async crear (dto: CreateOfertaCurricularDto[]) {
+    async crear (dto: CreateOfertaCurricularDto[], user:UserEntity) {
       
             try {
               for(const item of dto){
@@ -202,7 +202,7 @@ export class OfertaCurricularService {
                             gestionTipoId: item.gestion_tipo_id,
                             periodoTipoId: item.periodo_tipo_id,
                             planEstudioAsignaturaId: item.plan_estudio_asignatura_id,
-                            usuarioId: 1,
+                            usuarioId: user.id,
                         },
                     ])
                     .returning("id")
@@ -232,7 +232,7 @@ export class OfertaCurricularService {
                                 activo: true,
                                 cupo: aula.cupo,
                                 paraleloTipoId: aula.paralelo_tipo_id,
-                                usuarioId: 1,
+                                usuarioId: user.id,
                             },
                           ])
                           .returning("id")
@@ -247,7 +247,7 @@ export class OfertaCurricularService {
 
                                 console.log(nuevos);
                                 await this.aulaDetalleRepository.createAulaDetalle(
-                                    1,
+                                    user.id,
                                     aulaId,
                                     nuevos//aula.detalles
                                 );    

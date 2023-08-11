@@ -57,7 +57,7 @@ export class InstitucionEducativaRepository {
         .innerJoinAndSelect("a.educacionTipo", "d")
         .innerJoinAndSelect("a.estadoInstitucionEducativaTipo", "e")
         .where('a.educacionTipo in (7,8,9,11,12,13)')
-        .where('c.id = :id ', { id })
+        .andWhere('c.id = :id ', { id })
         .orderBy('a.id', 'ASC')
         .getOne();
         return itts;
@@ -69,8 +69,8 @@ export class InstitucionEducativaRepository {
         .innerJoinAndSelect("a.educacionTipo", "d")
         .innerJoinAndSelect("a.estadoInstitucionEducativaTipo", "e")
         .where('a.educacionTipo in (7,8,9,11,12,13)')
-        .where('c.id = :id ', { id })
-        .where('a.institucionEducativa = :nombre ', { nombre })
+        .andWhere('c.id = :id ', { id })
+        .andWhere('a.institucionEducativa = :nombre ', { nombre })
         .orderBy('a.id', 'ASC')
         .getOne();
         return itts;
@@ -87,7 +87,7 @@ export class InstitucionEducativaRepository {
         .leftJoinAndSelect("e.acreditacionTipo", "h")
         .select(["a","c","d","e","f","g","h"])
         .where('a.educacionTipo in (7,8,9)  ')
-        .where('a.id = :id ', { id })
+        .andWhere('a.id = :id ', { id })
         .orderBy('a.id', 'ASC')
         .getMany();
         return itts;
@@ -122,7 +122,7 @@ export class InstitucionEducativaRepository {
         .innerJoinAndSelect("up1.unidadTerritorialPadre", "up2")
         .innerJoinAndSelect("up2.unidadTerritorialPadre", "up3")
         .innerJoinAndSelect("up3.unidadTerritorialPadre", "up4")
-        .innerJoinAndSelect("a.imagenes", "img")
+        // .innerJoinAndSelect("a.imagenes", "img")
         .select([
             'a.id as ie_id',
             'j.id as sucursal_id',
@@ -148,12 +148,12 @@ export class InstitucionEducativaRepository {
             'j.sucursal_nombre as sede_subsede',
             'e.id as acreditacion_id',
             'j.id as sucursal_id',
-            'img.nombreArchivo as file',
+            // 'img.nombreArchivo as file',
         ])
         .where('b.id in (7,8,9,11,12,13)  ')
         .andWhere('a.id = :id ', { id })
         .andWhere('e.vigente = :vigente ', { vigente: 'TRUE'})
-        .andWhere('img.activo = :vigente ', { vigente: 'TRUE'})
+        // .andWhere('img.activo = :vigente ', { vigente: 'TRUE'})
         .orderBy('a.id', 'ASC')
         //.getOneOrFail();
         .getRawOne();
@@ -309,9 +309,10 @@ export class InstitucionEducativaRepository {
             "up4.id as departamento_id",
             "g.dependencia as dependencia",
             "g.id as dependencia_id",
-            "COUNT(e.dependenciaTipoId) as total",  
+            "COUNT(distinct(a.id)) as total",  
         ])
         .where('a.educacionTipoId in (7,8,9)')
+        .andWhere('a.estadoInstitucionEducativaTipoId = 10')
         .groupBy('up4.id')
         .addGroupBy('g.dependencia')
         .addGroupBy('g.id')

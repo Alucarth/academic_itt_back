@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common'
-import { InstitucionEducativaCurso } from 'src/academico/entidades/institucionEducativaCurso.entity';
 import { PlanEstudioAsignatura } from 'src/academico/entidades/planEstudioAsignatura.entity';
-import { PlanEstudioCarrera } from 'src/academico/entidades/planEstudioCarrera.entity';
-import { PlanEstudioResolucion } from 'src/academico/entidades/planEstudioResolucion.entity';
 import { DataSource, EntityManager } from 'typeorm'
 import { UpdatePlanEstudioAsignaturaDto } from './dto/updatePlanEstudioAsignatura.dto';
-
-
 @Injectable()
 export class PlanEstudioAsignaturaRepository {
     
@@ -21,28 +16,55 @@ export class PlanEstudioAsignaturaRepository {
         });
     }
 
-    async findAsignaturasPrerequisitosByPlan( id:number){
+    async findAsignaturasPrerequisitosByPlan3333( id:number){
+        console.log("iiiiiiii");
         const asignaturas = await this.dataSource.getRepository(PlanEstudioAsignatura)
         .createQueryBuilder("p")
         .innerJoinAndSelect("p.asignaturaTipo", "a")       
         .innerJoinAndSelect("p.regimenGradoTipo", "rg")     
-        .leftJoinAndSelect("p.planesAsignaturasReglas", "r")     
-        .innerJoinAndSelect("r.anterior_plan_estudio", "r")     
+        .leftJoinAndSelect("p.planesAsignaturasReglas", "re")     
+        .leftJoinAndSelect("re.anteriorPlanEstudioAsignatura", "an")       
+        .leftJoinAndSelect("an.asignaturaTipo", "a2")     
         .select([
             'p.id as plan_estudio_asignatura_id',
             'p.horas as horas',
             'a.asignatura as asignatura',
             'a.abreviacion as abreviacion',
-            'r.id',            
-            'r.anteriorPlanEstudioAsignatura',
+            'rg.id',            
+            'rg.regimenGrado as regimen_grado',            
+            're.id',
+            'an.id',
+            'a2.abreviacion'           
         ])
         .where('p.planEstudioCarreraId = :id ', { id })
-        
-        .orderBy('a.id', 'ASC')
-        .getRawMany();
+        .orderBy('rg.sigla', 'ASC')
+        .getMany();
         return asignaturas;
     }
-
+    async findAsignaturasPrerequisitosByPlan( id:number){
+        console.log("iiiiiiii");
+        const asignaturas = await this.dataSource.getRepository(PlanEstudioAsignatura)
+        .createQueryBuilder("p")
+        .innerJoinAndSelect("p.asignaturaTipo", "a")       
+        .innerJoinAndSelect("p.regimenGradoTipo", "rg")     
+        .leftJoinAndSelect("p.planesAsignaturasReglas", "re")     
+        .leftJoinAndSelect("re.anteriorPlanEstudioAsignatura", "an")       
+        .leftJoinAndSelect("an.asignaturaTipo", "a2")     
+        .select([
+            'p.id',
+            'a.asignatura',
+            'a.abreviacion',
+            'p.horas',   
+            'rg.regimenGrado',      
+            're.id',      
+            'an.id',      
+            'a2.abreviacion' 
+        ])
+        .where('p.planEstudioCarreraId = :id ', { id })
+        .orderBy('rg.sigla', 'ASC')
+        .getMany();
+        return asignaturas;
+    }
     async findAsignaturasByPlanRegimen( id:number, regimen:number){
         const asignaturas = await this.dataSource.getRepository(PlanEstudioAsignatura)
         .createQueryBuilder("p")
@@ -101,7 +123,6 @@ export class PlanEstudioAsignaturaRepository {
     async crearOnePlanEstudioAsignatura(idUsuario, asignatura, transaction) {
 
        // const planesAsignaturas: PlanEstudioAsignatura[] = asignaturas.map((item) => {
-          
           const planAsignatura  = new PlanEstudioAsignatura()
           planAsignatura.planEstudioCarreraId =asignatura.plan_estudio_carrera_id;
           planAsignatura.regimenGradoTipoId =asignatura.regimen_grado_tipo_id;
@@ -109,7 +130,7 @@ export class PlanEstudioAsignaturaRepository {
           planAsignatura.horas =asignatura.horas;
           planAsignatura.usuarioId =idUsuario;
         //  return planAsignatura;
-//});
+        //});
     
         return await transaction.getRepository(PlanEstudioAsignatura).save(planAsignatura)
     }

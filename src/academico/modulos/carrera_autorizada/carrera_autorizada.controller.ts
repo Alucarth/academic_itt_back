@@ -76,4 +76,13 @@ export class CarreraAutorizadaController {
       res.download(`${result}`);
     }
 
+    @Get("ieGestionPeriodo/:id/:gestion/:periodo")
+    async getCarrerasByIeIdGestionPeriodo(
+      @Param("id", ParseIntPipe) id: number,
+      @Param("gestion", ParseIntPipe) gestion: number,
+      @Param("periodo", ParseIntPipe) periodo: number
+      ) {
+      return await this.carreraAutorizadaService.getCarrerasByIeIdGestionPeriodo(id, gestion, periodo);
+    }
+
 }

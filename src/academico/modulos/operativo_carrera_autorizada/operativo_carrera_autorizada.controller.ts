@@ -5,6 +5,10 @@ import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { CreateOperativoCarreraAutorizadaDto } from './dto/createOperativoCarreraAutorizada.dto';
 import { UpdateOperativoCarreraAutorizadaDto } from './dto/updateOperativoCarreraAutorizada.dto';
 import { OperativoCarreraAutorizadaService } from './operativo_carrera_autorizada.service';
+import { Auth } from "src/auth/decorator/auth.decorator";
+import { Users } from 'src/users/decorator/user.decorator';
+import { User as UserEntity } from 'src/users/entity/users.entity';
+
 
 @Controller('operativo-carrera-autorizada')
 export class OperativoCarreraAutorizadaController {
@@ -26,11 +30,11 @@ export class OperativoCarreraAutorizadaController {
     async getOperativoVigenteCarrera(@Param('id') id: number,){
         return await this.operativoCarreraAutorizadaService.findOperativoActivoCarrera(id);
     }
-
+    @Auth()
     @Post()
-    async createOperativoCarrera(@Body() dto: CreateOperativoCarreraAutorizadaDto){
+    async createOperativoCarrera(@Body() dto: CreateOperativoCarreraAutorizadaDto, @Users() user: UserEntity){
         console.log('controller insert',dto);
-        return  await this.operativoCarreraAutorizadaService.createOperativoCarrera(dto);        
+        return  await this.operativoCarreraAutorizadaService.createOperativoCarrera(dto, user);        
     }
 
    // @Autenticacion()

@@ -3,6 +3,9 @@ import { OfertaCurricular } from 'src/academico/entidades/ofertaCurricular.entit
 import { DataSource } from 'typeorm';
 import { CreateOfertaCurricularDto } from './dto/createOfertaCurricular.dto';
 import { OfertaCurricularService } from './oferta_curricular.service';
+import { Auth } from "src/auth/decorator/auth.decorator";
+import { Users } from 'src/users/decorator/user.decorator';
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 @Controller('oferta-curricular')
 export class OfertaCurricularController {
@@ -35,13 +38,11 @@ export class OfertaCurricularController {
         return await this.ofertaCurricularService.getAllAsignaturasByCarreraGestionPeriodoDocente(id,gestion,periodo);
     }
 
+    @Auth()
     @Post()
-    async createOfertaCurricular(@Body() dto: CreateOfertaCurricularDto[]){
-       /* console.log('controller insert');
-        console.log(dto);
-        console.log("fin");*/
-     //   return  await this.ofertaCurricularService.createOfertaCurricular(dto);        
-        return  await this.ofertaCurricularService.crear(dto);        
+    async createOfertaCurricular(@Body() dto: CreateOfertaCurricularDto[], @Users() user: UserEntity){
+     
+        return  await this.ofertaCurricularService.crear(dto, user);        
     }
 
     @Post('editar')

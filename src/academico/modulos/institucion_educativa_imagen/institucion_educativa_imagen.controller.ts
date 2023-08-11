@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { InstitucionEducativaImagen } from 'src/academico/entidades/institucionEducativaImagen.entity';
@@ -18,7 +18,7 @@ export class InstitucionEducativaImagenController {
         //console.log("ins-educ");
         return await this.institucionEducativaImagenService.getAll();
     }
-    
+
     @Post()
     @UseInterceptors(
         FileInterceptor('file', {
@@ -28,11 +28,29 @@ export class InstitucionEducativaImagenController {
           }),
           fileFilter:fileFilter
         }),
-      )
+    )
+
     async createInstitutoImagen(@UploadedFile() file: Express.Multer.File,  @Body() dto: CreateInstitucionEducativaImagenDto) {
+
+        console.log("subiendo imagen")
         console.log('dto', dto);
         console.log('file', file);
         console.log('filename', file.filename);
         return  await this.institucionEducativaImagenService.createInstitucionEducativaImagen(dto, file.filename);        
     }
+
+    @Get('download-logo/:id')
+    async downloadFile(@Res() res, @Param('id', ParseIntPipe) id: number) {
+     const data = await this.institucionEducativaImagenService.getById(id);
+        console.log(data);
+        
+        res.download('./uploads/'+data.nombreArchivo)      
+   }
+
+   @Get('nombre-logo/:id')
+   async getLogo(@Param('id', ParseIntPipe) id: number){
+        const data = await this.institucionEducativaImagenService.getById(id);
+        return data.nombreArchivo;
+   }
+
 }

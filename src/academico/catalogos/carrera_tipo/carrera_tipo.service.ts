@@ -3,10 +3,9 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { RespuestaSigedService } from "../../../shared/respuesta.service";
 import { Repository } from "typeorm";
 import { DataSource, EntityManager } from "typeorm";
-
 import { CarreraTipo } from "src/academico/entidades/carrerraTipo.entity";
 import { CarreraGrupoTipo } from "src/academico/entidades/carreraGrupoTipo.entity";
-
+import { User, User as UserEntity } from 'src/users/entity/users.entity';
 @Injectable()
 export class CarreraTipoService {
   constructor(
@@ -120,7 +119,7 @@ export class CarreraTipoService {
     );
   }
 
-  async insertRecord(body) {
+  async insertRecord(body, user:UserEntity) {
     //TODO:validar si existe carreraGrupo
     const carreraGrupo = await this.carreraGrupoRepository.find({
       where: {
@@ -144,6 +143,7 @@ export class CarreraTipoService {
           {
             carrera: body.carrera,
             carreraGrupoTipo: carreraGrupo[0],
+            usuarioId: user.id,
           },
         ])
         .returning("id")
@@ -171,11 +171,14 @@ export class CarreraTipoService {
 
   async updateRecord(body) {
 
+    //el resultado deberia ser un objeto y no un array para validar si la respuesta es null y no tomar indices dado que esto generar error en caso de eque el array este vacio 
+    //verificar otros modulos y validar codigo
     const carreraGrupo = await this.carreraGrupoRepository.find({
       where: {
-        id: body.carreraGrupoTipoId,
+        id: body.carreraGrupoTipo.id,
       },
     });
+    console.log(carreraGrupo)
     if (carreraGrupo.length == 0) {
       return this._serviceResp.respuestaHttp404(
         body.carreraGrupoTipoId,
