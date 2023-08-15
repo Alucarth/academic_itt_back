@@ -52,7 +52,8 @@ export class AsignaturaTipoController {
     summary: "Crea un asignatura",
   })
   create(@Body() createAsignaturaTipoDto: CreateAsignaturaTipoDto, @Users() user: UserEntity) {
-    console.log('objeto',createAsignaturaTipoDto)
+    //console.log('objeto',createAsignaturaTipoDto)
+    console.log('usuario es:',user)
     return this.asignaturaTipoService.create(createAsignaturaTipoDto, user);
   }
 

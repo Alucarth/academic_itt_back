@@ -193,6 +193,13 @@ export class UsersController {
     return await this.usersService.createNewUser(body);
   }
 
+  @Post("array")
+  async addUserArray() {
+    //llegan los datos de la persona
+    console.log("controller new usuarios array");
+    return await this.usersService.createArrayUser();
+  }
+
   @UseGuards(JwtAuthGuard)
   @Put("/")
   async updateUser(@Body() body: UpdateUserDto, @Req() request: Request) {

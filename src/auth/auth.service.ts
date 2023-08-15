@@ -24,11 +24,12 @@ export class AuthService {
     return user;
   }
 
-  singUp(user: User) {
+
+    async singUp(user: User) {
     console.log("usuario de auth service es:",user)
     const { id, ...rest } = user;
     const payload = { sub: id };
-
+    console.log("auth.service payload", payload);
     return {
       user,
       accessToken: this.jwtService.sign(payload),
@@ -235,11 +236,12 @@ export class AuthService {
 
       const payload = {
         id: result[0].user_id,
+        //sub: result[0].user_id,
         rolid: 100,
         appid: 2,
         expiresIn: 60,
       };
-
+      console.log("auth.service login payload", payload);
       return {
         statusCode: 200,
         gestion_tipo_id: 2023,
