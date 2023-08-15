@@ -5,7 +5,10 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Persona } from './persona.entity';
 
 @Entity({ name: 'usuario', schema: 'public' })
 export class User {
@@ -29,4 +32,9 @@ export class User {
 
   @Column({ nullable: false, name: 'persona_id' })
   personaId: number;
+
+  @ManyToOne(() => Persona, (persona) => persona.id)
+  @JoinColumn({ name: 'persona_id', referencedColumnName: 'id'})
+  persona: Persona
+
 }

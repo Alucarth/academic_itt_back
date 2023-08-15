@@ -21,6 +21,7 @@ import { PersonaBusquedaCiFechaNacDTO, PersonaMReadDto } from './dto/persona.dto
 import { UpdatePasswordUserDto } from './dto/update-password-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
+import { get } from 'http';
 
 
 @Controller("user")
@@ -40,6 +41,12 @@ export class UsersController {
   @Get("profile")
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @Get('/list')
+  getAll()
+  {
+    return this.usersService.getAll()
   }
 
   /**/
