@@ -60,6 +60,7 @@ export class CarreraTipoService {
           "d.grupo",
         ])
       //.where('d.id in (1)')
+      .orderBy("a.carrera","ASC")
       .getMany();
 
     console.log(result);
