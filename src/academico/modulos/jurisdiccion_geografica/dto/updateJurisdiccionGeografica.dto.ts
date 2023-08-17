@@ -9,17 +9,17 @@ export class UpdateJurisdiccionGeograficaDto {
   @IsNotEmpty({ message: "Cordenada Y" })
   @IsNumber()
   cordy: number;
-
-  @IsNotEmpty()
+/*
+  @IsOptional()
   @IsString()
   direccion: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   zona: string;
 
   @IsOptional()
   @IsString()
-  observacion: string;
+  observacion: string;*/
     
 }

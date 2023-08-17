@@ -139,8 +139,8 @@ export class JurisdiccionGeograficaRepository {
           .set({
             cordx:dto.cordx,
             cordy:dto.cordy,
-            direccion:dto.direccion,
-            zona:dto.zona,
+           // direccion:dto.direccion,
+           // zona:dto.zona,
           })
           .where({ id: id })
           .execute()
