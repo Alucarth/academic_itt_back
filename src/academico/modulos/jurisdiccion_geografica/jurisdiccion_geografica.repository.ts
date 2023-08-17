@@ -18,7 +18,7 @@ export class JurisdiccionGeograficaRepository {
         return  await this.dataSource.getRepository(JurisdiccionGeografica).findOneBy({id:id});
     }
 
-    async getOneByCodigo2(id:number){
+    async getOneByCodigo(id:number){
         return  await this.dataSource.getRepository(JurisdiccionGeografica).findOneBy({codigoEdificioEducativo:id});
     }
     async getOne2001ByCodigo(id: number) {
@@ -132,7 +132,7 @@ export class JurisdiccionGeograficaRepository {
         const repo = transaction
           ? transaction.getRepository(JurisdiccionGeografica)
           : this.dataSource.getRepository(JurisdiccionGeografica)
-    
+    console.log("id=", id);
         return await repo
           .createQueryBuilder()
           .update(JurisdiccionGeografica)
@@ -142,8 +142,8 @@ export class JurisdiccionGeograficaRepository {
            // direccion:dto.direccion,
            // zona:dto.zona,
           })
-          .where({ id: id })
-          .execute()
+          .where({codigoEdificioEducativo: id })
+          .execute();
       }
 
     async runTransaction<T>(op: (entityManager: EntityManager) => Promise<T>) {

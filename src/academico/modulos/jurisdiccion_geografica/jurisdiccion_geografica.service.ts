@@ -37,6 +37,22 @@ export class JurisdiccionGeograficaService {
             '',
         );
     }
+
+    async findJurisdiccionGeograficaByCodigo(id:number){
+         const resultado =  await this.jurisdiccionGeograficaRepositorio.getOneByCodigo(id);
+        if(resultado == null){
+            return this._serviceResp.respuestaHttp404(
+                '',
+                'No se encontraron resultados  !!',
+                '',
+            );
+        }
+        return this._serviceResp.respuestaHttp201(
+            resultado,
+            'Datos encontrados  !!',
+            '',
+        );
+    }
     async findJurisdiccionGeografica2001Codigo(id:number){
          const resultado =  await this.jurisdiccionGeograficaRepositorio.getOne2001ByCodigo(id);
 
@@ -115,7 +131,8 @@ export class JurisdiccionGeograficaService {
     }
     async updateJurisdiccionGeografica (id:number, dto: UpdateJurisdiccionGeograficaDto) {
 
-        const jurisdiccion = await this.findJurisdiccionGeografica(id);
+        const jurisdiccion = await this.findJurisdiccionGeograficaByCodigo(id);
+       // const jurisdiccion = await this.findJurisdiccionGeografica(id);
       
         if(jurisdiccion.data){
             const op = async (transaction: EntityManager) => {
