@@ -21,15 +21,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 }
 
   async validate(payload: any) {
-    const { sub: id } = payload;
-    const user = await this.userService.getOne(id);
-    if(!user){
+    const { id: id } = payload;
+    //console.log("*******validate***********");
+   // console.log("payload sub", payload.sub);
+    const duser = await this.userService.getOne(id);
+   // console.log("usuario desde vaidate",duser)
+    if(!duser){
       console.log("no hay usuario desde jwt-srategy");
       throw new UnauthorizedException();
 
     }
     console.log("si existe usuario desde jwt-srategy");
-    return user;
+    return duser;
     /*return {
       userId: payload.sub,
       username: payload.username,

@@ -66,7 +66,7 @@ export class PlanEstudioCarreraService {
         return carrera
     }
 
-    async getResolucionesByCarreraAutorizadaId(id:number){
+    async getResolucionesByCarreraId(id:number){
         
         const carreraAutorizada = await this.carreraAutorizadaRepository.getCarreraAutorizadaById(id);
 
@@ -78,6 +78,44 @@ export class PlanEstudioCarreraService {
                 carreraAutorizada.intervalo_gestion_tipo_id,
                 carreraAutorizada.tiempo_estudio
             )
+            console.log("------------");
+            console.log(resoluciones);
+            if(resoluciones.length>0){
+                return this._serviceResp.respuestaHttp201(
+                    resoluciones,
+                    "Registro Encontrado !!",
+                    ""
+                );
+            }
+            else{
+                return this._serviceResp.respuestaHttp404(
+                    '',
+                    "No existen resoluciones de planes de estudio !!",
+                    ""
+                  );
+            }
+        }
+        
+        return this._serviceResp.respuestaHttp404(
+            '',
+            "Se produjo un error !!",
+            ""
+          );
+    }
+    async getResolucionesByCarreraAutorizadaId(id:number){
+        
+        const carreraAutorizada = await this.carreraAutorizadaRepository.getCarreraAutorizadaById(id);
+
+        if(carreraAutorizada){
+            const resoluciones = await this.planEstudioCarreraRepository.findResolucionesByCarreraAutorizadaData(
+                carreraAutorizada.carrera_id,
+                carreraAutorizada.nivel_academico_tipo_id,
+                carreraAutorizada.area_id,
+                carreraAutorizada.intervalo_gestion_tipo_id,
+                carreraAutorizada.tiempo_estudio
+            )
+            console.log("------------");
+            console.log(resoluciones);
             if(resoluciones.length>0){
                 return this._serviceResp.respuestaHttp201(
                     resoluciones,

@@ -21,6 +21,7 @@ import { PersonaBusquedaCiFechaNacDTO, PersonaMReadDto } from './dto/persona.dto
 import { UpdatePasswordUserDto } from './dto/update-password-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
+import { get } from 'http';
 
 
 @Controller("user")
@@ -40,6 +41,12 @@ export class UsersController {
   @Get("profile")
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @Get('/list')
+  getAll()
+  {
+    return this.usersService.getAll()
   }
 
   /**/
@@ -191,6 +198,13 @@ export class UsersController {
     //llegan los datos de la persona
     console.log("controller new", body);
     return await this.usersService.createNewUser(body);
+  }
+
+  @Post("array")
+  async addUserArray() {
+    //llegan los datos de la persona
+    console.log("controller new usuarios array");
+    return await this.usersService.createArrayUser();
   }
 
   @UseGuards(JwtAuthGuard)

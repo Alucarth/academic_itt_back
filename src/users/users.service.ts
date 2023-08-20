@@ -60,33 +60,45 @@ export class UsersService {
   }
 
   async getOne(id: number, userEntity?: User) {
-    const user = await this.userRepository.findOneBy({'id':id})
+    //console.log("************ 1 getOne", id);
+    const duser = await this.userRepository.findOneBy({'id':id})
       .then(u => (!userEntity ? u : !!u && userEntity.id === u.id ? u : null));
-    console.log("usuario es", user)
-    if (!user)
+    //console.log("usuario es", duser)
+    if (!duser)
       throw new NotFoundException('Usuario no existe o no esta autorizado');
 
-    return user;
+    return duser;
   }
 
   async findOne(username: string, password: string): Promise<User | undefined> {
-    console.log("findOne");
+    //console.log("*********** 2 findOne");
     try {
       //let id = 100;
-      const user = await this.userRepository.findOneBy({'username': username});
-      if(!user){
+      const duser = await this.userRepository.findOneBy({'username': username});
+      //console.log("Usuario desde user.sevices es",duser);
+      if(!duser){
         throw new Error(`Nombre de Usuario no existe`);
       }
       //console.log(user);
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (user && isMatch) {
-        return user;
+      const isMatch = await bcrypt.compare(password,duser.password);
+      if (duser && isMatch) {
+        return duser;
       } else {
         throw new Error(`Contraseña no coinciden`);
       }
     } catch (err) {
       throw new Error(`Error finding ${err} user ${err.message}`);
     }
+  }
+
+  async getAll()
+  {
+      let users = await this.userRepository.find({
+        relations:{
+          persona: true
+        }
+      })
+      return users
   }
 
   async getAllBySearch(ci: string, fechanac: string, complemento: string) {
@@ -617,6 +629,95 @@ export class UsersService {
     }
   }
 
+  async createArrayUser () {
+    const resultado = [];
+    const personas = await this.getAllPersonas();
+   // console.log("personas");
+   // console.log(personas);
+
+    for(const item of personas)
+    {
+
+        try {
+          let userId = 0;
+          const hashPassword = await bcrypt.hash("123456", 10);
+        
+          const result = await this.userRepository.query(`
+    select * from  usuario  where persona_id = ${item.persona_id}`);
+
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
+
+    if (result.length === 0) {
+
+            const res = await this.userRepository
+              .createQueryBuilder()
+              .insert()
+              .into(User)
+              .values([
+                {
+                  personaId: item.persona_id,
+                  username: item.ci,
+                  password: hashPassword,
+                  activo: true,
+                },
+              ])
+              .returning("id")
+              .execute();
+              userId = res.identifiers[0].id;
+           
+            //la persona ya existe, verificamos si existe el usuario
+            // OJO, no deberia tener mas de un usuario (REGLA DE BASE DATOS)
+    
+           // const roles = await this.userRepository.query(`
+          //  select count(*) as existe from usuario where persona_id = ${ item.persona_id}  `);
+    
+            //console.log("personaid", persona.id);
+            //console.log('roles', roles);
+    
+          //  if (roles[0].existe == 0) {
+              // no existe el usuario, se crea
+              //const hashPassword = await bcrypt.hash("123456", 10);
+    
+              await this.userRepository
+              .createQueryBuilder()
+              .insert()
+              .into(UsuarioRol)
+              .values([{ usuario_id: userId, rol_tipo_id: 5, activo: true }])
+              .returning("id")
+              .execute();
+    
+          
+           // } 
+         }
+      
+        } catch (error) {
+          console.log("Error insertar persona/usuario: ", error);
+          throw new HttpException(
+            {
+              status: HttpStatus.CONFLICT,
+              error: `xError insertar nueva Unidad Territorial: ${error.message}`,
+            },
+            HttpStatus.ACCEPTED,
+            {
+              cause: error,
+            }
+          );
+          //return 0;
+      }
+      
+    }  
+    return resultado;
+} 
+
+async getAllPersonas() {
+  const result = await this.userRepository.query(`
+  select persona_id, ci from aux_usuarios where aux_usuarios.persona_id is not null
+  `);
+
+  return result;
+ 
+}
   async getAllGeneroTipo() {
     const result = await this.userRepository.query(`
     select id,genero from genero_tipo where id in (1,2) order by 1

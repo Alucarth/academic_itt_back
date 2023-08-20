@@ -44,6 +44,11 @@ export class PlanEstudioCarreraController {
     }
 
     @Get('resoluciones-carrera/:id')
+    async getResolucionesCarrerId(@Param('id') id: number){
+       return await this.planEstudioCarreraService.getResolucionesByCarreraId(id);
+    }
+    
+    @Get('resoluciones-carrera-autorizada/:id')
     async getResolucionesCarreraAutorizadaId(@Param('id') id: number){
        return await this.planEstudioCarreraService.getResolucionesByCarreraAutorizadaId(id);
     }

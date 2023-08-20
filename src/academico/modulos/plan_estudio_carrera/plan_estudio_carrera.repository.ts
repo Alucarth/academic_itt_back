@@ -81,7 +81,40 @@ export class PlanEstudioCarreraRepository {
           .andWhere("i.carreraAutorizadaId = :ca ", { ca })
           .getRawOne();
     }
+
     async findResolucionesByData(
+        carrera_id:number,
+        nivel_id:number,
+        area_id:number,
+        intervalo_id:number,
+        tiempo:number,
+        ){
+            console.log("carrera es");
+            console.log(carrera_id);
+        return  await this.dataSource.getRepository(PlanEstudioCarrera)
+        .createQueryBuilder("pc")
+        .innerJoinAndSelect("pc.planEstudioResolucion", "r")
+        //.innerJoinAndSelect("pc.institutosPlanesCarreras", "i")
+        .select([
+            'pc.id as plan_estudio_carrera_id',
+            'r.id as plan_estudio_resolucion_id',
+            'r.numero_resolucion as numero_resolucion',
+            'r.fecha_resolucion as fecha_resolucion',
+            'r.activo as activo',
+           // 'i.id as instituto_plan_estudio_carrera_id',
+           // 'i.activo as activo_asignacion',
+
+        ])
+          .where("pc.carreraTipoId = :carrera_id", { carrera_id })
+          .andWhere("pc.areaTipoId = :area_id", { area_id })
+          .andWhere("pc.nivelAcademicoTipoId = :nivel_id", { nivel_id })
+          .andWhere("pc.intervaloGestionTipoId = :intervalo_id", { intervalo_id })
+          .andWhere("pc.tiempoEstudio = :tiempo", { tiempo })
+         // .andWhere("i.activo = true")
+          .getRawMany();
+
+    }
+    async findResolucionesByCarreraAutorizadaData(
         carrera_id:number,
         nivel_id:number,
         area_id:number,
@@ -111,8 +144,8 @@ export class PlanEstudioCarreraRepository {
           .andWhere("pc.tiempoEstudio = :tiempo", { tiempo })
           .andWhere("i.activo = true")
           .getRawMany();
-
     }
+    
     async findOneResolucionByData(
         resolucion_id:number,
         carrera_id:number,
