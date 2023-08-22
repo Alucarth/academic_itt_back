@@ -44,6 +44,9 @@ export class CarreraAutorizadaResolucion {
   @Column({ type: 'varchar', name: 'operacion' })
   operacion: string;
   
+  @Column({ type: 'boolean', name: 'ultimo' })
+  ultimo: boolean;
+
   @Exclude()
   @CreateDateColumn({
     name: 'fecha_registro',

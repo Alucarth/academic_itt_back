@@ -140,6 +140,8 @@ export class CarreraAutorizadaRepository {
         ])
           .where("ca.id = :id", { id })
           .andWhere("ca.activo = true")
+          .orderBy("r.fechaResolucion", "DESC")
+          .andWhere("r.ultimo = true")
           .getRawOne();
 
     }
