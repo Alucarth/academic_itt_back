@@ -74,6 +74,7 @@ export class CarreraAutorizadaRepository {
           ])
           .where("s.institucionEducativaId = :id ", { id })
           .andWhere("ca.areaTipoId > 1 ")
+          .andWhere("r.ultimo = true ")
           .getRawMany();
     }
     async getAllCursosByIeId(id){
