@@ -130,7 +130,7 @@ export class AuthService {
         maestro_inscripcion.persona_id = ${result[0].persona_id} 
       `);
 
-     
+     console.log('institutos',institutos)
 
       let arrayData = []
       let arrayInstitutos = []
@@ -141,8 +141,11 @@ export class AuthService {
         
         let rol_tipo = '';
         let rol_txt = '';
+        //verificar si la logica es correcta se adiciono el id: 6 cargo_tipo otros administrativos 
         switch( institutos[index]['cargo_tipo_id'] ) {
-          case 2: case 12:
+          case 2: 
+          case 12:
+          // case 6: 
             rol_tipo = '5';
             rol_txt = 'DIRECTOR';
             break;
@@ -151,11 +154,11 @@ export class AuthService {
             rol_txt = 'MAESTRA/O - DOCENTE';
             break;
         }
-
+        console.log('rol_tipo',rol_tipo)
         const roles = await this.userRepository.query(`
           select count(*) as existe_rol from usuario_rol where usuario_id = ${result[0].user_id}  and rol_tipo_id = ${rol_tipo}
         `);
-
+        console.log('roles', roles)
         if(roles[0]['existe_rol'] == 1){
           arrayRoles.push({rol_tipo_id: rol_tipo, rol: rol_txt})
         }
