@@ -19,7 +19,7 @@ export class CargoTipoService {
     async getAll(){
         //var result: EspecialidadTipo[] = [];
         const result =  await this.cargoTipoRepository.findBy({
-            id: Any([1,3,4,5,6,7])
+            id: Any([1,3,4,5,6,7,8,9,10,11])
         })
 
         return this._serviceResp.respuestaHttp200(
