@@ -109,6 +109,9 @@ export class MaestroInscripcion {
   @JoinColumn({ name: 'especialidad_tipo_id', referencedColumnName: 'id'})
   especialidadTipo: EspecialidadTipo;
 
+  @Column({ type: 'integer', name: 'especialidad_tipo_id' })
+  especialidadTipoId: number;
+
   @ManyToOne(() => GestionTipo, (gestionTipo) => gestionTipo.maestrosInscripciones, { nullable: false, cascade: true })
   @JoinColumn({ name: 'gestion_tipo_id', referencedColumnName: 'id'})
   gestionTipo: GestionTipo;

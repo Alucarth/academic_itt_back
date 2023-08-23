@@ -1357,7 +1357,7 @@ export class MaestroInscripcionService {
             formacionTipo        : formacionTipo,
             financiamientoTipo   : financiamientoTipo,
             cargoTipo            : cargoTipo,
-            especialidadTipo     : especialidadTipo,
+            especialidadTipoId     : especialidadTipo.id,
             gestionTipo          : gestionTipo,
             normalista           : dto.normalista,
             formacionDescripcion : dto.formacionDescripcion,
