@@ -1320,6 +1320,8 @@ export class InscripcionService {
         regimen_grado_tipo.id = ${regimenGrado}
 
     `);
+
+    
     for (let i = 0; i < result.length; i++) {
       console.log('i :', i);
       console.log('oferta_curricular.id', result[i].oferta_curricular_id);

@@ -10,6 +10,9 @@ import { extname } from 'path';
 import { diskStorage } from 'multer';
 import { fileName, fileFilter } from 'src/common/helpers/file.utils';
 import { InstitucionEducativaImagenService } from '../institucion_educativa_imagen/institucion_educativa_imagen.service';
+import { Auth } from "src/auth/decorator/auth.decorator";
+import { Users } from 'src/users/decorator/user.decorator';
+import { User as UserEntity } from 'src/users/entity/users.entity';
 
 const _ = require('lodash');
 @ApiTags('institucion-educativa')
@@ -123,6 +126,7 @@ export class InstitucionEducativaController {
         return await this.institucionEducativaService.findSucursalGestion(sie, gestion);
     }
 
+    @Auth()
     @Post()
     @UseInterceptors(
         FileInterceptor('file', {
@@ -133,11 +137,14 @@ export class InstitucionEducativaController {
           fileFilter:fileFilter
         }),
       )
-    async createInstituto(@UploadedFile() file: Express.Multer.File,  @Body() dto: CreateInstitucionEducativaDto) {
+    async createInstituto(
+        @UploadedFile() file: Express.Multer.File,  
+        @Body() dto: CreateInstitucionEducativaDto,
+        @Users() user: UserEntity) {
         console.log('dto', dto);
         console.log('file', file);
         console.log('file', file.filename);
-       // return  await this.institucionEducativaService.createInstitucionEducativa(dto, file.filename);        
+        return  await this.institucionEducativaService.createInstitucionEducativa(dto, file.filename, user);        
     }
    
     @Put()
