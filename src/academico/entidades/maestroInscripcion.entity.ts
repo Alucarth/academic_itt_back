@@ -87,9 +87,17 @@ export class MaestroInscripcion {
   @JoinColumn({ name: 'estudio_idioma_tipo_id', referencedColumnName: 'id'})
   estudioIdiomaTipo: IdiomaTipo;
 
+  @Column({ type: 'integer', name: 'estudio_idioma_tipo_id' })
+  estudioIdiomaTipoId: number;
+
+
   @ManyToOne(() => FormacionTipo, (formacionTipo) => formacionTipo.maestrosInscripciones, { nullable: false, cascade: true })
   @JoinColumn({ name: 'formacion_tipo_id', referencedColumnName: 'id'})
   formacionTipo: FormacionTipo;
+
+  @Column({ type: 'integer', name: 'formacion_tipo_id' })
+  formacionTipoId: number;
+
   
   @Column({ type: 'integer', name: 'financiamiento_tipo_id' })
   financiamientoTipoId: number;
