@@ -1723,7 +1723,7 @@ export class MaestroInscripcionService {
                 maestro_inscripcion.especialidad_tipo_id = especialidad_tipo.id
             where institucion_educativa_id = ${ueId} 
             and maestro_inscripcion.gestion_tipo_id = ${gestionId}  
-            and maestro_inscripcion.cargo_tipo_id in (2,1,12)                     
+           -- and maestro_inscripcion.cargo_tipo_id in (2,1,12)                     
             order by 2,3,4;`);
 
       console.log("result: ", data);
