@@ -1183,7 +1183,7 @@ export class MaestroInscripcionService {
       
       //si es secretario se crea como rol director: 5 segun Cristina...capaz de creerle
       if( dto.cargoTipoId === 3 ){
-        const newusuario = await this.usersService.createUserAndRol(persona, 5);
+        // const newusuario = await this.usersService.createUserAndRol(persona, 5);
       }
       // 6: ROL MAESTRO
       if( dto.cargoTipoId === 1 ){
