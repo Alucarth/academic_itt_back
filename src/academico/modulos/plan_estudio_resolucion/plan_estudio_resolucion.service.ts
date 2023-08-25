@@ -112,12 +112,12 @@ export class PlanEstudioResolucionService {
         
         // verificar la carrera ya existe
       const carreraAutorizada =await this.carreraAutorizadaRepository.getCarreraAutorizadaById(dto.carrera_autorizada_id);
-    
+      //console.log(carreraAutorizada);
         const op = async (transaction: EntityManager) => {
 
             const planResolucion = await this.createNewResolucion(dto, user);
             if(planResolucion.data?.id){ 
-                console.log("creoResol");
+                //console.log("creoResol");
                 //crear plan estudio carrera
                 let datos = {
                     plan_estudio_resolucion_id: planResolucion.data?.id,
@@ -130,9 +130,9 @@ export class PlanEstudioResolucionService {
                     denominacion: dto.denominacion,
                 }   
                 const planCarrera = await this.servicePlanEstudioCarrera.crearPlanEstudioCarrera(datos, user);
-                
-                if(planCarrera?.data.id ){
-                    console.log("creoPlanCarrera");
+                //console.log("planCarrera:::::::", planCarrera.data.id);
+                if(planCarrera?.data.id){
+                   // console.log("creoPlanCarrera");
                     let datopc = {
                         plan_estudio_carrera_id:planCarrera.data.id,
                         carrera_autorizada_id:carreraAutorizada.carrera_autorizada_id

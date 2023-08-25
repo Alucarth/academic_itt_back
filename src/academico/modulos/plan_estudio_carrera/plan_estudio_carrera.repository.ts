@@ -160,7 +160,7 @@ export class PlanEstudioCarreraRepository {
         .createQueryBuilder("pc")
         .innerJoinAndSelect("pc.planEstudioResolucion", "r")
         .select([
-            'pc.id',
+            'pc.id as id',
             'r.id as plan_estudio_resolucion_id',
             'r.numero_resolucion as numero_resolucion',
             'r.fecha_resolucion as fecha_resolucion',

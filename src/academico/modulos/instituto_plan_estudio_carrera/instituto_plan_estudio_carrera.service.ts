@@ -89,13 +89,14 @@ export class InstitutoPlanEstudioCarreraService {
 
     async createInstitutoPlan (dto: CreateInstitutoPlanEstudioCarreraDto, user:UserEntity) {
       const institutoPlanCarrera = await this.getOneByPlanCarrera(dto.plan_estudio_carrera_id, dto.carrera_autorizada_id);
-        if(institutoPlanCarrera.data?.id){
+      //console.log("institutoPlanCarrera____", institutoPlanCarrera);
+        if(institutoPlanCarrera.data!=''){ //console.log("ya existe ")
           return this._serviceResp.respuestaHttp201(
             institutoPlanCarrera,
             "El registro de instituto plan ya existe!!",
             ""
           );
-        }
+        }else{ //console.log("crea")
             const op = async (transaction: EntityManager) => {
               const nuevoInstitutoPlan =  await this.institutoPlanEstudioCarreraRepository.createInstitutoPlanEstudioCarrera(
                 user.id,
@@ -114,6 +115,7 @@ export class InstitutoPlanEstudioCarreraService {
                   '',
               );
             }
+          }
             return this._serviceResp.respuestaHttp500(
               "",
               'No se pudo guardar la información !!',
