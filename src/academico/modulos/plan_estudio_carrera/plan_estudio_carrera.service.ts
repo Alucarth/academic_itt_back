@@ -38,14 +38,17 @@ export class PlanEstudioCarreraService {
         nivel_id:number,
         area_id:number,
         intervalo_id:number,
-        tiempo:number){
+        tiempo:number,
+        carga:number
+        ){
         
         const carrera = await this.planEstudioCarreraRepository.findResolucionesByData(
             carrera_id,
             nivel_id,
             area_id,
             intervalo_id,
-            tiempo)
+            tiempo,
+            carga)
         return carrera
     }
     async getByResolucionData(
@@ -76,7 +79,8 @@ export class PlanEstudioCarreraService {
                 carreraAutorizada.nivel_academico_tipo_id,
                 carreraAutorizada.area_id,
                 carreraAutorizada.intervalo_gestion_tipo_id,
-                carreraAutorizada.tiempo_estudio
+                carreraAutorizada.tiempo_estudio,
+                carreraAutorizada.carga_horaria,
             )
             console.log("------------");
             console.log(resoluciones);
