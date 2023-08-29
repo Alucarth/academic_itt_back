@@ -88,6 +88,7 @@ export class PlanEstudioCarreraRepository {
         area_id:number,
         intervalo_id:number,
         tiempo:number,
+        carga:number,
         ){
             console.log("carrera es");
             console.log(carrera_id);
@@ -110,6 +111,7 @@ export class PlanEstudioCarreraRepository {
           .andWhere("pc.nivelAcademicoTipoId = :nivel_id", { nivel_id })
           .andWhere("pc.intervaloGestionTipoId = :intervalo_id", { intervalo_id })
           .andWhere("pc.tiempoEstudio = :tiempo", { tiempo })
+          .andWhere("pc.cargaHoraria = :carga", { carga })
          // .andWhere("i.activo = true")
           .getRawMany();
 
