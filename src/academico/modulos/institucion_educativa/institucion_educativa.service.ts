@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {  InjectRepository } from '@nestjs/typeorm';
 import { InstitucionEducativa } from 'src/academico/entidades/institucionEducativa.entity';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
@@ -10,7 +10,10 @@ import { CreateInstitucionEducativaDto } from './dto/createInstitucionEducativa.
 import { InstitucionEducativaRepository } from './institucion_educativa.repository';
 import { User as UserEntity } from 'src/users/entity/users.entity';
 
-
+//para exportar a xls
+import { Workbook } from "exceljs";
+import * as tmp from "tmp";
+import { writeFile } from "fs/promises";
 @Injectable()
 export class InstitucionEducativaService {
     constructor(
@@ -39,6 +42,134 @@ export class InstitucionEducativaService {
         console.log(lista);
         return lista;
     }
+
+    async getReporteInstitutoDependencia()
+    {
+        const lista = await this.institucionEducativaRepositorio.findTotalDependencias();
+        console.log(lista)
+        let institution_list = []
+        let privado = []
+        let fiscal = []
+        let convenio = []
+        let ciudades = [] 
+        let city = this.getCity('La Paz',lista)
+        console.log(city)
+        ciudades.push('LP')
+        institution_list.push(city)
+
+        fiscal.push(city.fiscal)
+        privado.push(city.privado)
+        convenio.push(city.convenio)
+
+        city = this.getCity('Cochabamba',lista)
+        ciudades.push('CBB')
+        institution_list.push(city)
+
+        fiscal.push(city.fiscal)
+        privado.push(city.privado)
+        convenio.push(city.convenio)
+
+        city = this.getCity('Chuquisaca',lista)
+        ciudades.push('CHU')
+        institution_list.push(city)
+
+        fiscal.push(city.fiscal)
+        privado.push(city.privado)
+        convenio.push(city.convenio)
+
+        city = this.getCity('Oruro',lista)
+        ciudades.push('OR')
+        institution_list.push(city)
+
+        fiscal.push(city.fiscal)
+        privado.push(city.privado)
+        convenio.push(city.convenio)
+
+        city = this.getCity('Potosi',lista)
+        ciudades.push('PT')
+        institution_list.push(city)
+
+        fiscal.push(city.fiscal)
+        privado.push(city.privado)
+        convenio.push(city.convenio)
+
+        city = this.getCity('Tarija',lista)
+        ciudades.push('TJ')
+        institution_list.push(city)
+
+        fiscal.push(city.fiscal)
+        privado.push(city.privado)
+        convenio.push(city.convenio)
+
+        city = this.getCity('Santa Cruz',lista)
+        ciudades.push('SZC')
+        institution_list.push(city)
+
+        fiscal.push(city.fiscal)
+        privado.push(city.privado)
+        convenio.push(city.convenio)
+
+        city = this.getCity('Beni',lista)
+        ciudades.push('BN')
+        institution_list.push(city)
+
+        fiscal.push(city.fiscal)
+        privado.push(city.privado)
+        convenio.push(city.convenio)
+
+        city = this.getCity('Pando',lista)
+        ciudades.push('PN')
+        institution_list.push(city)
+
+        fiscal.push(city.fiscal)
+        privado.push(city.privado)
+        convenio.push(city.convenio)
+
+        //creating a workbook
+        let book = new Workbook();
+        const sheet = book.addWorksheet('hoja1', {views: [{showGridLines: false}]});
+        sheet.addRow([]);
+        sheet.addRow([`NUMERO DE INSTITUTOS TECNICO TECNOLOGICOS   `]);
+        sheet.addRow(["GESTION 2023"]);
+        sheet.getRow(1).font = { size: 16, bold: true };
+        sheet.getRow(2).font = { size: 12, bold: true };
+  
+        sheet.addRow([]);
+         //add the header
+        sheet.addRow(['DEPARTAMENTO','CONVENIO','FISCAL','PRIVADO','TOTAL']);
+        institution_list.forEach(city => {
+            sheet.addRow([city.departamento,city.convenio, city.fiscal, city.privado, city.total])
+        });
+
+        let File = await new Promise((resolve, reject) => {
+            tmp.file(
+              {
+                discardDescriptor: true,
+                prefix: `institutos_dependencia`,
+                postfix: ".xlsx",
+                mode: parseInt("0600", 8),
+              },
+              async (err, file) => {
+                if (err) throw new BadRequestException(err);
+    
+                //write temporary file
+                book.xlsx
+                  .writeFile(file)
+                  .then((_) => {
+                    resolve(file);
+                  })
+                  .catch((err) => {
+                    throw new BadRequestException(err);
+                  });
+              }
+            );
+          });
+    
+        return File;
+    
+        // return institution_list;
+    }
+
     async getTotalGeneral(){
         const lista = await this.institucionEducativaRepositorio.findTotalGeneral();
         return lista;
@@ -285,5 +416,71 @@ export class InstitucionEducativaService {
               'No se pudo guardar la información !!',
               '',
           );
+    }
+    /**helpers */
+    getCity (value,list )
+    {
+        let result = list.filter((o)=>{return o.departamento === value})
+        let object = null
+        let departamento_id=0
+        let fiscal_id = 0
+        let privado_id = 0
+        let convenio_id = 0 
+        if(result.length > 0)
+        {
+            //populate data
+            object = {}
+            result.forEach(element => {
+                if(element.dependencia==='FISCAL')
+                {
+                    object.fiscal = parseInt(element.total) 
+                    fiscal_id = element.dependencia_id
+                }
+
+                if(element.dependencia==='PRIVADO')
+                {
+                    object.privado = parseInt(element.total) 
+                    privado_id = element.dependencia_id
+                }
+
+                if(element.dependencia==='CONVENIO')
+                {
+                    object.convenio = parseInt(element.total) 
+                    convenio_id = element.dependencia_id
+                }
+                departamento_id = element.departamento_id
+            });
+
+            if (!('fiscal' in object))
+            {
+                object.fiscal = 0
+            }
+
+            if (!('privado' in object))
+            {
+                object.privado = 0
+            }
+
+            if (!('convenio' in object))
+            {
+                object.convenio = 0
+            }
+        }
+
+        if(!object)
+        {   
+            object = {}
+            object.fiscal = 0
+            object.privado = 0
+            object.convenio = 0
+        
+        }
+        object.fiscal_id = fiscal_id
+        object.privado_id = privado_id
+        object.convenio_id = convenio_id
+        object.departamento_id = departamento_id
+        object.departamento = value
+        object.total = object.convenio + object.fiscal + object.privado
+        return object
     }
 }

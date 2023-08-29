@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Header, Param, ParseIntPipe, Post, Put, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { InstitucionEducativa } from 'src/academico/entidades/institucionEducativa.entity';
 import { CreateInstitucionEducativaDto } from './dto/createInstitucionEducativa.dto';
@@ -13,6 +13,7 @@ import { InstitucionEducativaImagenService } from '../institucion_educativa_imag
 import { Auth } from "src/auth/decorator/auth.decorator";
 import { Users } from 'src/users/decorator/user.decorator';
 import { User as UserEntity } from 'src/users/entity/users.entity';
+import { Response } from "express";
 
 const _ = require('lodash');
 @ApiTags('institucion-educativa')
@@ -88,7 +89,14 @@ export class InstitucionEducativaController {
         console.log('new',result)
         return result
     }
-   
+    //** reporte excel */
+    @Get('reporte/insituto_departamento')
+    @Header("Content-Type", "text/xlsx")
+    async getReporteInstitutoDependencia( @Res() res: Response )
+    {
+        let result = await this.institucionEducativaService.getReporteInstitutoDependencia()
+          res.download(`${result}`);
+    }
 
     @Get('reporte/general')
     async getTotalGeneral(){
@@ -171,5 +179,5 @@ export class InstitucionEducativaController {
  
    }
    
-      
+    
 }
