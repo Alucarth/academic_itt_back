@@ -46,7 +46,7 @@ export class CreatePersonaoDto {
   @IsNumber()
   segipTipoId: number;
 
-  @IsNotEmpty({ message: "Lugar de expedicion es requerido" })
+  @IsOptional({ message: "Lugar de expedicion es requerido" })
   @IsNumber()
   expedidoUnidadTerritorialId: number;
 

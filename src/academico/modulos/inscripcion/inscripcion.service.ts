@@ -2025,7 +2025,9 @@ export class InscripcionService {
         instituto_plan_estudio_carrera.plan_estudio_carrera_id = plan_estudio_carrera.id AND
         intervalo_gestion_tipo.id = plan_estudio_carrera.intervalo_gestion_tipo_id AND
         nivel_academico_tipo.id = plan_estudio_carrera.nivel_academico_tipo_id AND
-        plan_estudio_carrera.activo = true
+        plan_estudio_carrera.activo = true AND 
+        carrera_autorizada_resolucion.ultimo=true
+        
       INNER JOIN
       plan_estudio_resolucion
       ON 
