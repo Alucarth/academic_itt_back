@@ -89,7 +89,7 @@ export class InstitucionEducativaController {
         console.log('new',result)
         return result
     }
-    //** reporte excel */
+    //** reporte excel AQUI COMIENZA EL REPORTE DE LA NOTA 0690/2023 */
     @Get('reporte/insituto_departamento')
     @Header("Content-Type", "text/xlsx")
     async getReporteInstitutoDependencia( @Res() res: Response )
@@ -115,6 +115,89 @@ export class InstitucionEducativaController {
         res.download(`${result}`);
     
     }
+
+    @Get('reporte/lista_dependencia_area_geografica')
+    @Header("Content-Type", "text/xlsx")
+    async getInsitutosDependenciaUbicacionGeografica(@Res() res: Response)
+    {
+        // return 'hola';
+        let result = await this.institucionEducativaService.findInsitutosDependenciaUbicacionGeografica()
+        
+        res.download(`${result}`);
+    }
+
+    @Get('reporte/lista_inscritos_departamento_dependencia')
+    @Header("Content-Type", "text/xlsx")
+    async findInscritosInsitutosDependenciaDepartamento(@Res() res: Response)
+    {
+        // return 'hola';
+        let result = await this.institucionEducativaService.findInscritosInsitutosDependenciaDepartamento()
+        
+        res.download(`${result}`);
+    }
+
+    @Get('reporte/lista_inscritos_carrera_tipo_anual')
+    @Header("Content-Type", "text/xlsx")
+    async findEstudiantesTipoCarreraDependenciaAnual(@Res() res: Response)
+    {
+        // return 'hola';
+        let result = await this.institucionEducativaService.findEstudiantesTipoCarreraDependenciaAnual()
+        // return result;
+        res.download(`${result}`);
+    }
+
+    @Get('reporte/lista_inscritos_carrera_tipo_semestre')
+    @Header("Content-Type", "text/xlsx")
+    async findEstudiantesTipoCarreraDependenciaSemestre(@Res() res: Response)
+    {
+        // return 'hola';
+        let result = await this.institucionEducativaService.findEstudiantesTipoCarreraDependenciaSemestre()
+        // return result;
+        res.download(`${result}`);
+    }
+
+    @Get('reporte/lista_inscritos_departamento_genero')
+    @Header("Content-Type", "text/xlsx")
+    async findEstudiantesDepartamentoGenero(@Res() res: Response)
+    {
+        // return 'hola';
+        let result = await this.institucionEducativaService.findEstudiantesDepartamentoGenero()
+        // return result;
+        res.download(`${result}`);
+    }
+
+    @Get('reporte/lista_detalle_carrera_insituto_dependencia')
+    @Header("Content-Type", "text/xlsx")
+    async findDetalleCarrerasInsitutosDependencia(@Res() res: Response)
+    {
+        // return 'hola';
+        let result = await this.institucionEducativaService.findDetalleCarrerasInsitutosDependencia()
+        
+        res.download(`${result}`);
+    }
+
+    @Get('reporte/lista_detalle_carrera_tipo')
+    @Header("Content-Type", "text/xlsx")
+    async getDetalleCarreraTipo(@Res() res: Response)
+    {
+        // return 'hola';
+        let result = await this.institucionEducativaService.getDetalleCarreraTipo()
+        // return result
+        res.download(`${result}`);
+    }
+
+    @Get('reporte/lista_estudiantes_carrera')
+    @Header("Content-Type", "text/xlsx")
+    async getCantidadEstudianteCarrera(@Res() res: Response)
+    {
+        
+        let result = await this.institucionEducativaService.getCantidadEstudianteCarrera()
+        
+        res.download(`${result}`);
+    }
+
+
+    // HASTA AQUI LOS REPORTES XD DE LA NOTA INTERNA 0690/2023
 
     @Get('reporte/general')
     async getTotalGeneral(){

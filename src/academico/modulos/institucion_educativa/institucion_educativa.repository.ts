@@ -360,6 +360,160 @@ export class InstitucionEducativaRepository {
             ) as subquery group by lugar, dependencia,educacion;`)
     }
 
+    async findDetalleInstitutosAreaGeografica()
+    {
+        return await this.dataSource.query(`select ut5.lugar as departamento, dt.dependencia, ie.institucion_educativa, et.educacion as tipo,agt.area_geografica , count(distinct(ie.id)) as total   from institucion_educativa ie  
+        inner join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+        inner join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+        inner join unidad_territorial ut2 on ut.unidad_territorial_id  = ut2.id
+        inner join unidad_territorial ut3 on ut2.unidad_territorial_id  = ut3.id
+        inner join unidad_territorial ut4 on ut3.unidad_territorial_id  = ut4.id
+        inner join unidad_territorial ut5 on ut4.unidad_territorial_id = ut5.id
+        inner join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = ie.id
+        inner join educacion_tipo et on ie.educacion_tipo_id = et.id
+        inner join dependencia_tipo dt on iea.dependencia_tipo_id  = dt.id 
+        inner join area_geografica_tipo agt on ut.area_geografica_tipo_id = agt.id
+        where ie.educacion_tipo_id in (7,8,9) and ie.estado_institucion_educativa_tipo_id = 10 
+        group by ut5.id, ut5.lugar, dt.dependencia , dt.id, ie.institucion_educativa, et.educacion , agt.area_geografica  ;
+        `)
+    }
+
+    async findInscritosInsitutosDependenciaDepartamento()
+    {
+        return await this.dataSource.query(`select lugar,dependencia, sum(total) as total from (
+            select ut5.id, ut5.lugar,ie.id, dt.dependencia , dt.id, ie.institucion_educativa,count(distinct(iee.persona_id)) as total from instituto_estudiante_inscripcion iei
+            join matricula_estudiante me on iei.matricula_estudiante_id = me.id
+            join institucion_educativa_estudiante iee on me.institucion_educativa_estudiante_id = iee.id 
+            join institucion_educativa_sucursal ies on iee.institucion_educativa_sucursal_id = ies.id
+            join institucion_educativa ie on ies.institucion_educativa_id = ie.id
+            join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+            join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+            join unidad_territorial ut2 on ut.unidad_territorial_id  = ut2.id
+            join unidad_territorial ut3 on ut2.unidad_territorial_id  = ut3.id
+            join unidad_territorial ut4 on ut3.unidad_territorial_id  = ut4.id
+            join unidad_territorial ut5 on ut4.unidad_territorial_id = ut5.id
+            join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = ie.id
+            join educacion_tipo et on ie.educacion_tipo_id = et.id
+            join dependencia_tipo dt on iea.dependencia_tipo_id  = dt.id 
+            where ie.educacion_tipo_id in (7,8,9) and ie.estado_institucion_educativa_tipo_id = 10 
+            group by ie.id, ie.institucion_educativa,ut5.id, ut5.lugar, dt.dependencia , dt.id 
+            ) as subquery group  by lugar, dependencia;
+            `)
+    }
+
+    async findEstudiantesTipoCarreraDependenciaAnual()
+    {
+        return await this.dataSource.query(`select dependencia,educacion, sum(total) as total from (
+            select ut5.id, ut5.lugar,ie.id, dt.dependencia , dt.id, et.educacion  ,ie.institucion_educativa,count(distinct(iee.persona_id)) as total from matricula_estudiante me 
+            join plan_estudio_carrera pec on me.instituto_plan_estudio_carrera_id = pec.id
+            join institucion_educativa_estudiante iee on me.institucion_educativa_estudiante_id = iee.id 
+            join institucion_educativa_sucursal ies on iee.institucion_educativa_sucursal_id = ies.id
+            join institucion_educativa ie on ies.institucion_educativa_id = ie.id
+            join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+            join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+            join unidad_territorial ut2 on ut.unidad_territorial_id  = ut2.id
+            join unidad_territorial ut3 on ut2.unidad_territorial_id  = ut3.id
+            join unidad_territorial ut4 on ut3.unidad_territorial_id  = ut4.id
+            join unidad_territorial ut5 on ut4.unidad_territorial_id = ut5.id
+            join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = ie.id
+            join educacion_tipo et on ie.educacion_tipo_id = et.id
+            join dependencia_tipo dt on iea.dependencia_tipo_id  = dt.id 
+            where ie.educacion_tipo_id in (7,8,9) and ie.estado_institucion_educativa_tipo_id = 10 and pec.intervalo_gestion_tipo_id = 4
+            group by ie.id, ie.institucion_educativa,ut5.id, ut5.lugar, dt.dependencia , dt.id, et.educacion  
+            ) as subquery group by dependencia, educacion;`)
+    }
+
+    async findEstudiantesTipoCarreraDependenciaSemestre()
+    {
+        return await this.dataSource.query(`select dependencia,educacion, sum(total) as total from (
+            select ut5.id, ut5.lugar,ie.id, dt.dependencia , dt.id, et.educacion  ,ie.institucion_educativa,count(distinct(iee.persona_id)) as total from matricula_estudiante me 
+            join plan_estudio_carrera pec on me.instituto_plan_estudio_carrera_id = pec.id
+            join institucion_educativa_estudiante iee on me.institucion_educativa_estudiante_id = iee.id 
+            join institucion_educativa_sucursal ies on iee.institucion_educativa_sucursal_id = ies.id
+            join institucion_educativa ie on ies.institucion_educativa_id = ie.id
+            join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+            join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+            join unidad_territorial ut2 on ut.unidad_territorial_id  = ut2.id
+            join unidad_territorial ut3 on ut2.unidad_territorial_id  = ut3.id
+            join unidad_territorial ut4 on ut3.unidad_territorial_id  = ut4.id
+            join unidad_territorial ut5 on ut4.unidad_territorial_id = ut5.id
+            join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = ie.id
+            join educacion_tipo et on ie.educacion_tipo_id = et.id
+            join dependencia_tipo dt on iea.dependencia_tipo_id  = dt.id 
+            where ie.educacion_tipo_id in (7,8,9) and ie.estado_institucion_educativa_tipo_id = 10 and pec.intervalo_gestion_tipo_id = 1
+            group by ie.id, ie.institucion_educativa,ut5.id, ut5.lugar, dt.dependencia , dt.id, et.educacion  
+            ) as subquery group by dependencia, educacion;`)
+    }
+
+    async findEstudiantesDepartamentoGenero()
+    {
+        return await this.dataSource.query(`select lugar, genero, sum(total) as total from( 
+            select ut5.id, ut5.lugar,ie.id, ie.institucion_educativa,gt.genero,count(distinct(iee.persona_id)) as total from instituto_estudiante_inscripcion iei
+            join matricula_estudiante me on iei.matricula_estudiante_id = me.id
+            join institucion_educativa_estudiante iee on me.institucion_educativa_estudiante_id = iee.id 
+            join institucion_educativa_sucursal ies on iee.institucion_educativa_sucursal_id = ies.id
+            join institucion_educativa ie on ies.institucion_educativa_id = ie.id
+            join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+            join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+            join unidad_territorial ut2 on ut.unidad_territorial_id  = ut2.id
+            join unidad_territorial ut3 on ut2.unidad_territorial_id  = ut3.id
+            join unidad_territorial ut4 on ut3.unidad_territorial_id  = ut4.id
+            join unidad_territorial ut5 on ut4.unidad_territorial_id = ut5.id
+            join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = ie.id
+            join educacion_tipo et on ie.educacion_tipo_id = et.id
+            join dependencia_tipo dt on iea.dependencia_tipo_id  = dt.id 
+            join persona p on iee.persona_id = p.id 
+            join genero_tipo gt on p.genero_tipo_id = gt.id
+            group by ie.id, ie.institucion_educativa,ut5.id, ut5.lugar, gt.genero
+            ) as subquery group by lugar, genero;`)
+    }
+
+    async findDetalleCarrerasInsitutosDependencia()
+    {
+        return await this.dataSource.query(`select ct.carrera ,ie.institucion_educativa, ut5.lugar as departamento, dt.dependencia , ut3.lugar as municipio from carrera_autorizada ca 
+        join carrera_tipo ct on ca.carrera_tipo_id = ct.id
+        join institucion_educativa_sucursal ies on ca.institucion_educativa_sucursal_id = ies.id
+        join institucion_educativa ie on ie.id = ies.institucion_educativa_id 
+        join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = ie.id
+        join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+        join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+        join unidad_territorial ut2 on ut.unidad_territorial_id  = ut2.id
+        join unidad_territorial ut3 on ut2.unidad_territorial_id  = ut3.id
+        join unidad_territorial ut4 on ut3.unidad_territorial_id  = ut4.id
+        join unidad_territorial ut5 on ut4.unidad_territorial_id = ut5.id
+        join dependencia_tipo dt on iea.dependencia_tipo_id  = dt.id 
+        where ie.educacion_tipo_id in (7,8,9) and ie.estado_institucion_educativa_tipo_id = 10
+        group by ct.carrera, ie.institucion_educativa,ut5.lugar, dt.dependencia, ut3.lugar;`)
+    }
+
+    async getDetalleCarreraTipo()
+    {
+        return await this.dataSource.query(`select et.educacion , count(distinct (ca.carrera_tipo_id) ) as total from carrera_autorizada ca 
+        join carrera_tipo ct on ca.carrera_tipo_id = ct.id
+        join institucion_educativa_sucursal ies on ca.institucion_educativa_sucursal_id = ies.id
+        join institucion_educativa ie on ie.id = ies.institucion_educativa_id 
+        join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = ie.id
+        join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+        join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+        join unidad_territorial ut2 on ut.unidad_territorial_id  = ut2.id
+        join unidad_territorial ut3 on ut2.unidad_territorial_id  = ut3.id
+        join unidad_territorial ut4 on ut3.unidad_territorial_id  = ut4.id
+        join unidad_territorial ut5 on ut4.unidad_territorial_id = ut5.id
+        join educacion_tipo et on ie.educacion_tipo_id = et.id
+        where ie.educacion_tipo_id in (7,8,9) and ie.estado_institucion_educativa_tipo_id = 10
+        group by et.educacion  ;`)
+    }
+
+    async getCantidadEstudianteCarrera()
+    {
+        return await this.dataSource.query(`select ct.carrera, count( distinct (iee.persona_id) ) as total  from matricula_estudiante me
+        join instituto_plan_estudio_carrera ipec on me.instituto_plan_estudio_carrera_id = ipec.id
+        join carrera_autorizada ca on ipec.carrera_autorizada_id = ca.id
+        join carrera_tipo ct on ca.carrera_tipo_id = ct.id
+        join institucion_educativa_estudiante iee on me.institucion_educativa_estudiante_id = iee.id
+        group by ct.carrera ;`)
+    }
+
     async findListaInstitutosPorLugarDependencia(lugar, dependencia){
         
         const list = await this.dataSource.getRepository(InstitucionEducativa)
