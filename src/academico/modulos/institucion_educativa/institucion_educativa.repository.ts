@@ -320,6 +320,46 @@ export class InstitucionEducativaRepository {
         //.getMany();
         return list;
     }
+
+    async findListaInstitutosAreaGeografica()
+    {
+        return await this.dataSource.query(`select ut5.lugar as departamento, ut5.id as departamento_id, ut.area_geografica_tipo_id ,agt.area_geografica ,  count(distinct(ie.id)) as total   from institucion_educativa ie  
+        inner join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+        inner join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+        inner join unidad_territorial ut2 on ut.unidad_territorial_id  = ut2.id
+        inner join unidad_territorial ut3 on ut2.unidad_territorial_id  = ut3.id
+        inner join unidad_territorial ut4 on ut3.unidad_territorial_id  = ut4.id
+        inner join unidad_territorial ut5 on ut4.unidad_territorial_id = ut5.id
+        inner join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = ie.id
+        inner join educacion_tipo et on ie.educacion_tipo_id = et.id
+        inner join dependencia_tipo dt on iea.dependencia_tipo_id  = dt.id 
+        inner join area_geografica_tipo agt on ut.area_geografica_tipo_id  = agt.id
+        where ie.educacion_tipo_id in (7,8,9) and ie.estado_institucion_educativa_tipo_id = 10 
+        group by ut5.id, ut5.lugar, ut.area_geografica_tipo_id, agt.area_geografica  ;
+        `)
+    }
+
+    async findListaCarrerasInstitutosDependencia()
+    {
+        return await this.dataSource.query(`select lugar as departamento ,dependencia,educacion, count(total) as total from (
+            select ut5.id, ut5.lugar,dt.dependencia, et.educacion  , dt.id,ct.carrera, count(ca.carrera_tipo_id) as total from carrera_autorizada ca
+            join carrera_tipo ct on ct.id  = ca.carrera_tipo_id 
+            join institucion_educativa_sucursal ies on ies.id = ca.institucion_educativa_sucursal_id 
+            join institucion_educativa ie on ie.id  = ies.institucion_educativa_id 
+            join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg.id 
+            join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id
+            join unidad_territorial ut2 on ut.unidad_territorial_id  = ut2.id  
+            join unidad_territorial ut3 on ut2.unidad_territorial_id = ut3.id
+            join unidad_territorial ut4 on ut3.unidad_territorial_id = ut4.id
+            join unidad_territorial ut5 on ut4.unidad_territorial_id = ut5.id
+            join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = ie.id
+            join educacion_tipo et on ie.educacion_tipo_id = et.id
+            join dependencia_tipo dt on iea.dependencia_tipo_id  = dt.id 
+            where ie.educacion_tipo_id in (7,8,9) and ie.estado_institucion_educativa_tipo_id = 10 
+            group by  ca.carrera_tipo_id,ct.carrera ,ut5.id, ut5.lugar,dt.dependencia , dt.id, et.educacion
+            ) as subquery group by lugar, dependencia,educacion;`)
+    }
+
     async findListaInstitutosPorLugarDependencia(lugar, dependencia){
         
         const list = await this.dataSource.getRepository(InstitucionEducativa)

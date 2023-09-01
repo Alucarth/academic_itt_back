@@ -95,7 +95,25 @@ export class InstitucionEducativaController {
     async getReporteInstitutoDependencia( @Res() res: Response )
     {
         let result = await this.institucionEducativaService.getReporteInstitutoDependencia()
-          res.download(`${result}`);
+        res.download(`${result}`);
+    }
+
+    @Get('reporte/institutos_area_geografica')
+    @Header("Content-Type", "text/xlsx")
+    async getReporteListaInstitutosAreaGeografica(@Res() res: Response )
+    {   
+        // return 'hola'
+        let result = await this.institucionEducativaService.getReporteListaInstitutosAreaGeografica()
+        res.download(`${result}`);
+    }
+
+    @Get('reporte/lista_carreras_institutos_dependencia')
+    @Header("Content-Type", "text/xlsx")
+    async getListaCarrerasInstitutosDependencia(@Res() res: Response)
+    {
+        let result = await this.institucionEducativaService.getListaCarrerasInstitutosDependencia()
+        res.download(`${result}`);
+    
     }
 
     @Get('reporte/general')
