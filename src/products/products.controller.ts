@@ -3,11 +3,8 @@ import { Products } from './entity/products.entity';
 import {
   Controller,
   Get,
-  UseGuards,
   Post,
   Body,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { ProductService } from './produts.service';
 import { CreateProductDto } from './dto/products.dto';

@@ -139,6 +139,8 @@ export class PlanEstudioCarreraRepository {
             'r.activo as activo',
             'i.id as instituto_plan_estudio_carrera_id',
             'i.activo as activo_asignacion',
+            'pc.descripcion as mencion',
+            'pc.denominacion as denominacion'
 
         ])
           .where("pc.carreraTipoId = :carrera_id", { carrera_id })

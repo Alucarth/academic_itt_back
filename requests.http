@@ -1,5 +1,5 @@
 ### get all institutos
-GET http://localhost:3005/api/institucion-educativa/itt
+GET http://localhost:3006/api/institucion-educativa/itt
 
 ### search user
-GET http://localhost:3005/api/user/getAllBySearch
+GET http://localhost:3006/api/user/getAllBySearch

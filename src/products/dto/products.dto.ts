@@ -1,6 +1,23 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateProductDto {
+
+  @IsNotEmpty()
+  @IsNumber()
+  gestionTipoId: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  etapaEducativaId: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  turnoTipoId: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  paraleloTipoId: number;
+
 
   @IsString({ message: "el campo es un texto" })
   @IsNotEmpty({
@@ -25,4 +42,5 @@ export class CreateProductDto {
     message: 'Product Price is required',
   })
   price: string;
+    institucionEducativaSucursalId: number;
 }
