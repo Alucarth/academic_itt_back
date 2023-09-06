@@ -102,6 +102,8 @@ export class PlanEstudioCarreraRepository {
             'r.numero_resolucion as numero_resolucion',
             'r.fecha_resolucion as fecha_resolucion',
             'r.activo as activo',
+            'pc.descripcion as mencion',
+            'pc.denominacion as denominacion' 
            // 'i.id as instituto_plan_estudio_carrera_id',
            // 'i.activo as activo_asignacion',
 
