@@ -106,7 +106,6 @@ export class PlanEstudioCarreraRepository {
             'pc.denominacion as denominacion' 
            // 'i.id as instituto_plan_estudio_carrera_id',
            // 'i.activo as activo_asignacion',
-
         ])
           .where("pc.carreraTipoId = :carrera_id", { carrera_id })
           .andWhere("pc.areaTipoId = :area_id", { area_id })
@@ -141,7 +140,6 @@ export class PlanEstudioCarreraRepository {
             'i.activo as activo_asignacion',
             'pc.descripcion as mencion',
             'pc.denominacion as denominacion'
-
         ])
           .where("pc.carreraTipoId = :carrera_id", { carrera_id })
           .andWhere("pc.areaTipoId = :area_id", { area_id })
