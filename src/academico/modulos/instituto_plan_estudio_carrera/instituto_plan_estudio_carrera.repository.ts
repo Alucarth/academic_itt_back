@@ -108,6 +108,8 @@ export class InstitutoPlanEstudioCarreraRepository {
             'ip.id',
             'ip.observacion',
             'pe.id',
+            'pe.denominacion',
+            'pe.descripcion',
             'pr.id',
             'pr.numeroResolucion',
             'pr.fechaResolucion',
