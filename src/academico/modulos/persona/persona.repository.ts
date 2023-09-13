@@ -170,7 +170,7 @@ export class PersonaRepository {
   }
 
   async updatePersona(dto: UpdatePersonaoDto) {
-    console.log('dto.id--> ', dto.id);
+    console.log('update dto.id--> ', dto.id);
     try {
 
         const res = await this.dataSource.getRepository(Persona)
@@ -203,7 +203,7 @@ export class PersonaRepository {
           .execute();
 
         console.log("res:", res);
-        console.log("perosna Inscripcion actualizado");
+        console.log("Datos de persona Inscripcion actualizado....");
         return res;
     } catch (error) {
 

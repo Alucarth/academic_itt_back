@@ -41,7 +41,7 @@ export class AulaService {
     }
 
     async deleteAula(id: number)
-    {
+    { //console.log("borrado de aula***");
       const estudiantes = await this.aulaRepository.getInscritosByAulaId(id);
       if(estudiantes.length>0){
         return this._serviceResp.respuestaHttp500(
@@ -190,14 +190,14 @@ export class AulaService {
               }
 
             } 
-            for(const itemea of dto.eliminado_aulas){
-              await this.deleteAula(itemea.id);
-            } 
-            for(const itemed of dto.eliminado_detalles){
-              await this.aulaDetalleService.deleteDetalle(itemed.id);
-            } 
-            
           }
+          for(const itemea of dto.eliminado_aulas){
+            //console.log("el id a eliminar",itemea.id);
+            await this.deleteAula(itemea.id);
+          } 
+          for(const itemed of dto.eliminado_detalles){
+            await this.aulaDetalleService.deleteDetalle(itemed.id);
+          } 
             return this._serviceResp.respuestaHttp201(
                 "",
                 "Registro Actualizado/Creado !!",
