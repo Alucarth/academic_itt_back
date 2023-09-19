@@ -135,15 +135,15 @@ export class PersonaRepository {
   }
 
   async crearPersona(dto: CreatePersonaoDto) {
- 
-    console.log(dto);
+    
     const persona = new Persona();
     persona.carnetIdentidad               = dto.carnetIdentidad;
     persona.complemento                   = dto.complemento;
     persona.paterno                       = dto.paterno;
     persona.materno                       = dto.materno;
     persona.nombre                        = dto.nombre;
-    persona.fechaNacimiento               = new Date(dto.fechaNacimiento);
+    //persona.fechaNacimiento               = new Date(dto.fechaNacimiento);
+    persona.fechaNacimiento               = dto.fechaNacimiento;
     persona.generoTipoId                  = dto.generoTipoId;
     persona.estadoCivilTipoId             = dto.estadoCivilTipoId;
     persona.sangreTipoId                  = dto.sangreTipoId;
@@ -165,7 +165,7 @@ export class PersonaRepository {
     persona.telefono                      = dto.telefono;
     persona.email                         = dto.email;
     persona.cedulaTipoId                  = dto.cedulaTipoId;
-
+    
     return await this.dataSource.getRepository(Persona).save(persona);
   }
 

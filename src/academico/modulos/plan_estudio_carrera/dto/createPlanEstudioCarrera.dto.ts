@@ -33,5 +33,9 @@ export class CreatePlanEstudioCarreraDto {
     @IsNotEmpty({ message: " denominacion es requerido" })
     @IsString()
     denominacion: string;
+
+    @IsOptional({ message: " mencion es opcional" })
+    @IsString()
+    descripcion: string;
    
 }
