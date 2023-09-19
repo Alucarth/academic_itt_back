@@ -128,6 +128,7 @@ export class PlanEstudioResolucionService {
                     nivel_academico_tipo_id: carreraAutorizada.nivel_academico_tipo_id,
                     intervalo_gestion_tipo_id: carreraAutorizada.intervalo_gestion_tipo_id,
                     denominacion: dto.denominacion,
+                    descripcion: dto.descripcion,
                 }   
                 const planCarrera = await this.servicePlanEstudioCarrera.crearPlanEstudioCarrera(datos, user);
                 //console.log("planCarrera:::::::", planCarrera.data.id);
