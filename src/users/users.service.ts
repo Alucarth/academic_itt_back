@@ -1187,7 +1187,7 @@ async getAllPersonas() {
         .set({
           password: hashPassword,
         })
-        .where("id = :id", { id: ci_user })
+        .where("id = :id", { id: user.id })
         .execute();
 
       return this._serviceResp.respuestaHttp202(
