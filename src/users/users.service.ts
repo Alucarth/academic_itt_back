@@ -1159,6 +1159,57 @@ async getAllPersonas() {
     }
   }
 
+  async changePasswordUserCI(body) {
+    //TODO: validar que sea numero ?
+
+    const ci_user = body.ci;
+
+    //1:BUSCAR usuario
+    const user = await this.userRepository.findOne({
+      where: { username: ci_user },
+    });
+    console.log("persona:", user);
+
+    if (!user) {
+      return this._serviceResp.respuestaHttp404(
+        ci_user,
+        "Registro No Encontrado !!",
+        ""
+      );
+    }
+
+    try {
+      const hashPassword = await bcrypt.hash(body.password, 10);
+
+      await this.userRepository
+        .createQueryBuilder()
+        .update(User)
+        .set({
+          password: hashPassword,
+        })
+        .where("id = :id", { id: ci_user })
+        .execute();
+
+      return this._serviceResp.respuestaHttp202(
+        ci_user,
+        "Registro Actualizado !!",
+        ""
+      );
+    } catch (error) {
+      console.log("Error reset password: ", error);
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: `Error reset Password Usuario: ${error.message}`,
+        },
+        HttpStatus.ACCEPTED,
+        {
+          cause: error,
+        }
+      );
+    }
+  }
+
   async getAllMunicipioByProvinciaId(provId: number) {
     const result = await this.userRepository.query(`
       SELECT
