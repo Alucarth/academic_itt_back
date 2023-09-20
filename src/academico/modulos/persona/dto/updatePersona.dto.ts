@@ -54,7 +54,7 @@ export class UpdatePersonaoDto {
   @IsNumber()
   segipTipoId: number;*/
 
-  @IsNotEmpty({ message: "Lugar de expedicion es requerido" })
+  @IsOptional()
   @IsNumber()
   expedidoUnidadTerritorialId: number;
 

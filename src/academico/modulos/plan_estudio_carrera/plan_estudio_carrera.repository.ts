@@ -195,6 +195,7 @@ export class PlanEstudioCarreraRepository {
             pc.tiempoEstudio = datos.tiempo_estudio;
             pc.cargaHoraria = datos.carga_horaria;
             pc.denominacion = datos.denominacion;
+            pc.descripcion = datos.descripcion;
             pc.activo = true;
             pc.usuarioId = idUsuario;
             const result = await transaction.getRepository(PlanEstudioCarrera).save(pc);

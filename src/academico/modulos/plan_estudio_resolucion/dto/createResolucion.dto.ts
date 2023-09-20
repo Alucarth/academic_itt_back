@@ -10,8 +10,9 @@ export class CreateResolucionDto {
     @IsString()
     fecha_resolucion: string;
 
-    @IsNotEmpty({ message: " descripcion es requerido" })
+    @IsOptional()
     @IsString()
     descripcion: string;
    
+
 }
