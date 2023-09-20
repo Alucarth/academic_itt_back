@@ -230,7 +230,7 @@ export class UsersController {
   @Put("/changePasswordCI")
   async changePasswordUserCI(@Body() body: any) {
     console.log("controller update", body);
-    return await this.usersService.changePasswordUser(body);
+    return await this.usersService.changePasswordUserCI(body);
   }
 
   @Get("/getAllMenuByUserRolId/:userRolId")
