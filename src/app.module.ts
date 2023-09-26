@@ -88,6 +88,7 @@ import { InstitucionEducativaImagenModule } from './academico/modulos/institucio
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { CarreraGrupoTipoModule } from './academico/catalogos/carrera_grupo_tipo/carrera_grupo_tipo.module';
+import { UsuarioRolInstitucionEducativaModule } from './academico/modulos/usuario_rol_institucion_educativa/usuario_rol_institucion_educativa.module';
 
 //multiple bases
 const defaultOptions = {
@@ -243,6 +244,8 @@ const defaultOptionsSie = {
     InstitucionEducativaImagenModule,
 
     CarreraGrupoTipoModule,
+    
+    UsuarioRolInstitucionEducativaModule
 
   ]
 })
