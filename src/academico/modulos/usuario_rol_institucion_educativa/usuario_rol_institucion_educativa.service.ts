@@ -10,7 +10,18 @@ export class UsuarioRolInstitucionEducativaService{
     ){}
 
     async findAll(): Promise<UsuarioRolInstitucionEducativa[]>{
-        return this.usuarioRolInstitucionEducativaRepository.find()
+        return this.usuarioRolInstitucionEducativaRepository.find({                   
+        })
+    }
+
+    async findByUsuarioRolId(usuario_rol_id): Promise<UsuarioRolInstitucionEducativa[]>{
+        return this.usuarioRolInstitucionEducativaRepository.find(
+            {
+                where:{
+                    usuarioRolId: usuario_rol_id
+                }
+            }
+        )
     }
 
 }

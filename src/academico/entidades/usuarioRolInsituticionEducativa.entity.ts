@@ -1,36 +1,42 @@
 import { User } from "src/users/entity/users.entity";
-import { Column, Entity, ManyToMany, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { InstitucionEducativa } from "./institucionEducativa.entity";
-import { RolTipo } from "./rolTipo.entity";
-import { UnidadTerritorial } from "./unidadTerritorial.entity";
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { InstitucionEducativaSucursal } from "./institucionEducativaSucursal.entity";
+import { UsuarioRol } from "./usuarioRol.entity";
 
 @Entity({ name: 'usuario_rol_institucion_educativa', schema: 'public' })
 export class UsuarioRolInstitucionEducativa{
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({type: 'integer', name:'uuario_id'})
-    usuarioId: number;
-
-    @ManyToOne(()=>User, (user)=>user.id)
-    user: User
-
-    @Column({type: 'integer', name:'institucion_educativa_id'})
-    institucionEducativaId: number;
-
-    @ManyToOne (()=>InstitucionEducativa, (institucion_educativa)=>institucion_educativa.id)
-    institucionEducativa: InstitucionEducativa
-
-    @Column({type: 'integer', name: 'rol_tipo_id'})
-    rolTipoId: number
+    @Column({type: 'integer', name:'usuario_rol_id'})
+    usuarioRolId: number;
     
-    @ManyToOne (()=> RolTipo, (rol_tipo)=>rol_tipo.id)
-    rolTipo: RolTipo
+    @ManyToOne(()=>UsuarioRol, (user_rol)=>user_rol.id)
+    @JoinColumn({ name: 'usuario_rol_id', referencedColumnName: 'id'})
+    user_rol: UsuarioRol
 
-    @Column({type: 'integer', name: 'unidad_territorial_id'})
-    unidadTerritorialId: number
+    @Column({type: 'integer', name:'institucion_educativa_sucursal_id'})
+    institucionEducativaSucursalId: number;
 
-    @ManyToOne(()=> UnidadTerritorial, (unidad_territorial)=>unidad_territorial.id)
-    unidadTerritorial: UnidadTerritorial
+    @ManyToOne (()=>InstitucionEducativaSucursal, (institucion_educativa_sucursal)=>institucion_educativa_sucursal.id)
+    @JoinColumn({ name: 'institucion_educativa_sucursal_id', referencedColumnName: 'id'})
+    institucionEducativaSucursal: InstitucionEducativaSucursal
+
+    @Column()
+    activo: boolean
+    
+    // @Column({type: 'integer', name: 'rol_tipo_id'})
+    // rolTipoId: number  
+    
+    // @ManyToOne (()=> RolTipo, (rol_tipo)=>rol_tipo.id)
+    // @JoinColumn({ name: 'rol_tipo_id', referencedColumnName: 'id'})
+    // rolTipo: RolTipo
+
+    // @Column({type: 'integer', name: 'unidad_territorial_id'})
+    // unidadTerritorialId: number
+
+    // @ManyToOne(()=> UnidadTerritorial, (unidad_territorial)=>unidad_territorial.id)
+    // @JoinColumn({ name: 'unidad_territorial_id', referencedColumnName: 'id'})
+    // unidadTerritorial: UnidadTerritorial
 
 }

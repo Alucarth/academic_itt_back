@@ -7,6 +7,7 @@ import { UsuarioRolInstitucionEducativaService } from "./usuario_rol_institucion
 @Module({
     controllers: [UsuarioRolInsitucionEducativaController],
     imports: [DatabaseModule],
-    providers: [...usuarioRolInstitucionEducativaProviders, UsuarioRolInstitucionEducativaService]
+    providers: [...usuarioRolInstitucionEducativaProviders, UsuarioRolInstitucionEducativaService],
+    exports: [UsuarioRolInstitucionEducativaService]
 })
 export class UsuarioRolInstitucionEducativaModule{}
