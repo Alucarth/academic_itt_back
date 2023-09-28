@@ -196,7 +196,8 @@ export class PersonaRepository {
            tieneDiscapacidad            : dto.tieneDiscapacidad,
            telefono                     : dto.telefono,
            email                        : dto.email,
-           cedulaTipoId                 : dto.cedulaTipoId
+           cedulaTipoId                 : dto.cedulaTipoId,
+           sangreTipoId                 : dto.sangreTipoId
             
           })
           .where("id = :id", { id: dto.id })

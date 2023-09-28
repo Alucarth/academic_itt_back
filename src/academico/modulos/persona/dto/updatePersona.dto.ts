@@ -40,10 +40,10 @@ export class UpdatePersonaoDto {
   @IsNumber()
   estadoCivilTipoId: number;
 
-  /*
+  
   @IsNotEmpty({ message: "Sangre tipo es requerido" })
   @IsNumber()
-  sangreTipoId: number;*/
+  sangreTipoId: number;
 
   @IsNotEmpty({ message: "Idioma materno es requerido" })
   @IsNumber()
