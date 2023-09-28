@@ -58,6 +58,14 @@ export class UsersService {
       throw new Error(`Error creating ${err} user ${err.message}`);
     }
   }
+  async getById(id: number){
+    return await this.userRepository.findOne({
+      relations:{
+        persona:true
+      },
+      where:{id: id}
+    })
+  }
 
   async getOne(id: number, userEntity?: User) {
     //console.log("************ 1 getOne", id);
