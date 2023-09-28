@@ -16,7 +16,11 @@ export class UsuarioRolInstitucionEducativaService{
 
     async findByUsuarioRolId(usuario_rol_id): Promise<UsuarioRolInstitucionEducativa[]>{
         return this.usuarioRolInstitucionEducativaRepository.find(
-            {
+            {   relations:{
+                institucionEducativaSucursal:{
+                    institucionEducativa:true
+                }
+                },
                 where:{
                     usuarioRolId: usuario_rol_id
                 }

@@ -48,13 +48,62 @@ export class AuthService {
     console.log("usuario autentificado",user);
     const roles = await this.usuarioRolService.findByUserId(user.id)
     console.log('obteniendo roles')
-    const institutions = []
-
+    const institutions = [] 
+    const generalBag = []
+    
     await Promise.all(roles.map(async (user_rol)=>{
-      console.log('user_rol =========>',user_rol)
-        let instituciones = await this.usuarioRolInsitucionEducativaService.findByUsuarioRolId(user_rol.id)
-        console.log('instituciones ---------->',instituciones, user_rol)
+      let instituciones = await this.usuarioRolInsitucionEducativaService.findByUsuarioRolId(user_rol.id)
+
+      await Promise.all(instituciones.map(async (instituto)=>{
+        console.log('sucursal',instituto)
+        generalBag.push({ie_id: instituto.institucionEducativaSucursal.institucionEducativa.id,
+                         ie_sid: parseInt(instituto.institucionEducativaSucursalId+"") ,
+                         ie_nombre: instituto.institucionEducativaSucursal.institucionEducativa.institucionEducativa,
+                         ie_sucursal: instituto.institucionEducativaSucursal.sucursalNombre,
+                         rol_tipo_id: user_rol.rolTipoId,
+                         rol: user_rol.rolTipo.rol 
+                        })
+        let sucursal_id = parseInt(instituto.institucionEducativaSucursalId+"")
+        let finded = false
+        await Promise.all(institutions.map((institution)=>{
+          console.log('sid',institution)
+          if(sucursal_id === institution)
+          {
+            finded = true
+          }
+        }))
+
+        if(!finded)
+        {
+          institutions.push(sucursal_id)
+        }
+        
+        
+      }))
+
+      if(instituciones.length === 0) //en caso de que no pertenescan a ninguna instituticon se le accina por defecto MINEDU
+      {
+        generalBag.push(({ie_id: 0,
+                          ie_sid: 0,
+                          ie_nombre: 'MINEDU',
+                          ie_sucursal: '',
+                          rol_tipo_id: user_rol.rolTipoId,
+                          rol: user_rol.rolTipo.rol 
+                        }))
+      }
+
+        // console.log('instituciones ---------->',instituciones, user_rol)
+  
     }))
+
+    console.log('generalBag XXXXXXXD', generalBag)
+    console.log('uniques', institutions)
+    
+    await Promise.all(institutions.map(async (sucursal_id)=>{
+      //todo: aqui armar respuesta para envio final con los parametros similares a los que se envia en la ultima estructura de roles armados
+      
+    }))
+
     return roles
       // const result = await this.userRepository.query(`SELECT
       //   usuario.username, 
@@ -70,7 +119,7 @@ export class AuthService {
       //   persona.fecha_nacimiento, 
       //   persona.telefono, 
       //   persona.email        
-      // FROM
+      // FROM|
       //   usuario
       //   INNER JOIN
       //   persona
