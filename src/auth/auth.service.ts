@@ -101,6 +101,14 @@ export class AuthService {
 
     console.log('generalBag XXXXXXXD', generalBag)
     console.log('uniques', institutions)
+    const payload = {
+      id: user.id,
+      // sub: user.id,
+      rolid: 100,
+      appid: 2,
+      expiresIn: 60,
+    };
+
     let response = {
       statusCode: 200,
       gestion_tipo_id: 2023,
@@ -108,7 +116,8 @@ export class AuthService {
       p_id: user.personaId,
       username: user.username,
       persona: `${person.paterno} ${person.materno} ${person.nombre}`,
-      institutos: []
+      institutos: [],
+      token: this.jwtService.sign(payload) 
     }
     await Promise.all(institutions.map(async (sucursal_id) => {
       //todo: aqui armar respuesta para envio final con los parametros similares a los que se envia en la ultima estructura de roles armados
