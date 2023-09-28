@@ -1,7 +1,8 @@
 import { User } from "src/users/entity/users.entity";
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { InstitucionEducativaSucursal } from "./institucionEducativaSucursal.entity";
 import { UsuarioRol } from "./usuarioRol.entity";
+import { Exclude } from "class-transformer";
 
 @Entity({ name: 'usuario_rol_institucion_educativa', schema: 'public' })
 export class UsuarioRolInstitucionEducativa{
@@ -25,6 +26,25 @@ export class UsuarioRolInstitucionEducativa{
     @Column()
     activo: boolean
     
+    @Column({type: 'integer', name:'usuario_registro'})
+    usuarioRegistro: number;
+
+    @Exclude()
+    @CreateDateColumn({
+      name: 'fecha_registro',
+      type: 'timestamptz',
+      default: () => 'CURRENT_TIMESTAMP',
+    })
+    fechaRegistro: Date;
+  
+    @Exclude()
+    @UpdateDateColumn({
+      name: 'fecha_modificacion',
+      type: 'timestamptz',
+      default: () => 'CURRENT_TIMESTAMP',
+    })
+    fechaModificacion: Date;
+
     // @Column({type: 'integer', name: 'rol_tipo_id'})
     // rolTipoId: number  
     

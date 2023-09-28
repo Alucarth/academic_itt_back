@@ -12,6 +12,7 @@ import {
 import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
 import { OfertaAcademica } from './ofertaAcademica.entity';
 import { Tarea } from './tarea.entity';
+import { PlanEstudioCarreraSeguimiento } from './planEstudioCarreraSeguimiento.entity';
 
 @Entity({ name: 'proceso_tipo', schema: 'public' })
 export class ProcesoTipo {
@@ -46,4 +47,6 @@ export class ProcesoTipo {
   @OneToMany(() => Tarea, (tarea) => tarea.procesoTipo)
   tareas: Tarea[];
   
+  @OneToMany(() => PlanEstudioCarreraSeguimiento, (planEstudioCarreraSeguimiento) => planEstudioCarreraSeguimiento.procesoTipo, { cascade: true })
+  planesSeguimientos: PlanEstudioCarreraSeguimiento[];
 }

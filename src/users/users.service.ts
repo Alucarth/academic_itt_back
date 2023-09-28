@@ -23,6 +23,7 @@ import { JwtService } from "@nestjs/jwt";
 import { AppTipo } from "../academico/entidades/appTipo.entity";
 import { SegipService } from "src/segip/segip.service";
 import { RolTipo } from 'src/academico/entidades/rolTipo.entity';
+import { UsuarioRolInstitucionEducativa } from 'src/academico/entidades/usuarioRolInsituticionEducativa.entity';
 
 
 
@@ -1609,6 +1610,21 @@ async getAllPersonas() {
       code: "",
     };
   }
+  async getIdByUserRol(user, rol) {
+    const result = await this.userRepository.query(`SELECT
+      id
+    FROM
+      usuario_rol WHERE usuario_id = '${user}' and rol_tipo_id = '${rol}' and activo=true`);
+
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
+
+    if (result.length === 0) {
+      throw new NotFoundException("No se encontraron registros");
+    }
+    return result[0].id;
+
+  }
 
   async createUserAndRol(persona: Persona, rol_tipo_id: number) {
     //console.log('persona: ', persona);
@@ -1677,6 +1693,48 @@ async getAllPersonas() {
     }
   }
 
+  async createUserAndRolAndInstitution(usuario_rol_id: number, sucursal_id: number, user_id:number) {
+
+    try {
+      const resultp = await this.personaRepository.query(
+        `SELECT count(*) as existe FROM usuario_rol_institucion_educativa where usuario_rol_id = ${usuario_rol_id}
+        and institucion_educativa_sucursal_id = ${sucursal_id}`
+      );
+
+      console.log("resultp[0].existe: ", resultp[0].existe);
+      let user_institution_id = 0;
+      if (resultp[0].existe == 0) {
+        //creamos el usuario
+        console.log("creamos el usuario_institucion");
+        const newUserInstitution = await this.userRepository
+          .createQueryBuilder()
+          .insert()
+          .into(UsuarioRolInstitucionEducativa)
+          .values([
+            {
+              usuarioRolId: usuario_rol_id,
+              institucionEducativaSucursalId: sucursal_id,
+              activo: true,
+              usuarioRegistro: user_id
+
+            },
+          ])
+          .returning("id")
+          .execute();
+
+        //se le asigna el rol recibido
+        user_institution_id = newUserInstitution.identifiers[0].id;
+        console.log("new user_institution_id: ", user_institution_id);
+
+        console.log("graba");
+      } 
+      
+      return user_institution_id;
+    } catch (error) {
+      console.log("Error creacion usuario y rol: ", error.message);
+      return null;
+    }
+  }
   async checkToken(rolId: number, request: Request) {
     //0: validar token
     let user_id = 0;
