@@ -101,7 +101,7 @@ export class InstitutoPlanEstudioCarreraRepository {
         .leftJoinAndSelect("pe.planesAsignaturas", "pa")       
         .leftJoinAndSelect("pe.planesSeguimientos", "ps")       
         // .leftJoinAndSelect("ps.procesoTipo", "pt") 
-        .leftJoinAndSelect("ps.estadoInsituto","ie")
+        .leftJoinAndSelect("ps.estadoInstituto","ie")
         .leftJoinAndSelect("pa.regimenGradoTipo", "rg")     
         .leftJoinAndSelect("pa.asignaturaTipo", "a")       
         .leftJoinAndSelect("pa.planesAsignaturasReglas", "r")       
