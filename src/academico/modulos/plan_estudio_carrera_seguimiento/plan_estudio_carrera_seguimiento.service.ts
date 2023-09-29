@@ -5,6 +5,7 @@ import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { DataSource, Repository } from 'typeorm';
 import { CreateSeguimientoDto } from './dto/createSeguimiento.dto';
 import { User as UserEntity } from 'src/users/entity/users.entity';
+import { PlanEstudioCarrera } from 'src/academico/entidades/planEstudioCarrera.entity';
 
 
 @Injectable()
@@ -66,6 +67,18 @@ export class PlanEstudioCarreraSeguimientoService {
             .execute();
     
           console.log("res:", res);
+          
+          if(res.identifiers[0].id>0){
+                await this.dataSource
+            .createQueryBuilder()
+            .update(PlanEstudioCarrera)
+            .set({
+                estadoInstitutoId : dto.estadoInstitutoId,
+            })
+            .where({ id: dto.planEstudioCarreraId })
+            .execute(); 
+
+          }
           console.log("seguimiento adicionado");
           return this._serviceResp.respuestaHttp201(
             res.identifiers[0].id,
