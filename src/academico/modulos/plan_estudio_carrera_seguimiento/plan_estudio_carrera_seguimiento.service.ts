@@ -57,7 +57,7 @@ export class PlanEstudioCarreraSeguimientoService {
             .into(PlanEstudioCarreraSeguimiento)
             .values([
               {
-                procesoTipoId: dto.procesoTipoId,
+                estadoInstitutoId: dto.estadoInstitutoId,
                 observacion: dto.observacion,
                 planEstudioCarreraId: dto.planEstudioCarreraId,
                 usuarioId: user.id,

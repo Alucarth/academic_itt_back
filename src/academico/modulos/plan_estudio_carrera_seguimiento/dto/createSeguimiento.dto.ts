@@ -5,7 +5,7 @@ export class CreateSeguimientoDto {
  
   @IsNotEmpty({ message: "Proceso  es requerido" })
   @IsNumber()
-  procesoTipoId: number;
+  estadoInstitutoId: number;
 
   @IsNotEmpty({ message: "Plan de estudio de la carrera es requerido" })
   @IsNumber()

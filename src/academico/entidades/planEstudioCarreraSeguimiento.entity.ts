@@ -12,6 +12,7 @@ import {
 
 import { PlanEstudioCarrera } from './planEstudioCarrera.entity';
 import { ProcesoTipo } from './procesoTipo.entity';
+import { EstadoInstituto } from './estadoInstituto.entity';
 
 @Entity({ name: 'plan_estudio_carrera_seguimiento', schema: 'public' })
 export class PlanEstudioCarreraSeguimiento {
@@ -40,11 +41,11 @@ export class PlanEstudioCarreraSeguimiento {
   @JoinColumn({ name: 'plan_estudio_carrera_id', referencedColumnName: 'id'})
   planEstudioCarrera: PlanEstudioCarrera;
 
-  @Column({ name: 'proceso_tipo_id', nullable:false })
-  procesoTipoId: number;
+  @Column({ name: 'estado_instituto_id', nullable:false })
+  estadoInstitutoId: number;
 
-  @ManyToOne(() => ProcesoTipo, (procesoTipo) => procesoTipo.planesSeguimientos, { nullable: false, cascade: false })
-  @JoinColumn({ name: 'proceso_tipo_id', referencedColumnName: 'id'})
-  procesoTipo: ProcesoTipo;
+  @ManyToOne(() => EstadoInstituto, (estadoInstituto) => estadoInstituto.planesSeguimientos, { nullable: false, cascade: false })
+  @JoinColumn({ name: 'estado_instituto_id', referencedColumnName: 'id'})
+  estadoInstituto: EstadoInstituto;
 
 }
