@@ -19,6 +19,7 @@ import { NivelAcademicoTipo } from './nivelAcademicoTipo.entity';
 import { PlanEstudioAsignatura } from './planEstudioAsignatura.entity';
 import { PlanEstudioResolucion } from './planEstudioResolucion.entity';
 import { PlanEstudioCarreraSeguimiento } from './planEstudioCarreraSeguimiento.entity';
+import { EstadoInstituto } from './estadoInstituto.entity';
 
 @Entity({ name: 'plan_estudio_carrera', schema: 'public' })
 export class PlanEstudioCarrera {
@@ -113,5 +114,11 @@ export class PlanEstudioCarrera {
   @OneToMany(() => MatriculaEstudiante, (matriculaEstudiante) => matriculaEstudiante.planEstudioCarrera)
   matriculaEstudiantes: MatriculaEstudiante[];
   
+  @Column({ name: 'estado_instituto_id', nullable:false })
+  estadoInstitutoId: number;
+
+  @ManyToOne(() => EstadoInstituto, (estadoInstituto) => estadoInstituto.planesCarreras, { nullable: false, cascade: true })
+  @JoinColumn({ name: 'estado_instituto_id', referencedColumnName: 'id'})
+  estadoInstituto: EstadoInstituto;
 
 }

@@ -13,6 +13,7 @@ import { EtapaEducativaAsignatura } from './etapaEducativaAsignatura.entity';
 import { OfertaAcademica } from './ofertaAcademica.entity';
 import { Tarea } from './tarea.entity';
 import { PlanEstudioCarreraSeguimiento } from './planEstudioCarreraSeguimiento.entity';
+import { PlanEstudioCarrera } from './planEstudioCarrera.entity';
 
 @Entity({ name: 'estado_instituto', schema: 'public' })
 export class EstadoInstituto {
@@ -36,4 +37,7 @@ export class EstadoInstituto {
   
   @OneToMany(() => PlanEstudioCarreraSeguimiento, (planEstudioCarreraSeguimiento) => planEstudioCarreraSeguimiento.estadoInstituto, { cascade: true })
   planesSeguimientos: PlanEstudioCarreraSeguimiento[];
+
+  @OneToMany(() => PlanEstudioCarrera, (planEstudioCarrera) => planEstudioCarrera.estadoInstituto, { cascade: false })
+  planesCarreras: PlanEstudioCarrera[];
 }
