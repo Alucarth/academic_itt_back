@@ -8,13 +8,40 @@ import { AsignaturaTipo} from "../../entidades/asignaturaTipo.entity"
 import { User as UserEntity } from 'src/users/entity/users.entity';
 @Injectable()
 export class AsignaturaTipoService {
+  dataSource: any;
   constructor(
     @InjectRepository(AsignaturaTipo)
     private asignaturaTipoRepository: Repository<AsignaturaTipo>,
     private _serviceResp: RespuestaSigedService
   ) {}
-
   async getAll() {
+
+    const result = await this.dataSource
+      .getRepository(AsignaturaTipo)
+      .createQueryBuilder("a")
+      .leftJoinAndSelect("a.planesAsignaturas","pea")
+      .leftJoinAndSelect("pea.planEstudioCarrera","pec")
+      .select([
+        "a.id as id",
+        "a.asignatura as asignatura",
+        "a.abreviacion as abreviacion",
+        "a.comentario as comentario",
+        "pea.id as plan_estudio_asignatura_id",
+        "pec.id as plan_estudio_carrera_id",
+        "pec.aprobado as aprobado",
+      ])
+      .where('a.id >0')
+      .orderBy('a.asignatura','ASC')
+      .getRawMany();
+
+    //console.log(result);
+    return this._serviceResp.respuestaHttp200(
+      result,
+      "",
+      "Asignaturas Encontrados !!"
+    );
+  }
+  async getAllSinAprobacion() {
     const result = await this.asignaturaTipoRepository.find({
       where: {
         id: MoreThanOrEqual(5),

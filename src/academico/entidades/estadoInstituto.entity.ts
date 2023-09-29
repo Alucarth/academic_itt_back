@@ -14,13 +14,13 @@ import { OfertaAcademica } from './ofertaAcademica.entity';
 import { Tarea } from './tarea.entity';
 import { PlanEstudioCarreraSeguimiento } from './planEstudioCarreraSeguimiento.entity';
 
-@Entity({ name: 'proceso_tipo', schema: 'public' })
-export class ProcesoTipo {
+@Entity({ name: 'estado_instituto', schema: 'public' })
+export class EstadoInstituto {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', name: 'proceso' })
-  proceso: string;
+  @Column({ type: 'varchar', name: 'estado' })
+  estado: string;
   
   @Column({ type: 'varchar', name: 'comentario' })
   comentario: string;
@@ -33,19 +33,7 @@ export class ProcesoTipo {
   })
   fechaRegistro: Date;
 
-  @Exclude()
-  @UpdateDateColumn({
-    name: 'fecha_modificacion',
-    type: 'timestamptz',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  fechaModificacion: Date;
-
-  @Column({ type: 'integer', name: 'usuario_id' })
-  usuarioId: number;
-
-  @OneToMany(() => Tarea, (tarea) => tarea.procesoTipo)
-  tareas: Tarea[];
   
- 
+  @OneToMany(() => PlanEstudioCarreraSeguimiento, (planEstudioCarreraSeguimiento) => planEstudioCarreraSeguimiento.estadoInstituto, { cascade: true })
+  planesSeguimientos: PlanEstudioCarreraSeguimiento[];
 }
