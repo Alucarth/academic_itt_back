@@ -101,7 +101,7 @@ export class InstitutoPlanEstudioCarreraRepository {
         .leftJoinAndSelect("pe.planesAsignaturas", "pa")       
         .leftJoinAndSelect("pe.planesSeguimientos", "ps")       
         // .leftJoinAndSelect("ps.procesoTipo", "pt") 
-        .leftJoinAndSelect("ps.estadoInstituto","ie")
+        .leftJoinAndSelect("pe.estadoInstituto","ie")
         .leftJoinAndSelect("pa.regimenGradoTipo", "rg")     
         .leftJoinAndSelect("pa.asignaturaTipo", "a")       
         .leftJoinAndSelect("pa.planesAsignaturasReglas", "r")       
@@ -118,6 +118,7 @@ export class InstitutoPlanEstudioCarreraRepository {
             'pr.fechaResolucion',
             'pr.descripcion',
             'pe.aprobado',
+            'ie.estado',
             'pr.activo',
             'pa.horas',
             'rg.id',
@@ -129,7 +130,8 @@ export class InstitutoPlanEstudioCarreraRepository {
             'a2.abreviacion',
             'ps.id',
             // 'pt.proceso',
-            'ie.estado'
+            
+            
         ])
         .where('ip.carreraAutorizadaId = :id ', { id })
         .orderBy('rg.id', 'ASC')
