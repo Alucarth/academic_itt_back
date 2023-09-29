@@ -16,12 +16,13 @@ export class PlanEstudioCarreraSeguimientoController {
     async getPlanCarreraSeguimientos(){
        return await this.planEstudioCarreraSeguimientoService.getAll();
     }
-
+   
     @Auth()
     @Post()
     async create(@Body() createSeguimientoDto: CreateSeguimientoDto, @Users() user: UserEntity) {
-      return this.planEstudioCarreraSeguimientoService.create(createSeguimientoDto, user);
+      return await this.planEstudioCarreraSeguimientoService.create(createSeguimientoDto, user);
     }
+
     @Get('procesos/:id')
     async getProcesosPlanCarreraSeguimientos(
         @Param('id', ParseIntPipe) id: number, 

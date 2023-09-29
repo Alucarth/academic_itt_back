@@ -51,6 +51,7 @@ export class PlanEstudioCarreraSeguimientoService {
       }
     async create(dto: CreateSeguimientoDto, user: UserEntity) {
         //evitar duplicados en asignatura y abreviacion
+        
         try {
           const res = await this.planEstudioCarreraSeguimientoRepository
             .createQueryBuilder()
@@ -66,8 +67,8 @@ export class PlanEstudioCarreraSeguimientoService {
             ])
             .execute();
     
-          console.log("res:", res);
-          
+          console.log("res..........:", res);
+
           if(res.identifiers[0].id>0){
                 await this.dataSource
             .createQueryBuilder()
@@ -86,11 +87,11 @@ export class PlanEstudioCarreraSeguimientoService {
             ""
           );
         } catch (error) {
-          console.log("Error insertar asignaturatipo: ", error);
+          console.log("Error insertar : ", error);
           throw new HttpException(
             {
               status: HttpStatus.CONFLICT,
-              error: `Error insertar asignaturatipo: ${error.message}`,
+              error: `Error insertar : ${error.message}`,
             },
             HttpStatus.ACCEPTED,
             {
