@@ -12,6 +12,7 @@ import { UsuarioRolService } from 'src/academico/modulos/usuario_rol/usuario_rol
 import { UsuarioRol } from 'src/users/entity/usuarioRol.entity';
 import { UsuarioRolInstitucionEducativaService } from 'src/academico/modulos/usuario_rol_institucion_educativa/usuario_rol_institucion_educativa.service';
 import { lstat } from 'fs';
+import { UnidadTerritorialUsuarioRolService } from 'src/academico/modulos/unidad_territorial_usuario_rol/unidad_territorial_usuario_rol.service';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly usuarioRolService: UsuarioRolService,
     private readonly usuarioRolInsitucionEducativaService: UsuarioRolInstitucionEducativaService,
+    private readonly unidadTerritorialUsuarioRolService: UnidadTerritorialUsuarioRolService,
     private jwtService: JwtService,
     private configService: ConfigService,
     @InjectRepository(User) private userRepository: Repository<User>,
@@ -52,9 +54,15 @@ export class AuthService {
     console.log('obteniendo roles')
     const institutions = []
     const generalBag = []
-
+    const unidadTerritorial = []
     await Promise.all(roles.map(async (user_rol) => {
       let instituciones = await this.usuarioRolInsitucionEducativaService.findByUsuarioRolId(user_rol.id)
+      
+      //for unidad_territorial_id
+      let unidad_territorial_rol = await this.unidadTerritorialUsuarioRolService.findByUsuarioRolId(user_rol.id)
+      await Promise.all(unidad_territorial_rol.map((unidad)=>{
+        unidadTerritorial.push(unidad.unidadTerritorial)
+      }))
 
       await Promise.all(instituciones.map(async (instituto) => {
         console.log('sucursal', instituto)
@@ -99,8 +107,13 @@ export class AuthService {
 
     }))
 
-    console.log('generalBag XXXXXXXD', generalBag)
+    console.log('generalBag ', generalBag)
     console.log('uniques', institutions)
+
+    // for unidad territorial
+    
+
+    
     const payload = {
       id: user.id,
       // sub: user.id,
@@ -117,6 +130,7 @@ export class AuthService {
       username: user.username,
       persona: `${person.paterno} ${person.materno} ${person.nombre}`,
       institutos: [],
+      unidadTerritorial: unidadTerritorial,
       token: this.jwtService.sign(payload) 
     }
     await Promise.all(institutions.map(async (sucursal_id) => {

@@ -19,6 +19,9 @@ import { UsuarioRolModule } from 'src/academico/modulos/usuario_rol/usuario_rol.
 import { DatabaseModule } from 'src/database/database.module';
 import { usuarioRolInstitucionEducativaProviders } from 'src/academico/modulos/usuario_rol_institucion_educativa/usuario_rol_institucion_educativa.providers';
 import { UsuarioRolInstitucionEducativaService } from 'src/academico/modulos/usuario_rol_institucion_educativa/usuario_rol_institucion_educativa.service';
+import { unidadTerritorialUsuarioRolProviders } from 'src/academico/modulos/unidad_territorial_usuario_rol/unidad_territorial_usuario_rol.providers';
+import { UnidadTerritorialUsuarioRolService } from 'src/academico/modulos/unidad_territorial_usuario_rol/unidad_territorial_usuario_rol.service';
+
 // import { UsuarioRolModule } from 'src/academico/modulos/usuario_rol/usuario_rol.module';
 // import { UsuarioRolService } from 'src/academico/modulos/usuario_rol/usuario_rol.service';
 
@@ -42,7 +45,7 @@ import { UsuarioRolInstitucionEducativaService } from 'src/academico/modulos/usu
     }),
     forwardRef(() => UsersModule),
   ],
-  providers: [...usuarioRolProviders, ...usuarioRolInstitucionEducativaProviders, AuthService, LocalStrategy, JwtStrategy, RolesGuard, UsuarioRolService,UsuarioRolInstitucionEducativaService],
+  providers: [...unidadTerritorialUsuarioRolProviders,...usuarioRolProviders, ...usuarioRolInstitucionEducativaProviders, AuthService, LocalStrategy, JwtStrategy, RolesGuard, UsuarioRolService,UsuarioRolInstitucionEducativaService, UnidadTerritorialUsuarioRolService],
   controllers: [AuthController],
   exports: [AuthService],
 })
