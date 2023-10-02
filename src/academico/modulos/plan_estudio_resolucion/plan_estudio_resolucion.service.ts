@@ -146,10 +146,26 @@ export class PlanEstudioResolucionService {
         }
         const crearResult = await this.planEstudioResolucionRepository.runTransaction(op);
         
+        console.log("se registra anidado");
+        console.log(crearResult);
+
         if(crearResult){
             //mandamos datos de carrera_autorizada
+           /* const datoPlanEstudioCarrera = await this.planEstudioCarreraRepository.findOneResolucionByData( 
+              crearResult.data.id,
+              carreraAutorizada.carrera_id,
+              carreraAutorizada.nivel_academico_tipo_id,
+              carreraAutorizada.area_id,
+              carreraAutorizada.intervalo_gestion_tipo_id,
+              carreraAutorizada.tiempo_estudio);
+
+             console.log("inicio"); 
+             console.log(crearResult.data.id);
+             console.log(datoPlanEstudioCarrera);
+             console.log("finnn");
+             */
             let datos = {
-                plan_estudio_resolucion_id: crearResult.data.id,
+               // plan_estudio_resolucion_id: crearResult.data.id,
                 carrera_autorizada_id: carreraAutorizada.carrera_autorizada_id,
                 carrera_id: carreraAutorizada.carrera_id,
                 carrera: carreraAutorizada.carrera,
@@ -161,6 +177,7 @@ export class PlanEstudioResolucionService {
                 nivel_academico: carreraAutorizada.nivel_academico,
                 intervalo_gestion_tipo_id: carreraAutorizada.intervalo_gestion_tipo_id,
                 regimen_estudio: carreraAutorizada.regimen_estudio,
+                plan_estudio_carrera_id: crearResult.data.planEstudioCarreraId,
             }      
           return this._serviceResp.respuestaHttp201(
               datos,

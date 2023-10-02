@@ -111,7 +111,7 @@ export class InstitutoPlanEstudioCarreraService {
   
             if(crearResult){
               return this._serviceResp.respuestaHttp201(
-                  crearResult.id,
+                  crearResult,
                   'Registro de instituo_plan Creado !!',
                   '',
               );

@@ -202,9 +202,8 @@ export class PlanEstudioCarreraRepository {
         intervalo_id:number,
         tiempo:number,
         ){
-            console.log("carrera es");
-            console.log(carrera_id);
-        return  await this.dataSource.getRepository(PlanEstudioCarrera)
+        
+        const resultado =  await this.dataSource.getRepository(PlanEstudioCarrera)
         .createQueryBuilder("pc")
         .innerJoinAndSelect("pc.planEstudioResolucion", "r")
         .select([
@@ -222,6 +221,8 @@ export class PlanEstudioCarreraRepository {
           .andWhere("pc.planEstudioResolucionId = :resolucion_id", { resolucion_id })
           .andWhere("pc.activo = true")
           .getRawOne();
+
+          return resultado;
 
     }
 
