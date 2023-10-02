@@ -23,11 +23,11 @@ export class PlanEstudioCarreraSeguimientoController {
       return await this.planEstudioCarreraSeguimientoService.create(createSeguimientoDto, user);
     }
 
-    @Get('procesos/:id')
-    async getProcesosPlanCarreraSeguimientos(
+    @Get('estados/:id')
+    async getEstadosPlanCarreraSeguimientos(
         @Param('id', ParseIntPipe) id: number, 
     ){
-       return await this.planEstudioCarreraSeguimientoService.getAllProcesosCarrera(id);
+       return await this.planEstudioCarreraSeguimientoService.getAllEstadosPlanesCarrera(id);
     }
 
 }

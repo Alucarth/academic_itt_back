@@ -21,21 +21,22 @@ export class PlanEstudioCarreraSeguimientoService {
         const seguimientos = await this.planEstudioCarreraSeguimientoRepository.find();
         return seguimientos;
     }
-    async getAllProcesosCarrera(id:number) {
+    async getAllEstadosPlanesCarrera(id:number) {
         // revisado
         //const result = await this.carreraTipoRepository.find();
        // const solocursoscortos = 2
         const result = await this.dataSource
           .getRepository(PlanEstudioCarreraSeguimiento)
           .createQueryBuilder("a")
-          .innerJoinAndSelect("a.procesoTipo", "p")
+          .innerJoinAndSelect("a.estadoInstituto", "p")
           .select([
               "a.id",
               "a.usuarioId",
               "a.fechaRegistro",
               "a.observacion",
               "p.id",
-              "p.proceso",
+              "p.estado",
+              "p.comentario",
             ])
           .where("a.planEstudioCarreraId = :id", { id })
           .orderBy("a.fechaRegistro","ASC")
