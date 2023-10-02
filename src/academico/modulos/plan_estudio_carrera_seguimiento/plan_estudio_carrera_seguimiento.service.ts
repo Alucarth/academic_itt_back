@@ -52,7 +52,12 @@ export class PlanEstudioCarreraSeguimientoService {
       }
     async create(dto: CreateSeguimientoDto, user: UserEntity) {
         //evitar duplicados en asignatura y abreviacion
-        
+        let status = false;
+        if(dto.estadoInstitutoId==4){
+             status = true;
+        }
+
+
         try {
           const res = await this.planEstudioCarreraSeguimientoRepository
             .createQueryBuilder()
@@ -76,6 +81,7 @@ export class PlanEstudioCarreraSeguimientoService {
             .update(PlanEstudioCarrera)
             .set({
                 estadoInstitutoId : dto.estadoInstitutoId,
+                aprobado: status,
             })
             .where({ id: dto.planEstudioCarreraId })
             .execute(); 
