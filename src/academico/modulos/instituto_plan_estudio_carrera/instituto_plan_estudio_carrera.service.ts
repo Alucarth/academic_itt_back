@@ -81,6 +81,7 @@ export class InstitutoPlanEstudioCarreraService {
        const result = await this.institutoPlanEstudioCarreraRepository.findResolucionesCarreraAutorizadaId(id);
        return result;    
     }
+    
 
     async getPlanAsignaturaById( id:number ){
         const result = await this.institutoPlanEstudioCarreraRepository.findPlanAsignaturasById(id);

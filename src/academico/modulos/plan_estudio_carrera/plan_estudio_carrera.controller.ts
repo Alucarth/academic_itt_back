@@ -26,6 +26,11 @@ export class PlanEstudioCarreraController {
     async getPlanesCarreraAutorizadaId(@Param('id') id: number){
        return await this.planEstudioCarreraService.getPlanesCarreraById(id);
     }
+    @Get('asignaturas-carrera/:id')
+    async getPlanAsignaturaCarreraAutorizadaId(@Param('id') id: number){
+       return await this.planEstudioCarreraService.getPlanAsignaturaCarreraById(id);
+    }
+
     @Get('list-resoluciones/:carrera_id/:nivel_id/:area_id/:intervalo_id/:tiempo/:carga')
     async getResolucionesCarreraNivelTiempo(
         @Param('carrera_id') carrera_id: number,

@@ -140,6 +140,7 @@ export class InstitutoPlanEstudioCarreraRepository {
         return itt;
     }
 
+
     async findPlanAsignaturasById( id:number){
         const itt = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera)
         .createQueryBuilder("ip")
