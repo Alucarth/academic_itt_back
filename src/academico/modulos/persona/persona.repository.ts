@@ -4,6 +4,7 @@ import { DataSource } from "typeorm";
 import { CreatePersonaoDto } from "./dto/createPersona.dto";
 import { SearchDatoDto } from "./dto/searchDato.dto";
 import { UpdatePersonaoDto } from "./dto/updatePersona.dto";
+import { ContrastaPersonaDto } from "./dto/contrastaPersona.dto";
 
 @Injectable()
 export class PersonaRepository {
@@ -13,12 +14,16 @@ export class PersonaRepository {
     return await this.dataSource.getRepository(Persona).findBy({ id: id });
   }
 
-  async getPersonaSegip(dto: SearchDatoDto) {
+  async getPersonaSegip(dto: ContrastaPersonaDto) {
     
     console.log('dto:', dto);
     const result0 = await this.dataSource.getRepository(Persona).findOneBy({
       carnetIdentidad: dto.carnetIdentidad,
       complemento: dto.complemento,
+      paterno: dto.paterno,
+      materno: dto.materno,
+      nombre: dto.nombre,
+      fechaNacimiento: dto.fechaNacimiento,
     });
     console.log("result0: ", result0);
     if (!result0) {

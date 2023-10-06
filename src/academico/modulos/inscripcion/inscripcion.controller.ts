@@ -291,4 +291,11 @@ export class InscripcionController {
       return  await this.inscripcionService.updateEstadoNoSePresento(id);        
   }
 
+  @Get("/eliminar-inscripcion/:id")
+  async deleteInscripcionByMatriculaId(
+    @Param("id") id: number,
+  ) {
+    return await this.inscripcionService.deleteInscripcionMatriculado(id);
+  }
+
 }

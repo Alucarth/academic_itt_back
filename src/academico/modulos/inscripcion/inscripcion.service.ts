@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 
@@ -2126,6 +2126,25 @@ async updateEstadoNoSePresento(id:number) {
     );
   }
   
+}
+
+async deleteInscripcionMatriculado(id: number) {
+  const result = await this.inscripcionRepository
+    .createQueryBuilder()
+    .delete()
+    .from(InstitutoEstudianteInscripcion)
+    .where("matriculaEstudianteId = :id", { id })
+    .execute();
+
+  if (result.affected === 0) {
+    throw new NotFoundException("registro no encontrado !");
+  }
+
+  return this._serviceResp.respuestaHttp203(
+    result,
+    "Registro Eliminado !!",
+    ""
+  );
 }
 
   //xls de matriculados
