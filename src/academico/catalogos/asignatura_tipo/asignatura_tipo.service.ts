@@ -16,8 +16,7 @@ export class AsignaturaTipoService {
   ) {}
   async getAll() {
 
-    const result = await this.dataSource
-      .getRepository(AsignaturaTipo)
+    const result = await this.asignaturaTipoRepository
       .createQueryBuilder("a")
       .leftJoinAndSelect("a.planesAsignaturas","pea")
       .leftJoinAndSelect("pea.planEstudioCarrera","pec")
