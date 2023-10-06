@@ -2147,6 +2147,53 @@ async deleteInscripcionMatriculado(id: number) {
   );
 }
 
+async deleteMatriculado(id: number) {
+  const matriculaEstudiante = await this.matriculaRepository.findOne({
+    where: {
+      id: id
+    },
+  });
+
+  if (!matriculaEstudiante) {
+    return this._serviceResp.respuestaHttp404(
+      "0",
+      "Matricula No Encontrado !!",
+      ""
+    );
+  }
+  let idiee =  matriculaEstudiante.institucionEducativaEstudianteId;
+  
+  const result = await this.inscripcionRepository
+  .createQueryBuilder()
+  .delete()
+  .from(MatriculaEstudiante)
+  .where("id = :id", { id })
+  .execute();
+  if (result.affected === 0) {
+    throw new NotFoundException("registro no encontrado !");
+  }
+  
+ 
+  const iee = await this.inscripcionRepository
+    .createQueryBuilder()
+    .delete()
+    .from(InstitucionEducativaEstudiante)
+    .where("id = :idiee", { idiee })
+    .execute();
+
+    if (iee.affected === 0) {
+      throw new NotFoundException("registro no encontrado !");
+    }
+     
+
+  return this._serviceResp.respuestaHttp203(
+    result,
+    "Registro Eliminado !!",
+    ""
+  );
+}
+
+
   //xls de matriculados
   async getXlsAllMatriculadosByGestion(
     gestionId: number,

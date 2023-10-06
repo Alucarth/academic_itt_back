@@ -298,5 +298,11 @@ export class InscripcionController {
   ) {
     return await this.inscripcionService.deleteInscripcionMatriculado(id);
   }
+  @Delete("matricula/:id")
+  async deleteMatriculadoId(
+    @Param("id") id: number,
+  ) {
+    return await this.inscripcionService.deleteMatriculado(id);
+  }
 
 }
