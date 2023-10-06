@@ -6,6 +6,7 @@ import { SearchDatoDto } from "./dto/searchDato.dto";
 import { PersonaRepository } from "./persona.repository";
 import { UpdatePersonaoDto } from "./dto/updatePersona.dto";
 import { SegipService } from "src/segip/segip.service";
+import { ContrastaPersonaDto } from "./dto/contrastaPersona.dto";
 
 @Injectable()
 export class PersonaService {
@@ -47,10 +48,7 @@ export class PersonaService {
 
     if (!existePersona) {
       console.log("POST PERSONA");
-      // NO EXSISTE, VALIDMOS SEGIP
-
-      // se debe crear la persona, antes se VALIDA SEGIP
-
+     
       let arrayaux0 = dto.fechaNacimiento.toString();
       let arrayaux = arrayaux0.split("-");
       //console.log(arrayaux);
@@ -121,6 +119,62 @@ export class PersonaService {
         "Persona actualizada !!",
         ""
       );
+    }
+  }
+  async contrastaPersona(dto: ContrastaPersonaDto) {
+    const datoBusqueda = {
+      carnetIdentidad: dto.carnetIdentidad,
+      complemento: dto.complemento,
+    };
+    const existePersona = await this.personaRepositorio.getPersonaSegip(
+      datoBusqueda
+    );
+    console.log("RESULTADO BUSQUEDA PERSONA",existePersona);
+
+    if (!existePersona) {
+      console.log("VALIDAR PERSONA");
+      // NO EXSISTE, VALIDMOS SEGIP
+
+      let arrayaux0 = dto.fechaNacimiento.toString();
+      let arrayaux = arrayaux0.split("-");
+      //console.log(arrayaux);
+      const fechaSegip = arrayaux[2] + "/" + arrayaux[1] + "/" + arrayaux[0];
+      //console.log("fechaSegip", fechaSegip);
+
+      const personasegip = {
+        nombres        : dto.nombre.toUpperCase(),
+        paterno        : dto.paterno.toUpperCase(),
+        materno        : dto.materno.toUpperCase(),
+        ci             : dto.carnetIdentidad,
+        fechaNacimiento: fechaSegip,                  //'19/02/2014 ',
+        complemento    : dto.complemento,
+      };
+      console.log("personasegip", personasegip);
+
+      //const segipdata = await this.segipService.contrastar(personasegip, 1);
+      const segipdata = await this.segipService.contrastar(personasegip, dto.cedulaTipoId);
+      //console.log("segipdata", segipdata);
+      if (segipdata["finalizado"] === false) {
+        //return { message: "Datos SEGIP no corresponden", segipdata };
+        return this._serviceResp.respuestaHttp404(
+          404,
+          "Datos SEGIP no corresponden !!",
+          ""
+        );
+
+      }
+      return this._serviceResp.respuestaHttp201(
+        200,
+        "Datos contrastados !!",
+        ""
+      );
+    } else {
+      return this._serviceResp.respuestaHttp201(
+        200,
+        "Datos encontrados y contrastados !!",
+        ""
+      );
+     
     }
   }
 

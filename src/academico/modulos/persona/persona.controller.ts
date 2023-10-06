@@ -5,6 +5,7 @@ import { CreatePersonaoDto } from './dto/createPersona.dto';
 import { PersonaService } from './persona.service';
 import { ApiTags } from '@nestjs/swagger';
 import { UpdatePersonaoDto } from './dto/updatePersona.dto';
+import { ContrastaPersonaDto } from './dto/contrastaPersona.dto';
 
 @ApiTags('persona')
 @Controller('persona')
@@ -31,6 +32,11 @@ export class PersonaController {
     async createPersona(@Body() dto: CreatePersonaoDto){
         console.log('controller insert',dto);
         return  await this.personaService.createPersona(dto);        
+    }
+    @Post('segip')
+    async contrastaPersona(@Body() dto: ContrastaPersonaDto){
+        console.log('controller insert',dto);
+        return  await this.personaService.contrastaPersona(dto);        
     }
 
     @Put()

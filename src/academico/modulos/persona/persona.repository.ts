@@ -13,6 +13,21 @@ export class PersonaRepository {
     return await this.dataSource.getRepository(Persona).findBy({ id: id });
   }
 
+  async getPersonaSegip(dto: SearchDatoDto) {
+    
+    console.log('dto:', dto);
+    const result0 = await this.dataSource.getRepository(Persona).findOneBy({
+      carnetIdentidad: dto.carnetIdentidad,
+      complemento: dto.complemento,
+    });
+    console.log("result0: ", result0);
+    if (!result0) {
+      return false;
+    }
+    return result0;
+    
+  }
+
   async getPersonaByDato(dto: SearchDatoDto) {
     console.log('HERE---');
     console.log('dto:', dto);
