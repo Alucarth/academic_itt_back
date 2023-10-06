@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Header,
   Param,
@@ -291,7 +292,7 @@ export class InscripcionController {
       return  await this.inscripcionService.updateEstadoNoSePresento(id);        
   }
 
-  @Get("/eliminar-inscripcion/:id")
+  @Delete(":id")
   async deleteInscripcionByMatriculaId(
     @Param("id") id: number,
   ) {
