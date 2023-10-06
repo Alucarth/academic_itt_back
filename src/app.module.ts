@@ -91,6 +91,7 @@ import { CarreraGrupoTipoModule } from './academico/catalogos/carrera_grupo_tipo
 import { UsuarioRolInstitucionEducativaModule } from './academico/modulos/usuario_rol_institucion_educativa/usuario_rol_institucion_educativa.module';
 import { UsuarioRolModule } from './academico/modulos/usuario_rol/usuario_rol.module';
 import { PlanEstudioCarreraSeguimientoModule } from './academico/modulos/plan_estudio_carrera_seguimiento/plan_estudio_carrera_seguimiento.module';
+import { EstadoInstitutoModule } from './academico/catalogos/estado_instituto/estado_instituto.module';
 
 //multiple bases
 const defaultOptions = {
@@ -250,6 +251,7 @@ const defaultOptionsSie = {
     UsuarioRolInstitucionEducativaModule,
     
     PlanEstudioCarreraSeguimientoModule,
+    EstadoInstitutoModule
     // UsuarioRolModule
 
   ]
