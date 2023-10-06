@@ -127,7 +127,7 @@ export class PersonaService {
       complemento: dto.complemento,
     };
     const existePersona = await this.personaRepositorio.getPersonaSegip(
-      datoBusqueda
+      dto
     );
     console.log("RESULTADO BUSQUEDA PERSONA",existePersona);
 
