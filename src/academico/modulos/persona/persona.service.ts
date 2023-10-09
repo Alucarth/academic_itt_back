@@ -126,6 +126,7 @@ export class PersonaService {
       carnetIdentidad: dto.carnetIdentidad,
       complemento: dto.complemento,
     };
+
     const existePersona = await this.personaRepositorio.getPersonaSegip(
       dto
     );
@@ -137,9 +138,10 @@ export class PersonaService {
 
       let arrayaux0 = dto.fechaNacimiento.toString();
       let arrayaux = arrayaux0.split("-");
-      //console.log(arrayaux);
-      const fechaSegip = arrayaux[2] + "/" + arrayaux[1] + "/" + arrayaux[0];
-      //console.log("fechaSegip", fechaSegip);
+      console.log("arrayuax",arrayaux);
+      //const fechaSegip = arrayaux[2] + "/" + arrayaux[1] + "/" + arrayaux[0];
+      const fechaSegip = arrayaux[2].slice(0,2) + "/" + arrayaux[1] + "/" + arrayaux[0];
+     console.log("fechaSegip", fechaSegip);
 
       const personasegip = {
         nombres        : dto.nombre.toUpperCase(),
@@ -153,7 +155,7 @@ export class PersonaService {
 
       //const segipdata = await this.segipService.contrastar(personasegip, 1);
       const segipdata = await this.segipService.contrastar(personasegip, dto.cedulaTipoId);
-      //console.log("segipdata", segipdata);
+      console.log("segipdata", segipdata);
       if (segipdata["finalizado"] === false) {
         //return { message: "Datos SEGIP no corresponden", segipdata };
         return this._serviceResp.respuestaHttp404(
