@@ -77,7 +77,7 @@ export class PersonaRepository {
     if(resultUt[0]['unidad_territorial_tipo_id'] == 0)
     {
       //es solo un pais
-      const result = await this.dataSource.query(`
+      let result = await this.dataSource.query(`
        
         SELECT		
           persona.*,
@@ -100,8 +100,8 @@ export class PersonaRepository {
          
   
       `);
-  
-      console.log("result: ", result);
+      result[0].fecha_nacimiento = result0.fechaNacimiento;
+      console.log("resultado es________________: ", result);
   
       return result;
       
@@ -109,7 +109,7 @@ export class PersonaRepository {
     }else{
 
       //llega a comunidad
-      const result = await this.dataSource.query(`
+      let  result = await this.dataSource.query(`
         SELECT
         data2.*,
         ut.lugar AS comunidad,
@@ -147,7 +147,8 @@ export class PersonaRepository {
   
       `);
   
-      console.log("result: ", result);
+      result[0].fecha_nacimiento = result0.fechaNacimiento;
+      console.log("resultado es________________: ", result);
   
       return result;
     }
