@@ -65,6 +65,62 @@ export class AulaDocenteService {
         );
       }
    
+      async crearAulaDocenteAntes (dto: CreateAulaDocenteDto[], user:UserEntity) {
+        console.log("lista array inicio");
+        console.log(dto);
+        console.log(dto.length);
+        console.log("lista array");
+        const resultado = [];
+        for(const item of dto){
+          //buscamos docente en esa aula
+          const docente = await this.aulaDocenteRepositorio.getOneDocenteByAulaId(item.aula_id);
+          const op = async (transaction: EntityManager) => {
+            //console.log(datoCalificacion);
+                if(docente && docente.maestro_inscripcion_id!=item.maestro_inscripcion_id){
+                  console.log("desactiva");
+                  const actualizados = await this.aulaDocenteRepositorio.updateDocenteAulaVigencia(
+                        docente.id,
+                        item.fecha_inicio
+                    );
+                    resultado.push(actualizados);
+                }
+                if(!docente || docente.maestro_inscripcion_id!=item.maestro_inscripcion_id){
+                  console.log("inserta");
+                  const nuevos = await this.aulaDocenteRepositorio.crearDocenteAula(
+                            user.id,
+                            item,
+                            transaction
+                        );
+                        resultado.push(nuevos);
+                 }
+                 
+                 if(docente && docente.maestro_inscripcion_id==item.maestro_inscripcion_id){
+                  console.log("edita");
+                  const actualizados = await this.aulaDocenteRepositorio.updateDocenteAula(
+                            docente.id,
+                            item
+                        );
+                        resultado.push(actualizados);
+                 }
+            }
+              const crearResult = await this.aulaDocenteRepositorio.runTransaction(op);
+              console.log(crearResult);
+          
+        }
+        //return resultado;
+          if(resultado.length>0){
+            return this._serviceResp.respuestaHttp201(
+                resultado,
+                'Registro Creado !!',
+                '',
+            );
+          }
+          return this._serviceResp.respuestaHttp500(
+            "",
+            'No se pudo guardar la información !!',
+            '',
+        );
+    }
       async crearAulaDocente (dto: CreateAulaDocenteDto[], user:UserEntity) {
           console.log("lista array inicio");
           console.log(dto);
@@ -72,19 +128,20 @@ export class AulaDocenteService {
           console.log("lista array");
           const resultado = [];
           for(const item of dto){
-            const docente = await this.aulaDocenteRepositorio.getOneDocenteByAulaId(item.aula_id);
+            //buscamos docente en esa aula
+            const docente = await this.aulaDocenteRepositorio.getOneAulaDocente(item.aula_id, item.maestro_inscripcion_id);
+            console.log("existe docente",docente);
             const op = async (transaction: EntityManager) => {
               //console.log(datoCalificacion);
-                  if(docente && docente.maestro_inscripcion_id!=item.maestro_inscripcion_id){
-                    console.log("desactiva");
-                    const actualizados = await this.aulaDocenteRepositorio.updateDocenteAulaVigencia(
-                          docente.id,
-                          item.fecha_inicio
-                      );
-                      resultado.push(actualizados);
-                  }
-                  if(!docente || docente.maestro_inscripcion_id!=item.maestro_inscripcion_id){
-                    console.log("inserta");
+                  await this.aulaDocenteRepositorio.updateDocenteAulaVigenciaByAula(
+                    item.aula_id,
+                    item.fecha_inicio
+                  );
+                  if(!docente){
+                    console.log("desactiva  alos otros");
+                    //desactiva a otros docentes de esa aula
+                   
+                    console.log("inserta el nuevo");
                     const nuevos = await this.aulaDocenteRepositorio.crearDocenteAula(
                               user.id,
                               item,
@@ -92,7 +149,7 @@ export class AulaDocenteService {
                           );
                           resultado.push(nuevos);
                    }
-                   if(docente && docente.maestro_inscripcion_id==item.maestro_inscripcion_id){
+                   if(docente){
                     console.log("edita");
                     const actualizados = await this.aulaDocenteRepositorio.updateDocenteAula(
                               docente.id,
