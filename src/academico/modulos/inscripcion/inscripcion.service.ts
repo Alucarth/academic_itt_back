@@ -1404,7 +1404,7 @@ export class InscripcionService {
   }
 
   async getListaParalelosRegimenGrado(carreraAutorizadaId:number, regimenGrado:number, matricula_estudiante:number) {
-
+console.log("ingresa------------------------------");
     const result = await this.inscripcionRepository.query(`
       SELECT
         institucion_educativa.id AS institucion_educativa_id, 
@@ -1515,6 +1515,7 @@ export class InscripcionService {
           oferta_curricular.id = ${result[i].oferta_curricular_id}
           and maestro_inscripcion.vigente = TRUE
           and aula_docente.baja_tipo_id = 0
+          ORDER BY  aula.paralelo_tipo_id
       `);
 
       
