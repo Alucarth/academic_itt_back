@@ -1041,6 +1041,9 @@ export class InscripcionService {
       ])
       .where("i.aulaId = :id", { id })
       .andWhere("d.bajaTipoId = 0")
+      .orderBy("p.paterno",'ASC')
+      .addOrderBy("p.materno",'ASC')
+      .addOrderBy("p.nombre", 'ASC')
       .getRawMany();
     console.log("result: ", result);
 
