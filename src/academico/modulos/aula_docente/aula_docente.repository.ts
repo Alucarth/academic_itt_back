@@ -96,6 +96,7 @@ export class AulaDocenteRepository {
             'rg.regimenGrado as regimenGrado',
         ])
           .where("m.personaId = :id ", { id })
+          .andWhere("ad.bajaTipoId= 0")
           .getRawMany();
     }
 
