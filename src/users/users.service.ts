@@ -1620,6 +1620,8 @@ async getAllPersonas() {
       let user_id = 0;
       if (resultp[0].existe == 0) {
         //creamos el usuario
+        let username = `${persona.carnetIdentidad}${persona.complemento}`
+        //let username = persona.carnetIdentidad+''+persona.complemento;
         console.log("creamos el usuario");
         const newUser = await this.userRepository
           .createQueryBuilder()
@@ -1628,7 +1630,7 @@ async getAllPersonas() {
           .values([
             {
               personaId: persona.id,
-              username: persona.carnetIdentidad,
+              username: username,
               password: hashPassword,
               activo: true,
             },
