@@ -19,6 +19,16 @@ export class CarreraAutorizadaRepository {
         
     }
 
+    async getOneByDato(dto: CreateCarreraAutorizadaResolucionDto){
+      return  await this.dataSource.getRepository(CarreraAutorizada).findOneBy(
+        { 
+          carreraTipoId:dto.carrera_tipo_id,
+          areaTipoId:dto.area_tipo_id,
+          institucionEducativaSucursalId:dto.sucursal_id
+        });
+      
+  }
+
     async geAllCarrerasBySucursalId(id){
         return  await this.dataSource.getRepository(CarreraAutorizada)
         .createQueryBuilder("ca")
