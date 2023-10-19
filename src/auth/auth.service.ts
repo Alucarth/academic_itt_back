@@ -154,6 +154,7 @@ export class AuthService {
             rol_txt = 'MAESTRA/O - DOCENTE';
             break;
         }
+        if(rol_tipo!=''){
         console.log('rol_tipo',rol_tipo)
         const roles = await this.userRepository.query(`
           select count(*) as existe_rol from usuario_rol where usuario_id = ${result[0].user_id}  and rol_tipo_id = ${rol_tipo}
@@ -171,7 +172,7 @@ export class AuthService {
             roles: arrayRoles
           }
         )
-        
+       }
       }
       
       //arrayData.push(arrayInstitutos);
