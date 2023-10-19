@@ -26,7 +26,10 @@ export class OperativoCarreraAutorizadaController {
     async getAllOperativosCarrera(@Param('id') id: number){
         return await this.operativoCarreraAutorizadaService.findAllOperativosCarrera(id);
     }
-    
+    @Get(':id')
+    async getDatoOperativo(@Param('id') id: number){
+        return await this.operativoCarreraAutorizadaService.findOperativoCarrera(id);
+    }
     @Get('vigente/carrera/:id')
     async getOperativoVigenteCarrera(@Param('id') id: number,){
         return await this.operativoCarreraAutorizadaService.findOperativoActivoCarrera(id);

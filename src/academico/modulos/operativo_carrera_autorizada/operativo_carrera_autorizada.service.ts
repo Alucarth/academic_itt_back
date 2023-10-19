@@ -21,6 +21,15 @@ export class OperativoCarreraAutorizadaService {
     async findAllOperativos(){
         return await this.operativoCarreraAutorizadaRepositorio.getAll();
     }
+    async findOperativoCarrera(id:number){
+        const operativo = await this.operativoCarreraAutorizadaRepositorio.getDatoOperativoCarrera(id);
+          return this._serviceResp.respuestaHttp201(
+                operativo,
+                'Existen resultados encontrados !!',
+                '',
+            );
+        
+    }
     async findAllOperativosCarrera(id:number){
         const operativos = await this.operativoCarreraAutorizadaRepositorio.getAllOperativosCarrera(id);
         if(operativos.length > 0){
