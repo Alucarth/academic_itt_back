@@ -7,6 +7,7 @@ import { User } from 'src/users/entity/users.entity';
 import { DataSource, EntityManager } from 'typeorm'
 import { CreateOperativoCarreraAutorizadaDto } from './dto/createOperativoCarreraAutorizada.dto';
 import { UpdateOperativoCarreraAutorizadaDto } from './dto/updateOperativoCarreraAutorizada.dto';
+import { UpdateFechaOperativoCarreraAutorizadaDto } from './dto/updateFechaOperativoCarreraAutorizada.dto';
 
 @Injectable()
 export class OperativoCarreraAutorizadaRepository {
@@ -124,6 +125,18 @@ export class OperativoCarreraAutorizadaRepository {
             modalidadEvaluacionTipoId : dto.modalidad_evaluacion_tipo_id,
             activo:true,
             observacion:dto.observacion
+        })
+        .where({ id: id })
+        .execute(); 
+    }
+    async updateFechaOperativoCarreraById(id:number,dto: UpdateFechaOperativoCarreraAutorizadaDto) {
+       
+        return await this.dataSource
+        .createQueryBuilder()
+        .update(OperativoCarreraAutorizada)
+        .set({
+            fechaInicio : dto.fecha_inicio,
+            fechaFin : dto.fecha_fin,
         })
         .where({ id: id })
         .execute(); 
