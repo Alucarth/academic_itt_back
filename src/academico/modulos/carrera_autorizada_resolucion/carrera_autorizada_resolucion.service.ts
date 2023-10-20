@@ -30,9 +30,9 @@ export class CarreraAutorizadaResolucionService {
         // verificar la carrera ya existe
         const carrera_resolucion = await this.carreraAutorizadaResolucionRepositorio.getDatoCarreraAutorizadaResolucion(dto);
         console.log("carrera:::::::::::::::::::::",carrera_resolucion);
-        if(carrera_resolucion){
+       /* if(carrera_resolucion){
           return carrera_resolucion;
-        }
+        }*/
     
         const op = async (transaction: EntityManager) => {
             const nuevaCarreraAutorizada = await this.carreraAutorizadaRepositorio.createAutorizada(
