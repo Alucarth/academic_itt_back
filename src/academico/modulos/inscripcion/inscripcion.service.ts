@@ -1407,7 +1407,19 @@ export class InscripcionService {
   }
 
   async getListaParalelosRegimenGrado(carreraAutorizadaId:number, regimenGrado:number, matricula_estudiante:number) {
-console.log("ingresa------------------------------");
+    const matriculaEstudiante = await this.matriculaRepository
+    .createQueryBuilder("m")
+    .innerJoinAndSelect("m.gestionTipo", "g")
+    .innerJoinAndSelect("m.periodoTipo", "p")
+    .select([
+      'm.id as id',
+      'g.gestion as gestion',
+      'p.id as periodo',
+  ])
+    .where('m.id = :matricula_estudiante', {matricula_estudiante})
+    .getRawOne();
+   
+//console.log("ingresa---------------matriculado---------------", matriculaEstudiante.gestion);
     const result = await this.inscripcionRepository.query(`
       SELECT
         institucion_educativa.id AS institucion_educativa_id, 
@@ -1468,10 +1480,13 @@ console.log("ingresa------------------------------");
           plan_estudio_asignatura.regimen_grado_tipo_id = regimen_grado_tipo.id
       WHERE
         carrera_autorizada.id = ${carreraAutorizadaId} AND      
-        regimen_grado_tipo.id = ${regimenGrado}
+        regimen_grado_tipo.id = ${regimenGrado} AND
+        oferta_curricular.gestion_tipo_id = ${matriculaEstudiante.gestion} AND
+        oferta_curricular.periodo_tipo_id = ${matriculaEstudiante.periodo}
+        
 
     `);
-
+    //console.log("result-----------fin-------------------", result);
     
     for (let i = 0; i < result.length; i++) {
       console.log('i :', i);
