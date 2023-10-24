@@ -157,7 +157,7 @@ export class PlanEstudioCarreraRepository {
           .andWhere("pc.intervaloGestionTipoId = :intervalo_id", { intervalo_id })
           .andWhere("pc.tiempoEstudio = :tiempo", { tiempo })
           .andWhere("pc.cargaHoraria = :carga", { carga })
-         // .andWhere("i.activo = true")
+          .andWhere("pc.aprobado = true")
           .getRawMany();
 
     }

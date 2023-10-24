@@ -82,6 +82,7 @@ constructor(private dataSource: DataSource) {}
         .innerJoin('a.paraleloTipo', 'pt')
         .innerJoin('d.diaTipo', 'dt')
         .where('a.id = :id', {id})
+        .andWhere('do.bajaTipoId = 0')
         .select([
             'a.id as aula_id',
             'a.cupo as cupo',

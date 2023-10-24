@@ -96,6 +96,7 @@ export class AulaDocenteRepository {
             'rg.regimenGrado as regimenGrado',
         ])
           .where("m.personaId = :id ", { id })
+          .andWhere("ad.bajaTipoId= 0")
           .getRawMany();
     }
 
@@ -120,6 +121,19 @@ export class AulaDocenteRepository {
         .where('ad.aulaId = :aula_id', {aula_id})
         //.andWhere('pa.maestroInscripcionId = :docente_id', {docente_id})
         .andWhere('ad.bajaTipoId = 0')
+        .getRawOne();
+    }
+    async getOneAulaDocente(aula_id, docente_id){
+        return  await this.dataSource.getRepository(AulaDocente)
+        .createQueryBuilder("ad")
+        //.innerJoinAndSelect("ad.maestroInscripcion", "pa")
+        .select([
+            'ad.id as id',
+            'ad.maestroInscripcionId as maestro_inscripcion_id',
+        ])
+        .where('ad.aulaId = :aula_id', {aula_id})
+        .andWhere('ad.maestroInscripcionId = :docente_id', {docente_id})
+        //.andWhere('ad.bajaTipoId = 0')
         .getRawOne();
     }
 
@@ -162,6 +176,18 @@ export class AulaDocenteRepository {
         .where({ id: id })
         .execute(); 
     }
+    async updateDocenteAulaVigenciaByAula(id, fecha) {
+        console.log("actualiza estado--------------------");
+        return await this.dataSource
+        .createQueryBuilder()
+        .update(AulaDocente)
+        .set({
+            bajaTipoId : 3,
+            asignacionFechaFin : fecha,
+        })
+        .where({ aulaId: id })
+        .execute(); 
+    }
     async updateDocenteAula(id, item) {
         return await this.dataSource
         .createQueryBuilder()
@@ -169,6 +195,7 @@ export class AulaDocenteRepository {
         .set({
             asignacionFechaFin : item.fecha_fin,
             asignacionFechaInicio : item.fecha_inicio,
+            bajaTipoId : 0,
         })
         .where({ id: id })
         .execute(); 

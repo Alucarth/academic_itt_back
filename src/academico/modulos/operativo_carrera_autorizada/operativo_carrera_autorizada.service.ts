@@ -6,6 +6,7 @@ import { CreateOperativoCarreraAutorizadaDto } from './dto/createOperativoCarrer
 import { UpdateOperativoCarreraAutorizadaDto } from './dto/updateOperativoCarreraAutorizada.dto';
 import { OperativoCarreraAutorizadaRepository } from './operativo_carrera_autorizada.repository';
 import { User as UserEntity } from 'src/users/entity/users.entity';
+import { UpdateFechaOperativoCarreraAutorizadaDto } from './dto/updateFechaOperativoCarreraAutorizada.dto';
 @Injectable()
 export class OperativoCarreraAutorizadaService {
     constructor(
@@ -19,6 +20,15 @@ export class OperativoCarreraAutorizadaService {
 
     async findAllOperativos(){
         return await this.operativoCarreraAutorizadaRepositorio.getAll();
+    }
+    async findOperativoCarrera(id:number){
+        const operativo = await this.operativoCarreraAutorizadaRepositorio.getDatoOperativoCarrera(id);
+          return this._serviceResp.respuestaHttp201(
+                operativo,
+                'Existen resultados encontrados !!',
+                '',
+            );
+        
     }
     async findAllOperativosCarrera(id:number){
         const operativos = await this.operativoCarreraAutorizadaRepositorio.getAllOperativosCarrera(id);
@@ -139,6 +149,26 @@ export class OperativoCarreraAutorizadaService {
         ""
         );
     }
+    async editFechaOperativoCarreraById(id: number, dto:UpdateFechaOperativoCarreraAutorizadaDto)
+    {
+        const res = await this.operativoCarreraAutorizadaRepositorio.updateFechaOperativoCarreraById(id,dto);
+        if(res){
+            console.log("res:", res);
+            console.log("Operativo cambio de fecha");
+            return this._serviceResp.respuestaHttp202(
+            res,
+            "Registro Actualizado !!",
+            ""
+            );
+        }
+        
+        return this._serviceResp.respuestaHttp500(
+        "",
+        "Error Registro  !!",
+        ""
+        );
+    }
+
 
     async editEstadoById(id: number)
     {

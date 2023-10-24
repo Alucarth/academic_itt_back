@@ -20,6 +20,46 @@ export class CarreraAutorizadaResolucionRepository {
         return  await this.dataSource.getRepository(CarreraAutorizadaResolucion).find();
         
     }
+    async getDatoCarreraAutorizadaResolucion(dto: CreateCarreraAutorizadaResolucionDto){
+
+        let tiempoEstudio = dto.tiempo_estudio;
+        let cargaHoraria =dto.carga_horaria;
+        let nivelAcademicoTipoId = dto.nivel_academico_tipo_id;
+        let intervaloGestionTipoId = dto.intervalo_gestion_tipo_id;        
+        let numeroResolucion = dto.numero_resolucion;
+        let fechaResolucion = dto.fecha_resolucion;
+        let carreraTipoId = dto.carrera_tipo_id;
+        let areaTipoId = dto.area_tipo_id;
+        let institucionEducativaSucursalId = dto.sucursal_id;
+
+        const carreras_resoluciones = await this.dataSource.getRepository(CarreraAutorizadaResolucion)
+        .createQueryBuilder("ca")
+        .innerJoinAndSelect("ca.carreraAutorizada", "c")
+        .select([
+            'ca.tiempo_estudio',
+            'ca.carga_horaria',
+            'ca.nivel_academico_tipo_id',
+            'ca.intervalo_gestion_tipo_id',
+            'ca.ultimo',
+            'ca.numero_resolucion',
+            'ca.fecha_resolucion',
+            
+        ])
+        .where('ca.ultimo=true')
+        .andWhere("ca.tiempo_estudio = :tiempoEstudio ", { tiempoEstudio})
+        .andWhere("ca.cargo_tiempo = :cargaHoraria ", { cargaHoraria})
+        .andWhere("ca.nivel_academico_tipo_id = :nivelAcademicoTipoId ", { nivelAcademicoTipoId})
+        .andWhere("ca.intervalo_gestion_tipo_id = :intervaloGestionTipoId ", { intervaloGestionTipoId})
+        .andWhere("ca.numero_resolucion = :numeroResolucion ", { numeroResolucion})
+        .andWhere("ca.fecha_resolucion = :fechaResolucion ", { fechaResolucion})
+        .andWhere("ca.carrera_autorizada_id = :fechaResolucion ", { fechaResolucion})
+        .andWhere("c.carrera_tipo_id = :carreraTipoId ", { carreraTipoId})
+        .andWhere("c.area_tipo_id = :areaTipoId ", { areaTipoId})
+        .andWhere("c.institucionEducativaSucursal = :institucionEducativaSucursalId ", { institucionEducativaSucursalId})
+        .getRawOne();
+        return carreras_resoluciones;
+        
+    }
    
   async crearCarreraResolucion(
     usuarioId,

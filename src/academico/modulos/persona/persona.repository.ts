@@ -4,6 +4,7 @@ import { DataSource } from "typeorm";
 import { CreatePersonaoDto } from "./dto/createPersona.dto";
 import { SearchDatoDto } from "./dto/searchDato.dto";
 import { UpdatePersonaoDto } from "./dto/updatePersona.dto";
+import { ContrastaPersonaDto } from "./dto/contrastaPersona.dto";
 
 @Injectable()
 export class PersonaRepository {
@@ -11,6 +12,25 @@ export class PersonaRepository {
 
   async getById(id: number) {
     return await this.dataSource.getRepository(Persona).findBy({ id: id });
+  }
+
+  async getPersonaSegip(dto: ContrastaPersonaDto) {
+    
+    console.log('dto:', dto);
+    const result0 = await this.dataSource.getRepository(Persona).findOneBy({
+      carnetIdentidad: dto.carnetIdentidad,
+      complemento: dto.complemento,
+      paterno: dto.paterno,
+      materno: dto.materno,
+      nombre: dto.nombre,
+      fechaNacimiento: dto.fechaNacimiento,
+    });
+    console.log("result0: ", result0);
+    if (!result0) {
+      return false;
+    }
+    return result0;
+    
   }
 
   async getPersonaByDato(dto: SearchDatoDto) {
@@ -57,7 +77,7 @@ export class PersonaRepository {
     if(resultUt[0]['unidad_territorial_tipo_id'] == 0)
     {
       //es solo un pais
-      const result = await this.dataSource.query(`
+      let result = await this.dataSource.query(`
        
         SELECT		
           persona.*,
@@ -80,8 +100,8 @@ export class PersonaRepository {
          
   
       `);
-  
-      console.log("result: ", result);
+      result[0].fecha_nacimiento = result0.fechaNacimiento;
+      console.log("resultado es________________: ", result);
   
       return result;
       
@@ -89,7 +109,7 @@ export class PersonaRepository {
     }else{
 
       //llega a comunidad
-      const result = await this.dataSource.query(`
+      let  result = await this.dataSource.query(`
         SELECT
         data2.*,
         ut.lugar AS comunidad,
@@ -127,7 +147,8 @@ export class PersonaRepository {
   
       `);
   
-      console.log("result: ", result);
+      result[0].fecha_nacimiento = result0.fechaNacimiento;
+      console.log("resultado es________________: ", result);
   
       return result;
     }
@@ -196,7 +217,8 @@ export class PersonaRepository {
            tieneDiscapacidad            : dto.tieneDiscapacidad,
            telefono                     : dto.telefono,
            email                        : dto.email,
-           cedulaTipoId                 : dto.cedulaTipoId
+           cedulaTipoId                 : dto.cedulaTipoId,
+           sangreTipoId                 : dto.sangreTipoId
             
           })
           .where("id = :id", { id: dto.id })

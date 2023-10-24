@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Header,
   Param,
@@ -289,6 +290,19 @@ export class InscripcionController {
   @Put('cambia-estado/:id')
   async updateEstadoNoSePresento( @Param('id') id: number) {
       return  await this.inscripcionService.updateEstadoNoSePresento(id);        
+  }
+
+  @Delete(":id")
+  async deleteInscripcionByMatriculaId(
+    @Param("id") id: number,
+  ) {
+    return await this.inscripcionService.deleteInscripcionMatriculado(id);
+  }
+  @Delete("matricula/:id")
+  async deleteMatriculadoId(
+    @Param("id") id: number,
+  ) {
+    return await this.inscripcionService.deleteMatriculado(id);
   }
 
 }

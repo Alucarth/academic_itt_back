@@ -12,8 +12,7 @@ export class CreatePersonaoDto {
 
   @IsString()
   paterno: string;
-
-  @IsNotEmpty({ message: "el Ap. Materno es requerido" })
+  
   @IsString()
   materno: string;
 

@@ -19,6 +19,16 @@ export class CarreraAutorizadaRepository {
         
     }
 
+    async getOneByDato(dto: CreateCarreraAutorizadaResolucionDto){
+      return  await this.dataSource.getRepository(CarreraAutorizada).findOneBy(
+        { 
+          carreraTipoId:dto.carrera_tipo_id,
+          areaTipoId:dto.area_tipo_id,
+          institucionEducativaSucursalId:dto.sucursal_id
+        });
+      
+  }
+
     async geAllCarrerasBySucursalId(id){
         return  await this.dataSource.getRepository(CarreraAutorizada)
         .createQueryBuilder("ca")
@@ -392,6 +402,8 @@ export class CarreraAutorizadaRepository {
   }
 
   async geAllCarrerasByIeIdGestionPeriodo(id, gestion, periodo){
+//console.log("datos:", id, gestion, periodo)
+
     /*return await this.dataSource.query(`
     SELECT
     carrera_autorizada.id as carrera_autorizada_id, 
@@ -458,7 +470,7 @@ export class CarreraAutorizadaRepository {
       institucion_educativa_sucursal.institucion_educativa_id, 
       carrera_autorizada.id as carrera_autorizada_id, 
       carrera_tipo.carrera, 
-			(select area from area_tipo where id = carrera_autorizada.carrera_tipo_id ) as area,
+			(select area from area_tipo where id = carrera_autorizada.area_tipo_id ) as area,
       carrera_autorizada_resolucion.descripcion as carrera_autorizada_resolucion_descripcion, 
       carrera_autorizada_resolucion.numero_resolucion as numero_resolucion, 
       carrera_autorizada_resolucion.fecha_resolucion as fecha_resolucion, 
@@ -527,6 +539,7 @@ export class CarreraAutorizadaRepository {
     institucion_educativa_sucursal.institucion_educativa_id = ${id}
     and operativo_carrera_autorizada.gestion_tipo_id = ${gestion}
     and operativo_carrera_autorizada.periodo_tipo_id = ${periodo}
+    and carrera_autorizada_resolucion.ultimo = true
     `);
      
 }
