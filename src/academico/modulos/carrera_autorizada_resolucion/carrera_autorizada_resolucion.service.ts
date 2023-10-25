@@ -30,9 +30,13 @@ export class CarreraAutorizadaResolucionService {
         // verificar la carrera ya existe
         const carrera_resolucion = await this.carreraAutorizadaResolucionRepositorio.getDatoCarreraAutorizadaResolucion(dto);
         console.log("carrera:::::::::::::::::::::",carrera_resolucion);
-       /* if(carrera_resolucion){
-          return carrera_resolucion;
-        }*/
+        if(carrera_resolucion){
+          return this._serviceResp.respuestaHttp500(
+            "",
+            'Ya existe la carrera no puede guardar la información !!',
+            '',
+          );
+        }
     
         const op = async (transaction: EntityManager) => {
             const nuevaCarreraAutorizada = await this.carreraAutorizadaRepositorio.createAutorizada(
