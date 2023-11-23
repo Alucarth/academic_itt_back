@@ -1,3 +1,6 @@
+import { PlanEstudioCarrera } from './../../entidades/planEstudioCarrera.entity';
+import { EstadoMatriculaTipo } from './../../entidades/estadoMatriculaTipo.entity';
+import { ModalidadEvaluacionTipo } from 'src/academico/entidades/modalidadEvaluacionTipo.entity';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InstitutoEstudianteInscripcion } from 'src/academico/entidades/InstitutoEstudianteInscripcion.entity';
@@ -7,14 +10,31 @@ import { AulaRepository } from '../aula/aula.repository';
 import { CreateInstitutoInscripcionDocenteCalificacionDto } from './dto/createInstitutoInscripcionDocenteCalificacion.dto';
 import { InstitutoEstudianteInscripcionDocenteCalificacionRepository } from './instituto_estudiante_inscripcion_docente_calificacion.repository';
 import { User as UserEntity } from 'src/users/entity/users.entity';
+import { Aula } from 'src/academico/entidades/aula.entity';
+import { OperativoCarreraAutorizada } from 'src/academico/entidades/operativoCarreraAutorizada.entity';
+import { InstitutoEstudianteInscripcionDocenteCalificacion } from 'src/academico/entidades/institutoEstudianteInscripcionDocenteCalificacion.entity';
+import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
 @Injectable()
 export class InstitutoEstudianteInscripcionDocenteCalificacionService {
     constructor(
         @Inject(InstitutoEstudianteInscripcionDocenteCalificacionRepository)
         private inscDocenteCalificacionRepositorio: InstitutoEstudianteInscripcionDocenteCalificacionRepository,
         
-        @Inject(AulaRepository) 
-        private aulaRepository: AulaRepository,
+        @InjectRepository(Aula)
+        private aulaRepository: Repository<Aula>,
+
+        @InjectRepository(InstitutoEstudianteInscripcion)
+        private institutoEstudianteInscripcionRepository: Repository<InstitutoEstudianteInscripcion>,
+
+        @InjectRepository(OperativoCarreraAutorizada)
+        private operativoCarreraRepository: Repository<OperativoCarreraAutorizada>,
+
+        @InjectRepository(CarreraAutorizada)
+        private carreraAutorizadaRepository: Repository<CarreraAutorizada>,
+
+        @InjectRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
+        private calificacionesRepository: Repository<InstitutoEstudianteInscripcionDocenteCalificacion>,
+
         
         private _serviceResp: RespuestaSigedService
       ) {}
@@ -401,6 +421,188 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
         );
  }
 
+ async registroNotaByAulaId(aula_id, carrera_autorizada_id)
+ {
+    const students = await this.institutoEstudianteInscripcionRepository.find(
+        {
+            relations: {
+                matriculaEstudiante: {
+                    institucionEducativaEstudiante:{
+                        persona:true
+                    },
+                    
+                },
+                estadoMatriculaTipo: true,
+            },
+            select: {
+                id: true,
+                matriculaEstudiante: {
+                    id: true,
+                    institucionEducativaEstudiante: {
+                        id: true,
+                        persona: {
+                            carnetIdentidad: true,
+                            complemento: true,
+                            nombre: true,
+                            paterno: true,
+                            materno:true
+                        }
+                    },
+                    
+                },
+                estadoMatriculaTipo:{
+                    id: true,
+                    estadoMatricula: true,
+                }
+            },
+            where: { aulaId: aula_id}, 
+            take : 10,           
+        }
+    )
+
+    const operativos = await this.operativoCarreraRepository.find({
+        relations: {
+            periodoTipo: true,
+            eventoTipo: true,
+            modalidadEvaluacionTipo: true,
+        },
+        select:{
+            id: true,
+            periodoTipo: {
+                id: true,
+                periodo: true,
+            },
+            eventoTipo: {
+                id: true,
+                evento: true,
+            },
+            modalidadEvaluacionTipo: {
+                id:true,
+                modalidadEvaluacion: true,
+            }
+        },  
+        where: {
+            carreraAutorizadaId:carrera_autorizada_id,
+            eventoTipoId: 2,//calificaciones
+        }
+
+    })
+
+    const carrera_autorizada = await this.carreraAutorizadaRepository.findOne({
+        relations: {
+            institucionEducativaSucursal: {
+                institucionEducativa: true,
+            },
+            // areaTipo: true, //dato no correcto
+            carreraTipo: true,
+        },
+        where: { id: carrera_autorizada_id }
+    })
+
+    const aula = await this.aulaRepository.findOne({
+        relations:{
+            paraleloTipo: true,
+            ofertaCurricular:{
+                planEstudioAsignatura:{
+                    asignaturaTipo: true,
+                    planEstudioCarrera:{
+                        planEstudioResolucion: true,
+                    },
+                    regimenGradoTipo: true,
+                },
+                
+            }
+        },
+        where: {id:aula_id}
+    })
+
+    console.log('aula', aula)
+    console.log(carrera_autorizada)
+
+    console.log(operativos)
+    let ids = []
+    for( const operativo  of operativos)
+    {
+        ids.push(operativo.modalidadEvaluacionTipo.id)
+    }
+    console.log('IDS ====>',ids)
+    const registro_notas = []
+
+
+    for(const student of students)
+    {
+
+        let calificaciones = await this.calificacionesRepository.find({
+            relations: {
+                notaTipo:true,
+                modalidadEvaluacionTipo: true
+            },
+            select:{
+                id:true,
+                cuantitativa: true,
+                notaTipo:{
+                    id: true,
+                    nota: true,
+                },
+                modalidadEvaluacionTipo: {
+                    id: true,
+                    modalidadEvaluacion: true
+                }
+            },
+            where:{ institutoEstudianteInscripcionId: student.id },
+            order:{
+                modalidadEvaluacionTipoId : 'ASC',
+                notaTipoId: 'ASC'
+            }
+        })
+        let notas = []
+        let count = 0
+        for( const id of ids)
+        {
+            count = 0
+            for(const calificacion of calificaciones)
+            {
+                if(calificacion.modalidadEvaluacionTipo.id == id)
+                {
+                    notas.push({
+                        cuantitativa: calificacion.cuantitativa,
+                        modalidad_evaluacion: calificacion.modalidadEvaluacionTipo.modalidadEvaluacion,
+                        nota_tipo: calificacion.notaTipo.nota
+                    })
+                    count++;
+                }
+            }
+            while(count < 3)
+            {
+                notas.push({
+                    cuantitativa: '-' ,
+                    modalidad_evaluacion: 'sin modalidad',
+                    nota_tipo: 'sin nota'
+                })
+                count++
+            }
+        }
+        // let calificaciones = await this.calificacionesRepository.createQueryBuilder
+        
+        // console.log('calificaciones', calificaciones)
+
+        let registro = {
+            ci: student.matriculaEstudiante.institucionEducativaEstudiante.persona.carnetIdentidad,
+            nombre: `${student.matriculaEstudiante.institucionEducativaEstudiante.persona.paterno} ${student.matriculaEstudiante.institucionEducativaEstudiante.persona.materno} ${student.matriculaEstudiante.institucionEducativaEstudiante.persona.nombre} `,
+            estado: student.estadoMatriculaTipo.estadoMatricula,
+            notas: notas
+        }
+
+        registro_notas.push(registro)
+    }
+
+    return {
+        operativos: operativos,
+        estudiantes: registro_notas ,
+        aula: aula,
+        carrera_autorizada: carrera_autorizada,
+    } 
+ }
 
 
 }

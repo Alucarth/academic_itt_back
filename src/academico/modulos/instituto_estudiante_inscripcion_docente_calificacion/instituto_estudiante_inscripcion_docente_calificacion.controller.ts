@@ -4,7 +4,9 @@ import { InstitutoEstudianteInscripcionDocenteCalificacionService } from './inst
 import { Auth } from "src/auth/decorator/auth.decorator";
 import { Users } from 'src/users/decorator/user.decorator';
 import { User as UserEntity } from 'src/users/entity/users.entity';
+import { ApiTags } from '@nestjs/swagger';
 
+ApiTags('Inscripciones')
 @Controller('instituto-estudiante-inscripcion-docente-calificacion')
 export class InstitutoEstudianteInscripcionDocenteCalificacionController {
     constructor (
@@ -37,10 +39,18 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionController {
     async getAllEstadosFinalesByAulaId(@Param('id') id: number){
         return await this.inscripcionDocenteCalificacionService.updateEstadosFinalesByAulaId(id);
     }
+
     @Auth()
     @Post()
     async insertDocenteCalificacionGlobal(@Body() dto: CreateInstitutoInscripcionDocenteCalificacionDto[], @Users() user: UserEntity){
         return  await this.inscripcionDocenteCalificacionService.crearInscripcionDocenteCalificacionGlobal(dto, user);        
+    }
+
+    @Get('record-signature/:aula_id/:carrera_autorizada_id')
+    async registroNotaByAulaId(@Param('aula_id') aula_id: number,@Param('carrera_autorizada_id') carrera_autorizada_id: number)
+    {
+        console.log('ingresando a record signature')
+        return await this.inscripcionDocenteCalificacionService.registroNotaByAulaId(aula_id, carrera_autorizada_id);
     }
     
 }
