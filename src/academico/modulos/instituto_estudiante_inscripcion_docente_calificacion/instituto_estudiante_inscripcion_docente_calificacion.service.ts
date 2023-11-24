@@ -1,11 +1,11 @@
 import { PlanEstudioCarrera } from './../../entidades/planEstudioCarrera.entity';
 import { EstadoMatriculaTipo } from './../../entidades/estadoMatriculaTipo.entity';
 import { ModalidadEvaluacionTipo } from 'src/academico/entidades/modalidadEvaluacionTipo.entity';
-import { Inject, Injectable } from '@nestjs/common';
+import { ConsoleLogger, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InstitutoEstudianteInscripcion } from 'src/academico/entidades/InstitutoEstudianteInscripcion.entity';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
 import { AulaRepository } from '../aula/aula.repository';
 import { CreateInstitutoInscripcionDocenteCalificacionDto } from './dto/createInstitutoInscripcionDocenteCalificacion.dto';
 import { InstitutoEstudianteInscripcionDocenteCalificacionRepository } from './instituto_estudiante_inscripcion_docente_calificacion.repository';
@@ -14,6 +14,7 @@ import { Aula } from 'src/academico/entidades/aula.entity';
 import { OperativoCarreraAutorizada } from 'src/academico/entidades/operativoCarreraAutorizada.entity';
 import { InstitutoEstudianteInscripcionDocenteCalificacion } from 'src/academico/entidades/institutoEstudianteInscripcionDocenteCalificacion.entity';
 import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
+import { Persona } from 'src/users/entity/persona.entity';
 @Injectable()
 export class InstitutoEstudianteInscripcionDocenteCalificacionService {
     constructor(
@@ -34,6 +35,8 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
 
         @InjectRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
         private calificacionesRepository: Repository<InstitutoEstudianteInscripcionDocenteCalificacion>,
+        @InjectRepository(Persona)
+        private personaRepository: Repository<Persona>,
 
         
         private _serviceResp: RespuestaSigedService
@@ -456,7 +459,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                 }
             },
             where: { aulaId: aula_id}, 
-            take : 10,           
+            // take : 10,           
         }
     )
 
@@ -483,7 +486,11 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
         },  
         where: {
             carreraAutorizadaId:carrera_autorizada_id,
-            eventoTipoId: 2,//calificaciones
+            eventoTipoId: 2,//calificaciones,
+            modalidadEvaluacionTipo: In([3,4,5,6])
+        },
+        order: {
+            modalidadEvaluacionTipoId: 'ASC'
         }
 
     })
@@ -511,7 +518,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                     regimenGradoTipo: true,
                 },
                 
-            }
+            },
         },
         where: {id:aula_id}
     })
@@ -527,7 +534,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
     }
     console.log('IDS ====>',ids)
     const registro_notas = []
-
+    let persona = null;
 
     for(const student of students)
     {
@@ -535,7 +542,12 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
         let calificaciones = await this.calificacionesRepository.find({
             relations: {
                 notaTipo:true,
-                modalidadEvaluacionTipo: true
+                modalidadEvaluacionTipo: true,
+                aulaDocente:{
+                    maestroInscripcion:{
+                        persona:true
+                    }
+                }
             },
             select:{
                 id:true,
@@ -547,6 +559,12 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                 modalidadEvaluacionTipo: {
                     id: true,
                     modalidadEvaluacion: true
+                },
+                aulaDocente: {
+                    id:true,
+                    maestroInscripcion:{
+                        personaId: true,
+                    }
                 }
             },
             where:{ institutoEstudianteInscripcionId: student.id },
@@ -562,6 +580,21 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             count = 0
             for(const calificacion of calificaciones)
             {
+                if(!persona)
+                {
+                    persona = await this.personaRepository.findOne({
+                        select:{
+                          carnetIdentidad:true,
+                          complemento: true,
+                          nombre: true,
+                          paterno: true,
+                          materno: true,
+                        },
+                        where:{ id: calificacion.aulaDocente.maestroInscripcion.personaId}
+                    })
+                }
+
+                // console.log(calificacion)
                 if(calificacion.modalidadEvaluacionTipo.id == id)
                 {
                     notas.push({
@@ -590,7 +623,8 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             ci: student.matriculaEstudiante.institucionEducativaEstudiante.persona.carnetIdentidad,
             nombre: `${student.matriculaEstudiante.institucionEducativaEstudiante.persona.paterno} ${student.matriculaEstudiante.institucionEducativaEstudiante.persona.materno} ${student.matriculaEstudiante.institucionEducativaEstudiante.persona.nombre} `,
             estado: student.estadoMatriculaTipo.estadoMatricula,
-            notas: notas
+            notas: notas,
+         
         }
 
         registro_notas.push(registro)
@@ -601,7 +635,128 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
         estudiantes: registro_notas ,
         aula: aula,
         carrera_autorizada: carrera_autorizada,
+        docente: persona
     } 
+ }
+
+ async aulaFixes(aula_id, modalidad_evaluacion_tipo_id)
+ {
+    const students = await this.institutoEstudianteInscripcionRepository.find(
+        {
+            relations: {
+                matriculaEstudiante: {
+                    institucionEducativaEstudiante:{
+                        persona:true
+                    },
+                    
+                },
+                estadoMatriculaTipo: true,
+            },
+            select: {
+                id: true,
+                matriculaEstudiante: {
+                    id: true,
+                    institucionEducativaEstudiante: {
+                        id: true,
+                        persona: {
+                            carnetIdentidad: true,
+                            complemento: true,
+                            nombre: true,
+                            paterno: true,
+                            materno:true
+                        }
+                    },
+                    
+                },
+                estadoMatriculaTipo:{
+                    id: true,
+                    estadoMatricula: true,
+                }
+            },
+            where: { aulaId: aula_id}, 
+            // take : 10,           
+        }
+    )
+
+    for(const student of students)
+    {
+        let calificaciones = await this.calificacionesRepository.find({
+    
+            where:{ institutoEstudianteInscripcionId: student.id, modalidadEvaluacionTipoId: modalidad_evaluacion_tipo_id },
+            order:{
+                modalidadEvaluacionTipoId : 'ASC',
+                notaTipoId: 'ASC'
+            }
+        })
+        console.log('institutoEstudianteInscripcionId',student.id)
+        console.log('cantidad', calificaciones.length)
+        if(calificaciones.length>3)
+        {
+            console.log('aplicando solucion')
+            let teorica = null;
+            let practica = null;
+            let suma = null;
+
+            for(const calificacion of calificaciones)
+            {
+                if( !teorica && calificacion.notaTipoId  === 5 )
+                {
+                    teorica = calificacion
+
+                }else{
+    
+                    if(teorica && calificacion.notaTipoId === 5 )
+                    {
+                        await this.calificacionesRepository.delete( calificacion.id)
+                    }
+                }
+
+                if(!practica && calificacion.notaTipoId  === 6 ){
+                    
+                    practica = calificacion
+                    
+                }else{
+
+                    if(practica && calificacion.notaTipoId === 6 )
+                    {
+                        await this.calificacionesRepository.delete( calificacion.id)
+                    }
+
+                }
+
+
+                if(!suma && calificacion.notaTipoId  === 7 ){
+                   
+                    suma = calificacion
+                   
+                }else{
+                   
+                    if(suma && calificacion.notaTipoId  === 7 ){
+                        await this.calificacionesRepository.delete( calificacion.id)
+                    }
+                }
+
+            }
+            console.log('teorica', teorica.cuantitativa )
+            console.log('practica', practica.cuantitativa )
+            console.log('suma', suma.cuantitativa )
+
+            suma.cuantitativa = parseInt(teorica.cuantitativa ) +  parseInt(practica.cuantitativa);
+
+
+            suma = await this.calificacionesRepository.save(suma)
+            console.log('suma actualizado', suma)
+            
+            suma = null;
+            teorica = null;
+            practica = null;
+
+    
+        }
+    }
+
+
+    return students;
  }
 
 

@@ -13,6 +13,7 @@ import { InstitutoEstudianteInscripcionDocenteCalificacionService } from './inst
 import { Aula } from 'src/academico/entidades/aula.entity';
 import { OperativoCarreraAutorizada } from 'src/academico/entidades/operativoCarreraAutorizada.entity';
 import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
+import { Persona } from 'src/users/entity/persona.entity';
 
 @Module({
   imports:[
@@ -23,6 +24,7 @@ import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.ent
      OperativoCarreraAutorizada,
      InstitutoEstudianteInscripcionDocenteCalificacion,
      CarreraAutorizada,
+     Persona,
         ]),
     ],
   controllers: [InstitutoEstudianteInscripcionDocenteCalificacionController],

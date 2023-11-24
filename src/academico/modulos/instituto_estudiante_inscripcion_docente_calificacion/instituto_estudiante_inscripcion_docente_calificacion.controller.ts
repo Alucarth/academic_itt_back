@@ -52,5 +52,12 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionController {
         console.log('ingresando a record signature')
         return await this.inscripcionDocenteCalificacionService.registroNotaByAulaId(aula_id, carrera_autorizada_id);
     }
+
+    @Get('aula-fixes/:aula_id/:modalidad_evaluacion_tipo_id')
+    async auulaFixes(@Param('aula_id') aula_id: number,@Param('modalidad_evaluacion_tipo_id') modalidad_evaluacion_tipo_id: number)
+    {
+        console.log('ingresando a aula fixes')
+        return await this.inscripcionDocenteCalificacionService.aulaFixes(aula_id, modalidad_evaluacion_tipo_id);
+    }
     
 }
