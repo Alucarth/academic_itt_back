@@ -1380,6 +1380,165 @@ export class InstitucionEducativaService {
 
       return File;
     }
+
+    async getNumeroEstudiantesMatriculasdosAreaGeograficaDependencia()
+    {
+      let lista = await this.institucionEducativaRepository.query(`select dt.dependencia as dependencia, agt.area_geografica, count(agt.area_geografica) as total_area_geografica from tmp_gen_itt_superior_listado_itts_matricula_fin tgislimf
+      inner join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = tgislimf.cod_ue_id 
+      inner join institucion_educativa ie on ie.id = tgislimf.cod_ue_id 
+      inner join dependencia_tipo dt on dt.id = iea.dependencia_tipo_id
+      inner join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+      inner join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+      inner join area_geografica_tipo agt on ut.area_geografica_tipo_id = agt.id
+      group by dt.dependencia, agt.area_geografica 
+      order by dt.dependencia asc, agt.area_geografica asc;`);
+      let total = 0;
+      for(let item of lista)
+      {
+        total += parseInt(item.total_area_geografica)
+      }
+
+      lista.push({dependencia:'',area_geografica: 'TOTAL',total_area_geografica: total })
+        
+      let book = new Workbook();
+      const sheet = book.addWorksheet('hoja1', {views: [{showGridLines: false}]});
+      
+      sheet.addRow([]);
+      sheet.addRow([]);
+      sheet.addRow([]);
+      sheet.addRow([]);
+
+      sheet.addRow([`BOLIVIA: Numero de estudiantes matriculados por área geográfica segun dependencia`]);
+      sheet.addRow(["GESTION 2023"]);
+
+      sheet.getRow(5).font = { name:'Nimbus Sans', size: 16, bold: true ,color: {'argb': '485ab7'} };
+      sheet.getRow(6).font = { name:'Nimbus Sans', size: 10, bold: true ,color: {'argb': '7280c8'}};
+
+      sheet.addRow([]);
+       //add the header
+      sheet.addRow(['DEPENDENCIA','ÁREA GEOGRÁFICA','CANTIDAD DE ESTUDIANTES']);
+      lista.forEach(item => {
+          sheet.addRow([item.dependencia, item.area_geografica, item.total_area_geografica])
+      });
+
+      sheet.getRow(5).height = 30.5;
+        [
+          'A',
+          'B',
+          'C',
+          'D',
+          'E',
+         
+        
+        ].map((key) => {
+          let col = sheet.getColumn(key)
+            if(key==='A')
+            { 
+              col.width = 15
+            }else{
+              col.width = 20
+            }
+            if(key !== 'A')
+            {
+              col.alignment = { vertical: 'middle', horizontal: 'right' };
+            }
+
+            if(key==='C')
+            { 
+              col.width = 30
+              col.alignment = { vertical: 'middle', horizontal: 'right' };
+            }
+        });
+
+      
+
+          //para la imagen
+
+          lista = await this.institucionEducativaRepository.query(`select tgislimf.id_departamento , tgislimf.desc_departamento, dt.dependencia as dependencia, tgislimf.carrera,  agt.area_geografica, count(agt.area_geografica) as total_area_geografica 
+          from tmp_gen_itt_superior_listado_itts_matricula_fin tgislimf
+          inner join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = tgislimf.cod_ue_id 
+          inner join institucion_educativa ie on ie.id = tgislimf.cod_ue_id 
+          inner join dependencia_tipo dt on dt.id = iea.dependencia_tipo_id
+          inner join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+          inner join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+          inner join area_geografica_tipo agt on ut.area_geografica_tipo_id = agt.id
+          group by dt.dependencia, agt.area_geografica, tgislimf.desc_departamento, tgislimf.carrera, tgislimf.id_departamento
+          order by tgislimf.id_departamento asc, dt.dependencia asc, carrera asc;`)
+
+          sheet.addRow([]);
+          sheet.addRow([]);
+          sheet.addRow(['DEPARTAMENTO','DEPENDENCIA','CARRERA','ÁREA GEOGRÁFICA','CANTIDAD DE ESTUDIANTES']);
+          lista.forEach(item => {
+              sheet.addRow([item.desc_departamento,item.dependencia, item.carrera , item.area_geografica, item.total_area_geografica])
+          });
+
+
+          const imageId2 = book.addImage({
+            base64: this.getImageLogo(),
+            extension: 'png',
+          });
+          
+          sheet.addImage(imageId2, 'A1:A4');
+
+          [
+            'A8',
+            'B8',
+            'C8',
+            'A15',
+            'B15',
+            'C15',
+  
+            'A18',
+            'B18',
+            'C18',
+            'D18',
+            'E18',
+            
+          ].map((key) => {
+            sheet.getCell(key).fill = {
+              type: "pattern",
+              pattern: "solid",
+              fgColor: { argb: "E5E5E5" },
+            };
+            sheet.getCell(key).font = {
+              bold: true,
+              name:'Nimbus Sans',
+            };
+            sheet.getCell(key).border = {
+              top: { style: 'thin', color: {'argb': 'E5E5E5'} },
+              left: { style: 'thin', color: {'argb': 'E5E5E5'} },
+              bottom: { style: 'thin', color: {'argb': 'E5E5E5'} },
+              right: { style: 'thin', color: {'argb': 'E5E5E5'} }
+            };
+          });
+      let File = await new Promise((resolve, reject) => {
+          tmp.file(
+            {
+              discardDescriptor: true,
+              prefix: `REPORTE_MATRICULADOS_DEPENDENCIA_AREA_GEOGRAFICA `,
+              postfix: ".xlsx",
+              mode: parseInt("0600", 8),
+            },
+            async (err, file) => {
+              if (err) throw new BadRequestException(err);
+  
+              //write temporary file
+              book.xlsx
+                .writeFile(file)
+                .then((_) => {
+                  resolve(file);
+                })
+                .catch((err) => {
+                  throw new BadRequestException(err);
+                });
+            }
+          );
+        });
+
+      return File;
+    }
+
+
     async getTotalGeneral(){
         const lista = await this.institucionEducativaRepositorio.findTotalGeneral();
         return lista;
