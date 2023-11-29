@@ -90,7 +90,10 @@ export class CarreraAutorizadaService {
         const carreras = await this.carreraAutorizadaRepositorio.findListParalelosaCarrerasEstudiantes(id);
         return carreras;
       }
+
+      /* aqui reporte por genero */
       async getListaAsignaturaParaleloEstudianteCarrera(id:number){
+       console.log("id", id); 
         const carreras = await this.carreraAutorizadaRepositorio.findListAsignaturaParaleloCarreraEstudiante(id);
         return carreras;
       }

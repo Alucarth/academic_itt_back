@@ -58,9 +58,10 @@ export class CarreraAutorizadaController {
         console.log("total asignaturas, paralelos con la cantidad de estudiantes por carreraId");
         return await this.carreraAutorizadaService.getListaAsignaturasParaleloEstudiantes(id);
     }
+    /* aqui reporte de estudiante por genero */
     @Get('reporte/carrera-paralelo-estudiante/:id')
     async getListaCarreraParalelosEstudiantes(@Param("id", ParseIntPipe) id: number){
-        console.log("carrera asignaturas total parelelos y total estudiantes");
+        console.log("carrera asignaturas total parelelos y total estudiantes ------------>");
         return await this.carreraAutorizadaService.getListaAsignaturaParaleloEstudianteCarrera(id);
     }
     @Get('reporte/carreras-estudiantes/:lugar/:dependencia')

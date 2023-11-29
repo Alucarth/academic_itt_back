@@ -268,31 +268,46 @@ export class CarreraAutorizadaRepository {
           //.addGroupBy('o.planEstudioAsignaturaId')
           .getRawMany();
     }
+
+    /** aqui modificar */
     async findListAsignaturaParaleloCarreraEstudiante(id){
-        return await this.dataSource
-          .getRepository(CarreraAutorizada)
-          .createQueryBuilder("ca")
-          .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
-          .innerJoinAndSelect("ca.carreraTipo", "ct")
-          .innerJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
-          .innerJoinAndSelect("ipec.ofertasCurriculares", "o")
-          .innerJoinAndSelect("o.institutoEstudianteInscripcions", "iei")
-          .innerJoinAndSelect("o.planEstudioAsignatura", "pea")
-          .innerJoinAndSelect("pea.asignaturaTipo", "a")
-          .select([
-            "ct.carrera as carrera",
-            "a.asignatura as asignatura",
-            "COUNT(iei.matriculaEstudianteId) as total_estudiantes",
-            "COUNT(distinct(iei.aulaId)) as total_paralelos"
-           // "COUNT(distinct(a.id)) as total_aulas",
-           // "COUNT(distinct(m.institucionEducativaEstudianteId)) as total_estudiantes",
-          ])
-          .where("s.institucionEducativaId = :id ", { id })
-          .groupBy('ct.carrera')
-          .addGroupBy('iei.aulaId')
-          .addGroupBy('a.asignatura')
-          //.addGroupBy('o.planEstudioAsignaturaId')
-          .getRawMany();
+        // return await this.dataSource
+        //   .getRepository(CarreraAutorizada)
+        //   .createQueryBuilder("ca")
+        //   .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
+        //   .innerJoinAndSelect("ca.carreraTipo", "ct")
+        //   .innerJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
+        //   .innerJoinAndSelect("ipec.ofertasCurriculares", "o")
+        //   .innerJoinAndSelect("o.institutoEstudianteInscripcions", "iei")
+        //   .innerJoinAndSelect("o.planEstudioAsignatura", "pea")
+        //   .innerJoinAndSelect("pea.asignaturaTipo", "a")
+        //   .select([
+        //     "ct.carrera as carrera",
+        //     "a.asignatura as asignatura",
+        //     "COUNT(iei.matriculaEstudianteId) as total_estudiantes",
+        //     "COUNT(distinct(iei.aulaId)) as total_paralelos"
+        //   ])
+        //   .where("s.institucionEducativaId = :id ", { id })
+        //   .groupBy('ct.carrera')
+        //   .addGroupBy('iei.aulaId')
+        //   .addGroupBy('a.asignatura')
+        //   .getRawMany();
+        return await this.dataSource.query(`select carrera, genero, count(genero) as total_genero from (
+          select ie.id, ie.institucion_educativa, ies.sucursal_nombre, persona.carnet_identidad, persona.nombre, persona.paterno, persona.materno, 
+            (select gestion from gestion_tipo where gestion_tipo.id = me.gestion_tipo_id ) as gestion,
+            (select periodo from periodo_tipo where periodo_tipo.id = me.periodo_tipo_id) as periodo,
+            (select numero_resolucion from plan_estudio_resolucion where pec.plan_estudio_resolucion_id = plan_estudio_resolucion.id ) as numero_resolucion,
+            (select carrera from carrera_tipo where carrera_tipo.id =  pec.carrera_tipo_id),
+            (select genero from genero_tipo where genero_tipo.id = persona.genero_tipo_id) as genero	
+          from institucion_educativa ie 
+          inner join institucion_educativa_sucursal ies on ie.id = ies.institucion_educativa_id 
+          inner join institucion_educativa_estudiante iee on iee.institucion_educativa_sucursal_id = ies .id
+          inner join persona on persona.id = iee.persona_id
+          inner join matricula_estudiante me on me.institucion_educativa_estudiante_id  = iee.id
+          inner join instituto_plan_estudio_carrera ipec on me.instituto_plan_estudio_carrera_id = ipec.id 
+          inner join plan_estudio_carrera pec on pec.id = ipec.plan_estudio_carrera_id
+          where ie.id = ${id}
+          ) as subquery group by carrera, genero;`);
     }
     async findListaAsignaturasParaleloEstudiantes(id){
         return await this.dataSource
