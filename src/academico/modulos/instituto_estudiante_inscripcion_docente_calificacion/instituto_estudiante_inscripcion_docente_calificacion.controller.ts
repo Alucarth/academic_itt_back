@@ -60,4 +60,12 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionController {
         return await this.inscripcionDocenteCalificacionService.aulaFixes(aula_id, modalidad_evaluacion_tipo_id);
     }
     
+    @Get('aula-fixes')
+    async auulaFixesAll(@Param('aula_id') aula_id: number,@Param('modalidad_evaluacion_tipo_id') modalidad_evaluacion_tipo_id: number)
+    {
+        console.log('ingresando a aula fixes')
+        return await this.inscripcionDocenteCalificacionService.aulaFixesAll();
+    }
+
+    
 }

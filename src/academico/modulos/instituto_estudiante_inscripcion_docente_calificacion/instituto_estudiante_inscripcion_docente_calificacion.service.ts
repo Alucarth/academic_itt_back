@@ -399,7 +399,8 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
 
 
  async crearInscripcionDocenteCalificacionGlobal (dto: CreateInstitutoInscripcionDocenteCalificacionDto[], user:UserEntity) {
-     
+
+        console.log('dto',dto);
           const notas = await this.crearNotasModalidad(dto, user); //registramos las calificaciones y sus sumas remitido por array
 
             if ( dto[0].modalidad_evaluacion_tipo_id == 9){ //si son notas recuperatorias
@@ -737,19 +738,26 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                 }
 
             }
-            console.log('teorica', teorica.cuantitativa )
-            console.log('practica', practica.cuantitativa )
-            console.log('suma', suma.cuantitativa )
-
-            suma.cuantitativa = parseInt(teorica.cuantitativa ) +  parseInt(practica.cuantitativa);
-
-
-            suma = await this.calificacionesRepository.save(suma)
-            console.log('suma actualizado', suma)
+            try {
             
-            suma = null;
-            teorica = null;
-            practica = null;
+                console.log('teorica', teorica.cuantitativa )
+                console.log('practica', practica.cuantitativa )
+                console.log('suma', suma.cuantitativa )
+
+                suma.cuantitativa = parseInt(teorica.cuantitativa ) +  parseInt(practica.cuantitativa);
+
+
+                suma = await this.calificacionesRepository.save(suma)
+                console.log('suma actualizado', suma)
+                
+                suma = null;
+                teorica = null;
+                practica = null;
+
+            } catch (error) {
+                console.log(error)
+            }
+            
 
     
         }
@@ -759,5 +767,17 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
     return students;
  }
 
+ async aulaFixesAll()
+ {
+    let aulaFixes = await this.calificacionesRepository.query(`select instituto_estudiante_inscripcion.aula_id,ieidc.modalidad_evaluacion_tipo_id, count(ieidc.modalidad_evaluacion_tipo_id) as cantidad  from instituto_estudiante_inscripcion
+    inner join instituto_estudiante_inscripcion_docente_calificacion ieidc on ieidc.instituto_estudiante_inscripcion_id = instituto_estudiante_inscripcion.id
+    where ieidc.cuantitativa > 100
+    group by instituto_estudiante_inscripcion.aula_id,ieidc.modalidad_evaluacion_tipo_id order by cantidad desc;`)
+    
+    await Promise.all( aulaFixes.map(async (aula) =>{
+        await this.aulaFixes(aula.aula_id, aula.modalidad_evaluacion_tipo_id)
+    } ) )
+    return { message: 'todo ok ', aulaFixes: aulaFixes}
+ }
 
 }
