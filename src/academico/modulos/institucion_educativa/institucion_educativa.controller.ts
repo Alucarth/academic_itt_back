@@ -205,6 +205,27 @@ export class InstitucionEducativaController {
         
         res.download(`${result}`);
     }
+
+    @Get('reporte/lista_estudiantes_matriculados')
+    @Header("Content-Type", "text/xlsx")
+    async getMatriculadosDependenciaAreaGeografica(@Res() res: Response)
+    {
+        
+        let result = await this.institucionEducativaService.getMatriculadosDependenciaAreaGeografica()
+        
+        res.download(`${result}`);
+    }
+
+    @Get('reporte/lista_estudiantes_matriculados_notas')
+    @Header("Content-Type", "text/xlsx")
+    async getMatriculadosDependenciaAreaGeograficaNotas(@Res() res: Response)
+    {
+        
+        let result = await this.institucionEducativaService.getMatriculadosDependenciaAreaGeograficaNotas()
+        
+        res.download(`${result}`);
+    }
+
     // getNumeroEstudiantesMatriculasdosAreaGeograficaDependencia
 
     // HASTA AQUI LOS REPORTES XD DE LA NOTA INTERNA 0690/2023

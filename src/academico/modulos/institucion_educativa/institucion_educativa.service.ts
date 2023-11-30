@@ -1538,6 +1538,331 @@ export class InstitucionEducativaService {
       return File;
     }
 
+    async getMatriculadosDependenciaAreaGeografica()
+    {
+      let lista = await this.institucionEducativaRepository.query(`select tgislimf.*, p.nombre, p.paterno, p.materno , dt.dependencia as dependencia, agt.area_geografica, plan_estudio_resolucion.numero_resolucion as resolucion_carrera 
+      from tmp_gen_itt_superior_listado_itts_matricula_fin tgislimf
+      inner join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = tgislimf.cod_ue_id 
+      inner join institucion_educativa ie on ie.id = tgislimf.cod_ue_id 
+      inner join dependencia_tipo dt on dt.id = iea.dependencia_tipo_id
+      inner join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+      inner join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+      inner join area_geografica_tipo agt on ut.area_geografica_tipo_id = agt.id
+      inner join persona p on p.carnet_identidad = tgislimf.carnet_identidad
+      inner join institucion_educativa_estudiante iee on iee.persona_id = p.id
+      inner join matricula_estudiante me on me.institucion_educativa_estudiante_id = iee.id
+      inner join instituto_plan_estudio_carrera on instituto_plan_estudio_carrera.id = me.instituto_plan_estudio_carrera_id
+      inner join plan_estudio_carrera on plan_estudio_carrera.id = instituto_plan_estudio_carrera.plan_estudio_carrera_id 
+      inner join plan_estudio_resolucion on plan_estudio_resolucion.id  = plan_estudio_carrera.plan_estudio_resolucion_id; `);
+
+
+      let book = new Workbook();
+      const sheet = book.addWorksheet('hoja1', {views: [{showGridLines: false}]});
+      
+      sheet.addRow([]);
+      sheet.addRow([]);
+      sheet.addRow([]);
+      sheet.addRow([]);
+
+      sheet.addRow([`Lista de estudiantes matriculados en Institutos por área geográfica segun dependencia`]);
+      sheet.addRow(["GESTION 2023"]);
+
+      sheet.getRow(5).font = { name:'Nimbus Sans', size: 16, bold: true ,color: {'argb': '485ab7'} };
+      sheet.getRow(6).font = { name:'Nimbus Sans', size: 10, bold: true ,color: {'argb': '7280c8'}};
+
+      sheet.addRow([]);
+       //add the header
+      sheet.addRow(['INSTITUTO','DEPARTAMENTO', 'DEPENDENCIA', 'ÁREA GEOGRÁFICA','SECCION','EDUCACION TIPO','CARRERA','AREA','CARRERA RESOLUCION','CI','COMPLEMENTO', 'NOMBRE', 'PATERNO', 'MATERNO' ]);
+      lista.forEach(item => {
+          sheet.addRow([item.desc_ue, item.desc_departamento, item.dependencia, item.area_geografica, item.desc_seccion, item.educacion_tipo, item.carrera, item.area,  item.resolucion_carrera, item.carnet_identidad ,item.complemento, item.nombre, item.paterno, item.materno])
+      });
+
+      sheet.getRow(5).height = 30.5;
+        [
+          'A',
+          'B',
+          'C',
+          'D',
+          'E',
+          'F',
+          'G',
+          'H',
+          'I',
+          'J',
+          'K',
+          'L',
+          'M',
+          'N',
+        ].map((key) => {
+          let col = sheet.getColumn(key)
+            if(key==='A')
+            { 
+              col.width = 30
+            }else{
+              col.width = 30
+            }
+            if(key !== 'A')
+            {
+              col.alignment = { vertical: 'middle', horizontal: 'right' };
+            }
+
+        });
+
+      
+
+          //para la imagen
+
+          lista = await this.institucionEducativaRepository.query(`select tgislimf.id_departamento , tgislimf.desc_departamento, dt.dependencia as dependencia, tgislimf.carrera,  agt.area_geografica, count(agt.area_geografica) as total_area_geografica 
+          from tmp_gen_itt_superior_listado_itts_matricula_fin tgislimf
+          inner join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = tgislimf.cod_ue_id 
+          inner join institucion_educativa ie on ie.id = tgislimf.cod_ue_id 
+          inner join dependencia_tipo dt on dt.id = iea.dependencia_tipo_id
+          inner join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+          inner join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+          inner join area_geografica_tipo agt on ut.area_geografica_tipo_id = agt.id
+          group by dt.dependencia, agt.area_geografica, tgislimf.desc_departamento, tgislimf.carrera, tgislimf.id_departamento
+          order by tgislimf.id_departamento asc, dt.dependencia asc, carrera asc;`)
+
+          sheet.addRow([]);
+          sheet.addRow([]);
+          sheet.addRow(['DEPARTAMENTO','DEPENDENCIA','CARRERA','ÁREA GEOGRÁFICA','CANTIDAD DE ESTUDIANTES']);
+          lista.forEach(item => {
+              sheet.addRow([item.desc_departamento,item.dependencia, item.carrera , item.area_geografica, item.total_area_geografica])
+          });
+
+
+          const imageId2 = book.addImage({
+            base64: this.getImageLogo(),
+            extension: 'png',
+          });
+
+          
+          sheet.addImage(imageId2, 'A1:A6');
+
+
+          [
+            'A8',
+            'B8',
+            'C8',
+            'D8',
+            'E8',
+            'F8',
+            'G8',
+            'H8',
+            'I8',
+            'J8',
+            'K8',
+            'L8',
+            'M8',
+            'N8',
+            
+          ].map((key) => {
+            sheet.getCell(key).fill = {
+              type: "pattern",
+              pattern: "solid",
+              fgColor: { argb: "E5E5E5" },
+            };
+            sheet.getCell(key).font = {
+              bold: true,
+              name:'Nimbus Sans',
+            };
+            sheet.getCell(key).border = {
+              top: { style: 'thin', color: {'argb': 'E5E5E5'} },
+              left: { style: 'thin', color: {'argb': 'E5E5E5'} },
+              bottom: { style: 'thin', color: {'argb': 'E5E5E5'} },
+              right: { style: 'thin', color: {'argb': 'E5E5E5'} }
+            };
+          });
+        
+      let File = await new Promise((resolve, reject) => {
+          tmp.file(
+            {
+              discardDescriptor: true,
+              prefix: `REPORTE_MATRICULADOS_DEPENDENCIA_AREA_GEOGRAFICA `,
+              postfix: ".xlsx",
+              mode: parseInt("0600", 8),
+            },
+            async (err, file) => {
+              if (err) throw new BadRequestException(err);
+  
+              //write temporary file
+              book.xlsx
+                .writeFile(file)
+                .then((_) => {
+                  resolve(file);
+                })
+                .catch((err) => {
+                  throw new BadRequestException(err);
+                });
+            }
+          );
+        });
+
+      return File;
+    }
+
+    async getMatriculadosDependenciaAreaGeograficaNotas()
+    {
+      let lista = await this.institucionEducativaRepository.query(`select tgislimf.*, p.nombre, p.paterno, p.materno , dt.dependencia as dependencia, agt.area_geografica, plan_estudio_resolucion.numero_resolucion as resolucion_carrera 
+      from tmp_gen_itt_superior_listado_itts_matricula_notas_fin tgislimf
+      inner join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = tgislimf.cod_ue_id 
+      inner join institucion_educativa ie on ie.id = tgislimf.cod_ue_id 
+      inner join dependencia_tipo dt on dt.id = iea.dependencia_tipo_id
+      inner join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+      inner join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+      inner join area_geografica_tipo agt on ut.area_geografica_tipo_id = agt.id
+      inner join persona p on p.carnet_identidad = tgislimf.carnet_identidad
+      inner join institucion_educativa_estudiante iee on iee.persona_id = p.id
+      inner join matricula_estudiante me on me.institucion_educativa_estudiante_id = iee.id
+      inner join instituto_plan_estudio_carrera on instituto_plan_estudio_carrera.id = me.instituto_plan_estudio_carrera_id
+      inner join plan_estudio_carrera on plan_estudio_carrera.id = instituto_plan_estudio_carrera.plan_estudio_carrera_id 
+      inner join plan_estudio_resolucion on plan_estudio_resolucion.id  = plan_estudio_carrera.plan_estudio_resolucion_id;`);
+
+
+      let book = new Workbook();
+      const sheet = book.addWorksheet('hoja1', {views: [{showGridLines: false}]});
+      
+      sheet.addRow([]);
+      sheet.addRow([]);
+      sheet.addRow([]);
+      sheet.addRow([]);
+
+      sheet.addRow([`Lista de estudiantes matriculados en Institutos por área geográfica segun dependencia que tienen Notas`]);
+      sheet.addRow(["GESTION 2023"]);
+
+      sheet.getRow(5).font = { name:'Nimbus Sans', size: 16, bold: true ,color: {'argb': '485ab7'} };
+      sheet.getRow(6).font = { name:'Nimbus Sans', size: 10, bold: true ,color: {'argb': '7280c8'}};
+
+      sheet.addRow([]);
+       //add the header
+      sheet.addRow(['INSTITUTO','DEPARTAMENTO', 'DEPENDENCIA', 'ÁREA GEOGRÁFICA','SECCION','EDUCACION TIPO','CARRERA','AREA','CARRERA RESOLUCION','CI','COMPLEMENTO', 'NOMBRE', 'PATERNO', 'MATERNO' ]);
+      lista.forEach(item => {
+          sheet.addRow([item.desc_ue, item.desc_departamento, item.dependencia, item.area_geografica, item.desc_seccion, item.educacion_tipo, item.carrera, item.area,  item.resolucion_carrera, item.carnet_identidad ,item.complemento, item.nombre, item.paterno, item.materno])
+      });
+
+      sheet.getRow(5).height = 30.5;
+        [
+          'A',
+          'B',
+          'C',
+          'D',
+          'E',
+          'F',
+          'G',
+          'H',
+          'I',
+          'J',
+          'K',
+          'L',
+          'M',
+          'N',
+        ].map((key) => {
+          let col = sheet.getColumn(key)
+            if(key==='A')
+            { 
+              col.width = 30
+            }else{
+              col.width = 30
+            }
+            if(key !== 'A')
+            {
+              col.alignment = { vertical: 'middle', horizontal: 'right' };
+            }
+
+        });
+
+      
+
+          //para la imagen
+
+          lista = await this.institucionEducativaRepository.query(`select tgislimf.id_departamento , tgislimf.desc_departamento, dt.dependencia as dependencia, tgislimf.carrera,  agt.area_geografica, count(agt.area_geografica) as total_area_geografica 
+          from tmp_gen_itt_superior_listado_itts_matricula_fin tgislimf
+          inner join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = tgislimf.cod_ue_id 
+          inner join institucion_educativa ie on ie.id = tgislimf.cod_ue_id 
+          inner join dependencia_tipo dt on dt.id = iea.dependencia_tipo_id
+          inner join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+          inner join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+          inner join area_geografica_tipo agt on ut.area_geografica_tipo_id = agt.id
+          group by dt.dependencia, agt.area_geografica, tgislimf.desc_departamento, tgislimf.carrera, tgislimf.id_departamento
+          order by tgislimf.id_departamento asc, dt.dependencia asc, carrera asc;`)
+
+          sheet.addRow([]);
+          sheet.addRow([]);
+          sheet.addRow(['DEPARTAMENTO','DEPENDENCIA','CARRERA','ÁREA GEOGRÁFICA','CANTIDAD DE ESTUDIANTES']);
+          lista.forEach(item => {
+              sheet.addRow([item.desc_departamento,item.dependencia, item.carrera , item.area_geografica, item.total_area_geografica])
+          });
+
+
+          const imageId2 = book.addImage({
+            base64: this.getImageLogo(),
+            extension: 'png',
+          });
+
+          
+          sheet.addImage(imageId2, 'A1:A6');
+
+
+          [
+            'A8',
+            'B8',
+            'C8',
+            'D8',
+            'E8',
+            'F8',
+            'G8',
+            'H8',
+            'I8',
+            'J8',
+            'K8',
+            'L8',
+            'M8',
+            'N8',
+            
+          ].map((key) => {
+            sheet.getCell(key).fill = {
+              type: "pattern",
+              pattern: "solid",
+              fgColor: { argb: "E5E5E5" },
+            };
+            sheet.getCell(key).font = {
+              bold: true,
+              name:'Nimbus Sans',
+            };
+            sheet.getCell(key).border = {
+              top: { style: 'thin', color: {'argb': 'E5E5E5'} },
+              left: { style: 'thin', color: {'argb': 'E5E5E5'} },
+              bottom: { style: 'thin', color: {'argb': 'E5E5E5'} },
+              right: { style: 'thin', color: {'argb': 'E5E5E5'} }
+            };
+          });
+        
+      let File = await new Promise((resolve, reject) => {
+          tmp.file(
+            {
+              discardDescriptor: true,
+              prefix: `REPORTE_MATRICULADOS_DEPENDENCIA_AREA_GEOGRAFICA_NOTAS `,
+              postfix: ".xlsx",
+              mode: parseInt("0600", 8),
+            },
+            async (err, file) => {
+              if (err) throw new BadRequestException(err);
+  
+              //write temporary file
+              book.xlsx
+                .writeFile(file)
+                .then((_) => {
+                  resolve(file);
+                })
+                .catch((err) => {
+                  throw new BadRequestException(err);
+                });
+            }
+          );
+        });
+
+      return File;
+    }
 
     async getTotalGeneral(){
         const lista = await this.institucionEducativaRepositorio.findTotalGeneral();
