@@ -196,7 +196,17 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionRepository {
       nota_tipo,
       valoracion,
       transaction) {
-
+        console.log('Insertando ',{
+          institutoEstudianteInscripcionId : item.instituto_estudiante_inscripcion_id,
+          aulaDocenteId : docente,
+          periodoTipoId : item.periodo_tipo_id,
+          cuantitativa : item.cuantitativa,
+          cualitativa : '',
+          valoracionTipoId : valoracion, //nota normal
+          notaTipoId : nota_tipo,
+          modalidadEvaluacionTipoId :modalidad,
+          usuarioId : idUsuario,
+        })
       return   await transaction
       .createQueryBuilder()
       .insert()

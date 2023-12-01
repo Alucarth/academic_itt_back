@@ -183,6 +183,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             
             for(const item of promediosSemestrales)
             {
+                item.cuantitativa = parseInt(item.cuantitativa)
                 const datoPromedio = await this.inscDocenteCalificacionRepositorio.findPromedioByDato(
                     item.nota_tipo_id, 
                     item.periodo_tipo_id, 
@@ -231,7 +232,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
 
         for(const item of recuperatorios)
         {
-           //console.log(item); actualizamos la nota promedio poniendole el minimo de 61
+           console.log('actualizar registros',item); //actualizamos la nota promedio poniendole el minimo de 61
            const dato = await this.inscDocenteCalificacionRepositorio.findPromedioByDato(
             7, 
             item.periodo_tipo_id, 
@@ -239,7 +240,8 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             7);
           
            const op = async (transaction: EntityManager) => {
-           //console.log(datoCalificacion);
+           console.log('dato ', dato);
+           
            let item = {
             'cuantitativa' : 61
            }
@@ -373,8 +375,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                   //cuando es recuperacion
                   valoracion = 5;
                 }
-                const nuevos =
-                  await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
+                const nuevos = await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
                     user.id,
                     item,
                     item.modalidad_evaluacion_tipo_id,
@@ -409,6 +410,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
           const notas = await this.crearNotasModalidad(dto, user); //registramos las calificaciones y sus sumas remitido por array
 
             if ( dto[0].modalidad_evaluacion_tipo_id == 9){ //si son notas recuperatorias
+                console.log('ingresando a modo recuperatorio', dto[0])
                 await this.createUpdateRecuperatorioFinalByAulaId(dto[0].aula_id, dto[0].periodo_tipo_id, dto[0].modalidad_evaluacion_tipo_id, dto[0].aula_docente_id );
             }else{ // si son notas normales
                 await this.createUpdatePromedioCalificacionByAulaId(dto[0].aula_id, dto[0].periodo_tipo_id, dto[0].aula_docente_id, user );
