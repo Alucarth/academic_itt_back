@@ -598,6 +598,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                 // console.log(calificacion)
                 if(calificacion.modalidadEvaluacionTipo.id == id)
                 {
+                    // console.log("",calificacion.cuantitativa)
                     notas.push({
                         cuantitativa: calificacion.cuantitativa,
                         modalidad_evaluacion: calificacion.modalidadEvaluacionTipo.modalidadEvaluacion,
@@ -609,7 +610,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             while(count < 3)
             {
                 notas.push({
-                    cuantitativa: '-' ,
+                    cuantitativa: null ,
                     modalidad_evaluacion: 'sin modalidad',
                     nota_tipo: 'sin nota'
                 })
