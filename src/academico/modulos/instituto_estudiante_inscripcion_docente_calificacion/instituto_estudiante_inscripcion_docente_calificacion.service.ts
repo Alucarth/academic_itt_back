@@ -352,39 +352,44 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
  async crearNotasModalidad (dto: CreateInstitutoInscripcionDocenteCalificacionDto[], user:UserEntity) {
         console.log("calificaciones");
         const resultado = [];
-         for (const item of dto) {
-          const datoCalificacion = await this.inscDocenteCalificacionRepositorio.findCalificacionesByDato(item);
-     
-          const op = async (transaction: EntityManager) => {
-          //console.log(datoCalificacion);
-              if(datoCalificacion){
-                 const actualizados =  await this.inscDocenteCalificacionRepositorio.actualizarDatosCalificaciones(
-                      datoCalificacion.id,
-                      item,
-                      transaction
-                  )
-                  resultado.push(actualizados);
+
+        await Promise.all( dto.map(async (item) => {
+            const datoCalificacion =  await this.inscDocenteCalificacionRepositorio.findCalificacionesByDato(item);
+
+            const op = async (transaction: EntityManager) => {
+              //console.log(datoCalificacion);
+              if (datoCalificacion) {
+                const actualizados =
+                  await this.inscDocenteCalificacionRepositorio.actualizarDatosCalificaciones(
+                    datoCalificacion.id,
+                    item,
+                    transaction
+                  );
+                resultado.push(actualizados);
               }
-              if(!datoCalificacion){
+              if (!datoCalificacion) {
                 let valoracion = 1;
-                if(item.modalidad_evaluacion_tipo_id == 9){ //cuando es recuperacion
-                    valoracion = 5;
+                if (item.modalidad_evaluacion_tipo_id == 9) {
+                  //cuando es recuperacion
+                  valoracion = 5;
                 }
-                const nuevos =  await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
-                          user.id,
-                          item,
-                          item.modalidad_evaluacion_tipo_id,
-                          item.aula_docente_id,
-                          item.nota_tipo_id,
-                          valoracion,
-                          transaction
-                      );
-                  resultado.push(nuevos);
-               }
-            
-          }
+                const nuevos =
+                  await this.inscDocenteCalificacionRepositorio.crearOneInscripcionDocenteCalificacion(
+                    user.id,
+                    item,
+                    item.modalidad_evaluacion_tipo_id,
+                    item.aula_docente_id,
+                    item.nota_tipo_id,
+                    valoracion,
+                    transaction
+                  );
+                resultado.push(nuevos);
+              }
+            };
             await this.inscDocenteCalificacionRepositorio.runTransaction(op);
-       }
+          })
+        );
+       
        if(resultado.length>0){
         //insertamos la suma de las notas parciales normales
             await this.createUpdateSumaCalificacionByAulaId(
@@ -397,7 +402,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
        return resultado;
  }
 
-
+//REGISTRO DE NOTAS AQUI
  async crearInscripcionDocenteCalificacionGlobal (dto: CreateInstitutoInscripcionDocenteCalificacionDto[], user:UserEntity) {
 
         console.log('dto',dto);
