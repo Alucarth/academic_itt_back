@@ -183,7 +183,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             
             for(const item of promediosSemestrales)
             {
-                
+
                 const datoPromedio = await this.inscDocenteCalificacionRepositorio.findPromedioByDato(
                     item.nota_tipo_id, 
                     item.periodo_tipo_id, 
@@ -238,23 +238,32 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             item.periodo_tipo_id, 
             item.instituto_estudiante_inscripcion_id,
             7);
-          
-           const op = async (transaction: EntityManager) => {
-           console.log('dato ', dato);
-           
-           let item = {
-            'cuantitativa' : 61
-           }
-               if(dato){
-                    const actualizados =  await this.inscDocenteCalificacionRepositorio.actualizarDatosCalificaciones(
-                       dato.id,
-                       item,
-                       transaction
-                   )
-                   resultado.push(actualizados);
-               }
-           }
-           await this.inscDocenteCalificacionRepositorio.runTransaction(op);
+            console.log(dato)
+           console.log('cuantitativa ',item.cuantitativa);
+           let total = parseFloat(item.total)
+         
+            if(total>=61 && total <=100) /* condicional para actualizar registro de recuperatorio*/
+            {
+                /*iniando transaccion */
+                const op = async (transaction: EntityManager) => {
+                console.log('dato ', dato);
+             //    console.log(item)
+                
+                let item = {
+                 'cuantitativa' : 61
+                }
+                    if(dato){
+                         const actualizados =  await this.inscDocenteCalificacionRepositorio.actualizarDatosCalificaciones(
+                            dato.id,
+                            item,
+                            transaction
+                        )
+                        resultado.push(actualizados);
+                    }
+                }
+                await this.inscDocenteCalificacionRepositorio.runTransaction(op);
+                /** finalizando transaccion */
+            }
         }
         return resultado;
     }   
