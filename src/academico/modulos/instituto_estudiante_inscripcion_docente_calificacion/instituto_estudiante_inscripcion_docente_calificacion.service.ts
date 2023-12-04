@@ -183,7 +183,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             
             for(const item of promediosSemestrales)
             {
-                item.cuantitativa = parseInt(item.cuantitativa)
+                
                 const datoPromedio = await this.inscDocenteCalificacionRepositorio.findPromedioByDato(
                     item.nota_tipo_id, 
                     item.periodo_tipo_id, 
