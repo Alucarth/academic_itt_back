@@ -504,7 +504,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
         where: {
             carreraAutorizadaId:carrera_autorizada_id,
             eventoTipoId: 2,//calificaciones,
-            modalidadEvaluacionTipo: In([1,2,3,4,5,6,9.7])
+            modalidadEvaluacionTipo: In([1,2,3,4,5,6,7,9])
         },
         order: {
             modalidadEvaluacionTipoId: 'ASC'
@@ -612,7 +612,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                 }
 
                 // console.log(calificacion)
-                if(calificacion.modalidadEvaluacionTipo.id == id)
+                if(calificacion.modalidadEvaluacionTipo.id == id && calificacion.modalidadEvaluacionTipo.id !== 9 && calificacion.modalidadEvaluacionTipo.id !==7 )
                 {
                     // console.log("",calificacion.cuantitativa)
                     notas.push({
@@ -621,8 +621,31 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                         nota_tipo: calificacion.notaTipo.nota
                     })
                     count++;
+                }else{
+
+                    if(calificacion.modalidadEvaluacionTipo.id == id && (calificacion.modalidadEvaluacionTipo.id === 9 || calificacion.modalidadEvaluacionTipo.id ===7) )
+                    {
+                        if(calificacion.notaTipo.id === 7)
+                        {
+                            notas.push({
+                                cuantitativa: calificacion.cuantitativa,
+                                modalidad_evaluacion: calificacion.modalidadEvaluacionTipo.modalidadEvaluacion,
+                                nota_tipo: calificacion.notaTipo.nota
+                            })
+                            count = 3
+                        }   
+                    }
                 }
             }
+
+            if( id=== 9 || id === 7)
+            {
+                if(count=== 0)
+                {
+                    count = 2
+                }
+            } 
+
             while(count < 3)
             {
                 notas.push({
