@@ -504,7 +504,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
         where: {
             carreraAutorizadaId:carrera_autorizada_id,
             eventoTipoId: 2,//calificaciones,
-            modalidadEvaluacionTipo: In([3,4,5,6])
+            modalidadEvaluacionTipo: In([1,2,3,4,5,6,9.7])
         },
         order: {
             modalidadEvaluacionTipoId: 'ASC'
