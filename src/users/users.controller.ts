@@ -49,7 +49,7 @@ export class UsersController {
     return this.usersService.getAll()
   }
 
-  @Get(':ci')
+  @Get('/getByCi/:ci')
   async getByUsername(@Param("ci") ci: string)
   {
     return await this.usersService.getByUsername(ci)
