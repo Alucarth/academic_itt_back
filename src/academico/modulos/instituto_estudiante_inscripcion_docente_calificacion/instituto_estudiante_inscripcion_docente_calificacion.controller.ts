@@ -57,12 +57,12 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionController {
     async registroYearNotaByAulaId(@Param('aula_id') aula_id: number,@Param('carrera_autorizada_id') carrera_autorizada_id: number, @Param('periodo_tipo_id') periodo_tipo_id: number)
     {
         console.log('ingresando a record signature')
-        if(periodo_tipo_id>0)
-        {
-            return await this.inscripcionDocenteCalificacionService.registroYearNotaByAulaId(aula_id, carrera_autorizada_id, periodo_tipo_id);
-        }else{
+        // if(periodo_tipo_id>0)
+        // {
+        //     return await this.inscripcionDocenteCalificacionService.registroYearNotaByAulaId(aula_id, carrera_autorizada_id, periodo_tipo_id);
+        // }else{
             return await this.inscripcionDocenteCalificacionService.registroNotaByAulaId(aula_id, carrera_autorizada_id);
-        }
+        // }
     }
 
     @Get('aula-fixes/:aula_id/:modalidad_evaluacion_tipo_id')

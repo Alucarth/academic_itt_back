@@ -441,245 +441,246 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
         );
  }
 
- async registroYearNotaByAulaId(aula_id, carrera_autorizada_id, periodo_tipo_id)
- {
-    const students = await this.institutoEstudianteInscripcionRepository.find(
-        {
-            relations: {
-                matriculaEstudiante: {
-                    institucionEducativaEstudiante:{
-                        persona:true
-                    },
+//  async registroYearNotaByAulaId(aula_id, carrera_autorizada_id, periodo_tipo_id)
+//  {
+//     const students = await this.institutoEstudianteInscripcionRepository.find(
+//         {
+//             relations: {
+//                 matriculaEstudiante: {
+//                     institucionEducativaEstudiante:{
+//                         persona:true
+//                     },
                     
-                },
-                estadoMatriculaTipo: true,
-            },
-            select: {
-                id: true,
-                matriculaEstudiante: {
-                    id: true,
-                    institucionEducativaEstudiante: {
-                        id: true,
-                        persona: {
-                            carnetIdentidad: true,
-                            complemento: true,
-                            nombre: true,
-                            paterno: true,
-                            materno:true
-                        }
-                    },
+//                 },
+//                 estadoMatriculaTipo: true,
+//             },
+//             select: {
+//                 id: true,
+//                 matriculaEstudiante: {
+//                     id: true,
+//                     institucionEducativaEstudiante: {
+//                         id: true,
+//                         persona: {
+//                             carnetIdentidad: true,
+//                             complemento: true,
+//                             nombre: true,
+//                             paterno: true,
+//                             materno:true
+//                         }
+//                     },
                     
-                },
-                estadoMatriculaTipo:{
-                    id: true,
-                    estadoMatricula: true,
-                }
-            },
-            where: { aulaId: aula_id}, 
-            // take : 10,           
-        }
-    )
+//                 },
+//                 estadoMatriculaTipo:{
+//                     id: true,
+//                     estadoMatricula: true,
+//                 }
+//             },
+//             where: { aulaId: aula_id}, 
+//             // take : 10,           
+//         }
+//     )
 
-    const operativos = await this.operativoCarreraRepository.find({
-        relations: {
-            periodoTipo: true,
-            eventoTipo: true,
-            modalidadEvaluacionTipo: true,
-        },
-        select:{
-            id: true,
-            periodoTipo: {
-                id: true,
-                periodo: true,
-            },
-            eventoTipo: {
-                id: true,
-                evento: true,
-            },
-            modalidadEvaluacionTipo: {
-                id:true,
-                modalidadEvaluacion: true,
-            }
-        },  
-        where: {
-            carreraAutorizadaId:carrera_autorizada_id,
-            eventoTipoId: 2,//calificaciones,
-            modalidadEvaluacionTipo: In([1,2,3,4,5,6,7,9]),
-            periodoTipoId: periodo_tipo_id
-        },
-        order: {
-            modalidadEvaluacionTipoId: 'ASC'
-        }
+//     const operativos = await this.operativoCarreraRepository.find({
+//         relations: {
+//             periodoTipo: true,
+//             eventoTipo: true,
+//             modalidadEvaluacionTipo: true,
+//         },
+//         select:{
+//             id: true,
+//             periodoTipo: {
+//                 id: true,
+//                 periodo: true,
+//             },
+//             eventoTipo: {
+//                 id: true,
+//                 evento: true,
+//             },
+//             modalidadEvaluacionTipo: {
+//                 id:true,
+//                 modalidadEvaluacion: true,
+//             }
+//         },  
+//         where: {
+//             carreraAutorizadaId:carrera_autorizada_id,
+//             eventoTipoId: 2,//calificaciones,
+//             modalidadEvaluacionTipo: In([1,2,3,4,5,6,7,9]),
+//             periodoTipoId: periodo_tipo_id
+//         },
+//         order: {
+//             modalidadEvaluacionTipoId: 'ASC'
+//         }
 
-    })
+//     })
 
-    const carrera_autorizada = await this.carreraAutorizadaRepository.findOne({
-        relations: {
-            institucionEducativaSucursal: {
-                institucionEducativa: true,
-            },
-            // areaTipo: true, //dato no correcto
-            carreraTipo: true,
-        },
-        where: { id: carrera_autorizada_id }
-    })
+//     const carrera_autorizada = await this.carreraAutorizadaRepository.findOne({
+//         relations: {
+//             institucionEducativaSucursal: {
+//                 institucionEducativa: true,
+//             },
+//             // areaTipo: true, //dato no correcto
+//             carreraTipo: true,
+//         },
+//         where: { id: carrera_autorizada_id }
+//     })
 
-    const aula = await this.aulaRepository.findOne({
-        relations:{
-            paraleloTipo: true,
-            ofertaCurricular:{
-                planEstudioAsignatura:{
-                    asignaturaTipo: true,
-                    planEstudioCarrera:{
-                        planEstudioResolucion: true,
-                    },
-                    regimenGradoTipo: true,
-                },
+//     const aula = await this.aulaRepository.findOne({
+//         relations:{
+//             paraleloTipo: true,
+//             ofertaCurricular:{
+//                 periodoTipo:true,
+//                 planEstudioAsignatura:{
+//                     asignaturaTipo: true,
+//                     planEstudioCarrera:{
+//                         planEstudioResolucion: true,
+//                     },
+//                     regimenGradoTipo: true,
+//                 },
                 
-            },
-        },
-        where: {id:aula_id}
-    })
+//             },
+//         },
+//         where: {id:aula_id}
+//     })
 
-    console.log('aula', aula)
-    console.log(carrera_autorizada)
+//     console.log('aula', aula)
+//     console.log(carrera_autorizada)
 
-    console.log(operativos)
-    let ids = []
-    for( const operativo  of operativos)
-    {
-        ids.push(operativo.modalidadEvaluacionTipo.id)
-    }
-    console.log('IDS ====>',ids)
-    const registro_notas = []
-    let persona = null;
+//     console.log(operativos)
+//     let ids = []
+//     for( const operativo  of operativos)
+//     {
+//         ids.push(operativo.modalidadEvaluacionTipo.id)
+//     }
+//     console.log('IDS ====>',ids)
+//     const registro_notas = []
+//     let persona = null;
 
-    for(const student of students)
-    {
+//     for(const student of students)
+//     {
 
-        let calificaciones = await this.calificacionesRepository.find({
-            relations: {
-                notaTipo:true,
-                modalidadEvaluacionTipo: true,
-                aulaDocente:{
-                    maestroInscripcion:{
-                        persona:true
-                    }
-                }
-            },
-            select:{
-                id:true,
-                cuantitativa: true,
-                notaTipo:{
-                    id: true,
-                    nota: true,
-                },
-                modalidadEvaluacionTipo: {
-                    id: true,
-                    modalidadEvaluacion: true
-                },
-                aulaDocente: {
-                    id:true,
-                    maestroInscripcion:{
-                        personaId: true,
-                    }
-                }
-            },
-            where:{ institutoEstudianteInscripcionId: student.id, periodoTipoId: periodo_tipo_id },
-            order:{
-                modalidadEvaluacionTipoId : 'ASC',
-                notaTipoId: 'ASC'
-            }
-        })
-        let notas = []
-        let count = 0
-        for( const id of ids)
-        {
-            count = 0
-            for(const calificacion of calificaciones)
-            {
-                if(!persona)
-                {
-                    persona = await this.personaRepository.findOne({
-                        select:{
-                          carnetIdentidad:true,
-                          complemento: true,
-                          nombre: true,
-                          paterno: true,
-                          materno: true,
-                        },
-                        where:{ id: calificacion.aulaDocente.maestroInscripcion.personaId}
-                    })
-                }
+//         let calificaciones = await this.calificacionesRepository.find({
+//             relations: {
+//                 notaTipo:true,
+//                 modalidadEvaluacionTipo: true,
+//                 aulaDocente:{
+//                     maestroInscripcion:{
+//                         persona:true
+//                     }
+//                 }
+//             },
+//             select:{
+//                 id:true,
+//                 cuantitativa: true,
+//                 notaTipo:{
+//                     id: true,
+//                     nota: true,
+//                 },
+//                 modalidadEvaluacionTipo: {
+//                     id: true,
+//                     modalidadEvaluacion: true
+//                 },
+//                 aulaDocente: {
+//                     id:true,
+//                     maestroInscripcion:{
+//                         personaId: true,
+//                     }
+//                 }
+//             },
+//             where:{ institutoEstudianteInscripcionId: student.id, periodoTipoId: periodo_tipo_id },
+//             order:{
+//                 modalidadEvaluacionTipoId : 'ASC',
+//                 notaTipoId: 'ASC'
+//             }
+//         })
+//         let notas = []
+//         let count = 0
+//         for( const id of ids)
+//         {
+//             count = 0
+//             for(const calificacion of calificaciones)
+//             {
+//                 if(!persona)
+//                 {
+//                     persona = await this.personaRepository.findOne({
+//                         select:{
+//                           carnetIdentidad:true,
+//                           complemento: true,
+//                           nombre: true,
+//                           paterno: true,
+//                           materno: true,
+//                         },
+//                         where:{ id: calificacion.aulaDocente.maestroInscripcion.personaId}
+//                     })
+//                 }
 
-                // console.log(calificacion)
-                if(calificacion.modalidadEvaluacionTipo.id == id && calificacion.modalidadEvaluacionTipo.id !== 9 && calificacion.modalidadEvaluacionTipo.id !==7 )
-                {
-                    // console.log("",calificacion.cuantitativa)
-                    notas.push({
-                        cuantitativa: calificacion.cuantitativa,
-                        modalidad_evaluacion: calificacion.modalidadEvaluacionTipo.modalidadEvaluacion,
-                        nota_tipo: calificacion.notaTipo.nota
-                    })
-                    count++;
-                }else{
+//                 // console.log(calificacion)
+//                 if(calificacion.modalidadEvaluacionTipo.id == id && calificacion.modalidadEvaluacionTipo.id !== 9 && calificacion.modalidadEvaluacionTipo.id !==7 )
+//                 {
+//                     // console.log("",calificacion.cuantitativa)
+//                     notas.push({
+//                         cuantitativa: calificacion.cuantitativa,
+//                         modalidad_evaluacion: calificacion.modalidadEvaluacionTipo.modalidadEvaluacion,
+//                         nota_tipo: calificacion.notaTipo.nota
+//                     })
+//                     count++;
+//                 }else{
 
-                    if(calificacion.modalidadEvaluacionTipo.id == id && (calificacion.modalidadEvaluacionTipo.id === 9 || calificacion.modalidadEvaluacionTipo.id ===7) )
-                    {
-                        if(calificacion.notaTipo.id === 7)
-                        {
-                            notas.push({
-                                cuantitativa: calificacion.cuantitativa,
-                                modalidad_evaluacion: calificacion.modalidadEvaluacionTipo.modalidadEvaluacion,
-                                nota_tipo: calificacion.notaTipo.nota
-                            })
-                            count = 3
-                        }   
-                    }
-                }
-            }
+//                     if(calificacion.modalidadEvaluacionTipo.id == id && (calificacion.modalidadEvaluacionTipo.id === 9 || calificacion.modalidadEvaluacionTipo.id ===7) )
+//                     {
+//                         if(calificacion.notaTipo.id === 7)
+//                         {
+//                             notas.push({
+//                                 cuantitativa: calificacion.cuantitativa,
+//                                 modalidad_evaluacion: calificacion.modalidadEvaluacionTipo.modalidadEvaluacion,
+//                                 nota_tipo: calificacion.notaTipo.nota
+//                             })
+//                             count = 3
+//                         }   
+//                     }
+//                 }
+//             }
 
-            if( id=== 9 || id === 7)
-            {
-                if(count=== 0)
-                {
-                    count = 2
-                }
-            } 
+//             if( id=== 9 || id === 7)
+//             {
+//                 if(count=== 0)
+//                 {
+//                     count = 2
+//                 }
+//             } 
 
-            while(count < 3)
-            {
-                notas.push({
-                    cuantitativa: null ,
-                    modalidad_evaluacion: 'sin modalidad',
-                    nota_tipo: 'sin nota'
-                })
-                count++
-            }
-        }
-        // let calificaciones = await this.calificacionesRepository.createQueryBuilder
+//             while(count < 3)
+//             {
+//                 notas.push({
+//                     cuantitativa: null ,
+//                     modalidad_evaluacion: 'sin modalidad',
+//                     nota_tipo: 'sin nota'
+//                 })
+//                 count++
+//             }
+//         }
+//         // let calificaciones = await this.calificacionesRepository.createQueryBuilder
         
-        // console.log('calificaciones', calificaciones)
+//         // console.log('calificaciones', calificaciones)
 
-        let registro = {
-            ci: student.matriculaEstudiante.institucionEducativaEstudiante.persona.carnetIdentidad,
-            nombre: `${student.matriculaEstudiante.institucionEducativaEstudiante.persona.paterno} ${student.matriculaEstudiante.institucionEducativaEstudiante.persona.materno} ${student.matriculaEstudiante.institucionEducativaEstudiante.persona.nombre} `,
-            estado: student.estadoMatriculaTipo.estadoMatricula,
-            notas: notas,
+//         let registro = {
+//             ci: student.matriculaEstudiante.institucionEducativaEstudiante.persona.carnetIdentidad,
+//             nombre: `${student.matriculaEstudiante.institucionEducativaEstudiante.persona.paterno} ${student.matriculaEstudiante.institucionEducativaEstudiante.persona.materno} ${student.matriculaEstudiante.institucionEducativaEstudiante.persona.nombre} `,
+//             estado: student.estadoMatriculaTipo.estadoMatricula,
+//             notas: notas,
          
-        }
+//         }
 
-        registro_notas.push(registro)
-    }
+//         registro_notas.push(registro)
+//     }
 
-    return {
-        operativos: operativos,
-        estudiantes: registro_notas ,
-        aula: aula,
-        carrera_autorizada: carrera_autorizada,
-        docente: persona
-    } 
- }
+//     return {
+//         operativos: operativos,
+//         estudiantes: registro_notas ,
+//         aula: aula,
+//         carrera_autorizada: carrera_autorizada,
+//         docente: persona
+//     } 
+//  }
  async registroNotaByAulaId(aula_id, carrera_autorizada_id)
  {
     const students = await this.institutoEstudianteInscripcionRepository.find(
@@ -718,6 +719,26 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             // take : 10,           
         }
     )
+    
+    const aula = await this.aulaRepository.findOne({
+        relations:{
+            paraleloTipo: true,
+            ofertaCurricular:{
+                periodoTipo: true,
+                planEstudioAsignatura:{
+                    asignaturaTipo: true,
+                    planEstudioCarrera:{
+                        planEstudioResolucion: true,
+                    },
+                    regimenGradoTipo: true,
+                },
+                
+            },
+        },
+        where: {id:aula_id}
+    })
+
+    console.log('aula', aula)
 
     const operativos = await this.operativoCarreraRepository.find({
         relations: {
@@ -744,12 +765,14 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             carreraAutorizadaId:carrera_autorizada_id,
             eventoTipoId: 2,//calificaciones,
             modalidadEvaluacionTipo: In([1,2,3,4,5,6,7,9]),
+            periodoTipoId: aula.ofertaCurricular.periodoTipoId
         },
         order: {
             modalidadEvaluacionTipoId: 'ASC'
         }
 
     })
+    console.log('operativos', operativos)
 
     const carrera_autorizada = await this.carreraAutorizadaRepository.findOne({
         relations: {
@@ -762,24 +785,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
         where: { id: carrera_autorizada_id }
     })
 
-    const aula = await this.aulaRepository.findOne({
-        relations:{
-            paraleloTipo: true,
-            ofertaCurricular:{
-                planEstudioAsignatura:{
-                    asignaturaTipo: true,
-                    planEstudioCarrera:{
-                        planEstudioResolucion: true,
-                    },
-                    regimenGradoTipo: true,
-                },
-                
-            },
-        },
-        where: {id:aula_id}
-    })
-
-    console.log('aula', aula)
+   
     console.log(carrera_autorizada)
 
     console.log(operativos)
@@ -823,12 +829,15 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                     }
                 }
             },
-            where:{ institutoEstudianteInscripcionId: student.id },
+            where:{ institutoEstudianteInscripcionId: student.id, periodoTipoId: aula.ofertaCurricular.periodoTipoId},
             order:{
                 modalidadEvaluacionTipoId : 'ASC',
                 notaTipoId: 'ASC'
             }
         })
+        console.log('institutoEstudianteInscripcionId', student.id)
+        console.log('aula.ofertaCurricular.periodoTipoId',aula.ofertaCurricular.periodoTipoId)
+        console.log('calificaciones', calificaciones)
         let notas = []
         let count = 0
         for( const id of ids)
