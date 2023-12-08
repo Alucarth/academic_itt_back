@@ -6,6 +6,9 @@ import { CarreraAutorizadaRepository } from './carrera_autorizada.repository';
 import { Workbook } from "exceljs";
 import * as tmp from "tmp";
 import { writeFile } from "fs/promises";
+import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CarreraAutorizadaService {
@@ -13,10 +16,13 @@ export class CarreraAutorizadaService {
         @Inject(CarreraAutorizadaRepository)
         private carreraAutorizadaRepositorio: CarreraAutorizadaRepository,
       
+        @InjectRepository(CarreraAutorizada)
+        private _carreraAutorizadaRepository: Repository<CarreraAutorizada>,
         private _serviceResp: RespuestaSigedService
       ) {}
       async getCarrerasBySucursalId(id: number) {
         const carreras = await this.carreraAutorizadaRepositorio.geAllCarrerasBySucursalId(id);
+        
         return this._serviceResp.respuestaHttp201(
             carreras,
             "Datos Encontrados !!",
@@ -24,7 +30,27 @@ export class CarreraAutorizadaService {
           );
       }
       async getCarrerasByIeId(id: number) {
+        console.log('add students an teachers')
         const carreras = await this.carreraAutorizadaRepositorio.geAllCarrerasByIeId(id);
+        await Promise.all( carreras.map(async (carrera)=>{
+          console.log('carrera',carrera);
+          let total_estudiantes = await this._carreraAutorizadaRepository.query(`select count(*) as total_estudiantes from matricula_estudiante me 
+          inner join instituto_plan_estudio_carrera ipec on me.instituto_plan_estudio_carrera_id  = ipec.id
+          where ipec.carrera_autorizada_id  = ${carrera.carrera_autorizada_id};`)
+          console.log(total_estudiantes)
+
+          let total_docentes = await this._carreraAutorizadaRepository.query(`select count(*) as total_docentes from oferta_curricular oc
+          inner join instituto_plan_estudio_carrera ipec on oc.instituto_plan_estudio_carrera_id = ipec.id
+          inner join aula a on a.oferta_curricular_id = oc.id 
+          inner join aula_docente ad on ad.aula_id = a.id 
+          where ipec.carrera_autorizada_id = ${carrera.carrera_autorizada_id};`)
+          // console.log(total_estudiiantes)
+          carrera.total_estudiantes = total_estudiantes[0].total_estudiantes;
+          carrera.total_docentes = total_docentes[0].total_docentes
+          // let total_docentes
+
+        }))
+
         if(carreras.length>0){
             return this._serviceResp.respuestaHttp201(
                 carreras,
@@ -38,6 +64,21 @@ export class CarreraAutorizadaService {
             '',
         );
       }
+
+      async getTotalInsitution(insitution_educativa_id: number )
+      {
+        let total_estudiantes = await this._carreraAutorizadaRepository.query(`select count( distinct(mi.persona_id)) as total_docentes from institucion_educativa_sucursal ies 
+        inner join maestro_inscripcion mi on mi.institucion_educativa_sucursal_id  = ies.id 
+        where ies.institucion_educativa_id  = ${insitution_educativa_id};`)
+
+        let total_docentes = await this._carreraAutorizadaRepository.query(`select count( distinct(iee.persona_id)) as total_estudiantes from institucion_educativa_sucursal ies 
+        inner join institucion_educativa_estudiante iee on iee.institucion_educativa_sucursal_id = ies.id
+        where ies.institucion_educativa_id  = ${insitution_educativa_id};`)
+
+        return {total_docentes: total_docentes[0], total_estudiantes: total_estudiantes[0]}
+        
+      }
+
       async getCursosByIeId(id: number) {
         const cursos = await this.carreraAutorizadaRepositorio.getAllCursosByIeId(id);
         if(cursos.length>0){

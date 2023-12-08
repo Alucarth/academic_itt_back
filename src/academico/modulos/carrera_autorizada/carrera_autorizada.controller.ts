@@ -13,6 +13,7 @@ export class CarreraAutorizadaController {
     }
     @Get("ie/:id")
     async getCarrerasByIeId(@Param("id", ParseIntPipe) id: number) {
+      console.log('insitituton detail career')
       return await this.carreraAutorizadaService.getCarrerasByIeId(id);
     }
     @Get("cursos/ie/:id")
@@ -23,6 +24,12 @@ export class CarreraAutorizadaController {
     @Get(":id")
     async getCarreraById(@Param("id", ParseIntPipe) id: number) {
       return await this.carreraAutorizadaService.getCarreraById(id);
+    }
+
+    @Get('total-detail-institution/:id')
+    async getTotalInstitutionDetail(@Param("id", ParseIntPipe) id: number)
+    {
+      return await this.carreraAutorizadaService.getTotalInsitution(id);
     }
 
     @Get('reporte/totales')
