@@ -89,6 +89,28 @@ export class InstitucionEducativaController {
         console.log('new',result)
         return result
     }
+
+    @Get('reporte/lugar-estudiantes-excel/:lugar/:dependencia')
+    async getListaLugarDependenciasEstudiantesExcel(
+        @Param('lugar', ParseIntPipe) lugar: number,
+        @Param('dependencia', ParseIntPipe) dependencia: number,
+        @Res() res: Response
+    ){
+        console.log("total por lugar y dependencia");
+        let result = await this.institucionEducativaService.getListaLugarDependenciasEstudiantes(lugar, dependencia);
+        console.log('old',result)
+  
+        await Promise.all(result.map(async (instituto)=>{
+            let count = await this.institucionEducativaService.getCountCareer(instituto.institucion_educativa_id)
+            console.log('count',count)
+            instituto.career_quantity = count
+            return instituto
+    
+        }))
+        console.log('new',result)
+        let data = await this.institucionEducativaService.getExcelInstitutionsDashboard(result)
+        res.download(`${data}`);
+    }
     //** reporte excel AQUI COMIENZA EL REPORTE DE LA NOTA 0690/2023 */
     @Get('reporte/insituto_departamento')
     @Header("Content-Type", "text/xlsx")
