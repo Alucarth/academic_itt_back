@@ -26,6 +26,12 @@ export class CarreraAutorizadaController {
       return await this.carreraAutorizadaService.getCarreraById(id);
     }
 
+    @Get("detail-teacher/:carrera_autorizada_id")
+    async getTeacherDetail(@Param("carrera_autorizada_id", ParseIntPipe) carrera_autorizada_id: number)
+    {
+      return await this.carreraAutorizadaService.getDetailTeacher(carrera_autorizada_id)
+    }
+
     @Get('total-detail-institution/:id')
     async getTotalInstitutionDetail(@Param("id", ParseIntPipe) id: number)
     {
