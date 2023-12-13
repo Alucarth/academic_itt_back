@@ -15,10 +15,14 @@ import { Workbook } from "exceljs";
 import * as tmp from "tmp";
 import { writeFile } from "fs/promises";
 import { workerData } from 'worker_threads';
+import { InstitucionEducativaSucursal } from 'src/academico/entidades/institucionEducativaSucursal.entity';
+import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
 @Injectable()
 export class InstitucionEducativaService {
     constructor(
         @InjectRepository(InstitucionEducativa) private institucionEducativaRepository: Repository<InstitucionEducativa>,
+        @InjectRepository(InstitucionEducativaSucursal) private institucionEducativaSucursalRepository: Repository<InstitucionEducativaSucursal>,
+        @InjectRepository(CarreraAutorizada) private carreraAutorizadaRepository: Repository<CarreraAutorizada>,
         @Inject(InstitucionEducativaRepository) private institucionEducativaRepositorio: InstitucionEducativaRepository,
         @Inject(InstitucionEducativaAcreditacionRepository) private institucionEducativaAcreditacionRepositorio: InstitucionEducativaAcreditacionRepository,
         @Inject(InstitucionEducativaSucursalRepository) private institucionEducativaSucursalRepositorio: InstitucionEducativaSucursalRepository,
@@ -2006,16 +2010,75 @@ export class InstitucionEducativaService {
     //para reporte 
     async getCountCareer(unidad_educativa_id: number)
     {
-        let instituto = await this.institucionEducativaRepositorio.getInsititution(unidad_educativa_id)
-        
-        return new Promise((resolve)=>{
-            let count = 0
-            instituto.sucursales.forEach(sucursal => {
-                count += sucursal.carreras.length
-            });
-            console.log(count)
-            resolve(count)
-        })
+        let result = await this.institucionEducativaRepository.query(`select count(*) total_carreras from institucion_educativa_sucursal ies
+        inner join carrera_autorizada ca on ca.institucion_educativa_sucursal_id = ies.id
+        where ies.institucion_educativa_id = ${unidad_educativa_id};`)
+        let count = 0
+        result.forEach(element => {   // if are use foreach this return a object and you can retrive value 
+          count = element.total_carreras
+        });
+        console.log('carreras',count)
+        return count
+    }
+
+    async getCountTeacher(unidad_educativa_id: number)
+    {
+      let result = await this.institucionEducativaRepository.query(`select count( distinct(mi.persona_id)) as total_docentes from institucion_educativa_sucursal ies 
+      inner join maestro_inscripcion mi on mi.institucion_educativa_sucursal_id  = ies.id 
+      where ies.institucion_educativa_id = ${unidad_educativa_id};`)
+      let count = 0
+      result.forEach(element => {   // if are use foreach this return a object and you can retrive value 
+        count = element.total_docentes
+      });
+      return count  // this return text
+    }
+
+    async getCountStudent(unidad_educativa_id)
+    {
+      let result = await this.institucionEducativaRepository.query(`select count(*) as total_estudiantes from institucion_educativa_sucursal ies 
+      inner join institucion_educativa_estudiante iee on iee.institucion_educativa_sucursal_id = ies.id
+      where ies.institucion_educativa_id  = ${unidad_educativa_id};`)
+
+      let count = 0
+      result.forEach(element => {   // if are use foreach this return a object and you can retrive value 
+        count = element.total_estudiantes
+      });
+      return count  // this return text
+      // return result[0] // this return text check parse to object
+    }
+
+    async getCareerFromInstitute(unidad_educativa_id)
+    {
+      let result = await this.institucionEducativaRepository.query(`select ct.carrera, ct.id as carrera_autorizada_id,
+      (select count(distinct (a.paralelo_tipo_id)) as paralelos from instituto_plan_estudio_carrera ipec 
+        inner join oferta_curricular oc on oc.instituto_plan_estudio_carrera_id = ipec.id
+        inner join aula a on a.oferta_curricular_id = oc.id
+        where ipec.carrera_autorizada_id=ca.id),
+      (select count(distinct (mi.persona_id)) as docentes from instituto_plan_estudio_carrera ipec 
+        inner join oferta_curricular oc on oc.instituto_plan_estudio_carrera_id = ipec.id
+        inner join aula a on a.oferta_curricular_id = oc.id
+        inner join aula_docente ad on ad.aula_id = a.id
+        inner join maestro_inscripcion mi on mi.id = ad.maestro_inscripcion_id
+        where ipec.carrera_autorizada_id  = ca.id),
+      (select count( distinct (iee.persona_id)) as estudiantes  from instituto_plan_estudio_carrera ipec 
+        inner join oferta_curricular oc on oc.instituto_plan_estudio_carrera_id = ipec.id
+        inner join aula a on a.oferta_curricular_id = oc.id
+        inner join instituto_estudiante_inscripcion iei on iei.aula_id = a.id
+        inner join matricula_estudiante me on me.id = iei.matricula_estudiante_id
+        inner join institucion_educativa_estudiante iee on iee.id = me.institucion_educativa_estudiante_id
+        where ipec.carrera_autorizada_id  = ca.id),
+      (select max(ipec.id) as instituto_plan_estudio_carrera_id  from instituto_plan_estudio_carrera ipec 
+        inner join oferta_curricular oc on oc.instituto_plan_estudio_carrera_id = ipec.id
+        inner join aula a on a.oferta_curricular_id = oc.id
+        inner join aula_docente ad on ad.aula_id = a.id
+        inner join maestro_inscripcion mi on mi.id = ad.maestro_inscripcion_id
+        where ipec.carrera_autorizada_id  = ca.id)
+    from institucion_educativa_sucursal ies
+    inner join carrera_autorizada ca on ca.institucion_educativa_sucursal_id = ies.id
+    inner join carrera_tipo ct on ct.id  = ca.carrera_tipo_id 
+    where ies.institucion_educativa_id = ${unidad_educativa_id};
+    `)
+      return result;
     }
 
     //para reporte de carreras ->asignautas estudiantes

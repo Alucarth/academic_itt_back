@@ -104,8 +104,8 @@ export class CarreraAutorizadaService {
         }) 
         
       const tiempos= []
-        for (let index = 0; index < instituto_plan_estudio_carrera.planEstudioCarrera.tiempoEstudio; index++) {
-          const element = `${index+1} ${instituto_plan_estudio_carrera.planEstudioCarrera.intervaloGestionTipo.intervaloGestion} `
+        for (let index = 0; index < instituto_plan_estudio_carrera?.planEstudioCarrera?.tiempoEstudio; index++) {
+          const element = `${index+1} ${instituto_plan_estudio_carrera?.planEstudioCarrera?.intervaloGestionTipo?.intervaloGestion} `
           tiempos.push(element)
         }
 

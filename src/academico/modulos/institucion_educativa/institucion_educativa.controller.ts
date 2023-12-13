@@ -70,19 +70,34 @@ export class InstitucionEducativaController {
         console.log("lista institutos, sede,carreras de un lugar y dependencia");
         return await this.institucionEducativaService.getListaInstitutosLugarDependencias(lugar, dependencia);
     }
+
+    @Get('reporte/career-from-institution/:unidad_educativa_id')
+    async getCareerFromInstitution(@Param('unidad_educativa_id', ParseIntPipe) unidad_educativa_id: number,)
+    {
+        return await this.institucionEducativaService.getCareerFromInstitute(unidad_educativa_id)
+    }
+
     @Get('reporte/lugar-estudiantes/:lugar/:dependencia')
     async getListaLugarDependenciasEstudiantes(
         @Param('lugar', ParseIntPipe) lugar: number,
         @Param('dependencia', ParseIntPipe) dependencia: number
     ){
-        console.log("total por lugar y dependencia");
+        console.log("---------------------------------XD");
         let result = await this.institucionEducativaService.getListaLugarDependenciasEstudiantes(lugar, dependencia);
         console.log('old',result)
   
         await Promise.all(result.map(async (instituto)=>{
             let count = await this.institucionEducativaService.getCountCareer(instituto.institucion_educativa_id)
+            let count_teacher = await this.institucionEducativaService.getCountTeacher(instituto.institucion_educativa_id)
+            let count_student = await this.institucionEducativaService.getCountStudent(instituto.institucion_educativa_id)
+
+            console.log('count_teacher', count_teacher)
+            console.log('count_student', count_student)
             console.log('count',count)
-            instituto.career_quantity = count
+            instituto.carreras = count
+            instituto.estudiantes = count_student
+            instituto.docentes = count_teacher
+            
             return instituto
     
         }))
@@ -90,7 +105,7 @@ export class InstitucionEducativaController {
         return result
     }
 
-    @Get('reporte/lugar-estudiantes-excel/:lugar/:dependencia')
+    @Get('reporte/lugar-estudiantes-excel/:lugar/:dependencia') //revisar problemas con el reporte
     async getListaLugarDependenciasEstudiantesExcel(
         @Param('lugar', ParseIntPipe) lugar: number,
         @Param('dependencia', ParseIntPipe) dependencia: number,
@@ -102,8 +117,15 @@ export class InstitucionEducativaController {
   
         await Promise.all(result.map(async (instituto)=>{
             let count = await this.institucionEducativaService.getCountCareer(instituto.institucion_educativa_id)
-            console.log('count',count)
+            let count_teacher = await this.institucionEducativaService.getCountTeacher(instituto.institucion_educativa_id)
+            let count_student = await this.institucionEducativaService.getCountStudent(instituto.institucion_educativa_id)
+
+            console.log('count_teacher', count_teacher)
+            console.log('count_student', count_student)
+            // console.log('count',count)
             instituto.career_quantity = count
+            // instituto.studiantes = count_student.total_estudiantes
+            // instituto.docentes = count_teacher.total_docentes
             return instituto
     
         }))
