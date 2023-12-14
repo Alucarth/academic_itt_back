@@ -2081,6 +2081,133 @@ export class InstitucionEducativaService {
       return result;
     }
 
+    async getDependencyTeacherAll()
+    {
+      let result = await this.institucionEducativaRepository.query(`select dependencia, sum(total_docentes) as total_docentes, sum(total_directores) as total_directores, sum(total_administrativos) as total_administrativos from (
+        select ut5.lugar as departamento, ut5.id as departamento_id, dt.dependencia, dt.id as dependencia_id, ie.institucion_educativa, ie.id,
+          (select count( distinct(mi.persona_id)) as total_docentes from institucion_educativa_sucursal ies 
+            inner join maestro_inscripcion mi on mi.institucion_educativa_sucursal_id  = ies.id 
+            where ies.institucion_educativa_id  = ie.id and mi.cargo_tipo_id = 1),
+          (select count( distinct(mi.persona_id)) as total_directores from institucion_educativa_sucursal ies 
+            inner join maestro_inscripcion mi on mi.institucion_educativa_sucursal_id  = ies.id 
+            where ies.institucion_educativa_id  = ie.id and mi.cargo_tipo_id = 2),
+          (select count( distinct(mi.persona_id)) as total_administrativos from institucion_educativa_sucursal ies 
+            inner join maestro_inscripcion mi on mi.institucion_educativa_sucursal_id  = ies.id 
+            where ies.institucion_educativa_id  = ie.id and mi.cargo_tipo_id != 2 and mi.cargo_tipo_id != 1),
+          (select count( distinct(mi.persona_id)) as tota from institucion_educativa_sucursal ies 
+            inner join maestro_inscripcion mi on mi.institucion_educativa_sucursal_id  = ies.id 
+            where ies.institucion_educativa_id  = ie.id)
+        from institucion_educativa ie
+        inner join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id
+        inner join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id
+        inner join unidad_territorial ut2 on ut.unidad_territorial_id  = ut2.id
+        inner join unidad_territorial ut3 on ut2.unidad_territorial_id  = ut3.id
+        inner join unidad_territorial ut4 on ut3.unidad_territorial_id  = ut4.id
+        inner join unidad_territorial ut5 on ut4.unidad_territorial_id = ut5.id
+        inner join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = ie.id
+        inner join educacion_tipo et on ie.educacion_tipo_id = et.id
+        inner join dependencia_tipo dt on iea.dependencia_tipo_id  = dt.id
+        where ie.educacion_tipo_id in (7,8,9) and ie.estado_institucion_educativa_tipo_id = 10 
+        ) as subquery group by dependencia;`)
+
+        const departamentos = [ 
+                          {departamento:'Chuquisaca',departamento_id: 2},
+                          {departamento:'La Paz',departamento_id: 3},
+                          {departamento:'Cochabamba',departamento_id: 4},
+                          {departamento:'Oruro',departamento_id: 5},
+                          {departamento:'Potosi',departamento_id: 6},
+                          {departamento:'Tarija',departamento_id: 7},
+                          {departamento:'Santa Cruz',departamento_id: 8},
+                          {departamento:'Beni',departamento_id: 9},
+                          {departamento:'Pando',departamento_id: 10},
+                          ]
+        const list =  []
+        let fiscal = {dependencia_id: 0, dependencia: '', directores:0, docentes: 0, administrativos: 0 }
+        let convenio = {dependencia_id: 0, dependencia: '', directores:0, docentes: 0, administrativos: 0 }
+        let privado = {dependencia_id: 0, dependencia: '', directores:0, docentes: 0, administrativos: 0 }
+        let total =0 
+        await Promise.all(departamentos.map(async (departamento)=>{
+  
+              let dependencias = await this.institucionEducativaRepository.query(`select dependencia_id,dependencia, sum(total_docentes) as total_docentes, sum(total_directores) as total_directores, sum(total_administrativos) as total_administrativos from (
+                select ut5.lugar as departamento, ut5.id as departamento_id, dt.dependencia, dt.id as dependencia_id, ie.institucion_educativa, ie.id,
+                  (select count( distinct(mi.persona_id)) as total_docentes from institucion_educativa_sucursal ies 
+                    inner join maestro_inscripcion mi on mi.institucion_educativa_sucursal_id  = ies.id 
+                    where ies.institucion_educativa_id  = ie.id and mi.cargo_tipo_id = 1),
+                  (select count( distinct(mi.persona_id)) as total_directores from institucion_educativa_sucursal ies 
+                    inner join maestro_inscripcion mi on mi.institucion_educativa_sucursal_id  = ies.id 
+                    where ies.institucion_educativa_id  = ie.id and mi.cargo_tipo_id = 2),
+                  (select count( distinct(mi.persona_id)) as total_administrativos from institucion_educativa_sucursal ies 
+                    inner join maestro_inscripcion mi on mi.institucion_educativa_sucursal_id  = ies.id 
+                    where ies.institucion_educativa_id  = ie.id and mi.cargo_tipo_id != 2 and mi.cargo_tipo_id != 1),
+                  (select count( distinct(mi.persona_id)) as tota from institucion_educativa_sucursal ies 
+                    inner join maestro_inscripcion mi on mi.institucion_educativa_sucursal_id  = ies.id 
+                    where ies.institucion_educativa_id  = ie.id)
+                from institucion_educativa ie
+                inner join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id
+                inner join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id
+                inner join unidad_territorial ut2 on ut.unidad_territorial_id  = ut2.id
+                inner join unidad_territorial ut3 on ut2.unidad_territorial_id  = ut3.id
+                inner join unidad_territorial ut4 on ut3.unidad_territorial_id  = ut4.id
+                inner join unidad_territorial ut5 on ut4.unidad_territorial_id = ut5.id
+                inner join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = ie.id
+                inner join educacion_tipo et on ie.educacion_tipo_id = et.id
+                inner join dependencia_tipo dt on iea.dependencia_tipo_id  = dt.id
+                where ie.educacion_tipo_id in (7,8,9) and ie.estado_institucion_educativa_tipo_id = 10 and ut5.id = ${departamento.departamento_id}
+                ) as subquery group by dependencia,dependencia_id;`)
+              let fiscal = {dependencia_id: 0, dependencia: '', directores:0, docentes: 0, administrativos: 0 }
+              let convenio = {dependencia_id: 0, dependencia: '', directores:0, docentes: 0, administrativos: 0 }
+              let privado = {dependencia_id: 0, dependencia: '', directores:0, docentes: 0, administrativos: 0 }
+              let total =0 
+              await Promise.all( dependencias.map( (dependencia)=>{
+                  if(dependencia.dependencia === 'CONVENIO')
+                  {
+                    convenio.directores = dependencia.total_directores
+                    convenio.docentes = dependencia.total_docentes
+                    convenio.administrativos = dependencia.total_administrativos
+                    convenio.dependencia = dependencia.dependencia
+                    convenio.dependencia_id = dependencia.dependencia_id
+                    total += parseInt(dependencia.total_directores)
+                    total += parseInt(dependencia.total_docentes)
+                    total += parseInt(dependencia.total_administrativos)
+                  }
+
+                  if(dependencia.dependencia === 'FISCAL')
+                  {
+                    fiscal.directores = dependencia.total_directores
+                    fiscal.docentes = dependencia.total_docentes
+                    fiscal.administrativos = dependencia.total_administrativos
+                    fiscal.dependencia = dependencia.dependencia
+                    fiscal.dependencia_id = dependencia.dependencia_id
+                    total += parseInt(dependencia.total_directores)
+                    total += parseInt(dependencia.total_docentes)
+                    total += parseInt(dependencia.total_administrativos)
+                  }
+
+                  if(dependencia.dependencia === 'PRIVADO')
+                  {
+                    privado.directores = dependencia.total_directores
+                    privado.docentes = dependencia.total_docentes
+                    privado.administrativos = dependencia.total_administrativos
+                    privado.dependencia = dependencia.dependencia
+                    privado.dependencia_id = dependencia.dependencia_id
+                    total += parseInt(dependencia.total_directores)
+                    total += parseInt(dependencia.total_docentes)
+                    total += parseInt(dependencia.total_administrativos)
+                  }
+
+                  
+              }))
+
+              list.push({departamento_id: departamento.departamento_id, departamento: departamento.departamento, fiscal:fiscal, convenio:convenio, privado:privado ,total: total})
+              total =0 
+              
+                
+        }))
+
+
+        return {dependency_total_list: result, dependency_detail: list}
+    }
+
     //para reporte de carreras ->asignautas estudiantes
     async getCareersInstitution(unidad_educativa_id:number)
     {

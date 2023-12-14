@@ -77,6 +77,12 @@ export class InstitucionEducativaController {
         return await this.institucionEducativaService.getCareerFromInstitute(unidad_educativa_id)
     }
 
+    @Get('reporte/dependency-teacher')
+    async getDependencyTeacherAll()
+    {
+        return await this.institucionEducativaService.getDependencyTeacherAll()
+    }
+
     @Get('reporte/lugar-estudiantes/:lugar/:dependencia')
     async getListaLugarDependenciasEstudiantes(
         @Param('lugar', ParseIntPipe) lugar: number,

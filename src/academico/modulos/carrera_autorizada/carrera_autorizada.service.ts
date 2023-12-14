@@ -212,6 +212,51 @@ export class CarreraAutorizadaService {
 
       async getListaCarrerasRegimen(lugar:number, dependencia:number){
         const carreras = await this.carreraAutorizadaRepositorio.findListaRegimenCarrerasEstudiantes(lugar, dependencia);
+        let result = await this._carreraAutorizadaRepository.query(`select * from generar_reportes_itt('where carrera=''SECRETARIADO EJECUTIVO'' and tipo_var<>''institutos'';','carrera,des_itt','tipo_var,paralelo','row_number() over(order by carrera asc,case when trim(des_itt)='''' then ''Z'' else des_itt end asc) as nro2');`)
+        console.log('erikc',result)
+        result = await this._carreraAutorizadaRepository.query(`select * from rep_reporte1_aux order by nro2;`)
+        console.log('lista',result)
+        await Promise.all( carreras.map(async (carrera)=>{
+            // TODO: erik modificara esto en funcion
+         
+            // let result = await this._carreraAutorizadaRepository.query(`DROP table IF EXISTS tmp_reporte;
+            // create temporary table tmp_reporte as
+            // select * from estadistica_itt 
+            // where carrera='${carrera.carrera}';
+            
+            // --*limpieza data
+            // update tmp_reporte set paralelo =replace(paralelo,'/','_') where paralelo like '%/%';
+            
+            // --*EJECUTAR FUNCION
+            // select * from sp_genera_cubos_multidimensionales('carrera','tipo_var','1','als_docs','tmp_reporte','rep_reporte1','');
+            
+            // --*limpiar y ordernar reporte
+            // delete from rep_reporte1 where nro=1;
+            // drop table if exists rep_reporte1_aux;
+            // create temporary table rep_reporte1_aux as
+            // select row_number() over(order by case when trim(carrera)='' then 'Z' else carrera end asc) as nro2,* from rep_reporte1;
+            // alter table rep_reporte1_aux drop column nro;
+            
+            // --*REPORTE SOLICITADO
+            // select carrera, doce1, estu2,inst3 from rep_reporte1_aux
+            // order by nro2;`);
+
+            // if(result.length >0)
+            // {
+            //   let career_data = result[0] ;
+            //   carrera.institutos = career_data.inst3
+            //   carrera.estudiantes = career_data.estu2
+            //   carrera.docentes = career_data.doce1
+            // }else{
+            //   carrera.institutos = 0
+            //   carrera.estudiantes = 0
+            //   carrera.docentes = 0
+            // }
+       
+
+        }) )
+          
+
         return carreras;
       }
 
