@@ -2194,18 +2194,40 @@ export class InstitucionEducativaService {
                     total += parseInt(dependencia.total_docentes)
                     total += parseInt(dependencia.total_administrativos)
                   }
-
                   
               }))
 
               list.push({departamento_id: departamento.departamento_id, departamento: departamento.departamento, fiscal:fiscal, convenio:convenio, privado:privado ,total: total})
               total =0 
-              
-                
+            
         }))
 
 
         return {dependency_total_list: result, dependency_detail: list}
+    }
+
+    async getDashboardTeacherByDependency(departamento_id,dependencia_id,cargo_tipo_id)
+    {
+      if(cargo_tipo_id === 1 || cargo_tipo_id === 2)
+      {
+        return  await this.institucionEducativaRepository.query(`select dd.carnet_identidad, dd.institucion_educativa , dd.nombre, dd.carrera, dd.asignatura, dd.paralelo, dd.carga_horaria  from dashboard_docente dd
+        where dd.departamento_id = ${departamento_id} and dd.dependencia_id = ${dependencia_id} and dd.cargo_tipo_id = ${cargo_tipo_id};`)
+      }else{
+        return  await this.institucionEducativaRepository.query(`select dd.carnet_identidad, dd.institucion_educativa,  dd.nombre, dd.carrera, dd.asignatura, dd.paralelo, dd.carga_horaria  from dashboard_docente dd
+        where dd.departamento_id = ${departamento_id} and not dd.dependencia_id  = ${dependencia_id} and  not dd.cargo_tipo_id = ${cargo_tipo_id};`)
+      }
+  
+    }
+
+    async getDashboardTeacherAll(carnet_identidad)
+    {
+        if(carnet_identidad === '0')
+        {
+          return  await this.institucionEducativaRepository.query(`select * from dashboard_docente dd limit 50`);
+        }else{
+          return await this.institucionEducativaRepository.query(`select * from dashboard_docente dd where dd.carnet_identidad like '%${carnet_identidad}%' ;`);
+        }
+  
     }
 
     //para reporte de carreras ->asignautas estudiantes

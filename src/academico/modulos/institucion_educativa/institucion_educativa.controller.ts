@@ -83,6 +83,25 @@ export class InstitucionEducativaController {
         return await this.institucionEducativaService.getDependencyTeacherAll()
     }
 
+    @Get('dashboard/teacher/:departamento_id/:dependencia_id/:cargo_tipo_id')
+    async getDashboardTeacherByDependency(
+        @Param('departamento_id', ParseIntPipe) departamento_id: number,
+        @Param('dependencia_id', ParseIntPipe) dependencia_id: number,
+        @Param('cargo_tipo_id', ParseIntPipe) cargo_tipo_id: number,
+    ){
+        return await this.institucionEducativaService.getDashboardTeacherByDependency(departamento_id,dependencia_id,cargo_tipo_id)
+    }
+
+    @Get('dashboard/teachers/:carnet_identidad')
+    async getDashboardTeacherAll(
+        @Param('carnet_identidad') carnet_identidad: string,
+    )
+    {
+        console.log(carnet_identidad)
+        return await this.institucionEducativaService.getDashboardTeacherAll(carnet_identidad)
+    }
+    
+
     @Get('reporte/lugar-estudiantes/:lugar/:dependencia')
     async getListaLugarDependenciasEstudiantes(
         @Param('lugar', ParseIntPipe) lugar: number,
