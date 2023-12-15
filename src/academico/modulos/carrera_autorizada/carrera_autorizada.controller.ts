@@ -79,8 +79,14 @@ export class CarreraAutorizadaController {
     }
     @Get('reporte/carreras-estudiantes/:lugar/:dependencia')
     async getListaEstudiantesRegimen(@Param("lugar", ParseIntPipe) lugar: number, @Param("dependencia", ParseIntPipe) dependencia: number){
-        console.log("lista carreras, regimen, instituto y total de estudiantes");
+        console.log("lista carreras, regimen, instituto y total de estudiantes -->");
         return await this.carreraAutorizadaService.getListaCarrerasRegimen(lugar, dependencia);
+    }
+
+    @Get('reporte/institutions-by-career/:carrera')
+    async getInstitutionsByCarrera(@Param("carrera") carrera: number){
+        console.log("lista de insititutos por carrera -->");
+        return await this.carreraAutorizadaService.getInsitutionsByCareer(carrera);
     }
 
     @Get("xlsIe/:id")
