@@ -88,7 +88,6 @@ export class CarreraAutorizadaController {
         console.log("lista de insititutos por carrera -->");
         return await this.carreraAutorizadaService.getInsitutionsByCareer(carrera);
     }
-
     @Get("xlsIe/:id")
     @Header("Content-Type", "text/xlsx")
     async getXlsCarrerasByIeId(@Param("id", ParseIntPipe) id: number, @Res() res: Response) {
