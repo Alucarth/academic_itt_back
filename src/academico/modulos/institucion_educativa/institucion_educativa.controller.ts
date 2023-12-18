@@ -46,6 +46,12 @@ export class InstitucionEducativaController {
         return await this.institucionEducativaService.getAllItt();
     }
 
+    @Get('teachers/:codigo_ritt')
+    async getInsitutionTeacher(@Param('codigo_ritt', ParseIntPipe) codigo_ritt: number, )
+    {
+        console.log('codigo ritt',codigo_ritt)
+        return await this.institucionEducativaService.findTeacherByRitt(codigo_ritt)
+    }
 
     @Get('itt')
     async getListaItt(){

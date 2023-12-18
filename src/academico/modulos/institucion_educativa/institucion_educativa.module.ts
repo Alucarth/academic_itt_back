@@ -16,6 +16,7 @@ import { InstitucionEducativaImagenRepository } from '../institucion_educativa_i
 import { InstitucionEducativaImagenService } from '../institucion_educativa_imagen/institucion_educativa_imagen.service';
 import { InstitucionEducativaSucursal } from 'src/academico/entidades/institucionEducativaSucursal.entity';
 import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
+import { MaestroInscripcion } from 'src/academico/entidades/maestroInscripcion.entity';
 
 
 
@@ -23,7 +24,7 @@ import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.ent
 @Module({
   imports: [
     DatabaseModule, 
-    TypeOrmModule.forFeature([InstitucionEducativa,InstitucionEducativaSucursal, CarreraAutorizada])
+    TypeOrmModule.forFeature([InstitucionEducativa,InstitucionEducativaSucursal, CarreraAutorizada, MaestroInscripcion])
   ],
   controllers: [InstitucionEducativaController],
   providers: [

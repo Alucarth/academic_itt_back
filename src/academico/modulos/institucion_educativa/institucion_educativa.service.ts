@@ -17,16 +17,19 @@ import { writeFile } from "fs/promises";
 import { workerData } from 'worker_threads';
 import { InstitucionEducativaSucursal } from 'src/academico/entidades/institucionEducativaSucursal.entity';
 import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
+import { MaestroInscripcion } from 'src/academico/entidades/maestroInscripcion.entity';
 @Injectable()
 export class InstitucionEducativaService {
     constructor(
         @InjectRepository(InstitucionEducativa) private institucionEducativaRepository: Repository<InstitucionEducativa>,
         @InjectRepository(InstitucionEducativaSucursal) private institucionEducativaSucursalRepository: Repository<InstitucionEducativaSucursal>,
+        @InjectRepository(MaestroInscripcion) private maestroInscripcionRepository: Repository<MaestroInscripcion>,
         @InjectRepository(CarreraAutorizada) private carreraAutorizadaRepository: Repository<CarreraAutorizada>,
         @Inject(InstitucionEducativaRepository) private institucionEducativaRepositorio: InstitucionEducativaRepository,
         @Inject(InstitucionEducativaAcreditacionRepository) private institucionEducativaAcreditacionRepositorio: InstitucionEducativaAcreditacionRepository,
         @Inject(InstitucionEducativaSucursalRepository) private institucionEducativaSucursalRepositorio: InstitucionEducativaSucursalRepository,
         @Inject(InstitucionEducativaImagenRepository) private institucionEducativaImagenRepositorio: InstitucionEducativaImagenRepository,
+        
         private _serviceResp: RespuestaSigedService, 
     ){}
 
@@ -2264,6 +2267,38 @@ export class InstitucionEducativaService {
           //return itt;
     }
    
+    async findTeacherByRitt(codigo_ritt)
+    {
+      const sucursal = await this.institucionEducativaSucursalRepository.findOne({
+        relations: {
+          institucionEducativa: true
+        },
+        where:{ institucionEducativaId: codigo_ritt}
+      }) 
+      console.log('sucursal',sucursal)
+      if(sucursal){
+        const teachers = await this.maestroInscripcionRepository.find({
+          relations: {
+            persona: true,
+            cargoTipo: true,
+            formacionTipo: true,
+          },
+          where: { institucionEducativaSucursalId: sucursal.id }
+        })
+        console.log( teachers )
+        return {
+          sucursal : sucursal,
+          teachers: teachers
+        }
+      }
+
+      return {
+        sucursal: null,
+        teachers: null  
+      }
+      
+    }
+
     async findBySie( id:number ){
         const itts = await this.institucionEducativaRepositorio.findBySie(id);
         if(!itts){
