@@ -2282,13 +2282,38 @@ export class InstitucionEducativaService {
             persona: true,
             cargoTipo: true,
             formacionTipo: true,
+            especialidadTipo: true,
           },
-          where: { institucionEducativaSucursalId: sucursal.id }
+          where: { institucionEducativaSucursalId: sucursal.id },
+          order: { persona: { paterno: 'asc', materno: 'asc', nombre: 'asc'} }
         })
-        console.log( teachers )
+        let profesores:any[] = teachers
+        //the best way iterate array
+        await Promise.all( profesores.map( async teacher =>{
+          let result =  await  this.maestroInscripcionRepository.query(`select sum((adet.hora_fin - adet.hora_inicio)*4) as horas  from aula_docente ad
+          inner join maestro_inscripcion mi on mi.id  = ad.maestro_inscripcion_id  
+          inner join aula a on a.id  = ad.aula_id 
+          inner join aula_detalle adet on adet.aula_id  = a.id
+          where mi.id = ${teacher.id}`)
+          // let profesor:any = Object.assign({}, teacher)
+          // console.log('profesor',profesor)
+          teacher.horas = result[0].horas ?`${result[0].horas.hours??'0'}h ${result[0].horas.minutes??'0'}m`: '0h 0m'
+          // profesores.push(profesor)
+        
+          console.log('---------------->',result[0].horas)
+          return teacher;
+          // if(result)
+          // {
+            
+          //   teacher.horas = result[0].horas
+          // }
+
+        }))
+
+        // console.log( profesores )
         return {
           sucursal : sucursal,
-          teachers: teachers
+          teachers: profesores
         }
       }
 
