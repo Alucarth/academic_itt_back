@@ -1,3 +1,4 @@
+import { institucionEducativaEstudianteProviders } from './../Institucion_educativa_estudiante/institucion_educativa_estudiante.providers';
 import { Injectable, HttpStatus, Inject, UnauthorizedException, BadRequestException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { MaestroInscripcion } from "src/academico/entidades/maestroInscripcion.entity";
@@ -2427,5 +2428,16 @@ export class MaestroInscripcionService {
 
   }
 
+  async getTeacherDetail(carnet_identidad, codigo_rit)
+  { 
+      const institucionEducativaSucursal = await this.iesRepository.findOne({ where:{ institucionEducativaId: codigo_rit}})
+      const persona = await this.personaRepository.findOne({ where:{ carnetIdentidad: carnet_identidad}})
+      if(institucionEducativaSucursal && persona)
+      {
+        return await this.maestroRepository.findOne({where:{personaId:persona.id ,institucionEducativaSucursalId: institucionEducativaSucursal.id}})
+      }else {
+        return null
+      }
+  }
 
 }
