@@ -1402,6 +1402,7 @@ export class InscripcionService {
         ON 
           carrera_tipo.id =  carrera_autorizada.carrera_tipo_id
         where carrera_autorizada.id = ${carreraAutorizadaId}
+        and carrera_autorizada_resolucion.ultimo=true
     `);
   return intervaloGestion
   }

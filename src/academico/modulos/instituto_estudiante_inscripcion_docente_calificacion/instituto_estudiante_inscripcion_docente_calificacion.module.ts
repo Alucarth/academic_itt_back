@@ -10,12 +10,21 @@ import { InscripcionService } from '../inscripcion/inscripcion.service';
 import { InstitutoEstudianteInscripcionDocenteCalificacionController } from './instituto_estudiante_inscripcion_docente_calificacion.controller';
 import { InstitutoEstudianteInscripcionDocenteCalificacionRepository } from './instituto_estudiante_inscripcion_docente_calificacion.repository';
 import { InstitutoEstudianteInscripcionDocenteCalificacionService } from './instituto_estudiante_inscripcion_docente_calificacion.service';
+import { Aula } from 'src/academico/entidades/aula.entity';
+import { OperativoCarreraAutorizada } from 'src/academico/entidades/operativoCarreraAutorizada.entity';
+import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
+import { Persona } from 'src/users/entity/persona.entity';
 
 @Module({
   imports:[
     DatabaseModule, TypeOrmModule.forFeature([
      InstitutoEstudianteInscripcionDocenteCalificacion,
-     
+     Aula,
+     InstitutoEstudianteInscripcion,
+     OperativoCarreraAutorizada,
+     InstitutoEstudianteInscripcionDocenteCalificacion,
+     CarreraAutorizada,
+     Persona,
         ]),
     ],
   controllers: [InstitutoEstudianteInscripcionDocenteCalificacionController],

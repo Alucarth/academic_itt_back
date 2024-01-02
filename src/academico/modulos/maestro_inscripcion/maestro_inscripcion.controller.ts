@@ -214,5 +214,12 @@ export class MaestroInscripcionController {
       //return await this.usersService.crearUsuariosEstudiantes();
   }
   
+  @Get('/teacher-detail/:carnet_identidad/:codigo_rit')
+  async getTeacherDetail(
+    @Param("carnet_identidad") carnet_identidad: number,  
+    @Param("codigo_rit") codigo_rit: number,
+  ) {
+    return await this.usersService.getTeacherDetail(carnet_identidad, codigo_rit)
+  }
 
 }

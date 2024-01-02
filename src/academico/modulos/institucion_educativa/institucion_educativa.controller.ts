@@ -46,6 +46,12 @@ export class InstitucionEducativaController {
         return await this.institucionEducativaService.getAllItt();
     }
 
+    @Get('teachers/:codigo_ritt')
+    async getInsitutionTeacher(@Param('codigo_ritt', ParseIntPipe) codigo_ritt: number, )
+    {
+        console.log('codigo ritt',codigo_ritt)
+        return await this.institucionEducativaService.findTeacherByRitt(codigo_ritt)
+    }
 
     @Get('itt')
     async getListaItt(){
@@ -70,10 +76,71 @@ export class InstitucionEducativaController {
         console.log("lista institutos, sede,carreras de un lugar y dependencia");
         return await this.institucionEducativaService.getListaInstitutosLugarDependencias(lugar, dependencia);
     }
+
+    @Get('reporte/career-from-institution/:unidad_educativa_id')
+    async getCareerFromInstitution(@Param('unidad_educativa_id', ParseIntPipe) unidad_educativa_id: number,)
+    {
+        return await this.institucionEducativaService.getCareerFromInstitute(unidad_educativa_id)
+    }
+
+    @Get('reporte/dependency-teacher')
+    async getDependencyTeacherAll()
+    {
+        return await this.institucionEducativaService.getDependencyTeacherAll()
+    }
+
+    @Get('dashboard/teacher/:departamento_id/:dependencia_id/:cargo_tipo_id')
+    async getDashboardTeacherByDependency(
+        @Param('departamento_id', ParseIntPipe) departamento_id: number,
+        @Param('dependencia_id', ParseIntPipe) dependencia_id: number,
+        @Param('cargo_tipo_id', ParseIntPipe) cargo_tipo_id: number,
+    ){
+        return await this.institucionEducativaService.getDashboardTeacherByDependency(departamento_id,dependencia_id,cargo_tipo_id)
+    }
+
+    @Get('dashboard/teachers/:carnet_identidad')
+    async getDashboardTeacherAll(
+        @Param('carnet_identidad') carnet_identidad: string,
+    )
+    {
+        console.log(carnet_identidad)
+        return await this.institucionEducativaService.getDashboardTeacherAll(carnet_identidad)
+    }
+    
+
     @Get('reporte/lugar-estudiantes/:lugar/:dependencia')
     async getListaLugarDependenciasEstudiantes(
         @Param('lugar', ParseIntPipe) lugar: number,
         @Param('dependencia', ParseIntPipe) dependencia: number
+    ){
+        console.log("---------------------------------XD");
+        let result = await this.institucionEducativaService.getListaLugarDependenciasEstudiantes(lugar, dependencia);
+        console.log('old',result)
+  
+        await Promise.all(result.map(async (instituto)=>{
+            let count = await this.institucionEducativaService.getCountCareer(instituto.institucion_educativa_id)
+            let count_teacher = await this.institucionEducativaService.getCountTeacher(instituto.institucion_educativa_id)
+            let count_student = await this.institucionEducativaService.getCountStudent(instituto.institucion_educativa_id)
+
+            console.log('count_teacher', count_teacher)
+            console.log('count_student', count_student)
+            console.log('count',count)
+            instituto.carreras = count
+            instituto.estudiantes = count_student
+            instituto.docentes = count_teacher
+            
+            return instituto
+    
+        }))
+        console.log('new',result)
+        return result
+    }
+
+    @Get('reporte/lugar-estudiantes-excel/:lugar/:dependencia') //revisar problemas con el reporte
+    async getListaLugarDependenciasEstudiantesExcel(
+        @Param('lugar', ParseIntPipe) lugar: number,
+        @Param('dependencia', ParseIntPipe) dependencia: number,
+        @Res() res: Response
     ){
         console.log("total por lugar y dependencia");
         let result = await this.institucionEducativaService.getListaLugarDependenciasEstudiantes(lugar, dependencia);
@@ -81,13 +148,21 @@ export class InstitucionEducativaController {
   
         await Promise.all(result.map(async (instituto)=>{
             let count = await this.institucionEducativaService.getCountCareer(instituto.institucion_educativa_id)
-            console.log('count',count)
+            let count_teacher = await this.institucionEducativaService.getCountTeacher(instituto.institucion_educativa_id)
+            let count_student = await this.institucionEducativaService.getCountStudent(instituto.institucion_educativa_id)
+
+            console.log('count_teacher', count_teacher)
+            console.log('count_student', count_student)
+            // console.log('count',count)
             instituto.career_quantity = count
+            // instituto.studiantes = count_student.total_estudiantes
+            // instituto.docentes = count_teacher.total_docentes
             return instituto
     
         }))
         console.log('new',result)
-        return result
+        let data = await this.institucionEducativaService.getExcelInstitutionsDashboard(result)
+        res.download(`${data}`);
     }
     //** reporte excel AQUI COMIENZA EL REPORTE DE LA NOTA 0690/2023 */
     @Get('reporte/insituto_departamento')
@@ -196,6 +271,37 @@ export class InstitucionEducativaController {
         res.download(`${result}`);
     }
 
+    @Get('reporte/lista_estudiantes_matriculados_dependencia_area_geografica')
+    @Header("Content-Type", "text/xlsx")
+    async getNumeroEstudiantesMatriculasdosAreaGeograficaDependencia(@Res() res: Response)
+    {
+        
+        let result = await this.institucionEducativaService.getNumeroEstudiantesMatriculasdosAreaGeograficaDependencia()
+        
+        res.download(`${result}`);
+    }
+
+    @Get('reporte/lista_estudiantes_matriculados')
+    @Header("Content-Type", "text/xlsx")
+    async getMatriculadosDependenciaAreaGeografica(@Res() res: Response)
+    {
+        
+        let result = await this.institucionEducativaService.getMatriculadosDependenciaAreaGeografica()
+        
+        res.download(`${result}`);
+    }
+
+    @Get('reporte/lista_estudiantes_matriculados_notas')
+    @Header("Content-Type", "text/xlsx")
+    async getMatriculadosDependenciaAreaGeograficaNotas(@Res() res: Response)
+    {
+        
+        let result = await this.institucionEducativaService.getMatriculadosDependenciaAreaGeograficaNotas()
+        
+        res.download(`${result}`);
+    }
+
+    // getNumeroEstudiantesMatriculasdosAreaGeograficaDependencia
 
     // HASTA AQUI LOS REPORTES XD DE LA NOTA INTERNA 0690/2023
 

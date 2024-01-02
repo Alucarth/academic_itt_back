@@ -71,6 +71,7 @@ export class AulaDocenteRepository {
         .innerJoinAndSelect("a.paraleloTipo", "p")
         .innerJoinAndSelect("ad.maestroInscripcion", "m")
         .innerJoinAndSelect("a.ofertaCurricular", "o")
+        .innerJoinAndSelect("o.periodoTipo", "pt")
         .innerJoinAndSelect("o.institutoPlanEstudioCarrera", "ip")
         .innerJoinAndSelect("ip.carreraAutorizada", "ca")
         .innerJoinAndSelect("ca.carreraTipo", "ct")
@@ -94,6 +95,8 @@ export class AulaDocenteRepository {
             'a.cupo as cupo',
             'p.paralelo as paralelo',
             'rg.regimenGrado as regimenGrado',
+            'pt.periodo as periodo',
+            'pt.id as periodo_tipo_id'
         ])
           .where("m.personaId = :id ", { id })
           .andWhere("ad.bajaTipoId= 0")

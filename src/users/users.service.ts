@@ -110,6 +110,16 @@ export class UsersService {
       return users
   }
 
+  async getByUsername(ci)
+  {
+    return await this.userRepository.findOne({
+      relations:{
+        persona: true
+      },
+      where:{ username: ci}
+    });
+  }
+
   async getAllBySearch(ci: string, fechanac: string, complemento: string) {
     //const result = await this.userRepository.query(`SELECT count(*) FROM us_lex`);
 

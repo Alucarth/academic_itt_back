@@ -4,7 +4,9 @@ import { InstitutoEstudianteInscripcionDocenteCalificacionService } from './inst
 import { Auth } from "src/auth/decorator/auth.decorator";
 import { Users } from 'src/users/decorator/user.decorator';
 import { User as UserEntity } from 'src/users/entity/users.entity';
+import { ApiTags } from '@nestjs/swagger';
 
+ApiTags('Inscripciones')
 @Controller('instituto-estudiante-inscripcion-docente-calificacion')
 export class InstitutoEstudianteInscripcionDocenteCalificacionController {
     constructor (
@@ -37,10 +39,45 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionController {
     async getAllEstadosFinalesByAulaId(@Param('id') id: number){
         return await this.inscripcionDocenteCalificacionService.updateEstadosFinalesByAulaId(id);
     }
+
     @Auth()
     @Post()
     async insertDocenteCalificacionGlobal(@Body() dto: CreateInstitutoInscripcionDocenteCalificacionDto[], @Users() user: UserEntity){
         return  await this.inscripcionDocenteCalificacionService.crearInscripcionDocenteCalificacionGlobal(dto, user);        
     }
+
+    // @Get('record-signature/:aula_id/:carrera_autorizada_id')
+    // async registroNotaByAulaId(@Param('aula_id') aula_id: number,@Param('carrera_autorizada_id') carrera_autorizada_id: number)
+    // {
+    //     console.log('ingresando a record signature')
+    //     return await this.inscripcionDocenteCalificacionService.registroNotaByAulaId(aula_id, carrera_autorizada_id);
+    // }
+
+    @Get('record-signature/:aula_id/:carrera_autorizada_id/:periodo_tipo_id')
+    async registroYearNotaByAulaId(@Param('aula_id') aula_id: number,@Param('carrera_autorizada_id') carrera_autorizada_id: number, @Param('periodo_tipo_id') periodo_tipo_id: number)
+    {
+        console.log('ingresando a record signature')
+        // if(periodo_tipo_id>0)
+        // {
+        //     return await this.inscripcionDocenteCalificacionService.registroYearNotaByAulaId(aula_id, carrera_autorizada_id, periodo_tipo_id);
+        // }else{
+            return await this.inscripcionDocenteCalificacionService.registroNotaByAulaId(aula_id, carrera_autorizada_id);
+        // }
+    }
+
+    @Get('aula-fixes/:aula_id/:modalidad_evaluacion_tipo_id')
+    async auulaFixes(@Param('aula_id') aula_id: number,@Param('modalidad_evaluacion_tipo_id') modalidad_evaluacion_tipo_id: number)
+    {
+        console.log('ingresando a aula fixes')
+        return await this.inscripcionDocenteCalificacionService.aulaFixes(aula_id, modalidad_evaluacion_tipo_id);
+    }
+    
+    @Get('aula-fixes')
+    async auulaFixesAll(@Param('aula_id') aula_id: number,@Param('modalidad_evaluacion_tipo_id') modalidad_evaluacion_tipo_id: number)
+    {
+        console.log('ingresando a aula fixes')
+        return await this.inscripcionDocenteCalificacionService.aulaFixesAll();
+    }
+
     
 }

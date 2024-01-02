@@ -13,6 +13,7 @@ export class CarreraAutorizadaController {
     }
     @Get("ie/:id")
     async getCarrerasByIeId(@Param("id", ParseIntPipe) id: number) {
+      console.log('insitituton detail career')
       return await this.carreraAutorizadaService.getCarrerasByIeId(id);
     }
     @Get("cursos/ie/:id")
@@ -23,6 +24,18 @@ export class CarreraAutorizadaController {
     @Get(":id")
     async getCarreraById(@Param("id", ParseIntPipe) id: number) {
       return await this.carreraAutorizadaService.getCarreraById(id);
+    }
+
+    @Get("detail-teacher/:carrera_autorizada_id")
+    async getTeacherDetail(@Param("carrera_autorizada_id", ParseIntPipe) carrera_autorizada_id: number)
+    {
+      return await this.carreraAutorizadaService.getDetailTeacher(carrera_autorizada_id)
+    }
+
+    @Get('total-detail-institution/:id')
+    async getTotalInstitutionDetail(@Param("id", ParseIntPipe) id: number)
+    {
+      return await this.carreraAutorizadaService.getTotalInsitution(id);
     }
 
     @Get('reporte/totales')
@@ -58,17 +71,23 @@ export class CarreraAutorizadaController {
         console.log("total asignaturas, paralelos con la cantidad de estudiantes por carreraId");
         return await this.carreraAutorizadaService.getListaAsignaturasParaleloEstudiantes(id);
     }
+    /* aqui reporte de estudiante por genero */
     @Get('reporte/carrera-paralelo-estudiante/:id')
     async getListaCarreraParalelosEstudiantes(@Param("id", ParseIntPipe) id: number){
-        console.log("carrera asignaturas total parelelos y total estudiantes");
+        console.log("carrera asignaturas total parelelos y total estudiantes ------------>");
         return await this.carreraAutorizadaService.getListaAsignaturaParaleloEstudianteCarrera(id);
     }
     @Get('reporte/carreras-estudiantes/:lugar/:dependencia')
     async getListaEstudiantesRegimen(@Param("lugar", ParseIntPipe) lugar: number, @Param("dependencia", ParseIntPipe) dependencia: number){
-        console.log("lista carreras, regimen, instituto y total de estudiantes");
+        console.log("lista carreras, regimen, instituto y total de estudiantes -->");
         return await this.carreraAutorizadaService.getListaCarrerasRegimen(lugar, dependencia);
     }
 
+    @Get('reporte/institutions-by-career/:carrera')
+    async getInstitutionsByCarrera(@Param("carrera") carrera: number){
+        console.log("lista de insititutos por carrera -->");
+        return await this.carreraAutorizadaService.getInsitutionsByCareer(carrera);
+    }
     @Get("xlsIe/:id")
     @Header("Content-Type", "text/xlsx")
     async getXlsCarrerasByIeId(@Param("id", ParseIntPipe) id: number, @Res() res: Response) {

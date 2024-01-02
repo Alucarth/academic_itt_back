@@ -49,6 +49,11 @@ export class UsersController {
     return this.usersService.getAll()
   }
 
+  @Get('/getByCi/:ci')
+  async getByUsername(@Param("ci") ci: string)
+  {
+    return await this.usersService.getByUsername(ci)
+  }
   /**/
 
   @Get("/getAllBySearch")
