@@ -17,6 +17,7 @@ import { PeriodoTipo } from "../../entidades/periodoTipo.entity";
 import { InstitucionEducativaSucursalRepository } from '../institucion_educativa_sucursal/institucion_educativa_sucursal.repository';
 import { UsersModule } from "../../../users/users.module";
 import { JwtService } from "@nestjs/jwt";
+import { AulaDocente } from 'src/academico/entidades/aulaDocente.entity';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { JwtService } from "@nestjs/jwt";
     TypeOrmModule.forFeature([CargoTipo]),
     TypeOrmModule.forFeature([GestionTipo]),
     TypeOrmModule.forFeature([IdiomaTipo]),
-    TypeOrmModule.forFeature([PeriodoTipo]),
+    TypeOrmModule.forFeature([PeriodoTipo, AulaDocente]),
   ],
   controllers: [MaestroInscripcionController],
   providers: [

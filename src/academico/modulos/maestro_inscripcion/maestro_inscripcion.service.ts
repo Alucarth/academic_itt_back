@@ -27,6 +27,7 @@ import { User as UserEntity } from 'src/users/entity/users.entity';
 import { Workbook } from "exceljs";
 import * as tmp from "tmp";
 import { writeFile } from "fs/promises";
+import { AulaDocente } from 'src/academico/entidades/aulaDocente.entity';
 
 
 @Injectable()
@@ -38,6 +39,8 @@ export class MaestroInscripcionService {
     private personaRepository: Repository<Persona>,
     @InjectRepository(MaestroInscripcion)
     private maeRepository: Repository<MaestroInscripcion>,
+    @InjectRepository(AulaDocente)
+    private aulaDocenteRepository: Repository<AulaDocente>,
 
     @InjectRepository(InstitucionEducativaSucursal)
     private iesRepository: Repository<InstitucionEducativaSucursal>,
@@ -2432,9 +2435,53 @@ export class MaestroInscripcionService {
   { 
       const institucionEducativaSucursal = await this.iesRepository.findOne({ where:{ institucionEducativaId: codigo_rit}})
       const persona = await this.personaRepository.findOne({ where:{ carnetIdentidad: carnet_identidad}})
+      
+      const maestro_inscripcion =  await this.maestroRepository.findOne({
+        relations: {
+          persona: true,
+          institucionEducativaSucursal: {
+            institucionEducativa:true
+          },
+          cargoTipo: true,
+          formacionTipo: true,
+          especialidadTipo: true,
+        },
+        where:{personaId:persona.id ,institucionEducativaSucursalId: institucionEducativaSucursal.id}
+      })
+
+      const aulas_docente = await this.aulaDocenteRepository.find({
+        relations: {
+          aula:{ 
+                paraleloTipo:true,
+                institutoEstudianteInscripcions:true,
+                aulasDetalles: { diaTipo:true},
+                ofertaCurricular: {
+                  institutoPlanEstudioCarrera: { carreraAutorizada: { carreraTipo :true} },
+                  planEstudioAsignatura: { asignaturaTipo: true, regimenGradoTipo: true},
+                  periodoTipo: true
+                } 
+               },
+        },
+        where: { maestroInscripcionId: maestro_inscripcion.id }
+      })
+
+      let result = await this.maestroRepository.query(`select sum((adet.hora_fin - adet.hora_inicio)*4) as horas  from aula_docente ad
+      inner join maestro_inscripcion mi on mi.id  = ad.maestro_inscripcion_id  
+      inner join aula a on a.id  = ad.aula_id 
+      inner join aula_detalle adet on adet.aula_id  = a.id
+      where mi.id = ${maestro_inscripcion.id}`)
+      // let profesor:any = Object.assign({}, teacher)
+      // console.log('profesor',profesor)
+      const carga_horaria = result[0].horas ?`${result[0].horas.hours??'0'}h ${result[0].horas.minutes??'0'}m`: '0h 0m'
+
       if(institucionEducativaSucursal && persona)
       {
-        return await this.maestroRepository.findOne({where:{personaId:persona.id ,institucionEducativaSucursalId: institucionEducativaSucursal.id}})
+        return { 
+            maestro_inscripcion : maestro_inscripcion,
+            aulas_docente: aulas_docente,
+            carga_horaria: carga_horaria
+        }
+
       }else {
         return null
       }

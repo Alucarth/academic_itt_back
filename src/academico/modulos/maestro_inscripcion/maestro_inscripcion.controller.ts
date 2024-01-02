@@ -220,7 +220,6 @@ export class MaestroInscripcionController {
     @Param("codigo_rit") codigo_rit: number,
   ) {
     return await this.usersService.getTeacherDetail(carnet_identidad, codigo_rit)
-    
   }
 
 }
