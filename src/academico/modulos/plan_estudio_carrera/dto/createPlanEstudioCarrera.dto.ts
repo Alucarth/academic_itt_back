@@ -1,3 +1,4 @@
+import { PartialType } from '@nestjs/swagger';
 import { IsBoolean, IsDate, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreatePlanEstudioCarreraDto {
@@ -38,4 +39,14 @@ export class CreatePlanEstudioCarreraDto {
     @IsString()
     descripcion: string;
    
+}
+
+export class UpdatePlanEstudioCarreraDto {
+    @IsNotEmpty({ message: " denominacion es requerido" })
+    @IsString()
+    denominacion: string;
+
+    @IsOptional({ message: " mencion es opcional" })
+    @IsString()
+    descripcion: string;
 }

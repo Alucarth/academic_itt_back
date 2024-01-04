@@ -1,16 +1,20 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
-import { EntityManager } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CarreraAutorizadaRepository } from '../carrera_autorizada/carrera_autorizada.repository';
-import { CreatePlanEstudioCarreraDto } from './dto/createPlanEstudioCarrera.dto';
+import { CreatePlanEstudioCarreraDto, UpdatePlanEstudioCarreraDto } from './dto/createPlanEstudioCarrera.dto';
 import { PlanEstudioCarreraRepository } from './plan_estudio_carrera.repository';
 import { User as UserEntity } from 'src/users/entity/users.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { PlanEstudioCarrera } from 'src/academico/entidades/planEstudioCarrera.entity';
 @Injectable()
 export class PlanEstudioCarreraService {
     constructor(
         
         @Inject(PlanEstudioCarreraRepository) 
         private planEstudioCarreraRepository: PlanEstudioCarreraRepository,
+        @InjectRepository(PlanEstudioCarrera)
+        private _planEstudioCarreraRepository: Repository<PlanEstudioCarrera>,
         
         @Inject(CarreraAutorizadaRepository) 
         private carreraAutorizadaRepository: CarreraAutorizadaRepository,
@@ -185,5 +189,26 @@ export class PlanEstudioCarreraService {
           'No se pudo guardar la información !!',
           '',
       );
+    }
+
+    async upadtePlanEstudioCarrera(id: number, dto: UpdatePlanEstudioCarreraDto)
+    {
+        const plan_estudio_carrera = await this._planEstudioCarreraRepository.findOneBy({ id: id})
+        plan_estudio_carrera.denominacion = dto.denominacion
+        plan_estudio_carrera.descripcion = dto.descripcion
+        const plan_estudio_carrera_edited =  await this._planEstudioCarreraRepository.save(plan_estudio_carrera);
+
+        if(plan_estudio_carrera_edited){
+            return this._serviceResp.respuestaHttp201(
+                plan_estudio_carrera_edited,
+                  'Registro  Creado !!',
+                  '',
+              );
+        }
+        return this._serviceResp.respuestaHttp500(
+            "",
+            'No se pudo actualizar el registro !!',
+            '',
+        );
     }
 }
