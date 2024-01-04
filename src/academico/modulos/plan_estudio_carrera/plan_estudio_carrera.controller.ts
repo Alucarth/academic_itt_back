@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { CreatePlanEstudioCarreraDto } from './dto/createPlanEstudioCarrera.dto';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { CreatePlanEstudioCarreraDto, UpdatePlanEstudioCarreraDto } from './dto/createPlanEstudioCarrera.dto';
 import { PlanEstudioCarreraService } from './plan_estudio_carrera.service';
 import { Auth } from "src/auth/decorator/auth.decorator";
 import { Users } from 'src/users/decorator/user.decorator';
@@ -50,6 +50,14 @@ export class PlanEstudioCarreraController {
         carga);
     }
 
+     @Put(':id')
+     async updateById(
+         @Param('id', ParseIntPipe) id: number,
+         @Body() updateData: UpdatePlanEstudioCarreraDto,
+     ) {
+        return this.planEstudioCarreraService.upadtePlanEstudioCarrera(id, updateData);
+     }
+
     @Get('resoluciones-carrera/:id')
     async getResolucionesCarrerId(@Param('id') id: number){
        return await this.planEstudioCarreraService.getResolucionesByCarreraId(id);
@@ -66,4 +74,5 @@ export class PlanEstudioCarreraController {
       console.log("-*************-");
       return await this.planEstudioCarreraService.crearPlanEstudioCarrera(dto, user);
     }
+
 }
