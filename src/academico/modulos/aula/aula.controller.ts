@@ -24,6 +24,12 @@ export class AulaController {
         return await this.aulaService.getCalificacionesById(id);
     }
 
+    @Get('check_duplicate/:aula_id')
+    async checkDuplicate(@Param("aula_id", ParseIntPipe) aula_id: number){
+        return await this.aulaService.checkDuplicate(aula_id);
+    }
+
+
     @Auth()
     @Post('crea-actualiza')
     async createUpdateAulaDetalle(@Body() dto: CreateAulaDto,  @Users() user: UserEntity) {

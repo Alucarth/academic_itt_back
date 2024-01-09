@@ -90,11 +90,18 @@ export class AsignaturaTipoService {
           },
         ])
         .execute();
-
+      const asignatura = await this.asignaturaTipoRepository.findOneBy({id: res.identifiers[0].id})
+      // solo para la creacion desde la vista de plan de estudio
+      let subject = {
+        code : asignatura.abreviacion,
+        hours: 0,
+        id: asignatura.id,
+        name: asignatura.asignatura
+      }
       console.log("res:", res);
       console.log("asignaturatipo adicionado");
       return this._serviceResp.respuestaHttp201(
-        res.identifiers[0].id,
+        subject,
         "Registro Creado !!",
         ""
       );

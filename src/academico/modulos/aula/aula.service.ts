@@ -10,6 +10,8 @@ import { Aula } from 'src/academico/entidades/aula.entity';
 import { AulaDetalleService } from '../aula_detalle/aula_detalle.service';
 import { OfertaCurricular } from 'src/academico/entidades/ofertaCurricular.entity';
 import { User as UserEntity } from 'src/users/entity/users.entity';
+import { InstitutoEstudianteInscripcion } from 'src/academico/entidades/InstitutoEstudianteInscripcion.entity';
+import { InstitutoEstudianteInscripcionDocenteCalificacion } from 'src/academico/entidades/institutoEstudianteInscripcionDocenteCalificacion.entity';
 
 @Injectable()
 export class AulaService {
@@ -17,6 +19,10 @@ export class AulaService {
         
         @Inject(AulaRepository) 
         private aulaRepository: AulaRepository,
+        @InjectRepository(InstitutoEstudianteInscripcion)
+        private _institutoEstudianteInscripcionRepository: Repository<InstitutoEstudianteInscripcion>,
+        @InjectRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
+        private _docenteCalificacionRepository: Repository<InstitutoEstudianteInscripcionDocenteCalificacion>,
         private ofertaService: OfertaCurricularService,
         private aulaDetalleService: AulaDetalleService,
         private _serviceResp: RespuestaSigedService, 
@@ -68,6 +74,52 @@ export class AulaService {
         throw new NotFoundException("registro no encontrado !");
       }
      
+  }
+
+  async checkDuplicate (aula_id)
+  {
+    //todo: revisar el modulo de inscripicion antes realizar este modulo 
+    const estudiantes = await this._institutoEstudianteInscripcionRepository.find({where: {aulaId: aula_id}})
+    // console.log('estudiantes', estudiantes)
+    // const to_deleted = []
+    // await Promise.all( estudiantes.map(async (estudiante)=>{
+      
+    //   const duplicados =  await this.code.find({where: {matriculaEstudianteId: estudiante.matriculaEstudianteId, aulaId: estudiante.aulaId}})
+    //   // if(duplicados.length>1)
+    //   // {
+    //   //   console.log('duplicado',duplicados)
+    //   // }
+    //   if(duplicados.length > 1)
+    //   {
+    //       let can_delete = true
+    //       const calificaciones =  await this._docenteCalificacionRepository.find({where: {institutoEstudianteInscripcionId: estudiante.id}})
+
+    //       await Promise.all( calificaciones.map(async (calificacion )=>{
+    //         console.log(calificacion.cuantitativa)
+    //           if(calificacion.cuantitativa.toString() === "0.00")
+    //           {
+    //             console.log('intentando borrar')
+    //             try {
+    //               await this._docenteCalificacionRepository.delete(calificacion.id)
+                  
+    //             } catch (error) {
+    //               can_delete = false
+    //             }
+    //           }else{
+    //             can_delete = false
+    //           }
+    //       }))
+
+    //       if(can_delete)
+
+    //       {
+    //         await this._institutoEstudianteInscripcionRepository.delete(estudiante.id)
+    //         console.log('instituto_estudiante_inscripcion',estudiante.id)
+    //       }
+
+    //   }
+    // }))
+    return estudiantes
   }
 
     async createUpdateAulaDetalle (dto: CreateAulaDto, user:UserEntity) {

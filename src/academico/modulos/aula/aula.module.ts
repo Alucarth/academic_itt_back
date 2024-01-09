@@ -12,13 +12,17 @@ import { AulaDetalleRepository } from '../aula_detalle/aula_detalle.repository';
 import { OfertaCurricular } from 'src/academico/entidades/ofertaCurricular.entity';
 import { OfertaCurricularRepository } from '../oferta_curricular/oferta_curricular.repository';
 import { AulaDetalleService } from '../aula_detalle/aula_detalle.service';
+import { InstitutoEstudianteInscripcion } from 'src/academico/entidades/InstitutoEstudianteInscripcion.entity';
+import { InstitutoEstudianteInscripcionDocenteCalificacion } from 'src/academico/entidades/institutoEstudianteInscripcionDocenteCalificacion.entity';
 
 @Module({
   imports:[
     DatabaseModule, TypeOrmModule.forFeature([
          Aula,
          AulaDetalle,
-         OfertaCurricular
+         OfertaCurricular,
+         InstitutoEstudianteInscripcion,
+         InstitutoEstudianteInscripcionDocenteCalificacion
 
         ]),
     ],
