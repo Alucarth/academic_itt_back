@@ -68,8 +68,14 @@ export class AsignaturaTipoService {
     });
     console.log("asignaturaTipoExiste:", asignaturaTipoExiste);
     if(asignaturaTipoExiste){
-      return this._serviceResp.respuestaHttp200(
-        asignaturaTipoExiste,
+      let subject = {
+        code : asignaturaTipoExiste.abreviacion,
+        hours: 0,
+        id: asignaturaTipoExiste.id,
+        name: asignaturaTipoExiste.asignatura
+      }
+      return this._serviceResp.respuestaHttp201(
+        subject,
         "Registro Ya Existe !!",
         ""
       );
