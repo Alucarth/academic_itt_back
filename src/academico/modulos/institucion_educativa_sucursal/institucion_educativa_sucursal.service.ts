@@ -22,6 +22,11 @@ export class InstitucionEducativaSucursalService {
         return sucursales;
 
     }
+    async getAllIttPlanesLugarEstados(departamento_id, estado_id){
+        const sucursales = await this.institucionEducativaSucursalRepository.getAllIttPlanesEstados(departamento_id, estado_id);
+        return sucursales;
+
+    }
 
     
     async findSucursalBySie( id:number ){

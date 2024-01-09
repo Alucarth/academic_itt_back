@@ -18,6 +18,8 @@ import { MatriculaEstudiante } from './matriculaEstudiante.entity';
 import { NivelAcademicoTipo } from './nivelAcademicoTipo.entity';
 import { PlanEstudioAsignatura } from './planEstudioAsignatura.entity';
 import { PlanEstudioResolucion } from './planEstudioResolucion.entity';
+import { PlanEstudioCarreraSeguimiento } from './planEstudioCarreraSeguimiento.entity';
+import { EstadoInstituto } from './estadoInstituto.entity';
 
 @Entity({ name: 'plan_estudio_carrera', schema: 'public' })
 export class PlanEstudioCarrera {
@@ -28,7 +30,10 @@ export class PlanEstudioCarrera {
 
   @Column({name:'activo', type: 'bool', default: true })
   activo: boolean;
-    
+  
+  @Column({name:'aprobado', type: 'bool', default: true })
+  aprobado: boolean;
+  
   @Column({ type: 'varchar', name: 'descripcion' })
   descripcion: string;
 
@@ -100,11 +105,20 @@ export class PlanEstudioCarrera {
   @OneToMany(() => PlanEstudioAsignatura, (planEstudioAsignatura) => planEstudioAsignatura.planEstudioCarrera, { cascade: true })
   planesAsignaturas: PlanEstudioAsignatura[];
 
+  @OneToMany(() => PlanEstudioCarreraSeguimiento, (planEstudioCarreraSeguimiento) => planEstudioCarreraSeguimiento.planEstudioCarrera, { cascade: true })
+  planesSeguimientos: PlanEstudioCarreraSeguimiento[];
+
   @OneToMany(() => InstitutoPlanEstudioCarrera, (institutoPlanEstudioCarrera) => institutoPlanEstudioCarrera.planEstudioCarrera, { cascade: true })
   institutosPlanesCarreras: InstitutoPlanEstudioCarrera[];
 
   @OneToMany(() => MatriculaEstudiante, (matriculaEstudiante) => matriculaEstudiante.planEstudioCarrera)
   matriculaEstudiantes: MatriculaEstudiante[];
   
+  @Column({ name: 'estado_instituto_id', nullable:false })
+  estadoInstitutoId: number;
+
+  @ManyToOne(() => EstadoInstituto, (estadoInstituto) => estadoInstituto.planesCarreras, { nullable: false, cascade: true })
+  @JoinColumn({ name: 'estado_instituto_id', referencedColumnName: 'id'})
+  estadoInstituto: EstadoInstituto;
 
 }

@@ -37,6 +37,11 @@ export class PlanEstudioCarreraService {
         
         return carrera
     }
+    async getPlanAsignaturaCarreraById( id:number ){
+        const result = await this.planEstudioCarreraRepository.findResolucionCarreraAsignaturas(id);
+        return result;    
+     }
+
     async getResolucionesByData(
         carrera_id:number,
         nivel_id:number,

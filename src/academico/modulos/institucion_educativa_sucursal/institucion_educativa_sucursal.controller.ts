@@ -44,7 +44,11 @@ export class InstitucionEducativaSucursalController {
     }
 
     
-   
+    @Get('planes-lugar-estado/:departamento_id/:estado_id')
+    async getAllPlanesLugarEstados(@Param('departamento_id', ParseIntPipe) departamento_id: number,@Param('estado_id', ParseIntPipe) estado_id: number){
+        console.log("planes");
+        return await this.institucionEducativaSucursalService.getAllIttPlanesLugarEstados(departamento_id, estado_id);
+    }
 
    
 }

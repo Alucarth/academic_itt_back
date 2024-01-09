@@ -42,15 +42,15 @@ export class UnidadTerritorialUsuarioRol {
   })
   fechaModificacion: Date;
 
-  @Column({ type: 'integer', name: 'usuario_id' })
-  usuarioId: number;
+  @Column({ type: 'integer', name: 'usuario_rol_id' })
+  usuarioRolId: number;
   
   @ManyToOne(() => UnidadTerritorial, (unidadTerritorial) => unidadTerritorial.unidadesTerritorialesUsuariosRoles, { nullable: false, cascade: true })
   @JoinColumn({ name: 'unidad_territorial_id', referencedColumnName: 'id'})
   unidadTerritorial: UnidadTerritorial;
 
-  @ManyToOne(() => UsuarioRol, (usuarioRol) => usuarioRol.unidadesTerritorialesUsuariosRoles, { nullable: false, cascade: true })
-  @JoinColumn({ name: 'unidad_territorial_id', referencedColumnName: 'id'})
+  @ManyToOne(() => UsuarioRol, (usuarioRol) => usuarioRol.id, { nullable: false, cascade: true })
+  @JoinColumn({ name: 'usuario_rol_id', referencedColumnName: 'id'})
   usuarioRol: UsuarioRol;
 
   @OneToMany(() => UnidadTerritorialUsuarioRolApp, (unidadTerritorialUsuarioRolApp) => unidadTerritorialUsuarioRolApp.unidadTerritorialUsuarioRol)

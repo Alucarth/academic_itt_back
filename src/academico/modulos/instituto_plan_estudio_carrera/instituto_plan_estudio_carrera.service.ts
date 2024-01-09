@@ -81,6 +81,7 @@ export class InstitutoPlanEstudioCarreraService {
        const result = await this.institutoPlanEstudioCarreraRepository.findResolucionesCarreraAutorizadaId(id);
        return result;    
     }
+    
 
     async getPlanAsignaturaById( id:number ){
         const result = await this.institutoPlanEstudioCarreraRepository.findPlanAsignaturasById(id);
@@ -110,7 +111,7 @@ export class InstitutoPlanEstudioCarreraService {
   
             if(crearResult){
               return this._serviceResp.respuestaHttp201(
-                  crearResult.id,
+                  crearResult,
                   'Registro de instituo_plan Creado !!',
                   '',
               );

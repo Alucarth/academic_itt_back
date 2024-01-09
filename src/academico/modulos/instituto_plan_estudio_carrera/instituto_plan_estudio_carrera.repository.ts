@@ -99,6 +99,9 @@ export class InstitutoPlanEstudioCarreraRepository {
         .innerJoinAndSelect("ip.planEstudioCarrera", "pe")       
         .innerJoinAndSelect("pe.planEstudioResolucion", "pr")       
         .leftJoinAndSelect("pe.planesAsignaturas", "pa")       
+        .leftJoinAndSelect("pe.planesSeguimientos", "ps")       
+        // .leftJoinAndSelect("ps.procesoTipo", "pt") 
+        .leftJoinAndSelect("pe.estadoInstituto","ie")
         .leftJoinAndSelect("pa.regimenGradoTipo", "rg")     
         .leftJoinAndSelect("pa.asignaturaTipo", "a")       
         .leftJoinAndSelect("pa.planesAsignaturasReglas", "r")       
@@ -114,6 +117,8 @@ export class InstitutoPlanEstudioCarreraRepository {
             'pr.numeroResolucion',
             'pr.fechaResolucion',
             'pr.descripcion',
+            'pe.aprobado',
+            'ie.estado',
             'pr.activo',
             'pa.horas',
             'rg.id',
@@ -123,6 +128,10 @@ export class InstitutoPlanEstudioCarreraRepository {
             'r.id',
             'an.id',
             'a2.abreviacion',
+            'ps.id',
+            // 'pt.proceso',
+            
+            
         ])
         .where('ip.carreraAutorizadaId = :id ', { id })
         .orderBy('rg.id', 'ASC')
@@ -130,6 +139,7 @@ export class InstitutoPlanEstudioCarreraRepository {
         .getMany();
         return itt;
     }
+
 
     async findPlanAsignaturasById( id:number){
         const itt = await this.dataSource.getRepository(InstitutoPlanEstudioCarrera)

@@ -1185,13 +1185,28 @@ export class MaestroInscripcionService {
       //PARA LOS DEMAS CARGOS NO SE CREAN USUARIOS COMO portero,regente, etc
       //ROL DIRECTOR: se debe crear desde otro lugar, modulo departamental
       
-      //si es secretario se crea como rol director: 5 segun Cristina...capaz de creerle
+      //si es secretario se crea como rol director: 5 segun Cristina...capaz de creerle 
+      //cargoTipo 3 = Secretaria
       if( dto.cargoTipoId === 3 ){
-        // const newusuario = await this.usersService.createUserAndRol(persona, 5);
+        //const newusuario = await this.usersService.createUserAndRol(persona, 5);
+        //rol tipo = 13
+        //8333942 ijuro tola ana maylin
+        const newusuario = await this.usersService.createUserAndRol(persona, 13);
+        const usuarioRol = await this.usersService.getIdByUserRol(newusuario, 13);
+        if(usuarioRol){ //registramos en usuario_rol          
+          const newusuario = await this.usersService.createUserAndRolAndInstitution(usuarioRol,sucursal.id,  user_id);
+
+        }
       }
       // 6: ROL MAESTRO
       if( dto.cargoTipoId === 1 ){
         const newusuario = await this.usersService.createUserAndRol(persona, 6);
+
+        const usuarioRol = await this.usersService.getIdByUserRol(newusuario, 6);
+        if(usuarioRol){ //registramos en usuario_rol          
+          const newusuario = await this.usersService.createUserAndRolAndInstitution(usuarioRol,sucursal.id,  user_id);
+
+        }
       }
 
       console.log("res:", res);
