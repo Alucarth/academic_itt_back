@@ -12,6 +12,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PlanEstudioCarrera } from 'src/academico/entidades/planEstudioCarrera.entity';
 import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPlanEstudioCarrera.entity';
+import { InstitucionEducativaSucursal } from 'src/academico/entidades/institucionEducativaSucursal.entity';
 
 @Injectable()
 export class CarreraAutorizadaService {
@@ -21,6 +22,9 @@ export class CarreraAutorizadaService {
       
         @InjectRepository(CarreraAutorizada)
         private _carreraAutorizadaRepository: Repository<CarreraAutorizada>,
+
+        @InjectRepository(InstitucionEducativaSucursal)
+        private _institucionEducativaSucursal: Repository<InstitucionEducativaSucursal>,
 
         @InjectRepository(PlanEstudioCarrera)
         private _planEstudioCarreraRepository: Repository<PlanEstudioCarrera>,
@@ -41,7 +45,10 @@ export class CarreraAutorizadaService {
       }
       async getCarrerasByIeId(id: number) {
         console.log('add students an teachers')
+       
+     
         const carreras = await this.carreraAutorizadaRepositorio.geAllCarrerasByIeId(id);
+        // console.log('carreras',carreras)
         await Promise.all( carreras.map(async (carrera)=>{
           console.log('carrera',carrera);
           let total_estudiantes = await this._carreraAutorizadaRepository.query(`select count(*) as total_estudiantes from matricula_estudiante me 
@@ -60,6 +67,74 @@ export class CarreraAutorizadaService {
           // let total_docentes
 
         }))
+        console.log(carreras)
+        if(carreras.length>0){
+            return this._serviceResp.respuestaHttp201(
+                carreras,
+                "Datos Encontrados !!",
+                ""
+              );    
+        }
+        return this._serviceResp.respuestaHttp404(
+            "",
+            'No se encontraron resultados !!',
+            '',
+        );
+      }
+
+      async getReportCareer(id:number)
+      {
+         const sucursal = await this._institucionEducativaSucursal.findOne({
+          where: { institucionEducativaId: id }
+        })
+        const carreras = []
+        if(sucursal){
+            const careers = await this._carreraAutorizadaRepository.find(
+            {
+              relations:{
+                resoluciones: {
+                  nivelAcademicoTipo:true,
+                  intervaloGestionTipo:true,
+                },
+                carreraTipo: true,
+                areaTipo: true,
+              },
+              where:{ institucionEducativaSucursalId: sucursal.id, resoluciones:{ ultimo: true} }
+            }
+          )
+          console.log('carreras', careers)
+          
+        
+
+          await Promise.all( careers.map(async (career)=>{
+
+            let total_estudiantes = await this._carreraAutorizadaRepository.query(`select count(*) as total_estudiantes from matricula_estudiante me 
+            inner join instituto_plan_estudio_carrera ipec on me.instituto_plan_estudio_carrera_id  = ipec.id
+            where ipec.carrera_autorizada_id  = ${career.id};`)
+            console.log(total_estudiantes)
+
+            let total_docentes = await this._carreraAutorizadaRepository.query(`select count(*) as total_docentes from oferta_curricular oc
+              inner join instituto_plan_estudio_carrera ipec on oc.instituto_plan_estudio_carrera_id = ipec.id
+              inner join aula a on a.oferta_curricular_id = oc.id 
+              inner join aula_docente ad on ad.aula_id = a.id 
+              where ipec.carrera_autorizada_id = ${career.id};`)
+
+
+            const carrera = {
+              carrera_autorizada_id: career.id,
+              carrera: career.carreraTipo.carrera,
+              nivel_academico: career.resoluciones[0].nivelAcademicoTipo.nivelAcademico,
+              numero_resolucion: career.resoluciones[0].numeroResolucion,
+              regimen_estudion: career.resoluciones[0].intervaloGestionTipo.intervaloGestion,
+              total_estudiantes : total_estudiantes[0].total_estudiantes,
+              total_docentes : total_docentes[0].total_docentes
+            }
+            carreras.push(carrera)
+            // carrera.carrera_autorizada_id = career.id
+
+          }));
+  
+        }
 
         if(carreras.length>0){
             return this._serviceResp.respuestaHttp201(
@@ -79,12 +154,34 @@ export class CarreraAutorizadaService {
       {
         let total_docentes = await this._carreraAutorizadaRepository.query(`select count( distinct(mi.persona_id)) as total_docentes from institucion_educativa_sucursal ies 
         inner join maestro_inscripcion mi on mi.institucion_educativa_sucursal_id  = ies.id 
-        where ies.institucion_educativa_id  = ${insitution_educativa_id};`)
+        inner join cargo_tipo ct on mi.cargo_tipo_id = ct.id
+        where ies.institucion_educativa_id  = ${insitution_educativa_id} and ct.cargo_titular_id = 3;`)
+
+        let total_directivos = await this._carreraAutorizadaRepository.query(`select count( distinct(mi.persona_id)) as total_docentes from institucion_educativa_sucursal ies 
+        inner join maestro_inscripcion mi on mi.institucion_educativa_sucursal_id  = ies.id 
+        inner join cargo_tipo ct on mi.cargo_tipo_id = ct.id
+        where ies.institucion_educativa_id  = ${insitution_educativa_id} and ct.cargo_titular_id = 1;`)
+
+        let total_administrativo = await this._carreraAutorizadaRepository.query(`select count( distinct(mi.persona_id)) as total_docentes from institucion_educativa_sucursal ies 
+        inner join maestro_inscripcion mi on mi.institucion_educativa_sucursal_id  = ies.id 
+        inner join cargo_tipo ct on mi.cargo_tipo_id = ct.id
+        where ies.institucion_educativa_id  = ${insitution_educativa_id} and ct.cargo_titular_id = 2;`)
+
+        let total_jefes = await this._carreraAutorizadaRepository.query(`select count( distinct(mi.persona_id)) as total_docentes from institucion_educativa_sucursal ies 
+        inner join maestro_inscripcion mi on mi.institucion_educativa_sucursal_id  = ies.id 
+        inner join cargo_tipo ct on mi.cargo_tipo_id = ct.id
+        where ies.institucion_educativa_id  = ${insitution_educativa_id} and ct.cargo_titular_id = 4;`)
 
         let total_estudiantes = await this._carreraAutorizadaRepository.query(`select count( distinct(iee.persona_id)) as total_estudiantes from institucion_educativa_sucursal ies 
         inner join institucion_educativa_estudiante iee on iee.institucion_educativa_sucursal_id = ies.id
         where ies.institucion_educativa_id  = ${insitution_educativa_id};`)
-        return {total_docentes: total_docentes[0].total_docentes, total_estudiantes: total_estudiantes[0].total_estudiantes}
+        return  {
+                  total_docentes: total_docentes[0].total_docentes,
+                  total_estudiantes: total_estudiantes[0].total_estudiantes,
+                  total_directivos: total_directivos[0].total_docentes,
+                  total_administrativos: total_administrativo[0].total_docentes,
+                  total_jefes: total_jefes[0].total_docentes,  
+                }
         
       }
 
