@@ -10,13 +10,15 @@ import { AulaDetalleRepository } from '../aula_detalle/aula_detalle.repository';
 import { OfertaCurricularController } from './oferta_curricular.controller';
 import { OfertaCurricularRepository } from './oferta_curricular.repository';
 import { OfertaCurricularService } from './oferta_curricular.service';
+import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPlanEstudioCarrera.entity';
 
 @Module({
   imports:[
     DatabaseModule, TypeOrmModule.forFeature([
          OfertaCurricular,
          Aula,
-         AulaDetalle     
+         AulaDetalle,    
+         InstitutoPlanEstudioCarrera,
         ]),
     ],
   controllers: [OfertaCurricularController],

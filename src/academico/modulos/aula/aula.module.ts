@@ -14,6 +14,7 @@ import { OfertaCurricularRepository } from '../oferta_curricular/oferta_curricul
 import { AulaDetalleService } from '../aula_detalle/aula_detalle.service';
 import { InstitutoEstudianteInscripcion } from 'src/academico/entidades/InstitutoEstudianteInscripcion.entity';
 import { InstitutoEstudianteInscripcionDocenteCalificacion } from 'src/academico/entidades/institutoEstudianteInscripcionDocenteCalificacion.entity';
+import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPlanEstudioCarrera.entity';
 
 @Module({
   imports:[
@@ -22,7 +23,7 @@ import { InstitutoEstudianteInscripcionDocenteCalificacion } from 'src/academico
          AulaDetalle,
          OfertaCurricular,
          InstitutoEstudianteInscripcion,
-         InstitutoEstudianteInscripcionDocenteCalificacion
+         InstitutoEstudianteInscripcionDocenteCalificacion,InstitutoPlanEstudioCarrera
 
         ]),
     ],

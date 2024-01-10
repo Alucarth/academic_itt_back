@@ -1,17 +1,19 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { OfertaCurricular } from 'src/academico/entidades/ofertaCurricular.entity';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreateOfertaCurricularDto } from './dto/createOfertaCurricular.dto';
 import { OfertaCurricularService } from './oferta_curricular.service';
 import { Auth } from "src/auth/decorator/auth.decorator";
 import { Users } from 'src/users/decorator/user.decorator';
 import { User as UserEntity } from 'src/users/entity/users.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPlanEstudioCarrera.entity';
 
 @Controller('oferta-curricular')
 export class OfertaCurricularController {
     constructor (
         private readonly ofertaCurricularService: OfertaCurricularService,
-        
+       
         ){}
 
     @Get()
@@ -44,6 +46,12 @@ export class OfertaCurricularController {
      
         return  await this.ofertaCurricularService.crear(dto, user);        
     }
+
+    @Get('getRegimenEstudio/:instituto_plan_estudio_carrera_id')
+    async getRegimenEstudio(){
+        // return this.ofertaCurricularService.
+    }
+    
 
     @Post('editar')
     async EditarOferta(@Body() request: any)

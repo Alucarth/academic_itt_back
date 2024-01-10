@@ -10,6 +10,7 @@ import { CreateOfertaCurricularDto } from './dto/createOfertaCurricular.dto';
 import { OfertaCurricularRepository } from './oferta_curricular.repository';
 import { PlanEstudioAsignatura } from 'src/academico/entidades/planEstudioAsignatura.entity';
 import { User as UserEntity } from 'src/users/entity/users.entity';
+import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPlanEstudioCarrera.entity';
 @Injectable()
 export class OfertaCurricularService {
     constructor(
@@ -24,6 +25,9 @@ export class OfertaCurricularService {
 
         @Inject(AulaDetalleRepository) 
         private aulaDetalleRepository: AulaDetalleRepository,
+
+        @InjectRepository(InstitutoPlanEstudioCarrera)
+        private _institutoPlanEstudioCarreraRepository: Repository<InstitutoPlanEstudioCarrera>,
 
         private dataSource: DataSource,
 
@@ -287,5 +291,12 @@ export class OfertaCurricularService {
             ""
           );
         
+    }
+    async getRegimenEstudio(instituto_plan_estudio_carrera_id: number)
+    {
+      const instituto_plan_estudio_carrera = this._institutoPlanEstudioCarreraRepository.findOne({
+        where:{ id: instituto_plan_estudio_carrera_id}
+      })
+      return instituto_plan_estudio_carrera
     }
 }
