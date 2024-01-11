@@ -42,11 +42,46 @@ export class InstitucionEducativaService {
         return itt;
     }
     async getTotalItt(){
-        const itt = await this.institucionEducativaRepositorio.findTotalItt();
-        return itt;
+        //const itt = await this.institucionEducativaRepositorio.findTotalItt(); //verificar no cuadra los numeros
+
+        const itt =  await this.institucionEducativaRepository.query(`
+          select count(distinct(ie.id)) as total_institutos
+          from institucion_educativa ie  
+          inner join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+          inner join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+          inner join unidad_territorial ut2 on ut.unidad_territorial_id  = ut2.id
+          inner join unidad_territorial ut3 on ut2.unidad_territorial_id  = ut3.id
+          inner join unidad_territorial ut4 on ut3.unidad_territorial_id  = ut4.id
+          inner join unidad_territorial ut5 on ut4.unidad_territorial_id = ut5.id
+          inner join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = ie.id
+          inner join institucion_educativa_sucursal ies on ies.institucion_educativa_id = ie.id
+          inner join educacion_tipo et on ie.educacion_tipo_id = et.id
+          inner join dependencia_tipo dt on iea.dependencia_tipo_id  = dt.id 
+          inner join area_geografica_tipo agt on ut.area_geografica_tipo_id = agt.id
+          where ie.educacion_tipo_id in (7,8,9) and ie.estado_institucion_educativa_tipo_id = 10;
+        `)
+        return itt[0].total_institutos;
     }
     async getTotalDependencias(){
-        const lista = await this.institucionEducativaRepositorio.findTotalDependencias();
+        //const lista = await this.institucionEducativaRepositorio.findTotalDependencias(); //tampoco cuadra revisar XD
+        const lista = await this.institucionEducativaRepository.query(`
+        select ut5.id as departamento_id, ut5.lugar as departamento, dt.dependencia, dt.id as dependencia_id, count(distinct(ie.id)) as total
+        from institucion_educativa ie  
+        inner join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+        inner join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+        inner join unidad_territorial ut2 on ut.unidad_territorial_id  = ut2.id
+        inner join unidad_territorial ut3 on ut2.unidad_territorial_id  = ut3.id
+        inner join unidad_territorial ut4 on ut3.unidad_territorial_id  = ut4.id
+        inner join unidad_territorial ut5 on ut4.unidad_territorial_id = ut5.id
+        inner join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = ie.id
+        inner join institucion_educativa_sucursal ies on ies.institucion_educativa_id = ie.id
+        inner join educacion_tipo et on ie.educacion_tipo_id = et.id
+        inner join dependencia_tipo dt on iea.dependencia_tipo_id  = dt.id 
+        inner join area_geografica_tipo agt on ut.area_geografica_tipo_id = agt.id
+        where ie.educacion_tipo_id in (7,8,9) and ie.estado_institucion_educativa_tipo_id = 10  
+        group by ut5.id, ut5.lugar, dt.dependencia , dt.id 
+        order by ut5.lugar asc;
+        `)
         console.log(lista);
         return lista;
     }
@@ -2006,7 +2041,27 @@ export class InstitucionEducativaService {
         return lista;
     }
     async getListaLugarDependenciasEstudiantes(lugar, dependencia){
-        const lista = await this.institucionEducativaRepositorio.findListaLugarDependenciasEstudiantes(lugar, dependencia);
+        // const lista = await this.institucionEducativaRepositorio.findListaLugarDependenciasEstudiantes(lugar, dependencia);
+        const lista = await this.institucionEducativaRepository.query(`
+          select ut5.id as departamento_id, ut5.lugar as departamento, dt.dependencia,ie.id as institucion_educativa_id , ie.institucion_educativa, ies.sucursal_nombre,
+                (select count(distinct(carrera_tipo_id)) as carreras from carrera_autorizada ca 
+                where ca.institucion_educativa_sucursal_id = ies.id)
+          from institucion_educativa ie  
+          inner join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+          inner join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 
+          inner join unidad_territorial ut2 on ut.unidad_territorial_id  = ut2.id
+          inner join unidad_territorial ut3 on ut2.unidad_territorial_id  = ut3.id
+          inner join unidad_territorial ut4 on ut3.unidad_territorial_id  = ut4.id
+          inner join unidad_territorial ut5 on ut4.unidad_territorial_id = ut5.id
+          inner join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = ie.id
+          inner join institucion_educativa_sucursal ies on ies.institucion_educativa_id = ie.id
+          inner join educacion_tipo et on ie.educacion_tipo_id = et.id
+          inner join dependencia_tipo dt on iea.dependencia_tipo_id  = dt.id 
+          inner join area_geografica_tipo agt on ut.area_geografica_tipo_id = agt.id
+          where ie.educacion_tipo_id in (7,8,9) and ie.estado_institucion_educativa_tipo_id = 10  and ut5.id = ${lugar}  and  iea.dependencia_tipo_id = ${dependencia} 
+          group by ut5.id, ut5.lugar, dt.dependencia , dt.id,ie.id,ies.id, ies.sucursal_nombre, ie.institucion_educativa, et.educacion , agt.area_geografica;
+        `)
+
         return lista;
     }
 

@@ -115,24 +115,24 @@ export class InstitucionEducativaController {
     ){
         console.log("---------------------------------XD");
         let result = await this.institucionEducativaService.getListaLugarDependenciasEstudiantes(lugar, dependencia);
-        console.log('old',result)
+        // console.log('old',result)
   
-        await Promise.all(result.map(async (instituto)=>{
-            let count = await this.institucionEducativaService.getCountCareer(instituto.institucion_educativa_id)
-            let count_teacher = await this.institucionEducativaService.getCountTeacher(instituto.institucion_educativa_id)
-            let count_student = await this.institucionEducativaService.getCountStudent(instituto.institucion_educativa_id)
+        // await Promise.all(result.map(async (instituto)=>{
+        //     let count = await this.institucionEducativaService.getCountCareer(instituto.institucion_educativa_id)
+        //     let count_teacher = await this.institucionEducativaService.getCountTeacher(instituto.institucion_educativa_id)
+        //     let count_student = await this.institucionEducativaService.getCountStudent(instituto.institucion_educativa_id)
 
-            console.log('count_teacher', count_teacher)
-            console.log('count_student', count_student)
-            console.log('count',count)
-            instituto.carreras = count
-            instituto.estudiantes = count_student
-            instituto.docentes = count_teacher
+        //     console.log('count_teacher', count_teacher)
+        //     console.log('count_student', count_student)
+        //     console.log('count',count)
+        //     instituto.carreras = count
+        //     instituto.estudiantes = count_student
+        //     instituto.docentes = count_teacher
             
-            return instituto
+        //     return instituto
     
-        }))
-        console.log('new',result)
+        // }))
+        // console.log('new',result)
         return result
     }
 
