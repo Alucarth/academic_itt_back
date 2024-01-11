@@ -16,10 +16,11 @@ export class CargoTipoService {
 
 
     // SE FILTRA SOLO MAESTROS Y ADMINISTRATIVOS, DIRECTORES SE DEBE CREAR OTRO ENDPOINT PARA EL ROL DEPARTAMENTAL
+    // se implemento el rol a la persona por lo que ahora no es necesario corregir el cargo Gracias DAN
     async getAll(){
         //var result: EspecialidadTipo[] = [];
         const result =  await this.cargoTipoRepository.findBy({
-            id: Any([1,2,3,4,5,6,8,9,10,11,12])
+            id: Any([1,3,5,8,9,10,11,12])
         })
 
         return this._serviceResp.respuestaHttp200(
