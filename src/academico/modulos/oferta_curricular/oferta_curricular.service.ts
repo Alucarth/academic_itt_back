@@ -317,4 +317,90 @@ export class OfertaCurricularService {
       const regimen_grado_tipos = await this._regimenGradoTipoRepository.find({where: {intervaloGestionTipoId: instituto_plan_estudio_carrera.planEstudioCarrera.intervaloGestionTipoId  }})
       return {instituto_plan_estudio_carrera: instituto_plan_estudio_carrera, regimen_grado_tipos: regimen_grado_tipos, gestion_tipos: gestion_tipos}
     }
+    async getParalelosOfertaCurricular(instituto_plan_estudio_carrera_id: number,regimen_grado_tipo_id: number, gestion_tipo_id: number )
+    {
+
+      const total_estudiantes = await this._institutoPlanEstudioCarreraRepository.query(`
+          select count(distinct (iee.persona_id)) as total_estudiantes from oferta_curricular oc 
+          inner join plan_estudio_asignatura pea on pea.id = oc.plan_estudio_asignatura_id 
+          inner join aula a on a.oferta_curricular_id = oc.id
+          inner join paralelo_tipo pt on pt.id = a.paralelo_tipo_id 
+          inner join turno_tipo tt on tt.id = a.turno_tipo_id
+          inner join instituto_estudiante_inscripcion iei on iei.aula_id  = a.id 
+          inner join matricula_estudiante me on me.id = iei.matricula_estudiante_id 
+          inner join institucion_educativa_estudiante iee on iee.id = me.institucion_educativa_estudiante_id 
+          where oc.instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen_grado_tipo_id} and oc.gestion_tipo_id = ${gestion_tipo_id};
+      `) 
+      
+
+      const total_turnos = await this._institutoPlanEstudioCarreraRepository.query(`
+          select   a.turno_tipo_id, tt.turno, count(distinct (a.paralelo_tipo_id)) as total_pararelos
+          from oferta_curricular oc 
+          inner join plan_estudio_asignatura pea on pea.id = oc.plan_estudio_asignatura_id 
+          inner join aula a on a.oferta_curricular_id = oc.id
+          inner join paralelo_tipo pt on pt.id = a.paralelo_tipo_id 
+          inner join turno_tipo tt on tt.id = a.turno_tipo_id
+          where oc.instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen_grado_tipo_id} and oc.gestion_tipo_id = ${gestion_tipo_id}
+          group by  a.turno_tipo_id, tt.turno;
+      `)
+
+      const total_asignaturas = await this._institutoPlanEstudioCarreraRepository.query(`
+          select count(distinct (pea.asignatura_tipo_id)) as total_asignaturas from oferta_curricular oc 
+          inner join plan_estudio_asignatura pea on pea.id = oc.plan_estudio_asignatura_id 
+          inner join aula a on a.oferta_curricular_id = oc.id
+          inner join paralelo_tipo pt on pt.id = a.paralelo_tipo_id 
+          inner join turno_tipo tt on tt.id = a.turno_tipo_id
+          inner join instituto_estudiante_inscripcion iei on iei.aula_id  = a.id 
+          inner join matricula_estudiante me on me.id = iei.matricula_estudiante_id 
+          inner join institucion_educativa_estudiante iee on iee.id = me.institucion_educativa_estudiante_id 
+          where oc.instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen_grado_tipo_id}  and oc.gestion_tipo_id = ${gestion_tipo_id};
+      `)
+
+      
+      const paralelos = await this._institutoPlanEstudioCarreraRepository.query(`select a.paralelo_tipo_id, pt.paralelo , a.turno_tipo_id, tt.turno
+                      from oferta_curricular oc 
+                      inner join plan_estudio_asignatura pea on pea.id = oc.plan_estudio_asignatura_id 
+                      inner join aula a on a.oferta_curricular_id = oc.id
+                      inner join paralelo_tipo pt on pt.id = a.paralelo_tipo_id 
+                      inner join turno_tipo tt on tt.id = a.turno_tipo_id
+                      where oc.instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen_grado_tipo_id} and oc.gestion_tipo_id = ${gestion_tipo_id}
+                      group by a.paralelo_tipo_id, a.turno_tipo_id,pt.paralelo, tt.turno;`)
+
+      await Promise.all(paralelos.map(async (paralelo)=>{
+        let result = await this._institutoPlanEstudioCarreraRepository.query(`
+          select count(distinct (iee.persona_id)) as total_estudiantes from oferta_curricular oc 
+          inner join plan_estudio_asignatura pea on pea.id = oc.plan_estudio_asignatura_id 
+          inner join aula a on a.oferta_curricular_id = oc.id
+          inner join paralelo_tipo pt on pt.id = a.paralelo_tipo_id 
+          inner join turno_tipo tt on tt.id = a.turno_tipo_id
+          inner join instituto_estudiante_inscripcion iei on iei.aula_id  = a.id 
+          inner join matricula_estudiante me on me.id = iei.matricula_estudiante_id 
+          inner join institucion_educativa_estudiante iee on iee.id = me.institucion_educativa_estudiante_id 
+          where oc.instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen_grado_tipo_id}  and oc.gestion_tipo_id = ${gestion_tipo_id} and paralelo_tipo_id = ${paralelo.paralelo_tipo_id} and turno_tipo_id = ${paralelo.turno_tipo_id};`)
+        
+          paralelo.total_estudiantes = result[0].total_estudiantes
+
+          result = await this._institutoPlanEstudioCarreraRepository.query(`
+          select a.id as aula_id, pt.paralelo, tt.turno,at2.abreviacion , at2.asignatura, p.nombre , p.paterno,
+          p.materno,
+          (select count(*) as total_estudiantes  from instituto_estudiante_inscripcion iei where aula_id = a.id)
+          from oferta_curricular oc 
+          inner join plan_estudio_asignatura pea on pea.id = oc.plan_estudio_asignatura_id 
+          inner join asignatura_tipo at2 on at2.id = pea.asignatura_tipo_id 
+          inner join aula a on a.oferta_curricular_id = oc.id
+          inner join paralelo_tipo pt on pt.id = a.paralelo_tipo_id 
+          inner join turno_tipo tt on tt.id = a.turno_tipo_id
+          left join aula_docente ad on ad.aula_id  = a.id
+          left join maestro_inscripcion mi on mi.id = ad.maestro_inscripcion_id 
+          left join persona p on p.id = mi.persona_id 
+          where oc.instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen_grado_tipo_id}  and oc.gestion_tipo_id = ${gestion_tipo_id} and a.paralelo_tipo_id = ${paralelo.paralelo_tipo_id} and a.turno_tipo_id = ${paralelo.turno_tipo_id};
+          `)
+          paralelo.list = result
+        
+        
+        }))
+
+      
+      return { paralelos: paralelos, total_estudiantes: total_estudiantes[0].total_estudiantes, total_turnos: total_turnos, total_asignaturas: total_asignaturas[0].total_asignaturas }
+    }
 }
