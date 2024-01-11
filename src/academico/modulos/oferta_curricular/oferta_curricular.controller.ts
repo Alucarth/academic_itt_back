@@ -48,8 +48,8 @@ export class OfertaCurricularController {
     }
 
     @Get('getRegimenEstudio/:instituto_plan_estudio_carrera_id')
-    async getRegimenEstudio(){
-        // return this.ofertaCurricularService.
+    async getRegimenEstudio( @Param('instituto_plan_estudio_carrera_id') instituto_plan_estudio_carrera_id: number){
+        return this.ofertaCurricularService.getRegimenEstudio(instituto_plan_estudio_carrera_id)
     }
     
 

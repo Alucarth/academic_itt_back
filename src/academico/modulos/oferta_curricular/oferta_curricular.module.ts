@@ -11,6 +11,7 @@ import { OfertaCurricularController } from './oferta_curricular.controller';
 import { OfertaCurricularRepository } from './oferta_curricular.repository';
 import { OfertaCurricularService } from './oferta_curricular.service';
 import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPlanEstudioCarrera.entity';
+import { RegimenGradoTipo } from 'src/academico/entidades/regimenGradoTipo.entity';
 
 @Module({
   imports:[
@@ -19,6 +20,7 @@ import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPl
          Aula,
          AulaDetalle,    
          InstitutoPlanEstudioCarrera,
+         RegimenGradoTipo,
         ]),
     ],
   controllers: [OfertaCurricularController],

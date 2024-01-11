@@ -42,6 +42,9 @@ export class RegimenGradoTipo {
   @Column({ type: 'integer', name: 'usuario_id' })
   usuarioId: number;
 
+  @Column({ type: 'integer', name: 'intervalo_gestion_tipo_id' })
+  intervaloGestionTipoId: number;
+
   @OneToMany(() => PlanEstudioAsignatura, (planEstudioAsignatura) => planEstudioAsignatura.regimenGradoTipo)
   planesAsignaturas: PlanEstudioAsignatura[];
 }

@@ -11,6 +11,7 @@ import { OfertaCurricularRepository } from './oferta_curricular.repository';
 import { PlanEstudioAsignatura } from 'src/academico/entidades/planEstudioAsignatura.entity';
 import { User as UserEntity } from 'src/users/entity/users.entity';
 import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPlanEstudioCarrera.entity';
+import { RegimenGradoTipo } from 'src/academico/entidades/regimenGradoTipo.entity';
 @Injectable()
 export class OfertaCurricularService {
     constructor(
@@ -28,6 +29,9 @@ export class OfertaCurricularService {
 
         @InjectRepository(InstitutoPlanEstudioCarrera)
         private _institutoPlanEstudioCarreraRepository: Repository<InstitutoPlanEstudioCarrera>,
+
+        @InjectRepository(RegimenGradoTipo)
+        private _regimenGradoTipoRepository: Repository<RegimenGradoTipo>,
 
         private dataSource: DataSource,
 
@@ -294,9 +298,23 @@ export class OfertaCurricularService {
     }
     async getRegimenEstudio(instituto_plan_estudio_carrera_id: number)
     {
-      const instituto_plan_estudio_carrera = this._institutoPlanEstudioCarreraRepository.findOne({
+      const instituto_plan_estudio_carrera = await this._institutoPlanEstudioCarreraRepository.findOne({
+        relations:{
+          planEstudioCarrera: {
+            planEstudioResolucion:true,
+            carreraTipo:true,
+            nivelAcademicoTipo:true,
+            intervaloGestionTipo:true,
+          },
+          carreraAutorizada:{
+            carreraTipo:true,
+          }
+
+        },
         where:{ id: instituto_plan_estudio_carrera_id}
       })
-      return instituto_plan_estudio_carrera
+      const gestion_tipos = [ {id: 2023, gestion:'2023'},{id: 2024, gestion:'2024'} ]
+      const regimen_grado_tipos = await this._regimenGradoTipoRepository.find({where: {intervaloGestionTipoId: instituto_plan_estudio_carrera.planEstudioCarrera.intervaloGestionTipoId  }})
+      return {instituto_plan_estudio_carrera: instituto_plan_estudio_carrera, regimen_grado_tipos: regimen_grado_tipos, gestion_tipos: gestion_tipos}
     }
 }

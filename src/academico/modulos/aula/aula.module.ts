@@ -15,6 +15,7 @@ import { AulaDetalleService } from '../aula_detalle/aula_detalle.service';
 import { InstitutoEstudianteInscripcion } from 'src/academico/entidades/InstitutoEstudianteInscripcion.entity';
 import { InstitutoEstudianteInscripcionDocenteCalificacion } from 'src/academico/entidades/institutoEstudianteInscripcionDocenteCalificacion.entity';
 import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPlanEstudioCarrera.entity';
+import { RegimenGradoTipo } from 'src/academico/entidades/regimenGradoTipo.entity';
 
 @Module({
   imports:[
@@ -23,7 +24,9 @@ import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPl
          AulaDetalle,
          OfertaCurricular,
          InstitutoEstudianteInscripcion,
-         InstitutoEstudianteInscripcionDocenteCalificacion,InstitutoPlanEstudioCarrera
+         InstitutoEstudianteInscripcionDocenteCalificacion,
+         InstitutoPlanEstudioCarrera,
+         RegimenGradoTipo,
 
         ]),
     ],
