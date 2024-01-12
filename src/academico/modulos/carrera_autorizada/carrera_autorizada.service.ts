@@ -85,47 +85,70 @@ export class CarreraAutorizadaService {
       async getReportCareer(id:number)
       {
          const sucursal = await this._institucionEducativaSucursal.findOne({
-          where: { institucionEducativaId: id }
-        })
+            where: { institucionEducativaId: id }
+          })
         const carreras = []
         if(sucursal){
-            const careers = await this._carreraAutorizadaRepository.find(
-            {
-              relations:{
-                resoluciones: {
-                  nivelAcademicoTipo:true,
-                  intervaloGestionTipo:true,
-                },
-                carreraTipo: true,
-                areaTipo: true,
-              },
-              where:{ institucionEducativaSucursalId: sucursal.id, resoluciones:{ ultimo: true} }
-            }
-          )
+           
+          const careers = await this._carreraAutorizadaRepository.query(`
+            select ca.carrera_tipo_id,  ct.carrera , nat.nivel_academico   from carrera_autorizada ca 
+            left join carrera_autorizada_resolucion car on car.carrera_autorizada_id  = ca.id 
+            left join carrera_tipo ct on ct.id = ca.carrera_tipo_id 
+            left join nivel_academico_tipo nat on nat.id = car.nivel_academico_tipo_id 
+            where ca.institucion_educativa_sucursal_id = ${sucursal.id } 
+            group  by ca.carrera_tipo_id , nat.nivel_academico , ct.carrera 
+            order by ct.carrera asc ;
+          `) 
           console.log('carreras', careers)
           
         
 
           await Promise.all( careers.map(async (career)=>{
 
-            let total_estudiantes = await this._carreraAutorizadaRepository.query(`select count(*) as total_estudiantes from matricula_estudiante me 
-            inner join instituto_plan_estudio_carrera ipec on me.instituto_plan_estudio_carrera_id  = ipec.id
-            where ipec.carrera_autorizada_id  = ${career.id};`)
+            let total_estudiantes = await this._carreraAutorizadaRepository.query(`
+              select count(distinct (iee.persona_id)) as total_estudiantes from carrera_autorizada ca
+              inner join instituto_plan_estudio_carrera ipec on ipec.carrera_autorizada_id = ca.id
+              inner join oferta_curricular oc on oc.instituto_plan_estudio_carrera_id = ipec .id
+              inner join aula a on a.oferta_curricular_id = oc.id 
+              inner join instituto_estudiante_inscripcion iei on iei.aula_id = a.id 
+              inner join matricula_estudiante me on me.id = iei.matricula_estudiante_id 
+              inner join institucion_educativa_estudiante iee on iee.id = me.institucion_educativa_estudiante_id 
+              where ca.institucion_educativa_sucursal_id =  ${sucursal.id } and  ca.carrera_tipo_id = ${career.carrera_tipo_id};
+            `)
             console.log(total_estudiantes)
 
-            let total_docentes = await this._carreraAutorizadaRepository.query(`select count(*) as total_docentes from oferta_curricular oc
-              inner join instituto_plan_estudio_carrera ipec on oc.instituto_plan_estudio_carrera_id = ipec.id
-              inner join aula a on a.oferta_curricular_id = oc.id 
-              inner join aula_docente ad on ad.aula_id = a.id 
-              where ipec.carrera_autorizada_id = ${career.id};`)
+            let total_docentes = await this._carreraAutorizadaRepository.query(`
+            select count(distinct(mi.persona_id) ) as total_docentes  from carrera_autorizada ca
+            inner join instituto_plan_estudio_carrera ipec on ipec.carrera_autorizada_id = ca.id
+            inner join oferta_curricular oc on oc.instituto_plan_estudio_carrera_id = ipec .id
+            inner join aula a on a.oferta_curricular_id = oc.id 
+            inner join aula_docente ad on ad.aula_id = a.id
+            inner join maestro_inscripcion mi on ad.maestro_inscripcion_id = mi.id
+            where ca.institucion_educativa_sucursal_id = ${sucursal.id } and  ca.carrera_tipo_id =${career.carrera_tipo_id}   and mi.cargo_tipo_id = 1;
+            `)  
+            //cargo_tipo= 1 docente -catedratico siempre
 
+            let resoluciones = await this._carreraAutorizadaRepository.query(`
+            select ipec.id as instituto_plan_estudio_carrera_id, per.numero_resolucion, igt.intervalo_gestion, ca.id as carrera_autorizada_id  from carrera_autorizada ca
+            inner join instituto_plan_estudio_carrera ipec on ipec.carrera_autorizada_id = ca.id
+            inner join oferta_curricular oc on oc.instituto_plan_estudio_carrera_id = ipec .id
+            inner join aula a on a.oferta_curricular_id = oc.id 
+            inner join instituto_estudiante_inscripcion iei on iei.aula_id = a.id 
+            inner join matricula_estudiante me on me.id = iei.matricula_estudiante_id 
+            inner join institucion_educativa_estudiante iee on iee.id = me.institucion_educativa_estudiante_id 
+            inner join plan_estudio_carrera pec on pec.id = ipec.plan_estudio_carrera_id 
+            inner join plan_estudio_resolucion per on per.id = pec.plan_estudio_resolucion_id 
+            inner join intervalo_gestion_tipo igt on igt.id = pec.intervalo_gestion_tipo_id 
+            where ca.institucion_educativa_sucursal_id =  ${sucursal.id } and  ca.carrera_tipo_id = ${career.carrera_tipo_id}
+            group by ipec.id , per.numero_resolucion, igt.intervalo_gestion, ca.id
+            ;
+            `)
 
             const carrera = {
-              carrera_autorizada_id: career.id,
-              carrera: career.carreraTipo.carrera,
-              nivel_academico: career.resoluciones[0].nivelAcademicoTipo.nivelAcademico,
-              numero_resolucion: career.resoluciones[0].numeroResolucion,
-              regimen_estudion: career.resoluciones[0].intervaloGestionTipo.intervaloGestion,
+             
+              carrera: career.carrera,
+              nivel_academico: career.nivel_academico,
+              resoluciones: resoluciones,
               total_estudiantes : total_estudiantes[0].total_estudiantes,
               total_docentes : total_docentes[0].total_docentes
             }
