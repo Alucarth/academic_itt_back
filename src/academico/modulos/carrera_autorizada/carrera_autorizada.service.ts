@@ -97,7 +97,7 @@ export class CarreraAutorizadaService {
             left join nivel_academico_tipo nat on nat.id = car.nivel_academico_tipo_id 
             where ca.institucion_educativa_sucursal_id = ${sucursal.id } 
             group  by ca.carrera_tipo_id , nat.nivel_academico , ct.carrera 
-            order by ct.carrera asc ;
+            order by ca.carrera_tipo_id  asc ;
           `) 
           console.log('carreras', careers)
           
@@ -128,20 +128,35 @@ export class CarreraAutorizadaService {
             `)  
             //cargo_tipo= 1 docente -catedratico siempre
 
+            // let resoluciones = await this._carreraAutorizadaRepository.query(`
+            // select ipec.id as instituto_plan_estudio_carrera_id, per.numero_resolucion, igt.intervalo_gestion, ca.id as carrera_autorizada_id  from carrera_autorizada ca
+            // inner join instituto_plan_estudio_carrera ipec on ipec.carrera_autorizada_id = ca.id
+            // inner join oferta_curricular oc on oc.instituto_plan_estudio_carrera_id = ipec .id
+            // inner join aula a on a.oferta_curricular_id = oc.id 
+            // inner join instituto_estudiante_inscripcion iei on iei.aula_id = a.id 
+            // inner join matricula_estudiante me on me.id = iei.matricula_estudiante_id 
+            // inner join institucion_educativa_estudiante iee on iee.id = me.institucion_educativa_estudiante_id 
+            // inner join plan_estudio_carrera pec on pec.id = ipec.plan_estudio_carrera_id 
+            // inner join plan_estudio_resolucion per on per.id = pec.plan_estudio_resolucion_id 
+            // inner join intervalo_gestion_tipo igt on igt.id = pec.intervalo_gestion_tipo_id 
+            // where ca.institucion_educativa_sucursal_id =  ${sucursal.id } and  ca.carrera_tipo_id = ${career.carrera_tipo_id}
+            // group by ipec.id , per.numero_resolucion, igt.intervalo_gestion, ca.id
+            // ;
+            // `)
+
             let resoluciones = await this._carreraAutorizadaRepository.query(`
             select ipec.id as instituto_plan_estudio_carrera_id, per.numero_resolucion, igt.intervalo_gestion, ca.id as carrera_autorizada_id  from carrera_autorizada ca
             inner join instituto_plan_estudio_carrera ipec on ipec.carrera_autorizada_id = ca.id
-            inner join oferta_curricular oc on oc.instituto_plan_estudio_carrera_id = ipec .id
-            inner join aula a on a.oferta_curricular_id = oc.id 
-            inner join instituto_estudiante_inscripcion iei on iei.aula_id = a.id 
-            inner join matricula_estudiante me on me.id = iei.matricula_estudiante_id 
-            inner join institucion_educativa_estudiante iee on iee.id = me.institucion_educativa_estudiante_id 
-            inner join plan_estudio_carrera pec on pec.id = ipec.plan_estudio_carrera_id 
-            inner join plan_estudio_resolucion per on per.id = pec.plan_estudio_resolucion_id 
-            inner join intervalo_gestion_tipo igt on igt.id = pec.intervalo_gestion_tipo_id 
-            where ca.institucion_educativa_sucursal_id =  ${sucursal.id } and  ca.carrera_tipo_id = ${career.carrera_tipo_id}
-            group by ipec.id , per.numero_resolucion, igt.intervalo_gestion, ca.id
-            ;
+            left join oferta_curricular oc on oc.instituto_plan_estudio_carrera_id = ipec.id
+            left join aula a on a.oferta_curricular_id = oc.id 
+            left join instituto_estudiante_inscripcion iei on iei.aula_id = a.id 
+            left join matricula_estudiante me on me.id = iei.matricula_estudiante_id 
+            left join institucion_educativa_estudiante iee on iee.id = me.institucion_educativa_estudiante_id 
+            left join plan_estudio_carrera pec on pec.id = ipec.plan_estudio_carrera_id 
+            left join plan_estudio_resolucion per on per.id = pec.plan_estudio_resolucion_id 
+            left join intervalo_gestion_tipo igt on igt.id = pec.intervalo_gestion_tipo_id 
+            where ca.institucion_educativa_sucursal_id =   ${sucursal.id } and  ca.carrera_tipo_id = ${career.carrera_tipo_id}
+            group by ipec.id , per.numero_resolucion, igt.intervalo_gestion, ca.id;
             `)
 
             const carrera = {

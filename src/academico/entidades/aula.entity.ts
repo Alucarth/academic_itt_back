@@ -14,6 +14,7 @@ import { AulaDocente } from './aulaDocente.entity';
 import { InstitutoEstudianteInscripcion } from './InstitutoEstudianteInscripcion.entity';
 import { OfertaCurricular } from './ofertaCurricular.entity';
 import { ParaleloTipo } from './paraleloTipo.entity';
+import { TurnoTipo } from './turnoTipo.entity';
 
 @Entity({ name: 'aula', schema: 'public' })
 export class Aula {
@@ -58,6 +59,14 @@ export class Aula {
   @ManyToOne(() => OfertaCurricular, (ofertaCurricular) => ofertaCurricular.aulas, { nullable: false, cascade: true })
   @JoinColumn({ name: 'oferta_curricular_id', referencedColumnName: 'id'})
   ofertaCurricular:OfertaCurricular;
+
+  
+  @Column({name: 'turno_tipo_id'})
+  turnoTipoId: number
+
+  @ManyToOne(() => TurnoTipo, (turno_tipo) => turno_tipo.id)
+  @JoinColumn({ name: 'turno_tipo_id', referencedColumnName: 'id' })
+  turnoTipo: TurnoTipo;
 
   @OneToMany(() => InstitutoEstudianteInscripcion, (institutoEstudianteInscripcion) => institutoEstudianteInscripcion.aula)
   institutoEstudianteInscripcions: InstitutoEstudianteInscripcion[];

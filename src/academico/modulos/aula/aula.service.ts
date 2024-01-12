@@ -1,3 +1,4 @@
+import { TurnoTipo } from './../../entidades/turnoTipo.entity';
 import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { AulaRepository } from './aula.repository';
@@ -19,6 +20,8 @@ export class AulaService {
         
         @Inject(AulaRepository) 
         private aulaRepository: AulaRepository,
+        @InjectRepository(Aula) 
+        private _aulaRepository:Repository <Aula>,
         @InjectRepository(InstitutoEstudianteInscripcion)
         private _institutoEstudianteInscripcionRepository: Repository<InstitutoEstudianteInscripcion>,
         @InjectRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
@@ -38,7 +41,25 @@ export class AulaService {
         return s
     }
     async getById(id:number){
-        const aula = await this.aulaRepository.getByAulaId(id);
+        // const aula = await this.aulaRepository.getByAulaId(id); // mejorando consulta
+        const aula = await this._aulaRepository.findOne({
+          relations:{
+            aulasDocentes:{
+              maestroInscripcion: { persona:true }
+            },
+            paraleloTipo: true,
+            turnoTipo: true,
+            ofertaCurricular: {
+              institutoPlanEstudioCarrera: {
+                planEstudioCarrera:{ intervaloGestionTipo: true}
+              },
+              planEstudioAsignatura: {
+                asignaturaTipo: true,
+              }
+            }
+          },
+          where: {id: id }
+        })
         return aula;
     }
     async getCalificacionesById(id:number){
