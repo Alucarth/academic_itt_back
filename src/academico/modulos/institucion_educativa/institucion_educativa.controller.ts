@@ -46,11 +46,12 @@ export class InstitucionEducativaController {
         return await this.institucionEducativaService.getAllItt();
     }
 
-    @Get('teachers/:codigo_ritt')
-    async getInsitutionTeacher(@Param('codigo_ritt', ParseIntPipe) codigo_ritt: number, )
+    @Get('teachers/:codigo_ritt/:carrera_tipo_id')
+    async getInsitutionTeacher(@Param('codigo_ritt', ParseIntPipe) codigo_ritt: number,@Param('carrera_tipo_id', ParseIntPipe) carrera_tipo_id: number, )
     {
         console.log('codigo ritt',codigo_ritt)
-        return await this.institucionEducativaService.findTeacherByRitt(codigo_ritt)
+        console.log('carrera_tipo_id')
+        return await this.institucionEducativaService.findTeacherByRitt(codigo_ritt,carrera_tipo_id)
     }
 
     @Get('itt')

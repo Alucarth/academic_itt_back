@@ -2,7 +2,7 @@ import { BadRequestException, Inject, Injectable, NotFoundException } from '@nes
 import {  InjectRepository } from '@nestjs/typeorm';
 import { InstitucionEducativa } from 'src/academico/entidades/institucionEducativa.entity';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
 import { InstitucionEducativaAcreditacionRepository } from '../institucion_educativa_acreditacion/institucion_educativa_acreditacion.repository';
 import { InstitucionEducativaImagenRepository } from '../institucion_educativa_imagen/institucion_educativa_imagen.repository';
 import { InstitucionEducativaSucursalRepository } from '../institucion_educativa_sucursal/institucion_educativa_sucursal.repository';
@@ -2322,7 +2322,7 @@ export class InstitucionEducativaService {
           //return itt;
     }
    
-    async findTeacherByRitt(codigo_ritt)
+    async findTeacherByRitt(codigo_ritt,carrera_tipo_id)
     {
       const sucursal = await this.institucionEducativaSucursalRepository.findOne({
         relations: {
@@ -2331,6 +2331,30 @@ export class InstitucionEducativaService {
         where:{ institucionEducativaId: codigo_ritt}
       }) 
       console.log('sucursal',sucursal)
+
+      const ids = await this.institucionEducativaRepository.query(`
+          
+        select distinct (mi.id)  from carrera_autorizada ca
+        inner join instituto_plan_estudio_carrera ipec on ipec.carrera_autorizada_id = ca.id
+        inner join oferta_curricular oc on oc.instituto_plan_estudio_carrera_id = ipec .id
+        inner join aula a on a.oferta_curricular_id = oc.id 
+        inner join aula_docente ad on ad.aula_id = a.id
+        inner join maestro_inscripcion mi on ad.maestro_inscripcion_id = mi.id
+        where ca.institucion_educativa_sucursal_id = ${sucursal.id} and ca.carrera_tipo_id = ${carrera_tipo_id} and mi.cargo_tipo_id = 1;
+      `)
+      const new_ids = []
+      for(const id of ids)
+      { 
+        new_ids.push(id.id)
+      }
+      console.log('ids',ids)
+
+      const carreras = await this.institucionEducativaRepository.query(`
+        select distinct(ca.carrera_tipo_id), ct.carrera  from carrera_autorizada ca 
+        inner join carrera_tipo ct on ct.id = ca.carrera_tipo_id 
+        where ca.institucion_educativa_sucursal_id = ${sucursal.id} order by ct.carrera ;
+      `)
+
       if(sucursal){
         const teachers = await this.maestroInscripcionRepository.find({
           relations: {
@@ -2339,7 +2363,7 @@ export class InstitucionEducativaService {
             formacionTipo: true,
             especialidadTipo: true,
           },
-          where: { institucionEducativaSucursalId: sucursal.id },
+          where: { institucionEducativaSucursalId: sucursal.id, id: In(new_ids) },
           order: { persona: { paterno: 'asc', materno: 'asc', nombre: 'asc'} }
         })
         let profesores:any[] = teachers
@@ -2368,7 +2392,8 @@ export class InstitucionEducativaService {
         // console.log( profesores )
         return {
           sucursal : sucursal,
-          teachers: profesores
+          teachers: profesores,
+          carreras : carreras
         }
       }
 
