@@ -87,7 +87,7 @@ export class CarreraAutorizadaService {
          const sucursal = await this._institucionEducativaSucursal.findOne({
             where: { institucionEducativaId: id }
           })
-        const carreras = []
+        const careers = []
         if(sucursal){
            
           const careers = await this._carreraAutorizadaRepository.query(`
@@ -104,7 +104,6 @@ export class CarreraAutorizadaService {
         
 
           await Promise.all( careers.map(async (career)=>{
-
             let total_estudiantes = await this._carreraAutorizadaRepository.query(`
               select count(distinct (iee.persona_id)) as total_estudiantes from carrera_autorizada ca
               inner join instituto_plan_estudio_carrera ipec on ipec.carrera_autorizada_id = ca.id
@@ -158,29 +157,38 @@ export class CarreraAutorizadaService {
             where ca.institucion_educativa_sucursal_id =   ${sucursal.id } and  ca.carrera_tipo_id = ${career.carrera_tipo_id}
             group by ipec.id , per.numero_resolucion, igt.intervalo_gestion, ca.id;
             `)
-
-            const carrera = {
+            career.resoluciones = resoluciones,
+            career.total_estudiantes = total_estudiantes[0].total_estudiantes
+            career.total_docentes = total_docentes[0].total_docentes
+            // const carrera = {
              
-              carrera: career.carrera,
-              nivel_academico: career.nivel_academico,
-              resoluciones: resoluciones,
-              total_estudiantes : total_estudiantes[0].total_estudiantes,
-              total_docentes : total_docentes[0].total_docentes
-            }
-            carreras.push(carrera)
+            //   carrera: career.carrera,
+            //   nivel_academico: career.nivel_academico,
+            //   resoluciones: resoluciones,
+            //   total_estudiantes : total_estudiantes[0].total_estudiantes,
+            //   total_docentes : total_docentes[0].total_docentes
+            // }
+            // carreras.push(carrera)
             // carrera.carrera_autorizada_id = career.id
 
           }));
-  
+          if(careers.length>0){
+              return this._serviceResp.respuestaHttp201(
+                careers,
+                  "Datos Encontrados !!",
+                  ""
+                );    
+          }else{
+            return this._serviceResp.respuestaHttp404(
+              "",
+              'No se encontraron resultados !!',
+              '',
+          );
+          }
+
         }
 
-        if(carreras.length>0){
-            return this._serviceResp.respuestaHttp201(
-                carreras,
-                "Datos Encontrados !!",
-                ""
-              );    
-        }
+      
         return this._serviceResp.respuestaHttp404(
             "",
             'No se encontraron resultados !!',
