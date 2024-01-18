@@ -1,3 +1,4 @@
+
 import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -30,6 +31,7 @@ import * as tmp from "tmp";
 import { writeFile } from "fs/promises";
 import { TblAuxiliarSie } from "src/academico/entidades/tblAuxiliarSie";
 import { User as UserEntity } from 'src/users/entity/users.entity';
+import { InstitutoEstudianteInscripcionDocenteCalificacion } from "src/academico/entidades/institutoEstudianteInscripcionDocenteCalificacion.entity";
 
 @Injectable()
 export class InscripcionService {
@@ -60,6 +62,9 @@ export class InscripcionService {
     private ofertaCurricularRepository: Repository<OfertaCurricular>,
     @InjectRepository(InstitutoPlanEstudioCarrera)
     private ipecRepository: Repository<InstitutoPlanEstudioCarrera>,
+    @InjectRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
+    private _estudianteCalificacionDocente: Repository<InstitutoEstudianteInscripcionDocenteCalificacion>,
+  
     private _serviceResp: RespuestaSigedService,
     private _servicePersona: PersonaService,
     private readonly usersService: UsersService,
@@ -411,6 +416,7 @@ export class InscripcionService {
 
   async createInscriptionNuevo(dtos: CreateInscriptionNuevoDto[], user:UserEntity) {
     
+
     await Promise.all(
       dtos.map(async (dto,index)=>{
         
@@ -514,216 +520,219 @@ export class InscripcionService {
     // }
 
     //existe todo, se inserta uno a uno
+    
     let insertados = [];
-    try {
-      await Promise.all(
-        dtos.map(async (dto,index)=>{
+    let ofertaCurricularId = 0
+    await Promise.all(dtos.map(async (dto)=>{
+      //1. verificamos si existe registros 
+      const insctritos = await this.inscripcionRepository.find({
+        where:{
+          matriculaEstudianteId: dto.matriculaEstudianteId,
+          aulaId: dto.aulaId,
+          ofertaCurricularId: dto.ofertaCurricularId
+        }
+      })
+      ofertaCurricularId = dto.ofertaCurricularId
+
+      console.log('registros inscritos', insctritos.length)
+      // modulo de correccion de bugs para que se quede con una sola inscripcion 
+      if(insctritos.length > 1 ){
+         
+        await Promise.all(insctritos.map(async (inscrito,index) => {
+          if(index >= 1){
+
+            try {
+  
+              await this.inscripcionRepository.delete(inscrito.id)
+              
+            } catch (error) {
+              console.log('no se pudo eliminar ',inscrito.id )
+              const notas = await  this._estudianteCalificacionDocente.find({
+                where:{ institutoEstudianteInscripcionId: inscrito.id }
+              })
+  
+              await Promise.all(notas.map(async (nota)=>{
+                const eliminado =  await this._estudianteCalificacionDocente.delete(nota.id)
+                console.log('eliminado',eliminado)
+              }) )
+              
+              
+            }
+          }
+        }))
+      }
+    }))
+
+
+      /*
+        eliminar los que no se encuentran en la lista de los dtos
+      */
+      const oferta = await this.ofertaCurricularRepository.findOneBy({id: ofertaCurricularId})
+
+      const ofertas_asignaturas = await this.ofertaCurricularRepository.find({
+        where:{ institutoPlanEstudioCarreraId: oferta.institutoPlanEstudioCarreraId}
+      })
+      let finded = false
+      let eliminados = []
+      let aulaEliminados = []
+      await Promise.all(ofertas_asignaturas.map(async (oferta_asignatura)=>{
+         finded = false
+          await Promise.all(dtos.map(async (dto)=>{
+            if(oferta_asignatura.id === dto.ofertaCurricularId)
+            {
+              finded = true
+            }
+          }))
+
+          if(!finded)
+          {
+            /** como no se encuentra la asignatura entonces se debe eliminar pero para eso primero se verifica que exista */
+
+            const aulaForDelete = await this.aulaRepository.findOneBy({ ofertaCurricularId: oferta_asignatura.id})
+            
+            if(aulaForDelete){ //si existe el aula se tiene que eliminar primero su inscripcion
+               
+              const inscripcionForDelete = await this.inscripcionRepository.findOneBy({ aulaId: aulaForDelete.id, ofertaCurricularId: oferta_asignatura.id})
+              if(inscripcionForDelete) //si existe inscripcion se elimina primero la inscripcion
+              {
+                try {
+                    await this.inscripcionRepository.delete(inscripcionForDelete.id)
+                } catch (error) {
+                  console.log('nose pudo eliminar por que tiene nota id', inscripcionForDelete.id)
+                  eliminados.push(inscripcionForDelete.id)
+                }
+              }
+
+              try {
+                await this.aulaRepository.delete(aulaForDelete.id)
+              } catch (error) {
+                console.log('no se pudo eliminar el aula', aulaForDelete.id)
+                aulaEliminados.push(aulaForDelete.id)
+              }
+            }
+
+          }
+
+      }))
+      console.log('ofertas_asignaturas ',ofertas_asignaturas)
+    // try {
+    //   await Promise.all(
+    //     dtos.map(async (dto,index)=>{
             
 
         
-        const tieneOferta = await this.inscripcionRepository.query(`
-        select id
-        from instituto_estudiante_inscripcion 
-        where 
-        matricula_estudiante_id = ${dto.matriculaEstudianteId}  and 
-        estadomatricula_tipo_id = 1 and 
-        estadomatricula_inicio_tipo_id = 0 and 
-        oferta_curricular_id = ${dto.ofertaCurricularId}  
-        `);
+    //     const tieneOferta = await this.inscripcionRepository.query(`
+    //     select id
+    //     from instituto_estudiante_inscripcion 
+    //     where 
+    //     matricula_estudiante_id = ${dto.matriculaEstudianteId}  and 
+    //     estadomatricula_tipo_id = 1 and 
+    //     estadomatricula_inicio_tipo_id = 0 and 
+    //     oferta_curricular_id = ${dto.ofertaCurricularId}  
+    //     `);
 
-        if (parseInt(tieneOferta.length) == 0) {
-          const existe = await this.inscripcionRepository.query(`
-          select count(*) as existe 
-          from instituto_estudiante_inscripcion 
-          where 
-          matricula_estudiante_id = ${dto.matriculaEstudianteId}  and 
-          aula_id = ${dto.aulaId} and 
-          estadomatricula_tipo_id = 1 and 
-          estadomatricula_inicio_tipo_id = 0 and 
-          oferta_curricular_id = ${dto.ofertaCurricularId}  
-          `);
+    //     if (parseInt(tieneOferta.length) == 0) {
+    //       const existe = await this.inscripcionRepository.query(`
+    //       select count(*) as existe 
+    //       from instituto_estudiante_inscripcion 
+    //       where 
+    //       matricula_estudiante_id = ${dto.matriculaEstudianteId}  and 
+    //       aula_id = ${dto.aulaId} and 
+    //       estadomatricula_tipo_id = 1 and 
+    //       estadomatricula_inicio_tipo_id = 0 and 
+    //       oferta_curricular_id = ${dto.ofertaCurricularId}  
+    //       `);
 
-          // inserta solo si es que NO existe
-            if (parseInt(existe[0].existe) == 0) {
-              const aula = await this.aulaRepository.findOne({
-                where: {
-                  id: dto.aulaId,
-                },
-              });
+    //       // inserta solo si es que NO existe
+    //         if (parseInt(existe[0].existe) == 0) {
+    //           const aula = await this.aulaRepository.findOne({
+    //             where: {
+    //               id: dto.aulaId,
+    //             },
+    //           });
 
-              const ofertaCurricular =
-                await this.ofertaCurricularRepository.findOne({
-                  where: {
-                    id: dto.ofertaCurricularId,
-                  },
-                });
+    //           const ofertaCurricular =
+    //             await this.ofertaCurricularRepository.findOne({
+    //               where: {
+    //                 id: dto.ofertaCurricularId,
+    //               },
+    //             });
 
-              const matriculaEstudiante = await this.matriculaRepository.findOne({
-                where: {
-                  id: dto.matriculaEstudianteId,
-                },
-              });
+    //           const matriculaEstudiante = await this.matriculaRepository.findOne({
+    //             where: {
+    //               id: dto.matriculaEstudianteId,
+    //             },
+    //           });
 
-              const estadoMatriculaTipo =
-                await this.estadoMatriculaRepository.findOne({
-                  where: {
-                    id: 1,
-                  },
-                });
+    //           const estadoMatriculaTipo =
+    //             await this.estadoMatriculaRepository.findOne({
+    //               where: {
+    //                 id: 1,
+    //               },
+    //             });
 
-              const res = await this.inscripcionRepository
-                .createQueryBuilder()
-                .insert()
-                .into(InstitutoEstudianteInscripcion)
-                .values([
-                  {
-                    observacion: "Inscrito Nuevo",
-                    usuarioId: user.id,
-                    estadoMatriculaInicioTipoId: 0,
-                    aula: aula,
-                    ofertaCurricular: ofertaCurricular,
-                    estadoMatriculaTipo: estadoMatriculaTipo,
-                    matriculaEstudiante: matriculaEstudiante,
-                  },
-                ])
-                .returning("id")
-                .execute();
+    //           const res = await this.inscripcionRepository
+    //             .createQueryBuilder()
+    //             .insert()
+    //             .into(InstitutoEstudianteInscripcion)
+    //             .values([
+    //               {
+    //                 observacion: "Inscrito Nuevo",
+    //                 usuarioId: user.id,
+    //                 estadoMatriculaInicioTipoId: 0,
+    //                 aula: aula,
+    //                 ofertaCurricular: ofertaCurricular,
+    //                 estadoMatriculaTipo: estadoMatriculaTipo,
+    //                 matriculaEstudiante: matriculaEstudiante,
+    //               },
+    //             ])
+    //             .returning("id")
+    //             .execute();
 
-              console.log("res:", res);
-              let inscripcionId = res.identifiers[0].id;
-              insertados.push(inscripcionId);
-            }
-        }
-        //si existe editaremos el paralelo de inscripcion del estudiante
-        if (parseInt(tieneOferta.length) >= 1 && dto.aulaId!=tieneOferta[0].aula_id) {
-          await this.inscripcionRepository
-          .createQueryBuilder()
-          .update(InstitutoEstudianteInscripcion)
-          .set(
-            {
-              observacion: "Cambio de aula ..",
-              aulaId: dto.aulaId,
-            },
-          )
-          .where({id: tieneOferta[0].id})
-          .execute();
-        }
+    //           console.log("res:", res);
+    //           let inscripcionId = res.identifiers[0].id;
+    //           insertados.push(inscripcionId);
+    //         }
+    //     }
+    //     //si existe editaremos el paralelo de inscripcion del estudiante
+    //     if (parseInt(tieneOferta.length) >= 1 && dto.aulaId!=tieneOferta[0].aula_id) {
+    //       await this.inscripcionRepository
+    //       .createQueryBuilder()
+    //       .update(InstitutoEstudianteInscripcion)
+    //       .set(
+    //         {
+    //           observacion: "Cambio de aula ..",
+    //           aulaId: dto.aulaId,
+    //         },
+    //       )
+    //       .where({id: tieneOferta[0].id})
+    //       .execute();
+    //     }
 
       
-        })
-      )
-      // for (let index = 0; index < dtos.length; index++) {
+    //     })
+    //   )
+  
 
-      //   let dto = dtos[index];
-
-      //   const tieneOferta = await this.inscripcionRepository.query(`
-      //   select id
-      //   from instituto_estudiante_inscripcion 
-      //   where 
-      //   matricula_estudiante_id = ${dto.matriculaEstudianteId}  and 
-      //   estadomatricula_tipo_id = 1 and 
-      //   estadomatricula_inicio_tipo_id = 0 and 
-      //   oferta_curricular_id = ${dto.ofertaCurricularId}  
-      //   `);
-
-      //   if (parseInt(tieneOferta.length) == 0) {
-      //     const existe = await this.inscripcionRepository.query(`
-      //     select count(*) as existe 
-      //     from instituto_estudiante_inscripcion 
-      //     where 
-      //     matricula_estudiante_id = ${dto.matriculaEstudianteId}  and 
-      //     aula_id = ${dto.aulaId} and 
-      //     estadomatricula_tipo_id = 1 and 
-      //     estadomatricula_inicio_tipo_id = 0 and 
-      //     oferta_curricular_id = ${dto.ofertaCurricularId}  
-      //     `);
-
-      //     // inserta solo si es que NO existe
-      //       if (parseInt(existe[0].existe) == 0) {
-      //         const aula = await this.aulaRepository.findOne({
-      //           where: {
-      //             id: dto.aulaId,
-      //           },
-      //         });
-
-      //         const ofertaCurricular =
-      //           await this.ofertaCurricularRepository.findOne({
-      //             where: {
-      //               id: dto.ofertaCurricularId,
-      //             },
-      //           });
-
-      //         const matriculaEstudiante = await this.matriculaRepository.findOne({
-      //           where: {
-      //             id: dto.matriculaEstudianteId,
-      //           },
-      //         });
-
-      //         const estadoMatriculaTipo =
-      //           await this.estadoMatriculaRepository.findOne({
-      //             where: {
-      //               id: 1,
-      //             },
-      //           });
-
-      //         const res = await this.inscripcionRepository
-      //           .createQueryBuilder()
-      //           .insert()
-      //           .into(InstitutoEstudianteInscripcion)
-      //           .values([
-      //             {
-      //               observacion: "Inscrito Nuevo",
-      //               usuarioId: user.id,
-      //               estadoMatriculaInicioTipoId: 0,
-      //               aula: aula,
-      //               ofertaCurricular: ofertaCurricular,
-      //               estadoMatriculaTipo: estadoMatriculaTipo,
-      //               matriculaEstudiante: matriculaEstudiante,
-      //             },
-      //           ])
-      //           .returning("id")
-      //           .execute();
-
-      //         console.log("res:", res);
-      //         let inscripcionId = res.identifiers[0].id;
-      //         insertados.push(inscripcionId);
-      //       }
-      //   }
-      //   //si existe editaremos el paralelo de inscripcion del estudiante
-      //   if (parseInt(tieneOferta.length) >= 1 && dto.aulaId!=tieneOferta[0].aula_id) {
-      //     await this.inscripcionRepository
-      //     .createQueryBuilder()
-      //     .update(InstitutoEstudianteInscripcion)
-      //     .set(
-      //       {
-      //         observacion: "Cambio de aula ..",
-      //         aulaId: dto.aulaId,
-      //       },
-      //     )
-      //     .where({id: tieneOferta[0].id})
-      //     .execute();
-      //   }
-
-      // }
-      // ha insertado todos los que no existian
-      return this._serviceResp.respuestaHttp201(
-        insertados,
-        "Registro Creado !!",
-        ""
-      );
-    } catch (error) {
-      console.log("Error insertar inscripcion: ", error);
-      throw new HttpException(
-        {
-          status: HttpStatus.CONFLICT,
-          error: `Error insertar Matricula: ${error.message}`,
-        },
-        HttpStatus.ACCEPTED,
-        {
-          cause: error,
-        }
-      );
-    }
+    //   return this._serviceResp.respuestaHttp201(
+    //     insertados,
+    //     "Registro Creado !!",
+    //     ""
+    //   );
+    // } catch (error) {
+    //   console.log("Error insertar inscripcion: ", error);
+    //   throw new HttpException(
+    //     {
+    //       status: HttpStatus.CONFLICT,
+    //       error: `Error insertar Matricula: ${error.message}`,
+    //     },
+    //     HttpStatus.ACCEPTED,
+    //     {
+    //       cause: error,
+    //     }
+    //   );
+    // }
+    return insertados
   }
 
   async createInscriptionTransitabilidad(dtos: CreateInscriptionNuevoDto[], user:UserEntity) {
