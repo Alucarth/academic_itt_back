@@ -67,6 +67,9 @@ export class CreateMaestroInscripcionDto {
   item: string;
 
   @IsOptional()
+  horas_item: number;
+
+  @IsOptional()
   @IsNumber()
   maestroInscripcionIdAm: number;
 

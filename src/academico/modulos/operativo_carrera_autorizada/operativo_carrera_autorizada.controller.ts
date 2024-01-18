@@ -61,4 +61,16 @@ export class OperativoCarreraAutorizadaController {
     async deleteAreaTipo(@Param("id") id: string) {
       return await this.operativoCarreraAutorizadaService.deleteOperativoCarrera(parseInt(id));
     }
+
+    @Get('operativos/:carrera_autorizada_id/:gestion_id/:periodo_tipo_id')
+    async operative_career(@Param('carrera_autorizada_id') carrera_autorizada_id: number, @Param('gestion_id') gestion_id: number,  @Param('periodo_tipo_id') periodo_tipo_id: number)
+    {
+        return await this.operativoCarreraAutorizadaService.operativeCareer(carrera_autorizada_id, gestion_id, periodo_tipo_id)
+    }
+
+    @Get('operativo_activo/:carrera_autorizada_id')
+    async getOperativeActive (@Param('carrera_autorizada_id') carrera_autorizada_id: number)
+    {
+        return await this.operativoCarreraAutorizadaService.getOperativeActive(carrera_autorizada_id)
+    }
 }

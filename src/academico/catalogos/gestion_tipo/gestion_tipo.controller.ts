@@ -16,6 +16,11 @@ export class GestionTipoController {
         return await this.gestionTipoService.getAll();
     }
 
+    @Get('/gestions')
+    async getGestions():Promise<GestionTipo[]>{
+        return await this.gestionTipoService.getGestions();
+    }
+
     @Get('vigente')
     async getGestionVigente():Promise<GestionTipo>{
         return await this.gestionTipoService.getGestionVigente();

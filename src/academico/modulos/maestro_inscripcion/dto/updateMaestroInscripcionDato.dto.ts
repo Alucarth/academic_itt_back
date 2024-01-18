@@ -59,6 +59,9 @@ import {
   
     @IsOptional()
     item: string;
+
+    @IsOptional()
+    horas_item: number;
     
   }
   

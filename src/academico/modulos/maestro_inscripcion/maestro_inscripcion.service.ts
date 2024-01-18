@@ -645,6 +645,7 @@ export class MaestroInscripcionService {
         maestro_inscripcion.asignacion_fecha_inicio,
         maestro_inscripcion.asignacion_fecha_fin,
         maestro_inscripcion.item,
+        maestro_inscripcion.horas_item,
         maestro_inscripcion.periodo_tipo_id,
         maestro_inscripcion.institucion_educativa_sucursal_id,
         ( SELECT lugar FROM unidad_territorial WHERE ID = nacimiento_unidad_territorial_id ) AS pais,
@@ -753,6 +754,7 @@ export class MaestroInscripcionService {
               maestro_inscripcion.asignacion_fecha_inicio,
               maestro_inscripcion.asignacion_fecha_fin,
               maestro_inscripcion.item,
+              maestro_inscripcion.horas_item,
               maestro_inscripcion.periodo_tipo_id,
               maestro_inscripcion.institucion_educativa_sucursal_id
             FROM
@@ -1171,8 +1173,9 @@ export class MaestroInscripcionService {
             braile                      : dto.braile,
             estudioIdiomaTipo           : idiomaTipo,
             asignacionFechaInicio       : dto.asignacionFechaInicio,
-            asignacionFechaFin          : dto.asignacionFechaFin,
+            // asignacionFechaFin          : dto.asignacionFechaFin,
             item                        : dto.item,
+            horasItem                   : dto.horas_item,
             maestroInscripcionIdAm      : dto.maestroInscripcionIdAm,
             periodoTipo                 : periodoTipo,
             usuarioId                   : user_id
@@ -1382,8 +1385,9 @@ export class MaestroInscripcionService {
             formacionDescripcion : dto.formacionDescripcion,
             braile               : dto.braile,
             asignacionFechaInicio: dto.asignacionFechaInicio,
-            asignacionFechaFin   : dto.asignacionFechaFin,
+            // asignacionFechaFin   : dto.asignacionFechaFin,
             item                 : dto.item,
+            horasItem            : dto.HorasItem,
             //maestroInscripcionIdAm: dto.maestroInscripcionIdAm,
           })
           .where("id = :id", { id: dto.id })
@@ -1413,8 +1417,9 @@ export class MaestroInscripcionService {
             braile               : dto.braile,
             estudioIdiomaTipoId    : idiomaTipo.id,
             asignacionFechaInicio: dto.asignacionFechaInicio,
-            asignacionFechaFin   : dto.asignacionFechaFin,
+            // asignacionFechaFin   : dto.asignacionFechaFin,
             item                 : dto.item,
+            horasItem            : dto.HorasItem,
             //maestroInscripcionIdAm: dto.maestroInscripcionIdAm,
           })
           .where("id = :id", { id: dto.id })

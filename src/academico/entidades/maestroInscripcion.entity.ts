@@ -101,6 +101,9 @@ export class MaestroInscripcion {
   
   @Column({ type: 'integer', name: 'financiamiento_tipo_id' })
   financiamientoTipoId: number;
+  
+  @Column({type: 'float', name: 'horas_item'})
+  horasItem: number;
 
   @ManyToOne(() => FinanciamientoTipo, (financiamientoTipo) => financiamientoTipo.maestrosInscripciones, { nullable: false, cascade: true })
   @JoinColumn({ name: 'financiamiento_tipo_id', referencedColumnName: 'id'})

@@ -1,17 +1,21 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { User } from 'src/users/entity/users.entity';
-import { EntityManager } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CreateOperativoCarreraAutorizadaDto } from './dto/createOperativoCarreraAutorizada.dto';
 import { UpdateOperativoCarreraAutorizadaDto } from './dto/updateOperativoCarreraAutorizada.dto';
 import { OperativoCarreraAutorizadaRepository } from './operativo_carrera_autorizada.repository';
 import { User as UserEntity } from 'src/users/entity/users.entity';
 import { UpdateFechaOperativoCarreraAutorizadaDto } from './dto/updateFechaOperativoCarreraAutorizada.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { OperativoCarreraAutorizada } from 'src/academico/entidades/operativoCarreraAutorizada.entity';
 @Injectable()
 export class OperativoCarreraAutorizadaService {
     constructor(
         @Inject(OperativoCarreraAutorizadaRepository)
         private operativoCarreraAutorizadaRepositorio: OperativoCarreraAutorizadaRepository,
+        @InjectRepository(OperativoCarreraAutorizada)
+        private _operativeCareerRepository: Repository< OperativoCarreraAutorizada>,
 
         private _serviceResp: RespuestaSigedService,
     ){}
@@ -221,6 +225,37 @@ export class OperativoCarreraAutorizadaService {
             "Registro Eliminado !!",
             ""
           );
+    }
+
+    async getOperativeActive(carrera_autorizada_id){
+        const operative = await this._operativeCareerRepository.findOne({
+            relations:{
+                periodoTipo: true,
+                eventoTipo: true,
+                modalidadEvaluacionTipo:true,
+                gestionTipo: true,
+            },
+            where: {
+                carreraAutorizadaId: carrera_autorizada_id, activo: true
+            },
+        })
+        return operative
+    }
+
+    async operativeCareer( carrera_autorizada_id, gestion_id, periodo_tipo_id)
+    {
+        const operatives = await this._operativeCareerRepository.find({
+            relations:{
+                periodoTipo: true,
+                eventoTipo: true,
+                modalidadEvaluacionTipo:true
+            },
+            where: {
+                carreraAutorizadaId: carrera_autorizada_id, gestionTipoId: gestion_id , periodoTipoId: periodo_tipo_id
+            },
+            order:{ id: 'asc'}
+        })
+        return operatives
     }
    
 

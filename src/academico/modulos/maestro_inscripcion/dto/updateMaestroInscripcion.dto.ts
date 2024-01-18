@@ -65,12 +65,15 @@ export class UpdateMaestroInscripcionDto {
   @IsDateString()
   asignacionFechaInicio: string;
 
-  @IsOptional()
-  @IsDateString()
-  asignacionFechaFin: string;
+  // @IsOptional()
+  // @IsDateString()
+  // asignacionFechaFin: string;
 
   @IsOptional()
   item: string;
+
+  @IsOptional()
+  HorasItem: number;
 
   @IsOptional()
   @IsNumber()
