@@ -547,14 +547,15 @@ export class InscripcionService {
               
             } catch (error) {
               console.log('no se pudo eliminar ',inscrito.id )
-              const notas = await  this._estudianteCalificacionDocente.find({
-                where:{ institutoEstudianteInscripcionId: inscrito.id }
-              })
+              // esto elimina las notas validar que solo se elimine si es 0 
+              // const notas = await  this._estudianteCalificacionDocente.find({
+              //   where:{ institutoEstudianteInscripcionId: inscrito.id }
+              // })
   
-              await Promise.all(notas.map(async (nota)=>{
-                const eliminado =  await this._estudianteCalificacionDocente.delete(nota.id)
-                console.log('eliminado',eliminado)
-              }) )
+              // await Promise.all(notas.map(async (nota)=>{
+              //   const eliminado =  await this._estudianteCalificacionDocente.delete(nota.id)
+              //   console.log('eliminado',eliminado)
+              // }) )
               
               
             }
