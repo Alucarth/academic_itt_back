@@ -48,7 +48,8 @@ export class CarreraAutorizadaService {
        
      
         const carreras = await this.carreraAutorizadaRepositorio.geAllCarrerasByIeId(id);
-        // console.log('carreras',carreras)
+        console.log('carreras',carreras)
+        
         await Promise.all( carreras.map(async (carrera)=>{
           console.log('carrera',carrera);
           let total_estudiantes = await this._carreraAutorizadaRepository.query(`select count(*) as total_estudiantes from matricula_estudiante me 

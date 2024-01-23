@@ -62,14 +62,14 @@ export class CarreraAutorizadaRepository {
           .innerJoinAndSelect("ca.institucionEducativaSucursal", "s")
           .innerJoinAndSelect("ca.carreraTipo", "ct")
           .innerJoinAndSelect("ca.areaTipo", "at")
-          //.leftJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
-          .innerJoinAndSelect("ca.institutosPlanesCarreras","ipec")
-          .innerJoinAndSelect("ipec.planEstudioCarrera","pec")
-          .innerJoinAndSelect("pec.planEstudioResolucion","per")
-          .innerJoinAndSelect("ca.resoluciones", "r")
-          .innerJoinAndSelect("r.resolucionTipo", "rt")
-          .innerJoinAndSelect("r.nivelAcademicoTipo", "na")
-          .innerJoinAndSelect("r.intervaloGestionTipo", "ig")
+          .leftJoinAndSelect("ca.institutosPlanesCarreras", "ipec")
+          //.innerJoinAndSelect("ca.institutosPlanesCarreras","ipec")
+          .leftJoinAndSelect("ipec.planEstudioCarrera","pec")
+          .leftJoinAndSelect("pec.planEstudioResolucion","per")
+          .leftJoinAndSelect("ca.resoluciones", "r")
+          .leftJoinAndSelect("r.resolucionTipo", "rt")
+          .leftJoinAndSelect("r.nivelAcademicoTipo", "na")
+          .leftJoinAndSelect("r.intervaloGestionTipo", "ig")
           .select([
             "ca.id as carrera_autorizada_id",
             "ct.carrera as carrera",

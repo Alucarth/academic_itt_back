@@ -416,7 +416,7 @@ export class InscripcionService {
 
   async createInscriptionNuevo(dtos: CreateInscriptionNuevoDto[], user:UserEntity) {
     
-
+    let matricula_estudiante_id = 0
     await Promise.all(
       dtos.map(async (dto,index)=>{
         
@@ -431,6 +431,10 @@ export class InscripcionService {
               id: dto.matriculaEstudianteId,
             },
           });
+          if(matriculaEstudiante)
+          {
+            matricula_estudiante_id = matriculaEstudiante.id
+          }
           if (!matriculaEstudiante) {
             return this._serviceResp.respuestaHttp404(
               "0",
@@ -469,57 +473,6 @@ export class InscripcionService {
         
       })
     )
-    //valida los parametros
-    // for (let index = 0; index < dtos.length; index++) {
-    //   let dto = dtos[index];
-
-    //   console.log("index: ", index);
-    //   console.log(dto);
-
-    //   //1: existe matricula ?
-    //   const matriculaEstudiante = await this.matriculaRepository.findOne({
-    //     where: {
-    //       id: dto.matriculaEstudianteId,
-    //     },
-    //   });
-    //   if (!matriculaEstudiante) {
-    //     return this._serviceResp.respuestaHttp404(
-    //       "0",
-    //       "Matricula No Encontrado !!",
-    //       ""
-    //     );
-    //   }
-
-    //   //2: existe aula ?
-    //   const aula = await this.aulaRepository.findOne({
-    //     where: {
-    //       id: dto.aulaId,
-    //     },
-    //   });
-    //   if (!aula) {
-    //     return this._serviceResp.respuestaHttp404(
-    //       dto.aulaId,
-    //       "aulaId No Encontrado !!",
-    //       ""
-    //     );
-    //   }
-
-    //   //: existe oferta curricular?
-    //   const ofertaCurricular = await this.ofertaCurricularRepository.findOne({
-    //     where: {
-    //       id: dto.ofertaCurricularId,
-    //     },
-    //   });
-    //   if (!ofertaCurricular) {
-    //     return this._serviceResp.respuestaHttp404(
-    //       dto.ofertaCurricularId,
-    //       "ofertaCurricular No Encontrado !!",
-    //       ""
-    //     );
-    //   }
-    // }
-
-    //existe todo, se inserta uno a uno
     
     let insertados = [];
     let ofertaCurricularId = 0
@@ -533,34 +486,36 @@ export class InscripcionService {
         }
       })
       ofertaCurricularId = dto.ofertaCurricularId
-
-      console.log('registros inscritos', insctritos.length)
-      // modulo de correccion de bugs para que se quede con una sola inscripcion 
-      if(insctritos.length > 1 ){
+      console.log('si tiene mas de un registro aqui validar con el modulo ')
+      console.log('registros inscritos ', insctritos.length)
+      // modulo de correccion de bugs para que se quede con una sola inscripcion  
+      /* solo habilitar cuando se requira corregir algun caso especial */
+      // if(insctritos.length > 1 ){
          
-        await Promise.all(insctritos.map(async (inscrito,index) => {
-          if(index >= 1){
+      //   await Promise.all(insctritos.map(async (inscrito,index) => {
+      //     if(index >= 1){
 
-            try {
+      //       try {
   
-              await this.inscripcionRepository.delete(inscrito.id)
+      //         await this.inscripcionRepository.delete(inscrito.id)
               
-            } catch (error) {
-              console.log('no se pudo eliminar ',inscrito.id )
-              const notas = await  this._estudianteCalificacionDocente.find({
-                where:{ institutoEstudianteInscripcionId: inscrito.id }
-              })
-  
-              await Promise.all(notas.map(async (nota)=>{
-                const eliminado =  await this._estudianteCalificacionDocente.delete(nota.id)
-                console.log('eliminado',eliminado)
-              }) )
+      //       } catch (error) {
+      //         console.log('no se pudo eliminar ',inscrito.id )
+      //         const notas = await  this._estudianteCalificacionDocente.find({
+      //           where:{ institutoEstudianteInscripcionId: inscrito.id }
+      //         })
+                //antes de eliminar nota verificar si la nota es 0 adiciona de ser necesario 
+      //         await Promise.all(notas.map(async (nota)=>{
+      //           const eliminado =  await this._estudianteCalificacionDocente.delete(nota.id)
+      //           console.log('eliminado',eliminado)
+      //         }) )
               
               
-            }
-          }
-        }))
-      }
+      //       }
+      //     }
+      //   }))
+      // }
+
     }))
 
 
@@ -568,17 +523,21 @@ export class InscripcionService {
         eliminar los que no se encuentran en la lista de los dtos
       */
       const oferta = await this.ofertaCurricularRepository.findOneBy({id: ofertaCurricularId})
+      console.log('InstitutoPlanEstudio Carrera =====>', oferta.institutoPlanEstudioCarreraId);
 
-      const ofertas_asignaturas = await this.ofertaCurricularRepository.find({
-        where:{ institutoPlanEstudioCarreraId: oferta.institutoPlanEstudioCarreraId}
-      })
-      let finded = false
-      let eliminados = []
-      let aulaEliminados = []
-      await Promise.all(ofertas_asignaturas.map(async (oferta_asignatura)=>{
-         finded = false
+      const asignaturas_aula = await this.aulaRepository.query(`
+        select at2.asignatura, pt.paralelo,a.id as aula_id  from oferta_curricular oc 
+        inner join plan_estudio_asignatura pea on pea.id = oc.plan_estudio_asignatura_id 
+        inner join asignatura_tipo at2 on at2.id = pea.asignatura_tipo_id
+        inner join aula a on a.oferta_curricular_id  = oc.id
+        inner join paralelo_tipo pt on pt.id = a.paralelo_tipo_id 
+        where oc.instituto_plan_estudio_carrera_id = ${oferta.institutoPlanEstudioCarreraId};  
+      `);
+
+      await Promise.all(asignaturas_aula.map( async (asignatura_aula)=>{
+        let finded = false
           await Promise.all(dtos.map(async (dto)=>{
-            if(oferta_asignatura.id === dto.ofertaCurricularId)
+            if(asignatura_aula.aula_id === dto.aulaId)
             {
               finded = true
             }
@@ -586,35 +545,47 @@ export class InscripcionService {
 
           if(!finded)
           {
-            /** como no se encuentra la asignatura entonces se debe eliminar pero para eso primero se verifica que exista */
-
-            const aulaForDelete = await this.aulaRepository.findOneBy({ ofertaCurricularId: oferta_asignatura.id})
-            
-            if(aulaForDelete){ //si existe el aula se tiene que eliminar primero su inscripcion
-               
-              const inscripcionForDelete = await this.inscripcionRepository.findOneBy({ aulaId: aulaForDelete.id, ofertaCurricularId: oferta_asignatura.id})
-              if(inscripcionForDelete) //si existe inscripcion se elimina primero la inscripcion
-              {
-                try {
-                    await this.inscripcionRepository.delete(inscripcionForDelete.id)
-                } catch (error) {
-                  console.log('nose pudo eliminar por que tiene nota id', inscripcionForDelete.id)
-                  eliminados.push(inscripcionForDelete.id)
-                }
-              }
-
+            console.log('No encontrado en la lista', asignatura_aula)
+            const inscripcionForDelete = await this.inscripcionRepository.findOneBy({ aulaId: asignatura_aula.aula_id, matriculaEstudianteId: matricula_estudiante_id})
+            if(inscripcionForDelete)
+            {
+              //en el caso que exista se tiene que eliminar su inscricion
+              console.log('eliminando inscripcion')
               try {
-                await this.aulaRepository.delete(aulaForDelete.id)
+                await this.inscripcionRepository.delete(inscripcionForDelete.id)
               } catch (error) {
-                console.log('no se pudo eliminar el aula', aulaForDelete.id)
-                aulaEliminados.push(aulaForDelete.id)
+                console.log('no se pudo eliminar por que tiene notas')
               }
             }
-
           }
-
       }))
-      console.log('ofertas_asignaturas ',ofertas_asignaturas)
+
+    await Promise.all(dtos.map(async (dto)=>{
+      
+      //verificamos si ya tiene una inscripcion antes de generar un registro para evitar dobles registros
+      const new_inscripcion = await this.inscripcionRepository.findOneBy({matriculaEstudianteId: dto.matriculaEstudianteId, aulaId: dto.aulaId, ofertaCurricularId: dto.ofertaCurricularId  })
+      if(!new_inscripcion)
+      {
+        // observacion: "Inscrito Nuevo"
+        const payload = {
+          aulaId: dto.aulaId,
+          matriculaEstudianteId: dto.matriculaEstudianteId,
+          ofertaCurricularId: dto.ofertaCurricularId,
+          estadoMatriculaInicioTipoId: 0, //consultar cual era el motivo de este estado 
+          estadoMatriculaTipoId: 1,
+          usuarioId: user.id 
+        }
+        
+        const inscrito = await this.inscripcionRepository.save(payload)
+        insertados.push(inscrito)
+
+      }
+
+    }))
+
+    /** por si se requiere ver la logica que implementaron los del MINEDU */
+    
+      // console.log('ofertas_asignaturas ',asignaturas_aula)
     // try {
     //   await Promise.all(
     //     dtos.map(async (dto,index)=>{
