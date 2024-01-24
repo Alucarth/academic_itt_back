@@ -1,14 +1,21 @@
+import { Operativo } from './../../entidades/operativo.entity';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { User } from 'src/users/entity/users.entity';
 import { EntityManager, Repository } from 'typeorm';
-import { CreateOperativoCarreraAutorizadaDto } from './dto/createOperativoCarreraAutorizada.dto';
+
 import { UpdateOperativoCarreraAutorizadaDto } from './dto/updateOperativoCarreraAutorizada.dto';
 import { OperativoCarreraAutorizadaRepository } from './operativo_carrera_autorizada.repository';
 import { User as UserEntity } from 'src/users/entity/users.entity';
 import { UpdateFechaOperativoCarreraAutorizadaDto } from './dto/updateFechaOperativoCarreraAutorizada.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OperativoCarreraAutorizada } from 'src/academico/entidades/operativoCarreraAutorizada.entity';
+import { CarreraAutorizadaResolucion } from 'src/academico/entidades/carreraAutorizadaResolucion.entity';
+import { PeriodoTipo } from 'src/academico/entidades/periodoTipo.entity';
+import { ModalidadEvaluacionTipo } from 'src/academico/entidades/modalidadEvaluacionTipo.entity';
+import { EventoTipo } from 'src/academico/entidades/eventoTipo.entity';
+import { CreateOperativoCarreraAutorizadaDto } from './dto/createOperativoCarreraAutorizada.dto';
+import { OperativoCarreraAutorizadaDTO } from './dto/OperativoCarreraAutorizada.dto';
 @Injectable()
 export class OperativoCarreraAutorizadaService {
     constructor(
@@ -16,7 +23,14 @@ export class OperativoCarreraAutorizadaService {
         private operativoCarreraAutorizadaRepositorio: OperativoCarreraAutorizadaRepository,
         @InjectRepository(OperativoCarreraAutorizada)
         private _operativeCareerRepository: Repository< OperativoCarreraAutorizada>,
-
+        @InjectRepository(CarreraAutorizadaResolucion)
+        private _carreraAutorizadaResolucionRepository: Repository<CarreraAutorizadaResolucion>,
+        @InjectRepository(PeriodoTipo)
+        private _periodoTipoRepository: Repository <PeriodoTipo>,
+        @InjectRepository(EventoTipo)
+        private _eventoTipoRepository: Repository <EventoTipo>,
+        @InjectRepository(ModalidadEvaluacionTipo)
+        private _modalidadEvaluacionTipoRepository: Repository<ModalidadEvaluacionTipo>,
         private _serviceResp: RespuestaSigedService,
     ){}
     
@@ -257,6 +271,159 @@ export class OperativoCarreraAutorizadaService {
         })
         return operatives
     }
-   
+    /**
+     * intervalo_gestion_tipo_id: 4 Anual 1 Semestral
+     * evento_tipo_id: 1 inscripciones 2 calificaciones
+     * modalidad_evaluacion_tipo_id: 
+     * 1 primer trimestre
+     * 2 segundo trimestre
+     * 3 primer bimestre
+     * 4 segundo bimestre
+     * 5 ter bimestre
+     * 6 cuarto bimestre
+     * 7 nota final
+     * 9 recuperatorio
+     */
+    async generateOperativesCareer(carrera_autorizada_id, gestion_id, user)
+    {
+        const carrera_autorizada_resolucion = await this._carreraAutorizadaResolucionRepository.findOneBy({carreraAutorizadaId: carrera_autorizada_id})
+        
+        if(carrera_autorizada_resolucion)
+        {
+            const periodos = await this._periodoTipoRepository.find({
+                where: {intervaloGestionTipoId: carrera_autorizada_resolucion.intervaloGestionTipoId}
+            })
+
+            const modalidades = await this._modalidadEvaluacionTipoRepository.find({
+                where: { intervaloGestionTipoId: carrera_autorizada_resolucion.intervaloGestionTipoId}
+            })
+
+            const eventos = await this._eventoTipoRepository.find()
+            
+            let operativo_activo = false
+            
+            await Promise.all(periodos.map(async (periodo)=>{
+
+                await Promise.all(eventos.map( async (evento)=>{
+
+                    if(evento.evento === 'Inscripciones')
+                    {
+                        let new_operativo = new OperativoCarreraAutorizadaDTO()
+                        new_operativo.carreraAutorizadaId = carrera_autorizada_id
+                        new_operativo.eventoTipoId = evento.id
+                        new_operativo.gestionTipoId = gestion_id
+                        new_operativo.periodoTipoId = periodo.id
+                        new_operativo.activo = false
+
+                        let operativo = await this._operativeCareerRepository.findOne({
+                            where:  { 
+                                        carreraAutorizadaId: new_operativo.carreraAutorizadaId,
+                                        eventoTipoId: new_operativo.eventoTipoId,
+                                        gestionTipoId: new_operativo.gestionTipoId,
+                                        periodoTipoId: new_operativo.periodoTipoId
+                                    }
+                        })
+
+                        if(!operativo){
+                            if(!operativo_activo){
+                               new_operativo.activo = true
+                               operativo_activo = true
+                            }
+                            await this._operativeCareerRepository.save(new_operativo)
+                            
+                        }
+                        // new_operativo.user_id = user.id
+                    }
+
+                    if(evento.evento === 'Calificaciones')
+                    {
+                        await Promise.all( modalidades.map( async (modalidad)=>{
+                            
+                            let new_operativo = new OperativoCarreraAutorizadaDTO()
+                            new_operativo.carreraAutorizadaId = carrera_autorizada_id
+                            new_operativo.eventoTipoId = evento.id
+                            new_operativo.gestionTipoId = gestion_id
+                            new_operativo.periodoTipoId = periodo.id
+                            new_operativo.activo = false
+                            new_operativo.modalidadEvaluacionTipoId = modalidad.id
+
+                            let operativo = await this._operativeCareerRepository.findOne({
+                                where:  { 
+                                            carreraAutorizadaId: new_operativo.carreraAutorizadaId,
+                                            eventoTipoId: new_operativo.eventoTipoId,
+                                            gestionTipoId: new_operativo.gestionTipoId,
+                                            periodoTipoId: new_operativo.periodoTipoId,
+                                            modalidadEvaluacionTipoId : new_operativo.modalidadEvaluacionTipoId
+                                        }
+                            })
+
+                            if(!operativo){
+                                await this._operativeCareerRepository.save(new_operativo)
+                            }
+
+                        }))
+
+                         // adicionando modalidad recuperatorio 
+
+                        let new_operativo = new OperativoCarreraAutorizadaDTO()
+                        new_operativo.carreraAutorizadaId = carrera_autorizada_id
+                        new_operativo.eventoTipoId = evento.id
+                        new_operativo.gestionTipoId = gestion_id
+                        new_operativo.periodoTipoId = periodo.id
+                        new_operativo.activo = false
+                        new_operativo.modalidadEvaluacionTipoId = 9
+
+                        let operativo = await this._operativeCareerRepository.findOne({
+                            where:  { 
+                                        carreraAutorizadaId: new_operativo.carreraAutorizadaId,
+                                        eventoTipoId: new_operativo.eventoTipoId,
+                                        gestionTipoId: new_operativo.gestionTipoId,
+                                        periodoTipoId: new_operativo.periodoTipoId,
+                                        modalidadEvaluacionTipoId : new_operativo.modalidadEvaluacionTipoId
+                                    }
+                        })
+
+                        if(!operativo){
+                            await this._operativeCareerRepository.save(new_operativo)
+                        }
+                        new_operativo = null
+                        operativo = null
+                        // adicionando modalidad final
+
+                        new_operativo = new OperativoCarreraAutorizadaDTO()
+                        new_operativo.carreraAutorizadaId = carrera_autorizada_id
+                        new_operativo.eventoTipoId = evento.id
+                        new_operativo.gestionTipoId = gestion_id
+                        new_operativo.periodoTipoId = periodo.id
+                        new_operativo.activo = false
+                        new_operativo.modalidadEvaluacionTipoId = 7
+    
+                        operativo = await this._operativeCareerRepository.findOne({
+                            where:  { 
+                                        carreraAutorizadaId: new_operativo.carreraAutorizadaId,
+                                        eventoTipoId: new_operativo.eventoTipoId,
+                                        gestionTipoId: new_operativo.gestionTipoId,
+                                        periodoTipoId: new_operativo.periodoTipoId,
+                                        modalidadEvaluacionTipoId : new_operativo.modalidadEvaluacionTipoId
+                                    }
+                        })
+    
+                        if(!operativo){
+                            await this._operativeCareerRepository.save(new_operativo)
+                        }
+
+                    }                   
+                    
+                }))
+
+            }))
+        }
+
+        const operativos = await this._operativeCareerRepository.find({
+            where:{ carreraAutorizadaId: carrera_autorizada_id }
+        })
+
+        return operativos
+    }
 
 }

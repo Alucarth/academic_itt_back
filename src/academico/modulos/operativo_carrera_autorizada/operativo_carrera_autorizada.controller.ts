@@ -41,6 +41,14 @@ export class OperativoCarreraAutorizadaController {
         return  await this.operativoCarreraAutorizadaService.createOperativoCarrera(dto, user);        
     }
 
+    @Auth()
+    @Post('generar_operativos')
+    async generateOperativeCareer(@Body() payload: any, @Users() user: UserEntity)
+    {
+        console.log('generacion automatica de operativos')
+        return await this.operativoCarreraAutorizadaService.generateOperativesCareer(payload.carrera_autorizada_id, payload.gestion_tipo_id, user)
+    }
+
    // @Autenticacion()
     @Get('estado/:id')
     async editEstadoOperativoCarrera(@Param('id') id: number){
