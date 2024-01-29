@@ -4,6 +4,7 @@ import { CreateCarreraAutorizadaResolucionDto } from './dto/createCarreraAutoriz
 import { Auth } from "src/auth/decorator/auth.decorator";
 import { Users } from 'src/users/decorator/user.decorator';
 import { User as UserEntity } from 'src/users/entity/users.entity';
+import { UpdateCarreraAutorizadaResolucionDTO } from './dto/UpdateCarreraAutorizadaResolucionDTO.dto';
 
 @Controller('carrera-autorizada-resolucion')
 
@@ -23,6 +24,26 @@ export class CarreraAutorizadaResolucionController {
        console.log("crear" + dto);
         return await this.carreraAutorizadaResolucionService.crear(dto, user);
        
+    }
+
+    @Get('show/:carrera_autorizada_id')
+    async show( @Param('carrera_autorizada_id', ParseIntPipe) carrera_autorizada_id:number )
+    {
+      console.log('show',carrera_autorizada_id)
+      return await this.carreraAutorizadaResolucionService.showCareer(carrera_autorizada_id)
+    }
+
+    @Put(':/carrera_autorizada_resolucion_id')
+    async edit(@Body() dto: UpdateCarreraAutorizadaResolucionDTO,  @Param('carrera_autorizada_resolucion_id', ParseIntPipe) carrera_autorizada_resolucion_id:number)
+    {
+      //return await this.carreraAutorizadaResolucionService.editResolutionCareer()
+    }
+
+    /* para el listado de carreras de la sucursal */
+    @Get('career_institute/:institucion_educativa_sucursal_id')
+    async getCareerInsitute(@Param('institucion_educativa_sucursal_id', ParseIntPipe) institucion_educativa_sucursal_id:number )
+    {
+      // return await 
     }
     /*
     @Put(':id')

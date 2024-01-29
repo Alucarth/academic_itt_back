@@ -59,9 +59,9 @@ export class CreateMaestroInscripcionDto {
   @IsString()
   asignacionFechaInicio: string;
 
-  @IsOptional()
-  @IsString()
-  asignacionFechaFin: string;
+  // @IsOptional()
+  // @IsString()
+  // asignacionFechaFin: string;
 
   @IsOptional()
   item: string;

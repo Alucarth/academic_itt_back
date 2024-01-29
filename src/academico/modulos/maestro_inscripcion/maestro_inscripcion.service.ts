@@ -2473,6 +2473,7 @@ export class MaestroInscripcionService {
         relations: {
           aula:{ 
                 paraleloTipo:true,
+                turnoTipo:true,
                 institutoEstudianteInscripcions:true,
                 aulasDetalles: { diaTipo:true},
                 ofertaCurricular: {

@@ -1,10 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
-import { EntityManager } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CarreraAutorizadaRepository } from '../carrera_autorizada/carrera_autorizada.repository';
 import { CarreraAutorizadaResolucionRepository } from './carrera_autorizada_resolucion.repository';
 import { CreateCarreraAutorizadaResolucionDto } from './dto/createCarreraAutorizadaResolucion.dto';
 import { User as UserEntity } from 'src/users/entity/users.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
+import { CarreraAutorizadaResolucion } from 'src/academico/entidades/carreraAutorizadaResolucion.entity';
+import { UpdateCarreraAutorizadaResolucionDTO } from './dto/UpdateCarreraAutorizadaResolucionDTO.dto';
 @Injectable()
 export class CarreraAutorizadaResolucionService {
     constructor(
@@ -12,6 +16,10 @@ export class CarreraAutorizadaResolucionService {
         private carreraAutorizadaResolucionRepositorio: CarreraAutorizadaResolucionRepository,
         @Inject(CarreraAutorizadaRepository)
         private carreraAutorizadaRepositorio: CarreraAutorizadaRepository,
+        @InjectRepository(CarreraAutorizada)
+        private _carreraAutorizadaRepository: Repository<CarreraAutorizada>,
+        @InjectRepository(CarreraAutorizadaResolucion)
+        private _carreraAutorizadaResolucionRepository: Repository<CarreraAutorizadaResolucion>,
         private _serviceResp: RespuestaSigedService, 
 
       
@@ -69,4 +77,41 @@ export class CarreraAutorizadaResolucionService {
       );
 
       }
+
+      async showCareer(carrera_autorizada_id)
+      {
+        const carrera_autorizada = this._carreraAutorizadaRepository.findOne({
+          relations:{
+            areaTipo: true,
+            carreraTipo: true,
+            institucionEducativaSucursal: true,
+            resoluciones: {
+              resolucionTipo: true,
+              intervaloGestionTipo: true,
+              nivelAcademicoTipo: true,
+            }
+          },
+          where: { id: carrera_autorizada_id}
+        })
+        return carrera_autorizada
+      }
+
+      async editResolutionCareer(carrera_autorizada_resolucion_id, payload: UpdateCarreraAutorizadaResolucionDTO)
+      {
+        const carrera_autorizada_resolucion = await this._carreraAutorizadaResolucionRepository.findOne({ where: { id: carrera_autorizada_resolucion_id} })
+
+        carrera_autorizada_resolucion.fechaResolucion = payload.fechaResolucion
+        carrera_autorizada_resolucion.resolucionTipoId = payload.resolucionTipoId
+        carrera_autorizada_resolucion.numeroResolucion = payload.numeroResolucion
+        carrera_autorizada_resolucion.nivelAcademicoTipoId = payload.nivelAcademicoTipoId
+        carrera_autorizada_resolucion.intervaloGestionTipoId = payload.intervaloGestionTipoId
+        carrera_autorizada_resolucion.tiempoEstudio = payload.tiempoEstudio
+        carrera_autorizada_resolucion.cargaHoraria = payload.cargaHoraria
+
+        return await this._carreraAutorizadaResolucionRepository.save(carrera_autorizada_resolucion)
+        
+      }
+
+    
+
     }

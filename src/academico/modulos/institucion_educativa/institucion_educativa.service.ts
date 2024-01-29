@@ -2045,7 +2045,8 @@ export class InstitucionEducativaService {
         const lista = await this.institucionEducativaRepository.query(`
           select ut5.id as departamento_id, ut5.lugar as departamento, dt.dependencia,ie.id as institucion_educativa_id , ie.institucion_educativa, ies.sucursal_nombre,
                 (select count(distinct(carrera_tipo_id)) as carreras from carrera_autorizada ca 
-                where ca.institucion_educativa_sucursal_id = ies.id)
+                where ca.institucion_educativa_sucursal_id = ies.id),
+                (select  count( distinct(institucion_educativa_estudiante.persona_id)) as estudiantes from institucion_educativa_estudiante where institucion_educativa_estudiante.institucion_educativa_sucursal_id = ies.id )
           from institucion_educativa ie  
           inner join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
           inner join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id = ut.id 

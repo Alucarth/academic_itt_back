@@ -7,10 +7,11 @@ import { CarreraAutorizadaRepository } from '../carrera_autorizada/carrera_autor
 import { CarreraAutorizadaResolucionController } from './carrera_autorizada_resolucion.controller';
 import { CarreraAutorizadaResolucionRepository } from './carrera_autorizada_resolucion.repository';
 import { CarreraAutorizadaResolucionService } from './carrera_autorizada_resolucion.service';
+import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
 
 @Module({
   imports: [DatabaseModule, 
-    TypeOrmModule.forFeature([CarreraAutorizadaResolucion]),
+    TypeOrmModule.forFeature([CarreraAutorizadaResolucion, CarreraAutorizada]),
     
   ],
   

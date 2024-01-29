@@ -16,6 +16,12 @@ export class CarreraTipoService {
     @InjectRepository(CarreraGrupoTipo)
     private carreraGrupoRepository: Repository<CarreraGrupoTipo>
   ) {}
+  async getAllCareerType()
+  {
+    return await this.carreraTipoRepository.find({
+      order: { carrera: 'ASC'}
+    }) 
+  }
 
   async getAll() {
     //const result = await this.carreraTipoRepository.find();
