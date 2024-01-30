@@ -96,7 +96,7 @@ export class CarreraAutorizadaResolucionService {
         return carrera_autorizada
       }
 
-      async editResolutionCareer(carrera_autorizada_resolucion_id, payload: UpdateCarreraAutorizadaResolucionDTO)
+      async editResolutionCareer(carrera_autorizada_resolucion_id, payload: UpdateCarreraAutorizadaResolucionDTO, user: UserEntity)
       {
         const carrera_autorizada_resolucion = await this._carreraAutorizadaResolucionRepository.findOne({ where: { id: carrera_autorizada_resolucion_id} })
 
@@ -107,11 +107,33 @@ export class CarreraAutorizadaResolucionService {
         carrera_autorizada_resolucion.intervaloGestionTipoId = payload.intervaloGestionTipoId
         carrera_autorizada_resolucion.tiempoEstudio = payload.tiempoEstudio
         carrera_autorizada_resolucion.cargaHoraria = payload.cargaHoraria
+        carrera_autorizada_resolucion.usuarioId = user.id
 
         return await this._carreraAutorizadaResolucionRepository.save(carrera_autorizada_resolucion)
         
       }
 
-    
+      async createResolutionCareer(payload: UpdateCarreraAutorizadaResolucionDTO, user: UserEntity)
+      {
+        return await this._carreraAutorizadaResolucionRepository.save(payload)
+      }
+      
+      async deleteResolutionCareer(carrera_autorizada_resolucion_id)
+      {
+        return await this._carreraAutorizadaResolucionRepository.delete(carrera_autorizada_resolucion_id)
+      }
+      
+      async getCareerResolutionsInstitute(institucion_educativa_sucursal_id)
+      {
+        return await this._carreraAutorizadaResolucionRepository.find({
+          relations:{ 
+            carreraAutorizada: true,
+            nivelAcademicoTipo: true,
+            intervaloGestionTipo: true ,
+            resolucionTipo:true
+          },
+          where: { carreraAutorizada: {institucionEducativaSucursalId: institucion_educativa_sucursal_id } }
+        })
+      }
 
     }

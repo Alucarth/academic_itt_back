@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { CarreraAutorizadaResolucionService } from './carrera_autorizada_resolucion.service';
 import { CreateCarreraAutorizadaResolucionDto } from './dto/createCarreraAutorizadaResolucion.dto';
 import { Auth } from "src/auth/decorator/auth.decorator";
@@ -33,17 +33,26 @@ export class CarreraAutorizadaResolucionController {
       return await this.carreraAutorizadaResolucionService.showCareer(carrera_autorizada_id)
     }
 
-    @Put(':/carrera_autorizada_resolucion_id')
-    async edit(@Body() dto: UpdateCarreraAutorizadaResolucionDTO,  @Param('carrera_autorizada_resolucion_id', ParseIntPipe) carrera_autorizada_resolucion_id:number)
+    @Auth()
+    @Put('/:carrera_autorizada_resolucion_id')
+    async edit(@Body() dto: UpdateCarreraAutorizadaResolucionDTO,  @Param('carrera_autorizada_resolucion_id', ParseIntPipe) carrera_autorizada_resolucion_id:number, @Users() user: UserEntity)
     {
-      //return await this.carreraAutorizadaResolucionService.editResolutionCareer()
+      return await this.carreraAutorizadaResolucionService.editResolutionCareer(carrera_autorizada_resolucion_id,dto,user)
     }
 
+    @Auth()
+    @Post('create')
+    async create(@Body() dto: UpdateCarreraAutorizadaResolucionDTO,  @Users() user: UserEntity)
+    {
+      return await this.carreraAutorizadaResolucionService.createResolutionCareer(dto,user)
+    }
+
+    	
     /* para el listado de carreras de la sucursal */
     @Get('career_institute/:institucion_educativa_sucursal_id')
     async getCareerInsitute(@Param('institucion_educativa_sucursal_id', ParseIntPipe) institucion_educativa_sucursal_id:number )
     {
-      // return await 
+      return await this.carreraAutorizadaResolucionService.getCareerResolutionsInstitute(institucion_educativa_sucursal_id)
     }
     /*
     @Put(':id')
@@ -52,5 +61,9 @@ export class CarreraAutorizadaResolucionController {
         return await this.carreraAutorizadaResolucionService.update(dto);
     }
     */
+    @Delete(':id')
+    async deleteById(@Param('id', ParseIntPipe) id: number) {
+      return this.carreraAutorizadaResolucionService.deleteResolutionCareer(id);
+    }
 }
 
