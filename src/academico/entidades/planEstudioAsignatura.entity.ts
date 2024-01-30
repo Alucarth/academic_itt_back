@@ -26,6 +26,9 @@ export class PlanEstudioAsignatura {
   @Column({ type: 'integer', name: 'horas' })
   horas: number;
   
+  @Column({ name: 'index', nullable:true })
+  index: number;
+
   @CreateDateColumn({
     name: 'fecha_registro',
     type: 'timestamp',

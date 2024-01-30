@@ -21,6 +21,10 @@ class PlanAsignaturaPrerequisito {
     @IsOptional({ message: " id prerequisito es requerido" })
     @IsNumber()
     prerequisito_id: number;
+
+    @IsOptional({ message: " id prerequisito es requerido" })
+    @IsNumber()
+    index: number;
   }
 
 export class CreatePlanAsignaturaPrerequisitoDto {
@@ -47,4 +51,8 @@ export class CreatePlanAsignaturaPrerequisitoDto {
     @ValidateNested({ each: true })
     @Type(() => PlanAsignaturaPrerequisito)
     datos: PlanAsignaturaPrerequisito[];
+
+    @IsOptional({ message: " id prerequisito es requerido" })
+    @IsNumber()
+    index: number;
 }

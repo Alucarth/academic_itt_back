@@ -121,6 +121,7 @@ export class InstitutoPlanEstudioCarreraRepository {
             'ie.estado',
             'pr.activo',
             'pa.horas',
+            'pa.index',
             'rg.id',
             'rg.regimenGrado',
             'a.asignatura',
@@ -135,6 +136,7 @@ export class InstitutoPlanEstudioCarreraRepository {
         ])
         .where('ip.carreraAutorizadaId = :id ', { id })
         .orderBy('rg.id', 'ASC')
+        // .orderBy('pa.index','ASC')
         //.orderBy('a.id', 'ASC')
         .getMany();
         return itt;

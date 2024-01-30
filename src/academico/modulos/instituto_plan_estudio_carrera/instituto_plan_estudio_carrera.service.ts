@@ -1,14 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
-import { EntityManager } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CreateInstitutoPlanEstudioCarreraDto } from './dto/createInstitutoPlanEstudioCarrera.dto';
 import { InstitutoPlanEstudioCarreraRepository } from './instituto_plan_estudio_carrera.repository';
 import { User as UserEntity } from 'src/users/entity/users.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPlanEstudioCarrera.entity';
 @Injectable()
 export class InstitutoPlanEstudioCarreraService {
     constructor(
         @Inject(InstitutoPlanEstudioCarreraRepository)
         private institutoPlanEstudioCarreraRepository: InstitutoPlanEstudioCarreraRepository,
+        @InjectRepository(InstitutoPlanEstudioCarrera)
+        private _institutoPlanEstudioCarreraRepository: Repository<InstitutoPlanEstudioCarrera>,
         private _serviceResp: RespuestaSigedService, 
     ){}
 
@@ -82,6 +86,23 @@ export class InstitutoPlanEstudioCarreraService {
        return result;    
     }
     
+    // async getResolutionsCareer(carrera_autorizada_id)
+    // {
+    //   const result = await this._institutoPlanEstudioCarreraRepository.find({
+    //     relations:{
+    //       planEstudioCarrera: {
+    //         planEstudioResolucion: true,
+    //         planesAsignaturas: {
+    //           asignaturaTipo: true,
+    //           regimenGradoTipo: true,
+              
+
+    //         },
+    //       }
+    //     },
+    //     where: { carreraAutorizadaId: carrera_autorizada_id }
+    //   })
+    // }
 
     async getPlanAsignaturaById( id:number ){
         const result = await this.institutoPlanEstudioCarreraRepository.findPlanAsignaturasById(id);

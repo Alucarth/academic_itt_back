@@ -115,6 +115,8 @@ export class PlanEstudioAsignaturaRepository {
           planAsignatura.asignaturaTipoId =item.asignatura_tipo_id;
           planAsignatura.horas =item.horas;
           planAsignatura.usuarioId =idUsuario;
+          planAsignatura.index = item.index ?? 0;
+
           return planAsignatura;
         });
     
@@ -129,6 +131,7 @@ export class PlanEstudioAsignaturaRepository {
           planAsignatura.asignaturaTipoId =asignatura.asignatura_tipo_id;
           planAsignatura.horas =asignatura.horas;
           planAsignatura.usuarioId =idUsuario;
+          planAsignatura.index = asignatura.index ?? 0;
         //  return planAsignatura;
         //});
     

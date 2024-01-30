@@ -19,6 +19,7 @@ export class InstitutoPlanEstudioCarreraController {
     @Get('carrera/:id')
     async getResolucionesCarreraAutorizadaById(@Param('id', ParseIntPipe) id: number){
         return await this.institutoPlanEstudioCarreraService.getResolucionesCarreraAutorizadaId(id);
+        // return await this.institutoPlanEstudioCarreraService.getResolutionsCareer(id) //revisar no esta en el formato deseado
     }
     
     @Get(':id')
