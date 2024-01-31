@@ -182,7 +182,7 @@ export class OperativoCarreraAutorizadaRepository {
         })
         .where({ 
             carreraAutorizadaId: carrera,
-            gestionTipoId:gestion
+            // gestionTipoId:gestion //se quito para que solo se mantenga un estado activo y no se raye el sistema 
          })
         .execute();
 

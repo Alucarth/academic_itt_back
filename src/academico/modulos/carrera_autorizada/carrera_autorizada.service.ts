@@ -83,6 +83,26 @@ export class CarreraAutorizadaService {
         );
       }
 
+      async getCareerInstitute(id: number)
+      {
+        
+
+        return await this._carreraAutorizadaRepository.query(`
+          select ca.id as carrera_autorizada_id, ct.carrera , at2.area, igt.intervalo_gestion as regimen_estudio, car.numero_resolucion,car.fecha_resolucion , nat.nivel_academico, rt.resolucion_tipo, car.tiempo_estudio , car.carga_horaria  from institucion_educativa ie 
+          inner join institucion_educativa_sucursal ies on ies.institucion_educativa_id  = ie.id
+          inner join carrera_autorizada ca on ca.institucion_educativa_sucursal_id = ies.id
+          inner join carrera_autorizada_resolucion car on car.carrera_autorizada_id  = ca.id
+          inner join carrera_tipo ct on ct.id  = ca.carrera_tipo_id 
+          inner join area_tipo at2 on at2.id  = ca.area_tipo_id 
+          inner join intervalo_gestion_tipo igt on igt.id = car.intervalo_gestion_tipo_id 
+          inner join nivel_academico_tipo nat on nat.id = car.nivel_academico_tipo_id 
+          inner join resolucion_tipo rt on rt.id = car.resolucion_tipo_id 
+          where ie.id = ${id} and car.resolucion_tipo_id in(1,5,4)
+          order by ct.carrera asc
+          ;
+        `)
+      }
+
       async getReportCareer(id:number)
       {
          const sucursal = await this._institucionEducativaSucursal.findOne({

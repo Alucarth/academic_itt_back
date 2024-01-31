@@ -23,6 +23,12 @@ export class CarreraAutorizadaController {
       return await this.carreraAutorizadaService.getReportCareer(id);
     }
     
+    @Get("career_list/:id")
+    async getCareerList(@Param("id", ParseIntPipe) id: number) {
+      console.log('list career in show insitute')
+      return await this.carreraAutorizadaService.getCareerInstitute(id);
+    }
+
     @Get("cursos/ie/:id")
     async getCursosByIeId(@Param("id", ParseIntPipe) id: number) {
       return await this.carreraAutorizadaService.getCursosByIeId(id);
