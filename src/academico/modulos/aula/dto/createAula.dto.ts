@@ -15,6 +15,10 @@ class Aula {
     @IsNotEmpty({ message: " el paralelo  es requerido" })
     @IsNumber()
     paralelo_tipo_id: number;
+    
+    @IsOptional({ message: " el turno_tipo_id es requerido" })
+    @IsNumber()
+    turno_tipo_id: number;
 
     @ValidateNested({ each: true })
     @Type(() => Detalle)
@@ -72,6 +76,8 @@ class Aula {
     @IsNotEmpty({ message: " el plan de estudio asignatura" })
     @IsNumber()
     plan_estudio_asignatura_id: number;
+
+    
     
     @ValidateNested({ each: true })
     @Type(() => Aula)

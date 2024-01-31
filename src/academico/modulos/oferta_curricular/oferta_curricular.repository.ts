@@ -91,7 +91,8 @@ export class OfertaCurricularRepository {
       .leftJoinAndSelect("pa.asignaturaTipo", "at")       
       .leftJoinAndSelect("o.aulas", "a")       
       .leftJoinAndSelect("a.institutoEstudianteInscripcions", "iei")       
-      .leftJoinAndSelect("a.paraleloTipo", "pt")       
+      .leftJoinAndSelect("a.paraleloTipo", "pt")
+      .leftJoinAndSelect("a.turnoTipo", "tt")       
       .leftJoinAndSelect("a.aulasDetalles", "d")       
       .leftJoinAndSelect("d.diaTipo", "dt")       
       .leftJoinAndSelect("a.aulasDocentes", "do")       
@@ -111,6 +112,8 @@ export class OfertaCurricularRepository {
           'a.cupo',
           'pt.id',
           'pt.paralelo',
+          'tt.id',
+          'tt.turno',
           'd.id',
           'd.horaInicio',
           'd.horaFin',

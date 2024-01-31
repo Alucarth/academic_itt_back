@@ -144,6 +144,7 @@ export class AulaService {
   }
 
     async createUpdateAulaDetalle (dto: CreateAulaDto, user:UserEntity) {
+      console.log('payload',dto.aulas)
       const resultado = [];
       let ofertaId = 0;
         try {
@@ -197,6 +198,7 @@ export class AulaService {
                         cupo: item.cupo,
                         paraleloTipoId: item.paralelo_tipo_id,
                         usuarioId: user.id,
+                        turnoTipoId: item.turno_tipo_id
                     },
                   ])
                   .returning("id")
@@ -212,6 +214,7 @@ export class AulaService {
                 {
                     cupo: item.cupo,
                     paraleloTipoId: item.paralelo_tipo_id,
+                    turnoTipoId: item.turno_tipo_id
                 },
               )
               .where({id:item.id})
