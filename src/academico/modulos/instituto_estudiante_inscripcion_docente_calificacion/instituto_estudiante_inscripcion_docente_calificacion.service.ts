@@ -1,3 +1,4 @@
+import { IntervaloGestionTipo } from './../../entidades/intervaloGestionTipo.entity';
 import { PlanEstudioCarrera } from './../../entidades/planEstudioCarrera.entity';
 import { EstadoMatriculaTipo } from './../../entidades/estadoMatriculaTipo.entity';
 import { ModalidadEvaluacionTipo } from 'src/academico/entidades/modalidadEvaluacionTipo.entity';
@@ -732,6 +733,9 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                     },
                     regimenGradoTipo: true,
                 },
+                institutoPlanEstudioCarrera:{
+                    planEstudioCarrera:{ intervaloGestionTipo:true }
+                }
                 
             },
         },
@@ -739,6 +743,8 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
     })
 
     console.log('aula', aula)
+    const regimen = aula.ofertaCurricular.institutoPlanEstudioCarrera.planEstudioCarrera.intervaloGestionTipo.intervaloGestion;
+    console.log('regimen de estudio', regimen)
 
     const operativos = await this.operativoCarreraRepository.find({
         relations: {
@@ -772,7 +778,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
         }
 
     })
-    console.log('operativos', operativos)
+    // console.log('operativos', operativos)
 
     const carrera_autorizada = await this.carreraAutorizadaRepository.findOne({
         relations: {
@@ -787,144 +793,75 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
 
    
     console.log(carrera_autorizada)
-
+    let registro_notas =[]
     console.log(operativos)
-    let ids = []
-    for( const operativo  of operativos)
+    if(regimen === 'AÑO')
     {
-        ids.push(operativo.modalidadEvaluacionTipo.id)
-    }
-    console.log('IDS ====>',ids)
-    const registro_notas = []
-    let persona = null;
-
-    for(const student of students)
-    {
-
-        let calificaciones = await this.calificacionesRepository.find({
-            relations: {
-                notaTipo:true,
-                modalidadEvaluacionTipo: true,
-                aulaDocente:{
-                    maestroInscripcion:{
-                        persona:true
-                    }
-                }
-            },
-            select:{
-                id:true,
-                cuantitativa: true,
-                notaTipo:{
-                    id: true,
-                    nota: true,
-                },
-                modalidadEvaluacionTipo: {
-                    id: true,
-                    modalidadEvaluacion: true
-                },
-                aulaDocente: {
-                    id:true,
-                    maestroInscripcion:{
-                        personaId: true,
-                    }
-                }
-            },
-            where:{ institutoEstudianteInscripcionId: student.id, periodoTipoId: aula.ofertaCurricular.periodoTipoId},
-            order:{
-                modalidadEvaluacionTipoId : 'ASC',
-                notaTipoId: 'ASC'
-            }
-        })
-        console.log('institutoEstudianteInscripcionId', student.id)
-        console.log('aula.ofertaCurricular.periodoTipoId',aula.ofertaCurricular.periodoTipoId)
-        console.log('calificaciones', calificaciones)
-        let notas = []
-        let count = 0
-        for( const id of ids)
-        {
-            count = 0
-            for(const calificacion of calificaciones)
-            {
-                if(!persona)
-                {
-                    persona = await this.personaRepository.findOne({
-                        select:{
-                          carnetIdentidad:true,
-                          complemento: true,
-                          nombre: true,
-                          paterno: true,
-                          materno: true,
-                        },
-                        where:{ id: calificacion.aulaDocente.maestroInscripcion.personaId}
-                    })
-                }
-
-                // console.log(calificacion)
-                if(calificacion.modalidadEvaluacionTipo.id == id && calificacion.modalidadEvaluacionTipo.id !== 9 && calificacion.modalidadEvaluacionTipo.id !==7 )
-                {
-                    // console.log("",calificacion.cuantitativa)
-                    notas.push({
-                        cuantitativa: calificacion.cuantitativa,
-                        modalidad_evaluacion: calificacion.modalidadEvaluacionTipo.modalidadEvaluacion,
-                        nota_tipo: calificacion.notaTipo.nota
-                    })
-                    count++;
-                }else{
-
-                    if(calificacion.modalidadEvaluacionTipo.id == id && (calificacion.modalidadEvaluacionTipo.id === 9 || calificacion.modalidadEvaluacionTipo.id ===7) )
-                    {
-                        if(calificacion.notaTipo.id === 7)
-                        {
-                            notas.push({
-                                cuantitativa: calificacion.cuantitativa,
-                                modalidad_evaluacion: calificacion.modalidadEvaluacionTipo.modalidadEvaluacion,
-                                nota_tipo: calificacion.notaTipo.nota
-                            })
-                            count = 3
-                        }   
-                    }
-                }
-            }
-
-            if( id=== 9 || id === 7)
-            {
-                if(count=== 0)
-                {
-                    count = 2
-                }
-            } 
-
-            while(count < 3)
-            {
-                notas.push({
-                    cuantitativa: null ,
-                    modalidad_evaluacion: 'sin modalidad',
-                    nota_tipo: 'sin nota'
-                })
-                count++
-            }
-        }
-        // let calificaciones = await this.calificacionesRepository.createQueryBuilder
+        registro_notas = await this.institutoEstudianteInscripcionRepository.query(`
+            select p.carnet_identidad, p.complemento, p.paterno , p.materno ,p.nombre,
+            (select ieidc.cuantitativa as pb_teorico from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 3 and ieidc.nota_tipo_id = 5 ),
+            (select ieidc.cuantitativa as pb_practico from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 3 and ieidc.nota_tipo_id = 6 ),
+            (select ieidc.cuantitativa as pb_suma from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 3 and ieidc.nota_tipo_id = 7 ),
+            (select ieidc.cuantitativa as sb_teorico from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 4 and ieidc.nota_tipo_id = 5 ),
+            (select ieidc.cuantitativa as sb_practico from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 4 and ieidc.nota_tipo_id = 6 ),
+            (select ieidc.cuantitativa as sb_suma from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 4 and ieidc.nota_tipo_id = 7 ),
+            (select ieidc.cuantitativa as tb_teorico from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 5 and ieidc.nota_tipo_id = 5 ),
+            (select ieidc.cuantitativa as tb_practico from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 5 and ieidc.nota_tipo_id = 6 ),
+            (select ieidc.cuantitativa as tb_suma from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 5 and ieidc.nota_tipo_id = 7 ),
+            (select ieidc.cuantitativa as cb_teorico from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 6 and ieidc.nota_tipo_id = 5 ),
+            (select ieidc.cuantitativa as cb_practico from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 6 and ieidc.nota_tipo_id = 6 ),
+            (select ieidc.cuantitativa as cb_suma from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 6 and ieidc.nota_tipo_id = 7 ),
+            (select ieidc.cuantitativa as final_suma from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 7 and ieidc.nota_tipo_id = 7 ),
+            (select ieidc.cuantitativa as recuperatorio_suma from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 9 and ieidc.nota_tipo_id = 7 ),
+            emt.estado_matricula  
+            from instituto_estudiante_inscripcion iei
+            inner join matricula_estudiante me on me.id = iei.matricula_estudiante_id 
+            inner join institucion_educativa_estudiante iee on iee.id = me.institucion_educativa_estudiante_id 
+            inner join persona p on p.id = iee.persona_id
+            inner join estado_matricula_tipo emt on emt.id = iei.estadomatricula_tipo_id 
+            where iei.aula_id = ${aula.id} 
+            order by p.paterno asc, p.materno asc, p.nombre asc;
         
-        // console.log('calificaciones', calificaciones)
+        `)
+    }else{
 
-        let registro = {
-            ci: student.matriculaEstudiante.institucionEducativaEstudiante.persona.carnetIdentidad,
-            nombre: `${student.matriculaEstudiante.institucionEducativaEstudiante.persona.paterno} ${student.matriculaEstudiante.institucionEducativaEstudiante.persona.materno} ${student.matriculaEstudiante.institucionEducativaEstudiante.persona.nombre} `,
-            estado: student.estadoMatriculaTipo.estadoMatricula,
-            notas: notas,
-         
-        }
-
-        registro_notas.push(registro)
+        registro_notas = await this.institutoEstudianteInscripcionRepository.query(`
+            select p.carnet_identidad, p.complemento, p.paterno , p.materno ,p.nombre,
+            (select ieidc.cuantitativa as pt_teorico from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 1 and ieidc.nota_tipo_id = 5 ),
+            (select ieidc.cuantitativa as pt_practico from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 1 and ieidc.nota_tipo_id = 6 ),
+            (select ieidc.cuantitativa as pt_suma from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 1 and ieidc.nota_tipo_id = 7 ),
+            (select ieidc.cuantitativa as st_teorico from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 2 and ieidc.nota_tipo_id = 5 ),
+            (select ieidc.cuantitativa as st_practico from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 2 and ieidc.nota_tipo_id = 6 ),
+            (select ieidc.cuantitativa as st_suma from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 2 and ieidc.nota_tipo_id = 7 ),
+            (select ieidc.cuantitativa as final_suma from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 7 and ieidc.nota_tipo_id = 7 ),
+            (select ieidc.cuantitativa as recuperatorio_suma from instituto_estudiante_inscripcion_docente_calificacion ieidc where ieidc.instituto_estudiante_inscripcion_id = iei.id and ieidc.modalidad_evaluacion_tipo_id = 9 and ieidc.nota_tipo_id = 7 ),
+            emt.estado_matricula  
+            from instituto_estudiante_inscripcion iei
+            inner join matricula_estudiante me on me.id = iei.matricula_estudiante_id 
+            inner join institucion_educativa_estudiante iee on iee.id = me.institucion_educativa_estudiante_id 
+            inner join persona p on p.id = iee.persona_id
+            inner join estado_matricula_tipo emt on emt.id = iei.estadomatricula_tipo_id 
+            where iei.aula_id = ${aula.id} 
+            order by p.paterno asc, p.materno asc, p.nombre asc;
+        `)
     }
+    
+    const persona = await this.institutoEstudianteInscripcionRepository.query(`
+            select p.paterno, p.materno, p.nombre, p.carnet_identidad, p.complemento  from aula_docente ad 
+            inner join maestro_inscripcion mi on mi.id = ad.maestro_inscripcion_id 
+            inner join persona p on p.id = mi.persona_id 
+            where ad.aula_id = ${aula.id};
+    `);
+
+    
 
     return {
         operativos: operativos,
         estudiantes: registro_notas ,
         aula: aula,
         carrera_autorizada: carrera_autorizada,
-        docente: persona
+        docente: persona[0],
+        regimen: regimen
     } 
  }
 
