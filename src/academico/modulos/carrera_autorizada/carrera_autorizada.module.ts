@@ -9,10 +9,11 @@ import { CarreraAutorizadaService } from './carrera_autorizada.service';
 import { PlanEstudioCarrera } from 'src/academico/entidades/planEstudioCarrera.entity';
 import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPlanEstudioCarrera.entity';
 import { InstitucionEducativaSucursal } from 'src/academico/entidades/institucionEducativaSucursal.entity';
+import { CarreraAutorizadaResolucion } from 'src/academico/entidades/carreraAutorizadaResolucion.entity';
 
 @Module({
   imports: [DatabaseModule, 
-    TypeOrmModule.forFeature([CarreraAutorizada,PlanEstudioCarrera, InstitutoPlanEstudioCarrera, InstitucionEducativaSucursal]),
+    TypeOrmModule.forFeature([CarreraAutorizada,PlanEstudioCarrera, InstitutoPlanEstudioCarrera, InstitucionEducativaSucursal, CarreraAutorizadaResolucion]),
   ],
   controllers: [CarreraAutorizadaController],
   providers: [CarreraAutorizadaService,

@@ -9,10 +9,11 @@ import * as tmp from "tmp";
 import { writeFile } from "fs/promises";
 import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { PlanEstudioCarrera } from 'src/academico/entidades/planEstudioCarrera.entity';
 import { InstitutoPlanEstudioCarrera } from 'src/academico/entidades/institutoPlanEstudioCarrera.entity';
 import { InstitucionEducativaSucursal } from 'src/academico/entidades/institucionEducativaSucursal.entity';
+import { CarreraAutorizadaResolucion } from 'src/academico/entidades/carreraAutorizadaResolucion.entity';
 
 @Injectable()
 export class CarreraAutorizadaService {
@@ -22,6 +23,9 @@ export class CarreraAutorizadaService {
       
         @InjectRepository(CarreraAutorizada)
         private _carreraAutorizadaRepository: Repository<CarreraAutorizada>,
+
+        @InjectRepository(CarreraAutorizadaResolucion)
+        private _carreraAutorizadaResolucionRepository: Repository<CarreraAutorizadaResolucion>,
 
         @InjectRepository(InstitucionEducativaSucursal)
         private _institucionEducativaSucursal: Repository<InstitucionEducativaSucursal>,
@@ -86,21 +90,48 @@ export class CarreraAutorizadaService {
       async getCareerInstitute(id: number)
       {
         
+        const sucursal = await this._institucionEducativaSucursal.findOne({
+          where: { institucionEducativaId: id }
+        })
+        if(sucursal)
+        {
+          const carreras = await this._carreraAutorizadaRepository.find({
+            where: { institucionEducativaSucursalId: sucursal.id }
+          })
 
-        return await this._carreraAutorizadaRepository.query(`
-          select ca.id as carrera_autorizada_id, ct.carrera , at2.area, igt.intervalo_gestion as regimen_estudio, car.numero_resolucion,car.fecha_resolucion , nat.nivel_academico, rt.resolucion_tipo, car.tiempo_estudio , car.carga_horaria  from institucion_educativa ie 
-          inner join institucion_educativa_sucursal ies on ies.institucion_educativa_id  = ie.id
-          inner join carrera_autorizada ca on ca.institucion_educativa_sucursal_id = ies.id
-          inner join carrera_autorizada_resolucion car on car.carrera_autorizada_id  = ca.id
-          inner join carrera_tipo ct on ct.id  = ca.carrera_tipo_id 
-          inner join area_tipo at2 on at2.id  = ca.area_tipo_id 
-          inner join intervalo_gestion_tipo igt on igt.id = car.intervalo_gestion_tipo_id 
-          inner join nivel_academico_tipo nat on nat.id = car.nivel_academico_tipo_id 
-          inner join resolucion_tipo rt on rt.id = car.resolucion_tipo_id 
-          where ie.id = ${id} and car.resolucion_tipo_id in(1,5,4)
-          order by ct.carrera asc
-          ;
-        `)
+          let career_ids = []
+          await Promise.all( carreras.map( (carrera)=>{
+            career_ids.push(carrera.id)
+          }) )
+
+          const resoluciones = await this._carreraAutorizadaResolucionRepository.find({
+            relations: {
+              nivelAcademicoTipo:true,
+              carreraAutorizada: {  carreraTipo:true, areaTipo: true },
+              intervaloGestionTipo: true,
+              resolucionTipo:true,
+            },
+            where: { carreraAutorizadaId: In(career_ids), resolucionTipoId: In([1,5,4]) }
+          })
+          
+          return resoluciones;
+
+        }
+        return []
+        // return await this._carreraAutorizadaRepository.query(`
+        //   select ca.id as carrera_autorizada_id, ct.carrera , at2.area, igt.intervalo_gestion as regimen_estudio, car.numero_resolucion,car.fecha_resolucion , nat.nivel_academico, rt.resolucion_tipo, car.tiempo_estudio , car.carga_horaria  from institucion_educativa ie 
+        //   inner join institucion_educativa_sucursal ies on ies.institucion_educativa_id  = ie.id
+        //   inner join carrera_autorizada ca on ca.institucion_educativa_sucursal_id = ies.id
+        //   inner join carrera_autorizada_resolucion car on car.carrera_autorizada_id  = ca.id
+        //   inner join carrera_tipo ct on ct.id  = ca.carrera_tipo_id 
+        //   inner join area_tipo at2 on at2.id  = ca.area_tipo_id 
+        //   inner join intervalo_gestion_tipo igt on igt.id = car.intervalo_gestion_tipo_id 
+        //   inner join nivel_academico_tipo nat on nat.id = car.nivel_academico_tipo_id 
+        //   inner join resolucion_tipo rt on rt.id = car.resolucion_tipo_id 
+        //   where ie.id = ${id} and car.resolucion_tipo_id in(1,5,4)
+        //   order by ct.carrera asc
+        //   ;
+        // `)
       }
 
       async getReportCareer(id:number)
