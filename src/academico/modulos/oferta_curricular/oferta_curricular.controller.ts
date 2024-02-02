@@ -32,6 +32,7 @@ export class OfertaCurricularController {
         @Param('periodo') periodo: number){
         return await this.ofertaCurricularService.getAllAsignaturasByCarreraGestionPeriodo(id,gestion,periodo);
     }
+    /** show academic offert by periodo */
     @Get('byCarreraGestionPeriodoDocente/:id/:gestion/:periodo')
     async getAllAsignaturasByCarreraGestionPeriodoDocente(
         @Param('id') id: number,
@@ -39,6 +40,18 @@ export class OfertaCurricularController {
         @Param('periodo') periodo: number){
         return await this.ofertaCurricularService.getAllAsignaturasByCarreraGestionPeriodoDocente(id,gestion,periodo);
     }
+
+
+    @Get('byCarreraGestionPeriodoRegimenGrado/:id/:gestion/:periodo/:regimen_grado')
+    async getAllAsignaturasByRegimenGrado(
+        @Param('id') id: number,
+        @Param('gestion') gestion: number,
+        @Param('periodo') periodo: number,
+        @Param('regimen_grado') regimen_grado: number){
+        return await this.ofertaCurricularService.getAllAsignaturasByRegimenGrado(id,gestion,periodo,regimen_grado);
+    }
+
+
 
     @Auth()
     @Post()

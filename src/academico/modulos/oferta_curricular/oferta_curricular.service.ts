@@ -95,6 +95,23 @@ export class OfertaCurricularService {
             ""
           );
     }
+
+    async getAllAsignaturasByRegimenGrado(id:number, gestion:number, periodo:number, regimen_grado: number){
+      const oferta = await this.ofertaCurricularRepository.findOfertasByCarreraAutorizadaIdGestionPeriodoRegimenGrado(id,gestion,periodo,regimen_grado);
+      console.log('ofertaXD',oferta)
+      if (oferta){
+          return this._serviceResp.respuestaHttp201(
+              oferta,
+            "resultados encontrados !!",
+            ""
+          );
+        }
+        return this._serviceResp.respuestaHttp404(
+          "",
+          "no existen resultados !!",
+          ""
+        );
+  }
     
     async editar (request: any)
     {

@@ -145,6 +145,74 @@ export class OfertaCurricularRepository {
       .getMany();
       return ofertas;
   }
+    async findOfertasByCarreraAutorizadaIdGestionPeriodoRegimenGrado( id:number, gestion:number,periodo:number, regimen_grado: number){
+      console.log("resultado aaaaaaaaaaaaaaaaaaaaaaaa");
+      console.log(id);
+      console.log(gestion);
+      console.log(periodo);
+      const ofertas = await this.dataSource.getRepository(OfertaCurricular)
+      .createQueryBuilder("o")
+      .leftJoinAndSelect("o.planEstudioAsignatura", "pa")       
+      .leftJoinAndSelect("pa.planEstudioCarrera", "pe")       
+      .leftJoinAndSelect("pa.regimenGradoTipo", "rg")     
+      .leftJoinAndSelect("pa.asignaturaTipo", "at")       
+      .leftJoinAndSelect("o.aulas", "a")       
+      .leftJoinAndSelect("a.institutoEstudianteInscripcions", "iei")       
+      .leftJoinAndSelect("a.paraleloTipo", "pt")
+      .leftJoinAndSelect("a.turnoTipo", "tt")       
+      .leftJoinAndSelect("a.aulasDetalles", "d")       
+      .leftJoinAndSelect("d.diaTipo", "dt")       
+      .leftJoinAndSelect("a.aulasDocentes", "do")       
+      .leftJoinAndSelect("do.maestroInscripcion", "m")       
+      .leftJoinAndSelect("m.persona", "p")       
+      .select([
+          'o.id',
+          'o.institutoPlanEstudioCarreraId',
+          'pa.id',
+          'pa.horas',
+          'at.id',
+          'at.asignatura',
+          'at.abreviacion',
+          'rg.id',
+          'rg.regimenGrado',
+          'a.id',
+          'a.cupo',
+          'pt.id',
+          'pt.paralelo',
+          'tt.id',
+          'tt.turno',
+          'd.id',
+          'd.horaInicio',
+          'd.horaFin',
+          'd.numeroAula',  
+          'dt.id',  
+          'dt.dia',  
+          'do.id',  
+          'do.asignacionFechaInicio',  
+          'do.asignacionFechaFin',
+          'do.bajaTipoId',
+          'm.id',  
+          'm.vigente',  
+          'p.paterno',  
+          'p.materno',  
+          'p.nombre',  
+          'p.carnetIdentidad',  
+          'iei.id',  
+      ])
+      .where('o.institutoPlanEstudioCarreraId = :id ', { id })
+      .andWhere('o.gestionTipoId = :gestion ', { gestion })
+      .andWhere('o.periodoTipoId = :periodo ', { periodo })
+      .andWhere('pa.regimenGradoTipoId = :regimen_grado', { regimen_grado})
+      .orderBy('a.id', 'ASC')
+      .orderBy('do.id', 'DESC')
+      .orderBy('o.id', 'ASC')
+      .orderBy('pa.id', 'ASC')
+      .orderBy('at.id', 'ASC')
+    
+      //.getRawMany();
+      .getMany();
+      return ofertas;
+  }
 
     async createOfertaCurricular(dto, transaction) {
         const oc  = new OfertaCurricular();
