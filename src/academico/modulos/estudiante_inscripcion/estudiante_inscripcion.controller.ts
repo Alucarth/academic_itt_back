@@ -35,4 +35,11 @@ export class EstudianteInscripcionController {
         //console.log('controller insert',dto);
         return  await this.estudianteInscripcionService.createEstudianteInscripcionOferta(dto);        
     }
+    // checkInscription
+
+    @Get('check_inscription/:aula_id/:matricula_estudiante_id')
+    async checkInscription(@Param('aula_id', ParseIntPipe) aula_id: number, @Param('matricula_estudiante_id', ParseIntPipe) matricula_estudiante_id: number)
+    {
+        return await this.estudianteInscripcionService.checkInscription(aula_id,matricula_estudiante_id)
+    }   
 }

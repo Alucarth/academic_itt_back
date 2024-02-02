@@ -331,7 +331,10 @@ export class OfertaCurricularService {
         where:{ id: instituto_plan_estudio_carrera_id}
       })
       const gestion_tipos = [ {id: 2023, gestion:'2023'},{id: 2024, gestion:'2024'} ]
-      const regimen_grado_tipos = await this._regimenGradoTipoRepository.find({where: {intervaloGestionTipoId: instituto_plan_estudio_carrera.planEstudioCarrera.intervaloGestionTipoId  }})
+      const regimen_grado_tipos = await this._regimenGradoTipoRepository.find({
+          where: {intervaloGestionTipoId: instituto_plan_estudio_carrera.planEstudioCarrera.intervaloGestionTipoId },
+          order: { id: 'ASC' }
+        })
       return {instituto_plan_estudio_carrera: instituto_plan_estudio_carrera, regimen_grado_tipos: regimen_grado_tipos, gestion_tipos: gestion_tipos}
     }
     async getParalelosOfertaCurricular(instituto_plan_estudio_carrera_id: number,regimen_grado_tipo_id: number, gestion_tipo_id: number )

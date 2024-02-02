@@ -7,9 +7,10 @@ import { EstudianteInscripcionOfertaAcademicaRepository } from '../estudiante_in
 import { EstudianteInscripcionController } from './estudiante_inscripcion.controller';
 import { EstudianteInscripcionRepository } from './estudiante_inscripcion.repository';
 import { EstudianteInscripcionService } from './estudiante_inscripcion.service';
+import { InstitutoEstudianteInscripcion } from 'src/academico/entidades/InstitutoEstudianteInscripcion.entity';
 
 @Module({
-  imports : [DatabaseModule, TypeOrmModule.forFeature([EstudianteInscripcion])],
+  imports : [DatabaseModule, TypeOrmModule.forFeature([EstudianteInscripcion,InstitutoEstudianteInscripcion])],
   controllers: [EstudianteInscripcionController],
   providers: [
     EstudianteInscripcionService, 

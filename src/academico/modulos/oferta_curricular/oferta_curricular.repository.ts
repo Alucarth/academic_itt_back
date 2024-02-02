@@ -177,6 +177,7 @@ export class OfertaCurricularRepository {
           'rg.regimenGrado',
           'a.id',
           'a.cupo',
+          'a.ofertaCurricularId',          
           'pt.id',
           'pt.paralelo',
           'tt.id',

@@ -2,17 +2,21 @@ import { Inject, Injectable } from '@nestjs/common';
 import { resourceUsage } from 'process';
 import { OfertaAcademica } from 'src/academico/entidades/ofertaAcademica.entity';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
-import { EntityManager } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { EstudianteInscripcionOfertaAcademicaRepository } from '../estudiante_inscripcion_oferta_academica/estudiante_inscripcion_oferta_academica.repository';
 import { CreateEstudianteInscripcionDto } from './dto/createEstudianteInscripcion.dto';
 import { CreateEstudianteInscripcionOfertaDto } from './dto/createEstudianteInscripcionOferta.dto';
 import { EstudianteInscripcionRepository } from './estudiante_inscripcion.repository';
+import { InjectRepository } from '@nestjs/typeorm';
+import { InstitutoEstudianteInscripcion } from 'src/academico/entidades/InstitutoEstudianteInscripcion.entity';
 
 @Injectable()
 export class EstudianteInscripcionService {
     constructor(
         @Inject(EstudianteInscripcionRepository)
         private estudianteInscripcionRepositorio: EstudianteInscripcionRepository,
+        @InjectRepository(InstitutoEstudianteInscripcion)
+        private _institutoEstudianteInscripcionRepository: Repository <InstitutoEstudianteInscripcion>,
 
         @Inject(EstudianteInscripcionOfertaAcademicaRepository)
         private estudianteInscripcionOfertaAcademicaRepositorio: EstudianteInscripcionOfertaAcademicaRepository,
@@ -41,6 +45,12 @@ export class EstudianteInscripcionService {
         return dato
     }
     
+    async checkInscription(aula_id, matricula_estudiante_id)
+    {
+        return await this._institutoEstudianteInscripcionRepository.findOne({
+            where: { aulaId: aula_id, matriculaEstudianteId: matricula_estudiante_id}
+        })
+    }
    
 
     async createEstudianteInscripcionOferta (dto: CreateEstudianteInscripcionOfertaDto) {
