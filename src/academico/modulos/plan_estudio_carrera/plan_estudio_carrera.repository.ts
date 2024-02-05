@@ -73,6 +73,7 @@ export class PlanEstudioCarreraRepository {
             'ie.estado',
             'pr.activo',
             'pa.horas',
+            'pa.index',
             'rg.id',
             'rg.regimenGrado',
             'a.asignatura',
