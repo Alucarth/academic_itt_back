@@ -36,6 +36,7 @@ export class CarreraAutorizadaResolucionService {
 
       async crear(dto: CreateCarreraAutorizadaResolucionDto, user:UserEntity) {
         // verificar la carrera ya existe
+        console.log('DTO', dto)
         const carrera_resolucion = await this.carreraAutorizadaResolucionRepositorio.getDatoCarreraAutorizadaResolucion(dto);
         console.log("carrera:::::::::::::::::::::",carrera_resolucion);
         if(carrera_resolucion){

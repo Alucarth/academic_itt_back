@@ -93,28 +93,67 @@ export class CarreraAutorizadaService {
         const sucursal = await this._institucionEducativaSucursal.findOne({
           where: { institucionEducativaId: id }
         })
+        console.log('sucursal', sucursal )
         if(sucursal)
         {
           const carreras = await this._carreraAutorizadaRepository.find({
-            where: { institucionEducativaSucursalId: sucursal.id }
+            relations: {
+              carreraTipo: true
+            },
+            where: { institucionEducativaSucursalId: sucursal.id },
+            order: { carreraTipo: { carrera: 'ASC' } }
           })
+          console.log('carreras encontradas::::::::::::::::::', carreras)
+          let ids = []
+          let no_resolutions = []
+          // const resolutions = []
+          await Promise.all( carreras.map(async (carrera)=>{
+            // career_ids.push(carrera.id)
 
-          let career_ids = []
-          await Promise.all( carreras.map( (carrera)=>{
-            career_ids.push(carrera.id)
+            const resoluciones = await this._carreraAutorizadaResolucionRepository.find({
+              relations: {
+                nivelAcademicoTipo:true,
+                carreraAutorizada: {  carreraTipo:true, areaTipo: true },
+                intervaloGestionTipo: true,
+                resolucionTipo:true,
+              },
+              where: { carreraAutorizadaId:carrera.id, ultimo: true }
+            })
+
+            await Promise.all( resoluciones.map( (resolution) =>{
+                //resolutions.push(resolution)
+                ids.push(resolution.id)
+            } ) )
+
+            if(resoluciones.length === 0)
+            {
+                no_resolutions.push({
+                  carreraAutorizada: carrera
+                })
+            }
+
+
           }) )
 
-          const resoluciones = await this._carreraAutorizadaResolucionRepository.find({
+          //just resolutions order
+          
+          const resolutions = await this._carreraAutorizadaResolucionRepository.find({
             relations: {
               nivelAcademicoTipo:true,
               carreraAutorizada: {  carreraTipo:true, areaTipo: true },
               intervaloGestionTipo: true,
               resolucionTipo:true,
             },
-            where: { carreraAutorizadaId: In(career_ids), resolucionTipoId: In([1,5,4]) }
+            where: { id: In(ids) },
+            order: { carreraAutorizada: {carreraTipo: { carrera: 'ASC' }}  }
           })
+
+          // in case to order by name career save ids then try egain resolve query
+          await Promise.all(no_resolutions.map( (career) =>{
+            resolutions.push(career)
+          } ) )
           
-          return resoluciones;
+          return resolutions;
 
         }
         return []
