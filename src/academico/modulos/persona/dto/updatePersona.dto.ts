@@ -41,11 +41,11 @@ export class UpdatePersonaoDto {
   estadoCivilTipoId: number;
 
   
-  @IsNotEmpty({ message: "Sangre tipo es requerido" })
+  @IsOptional({ message: "Sangre tipo es requerido" })
   @IsNumber()
   sangreTipoId: number;
 
-  @IsNotEmpty({ message: "Idioma materno es requerido" })
+  @IsOptional({ message: "Idioma materno es requerido" })
   @IsNumber()
   maternoIdiomaTipoId: number;
 
@@ -62,42 +62,55 @@ export class UpdatePersonaoDto {
   @IsNumber()
   nacimientoUnidadTerritorialId: number;
 
+  @IsOptional()
   @IsString()
   nacimientoOficialia: string;
 
+  @IsOptional()
   @IsString()
   nacimientoLibro: string;
 
+  @IsOptional()
   @IsString()
   nacimientoPartida: string;
 
+  @IsOptional()
   @IsString()
   nacimientoFolio: string;
 
+  @IsOptional()
   @IsString()
   carnetIbc: string;
 
+  @IsOptional()
   @IsString()
   pasaporte: string;
 
+  @IsOptional()
   @IsString()
   libretaMilitar: string;
 
+  @IsOptional()
   @IsBoolean()
   dobleNacionalidad: boolean;
 
+  @IsOptional()
   @IsString()
   codigoRda: string;
 
+  @IsOptional()
   @IsString()
   nacimientoLocalidad: string;
 
+  @IsOptional()
   @IsBoolean()
   tieneDiscapacidad: boolean;
 
+  @IsNotEmpty()
   @IsString()
   telefono: string;
 
+  @IsNotEmpty()
   @IsString()
   email: string;
 
