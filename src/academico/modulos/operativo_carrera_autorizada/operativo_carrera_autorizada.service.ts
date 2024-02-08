@@ -286,7 +286,7 @@ export class OperativoCarreraAutorizadaService {
      */
     async generateOperativesCareer(carrera_autorizada_id, gestion_id, user)
     {
-        const carrera_autorizada_resolucion = await this._carreraAutorizadaResolucionRepository.findOneBy({carreraAutorizadaId: carrera_autorizada_id})
+        const carrera_autorizada_resolucion = await this._carreraAutorizadaResolucionRepository.findOneBy({carreraAutorizadaId: carrera_autorizada_id, ultimo: true } )
         
         if(carrera_autorizada_resolucion)
         {
