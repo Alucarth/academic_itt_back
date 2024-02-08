@@ -65,13 +65,19 @@ export class OfertaCurricularController {
         return this.ofertaCurricularService.getRegimenEstudio(instituto_plan_estudio_carrera_id)
     }
 
-    @Get('getParalelos/:instituto_plan_estudio_carrera_id/:regimen_grado_tipo_id/:gestion_tipo_id')
+    @Get('getParalelos/:instituto_plan_estudio_carrera_id/:regimen_grado_tipo_id/:gestion_tipo_id/:periodo_tipo_id')
     async getParalelosOfertaCurricular(
         @Param('instituto_plan_estudio_carrera_id') instituto_plan_estudio_carrera_id: number,
         @Param('regimen_grado_tipo_id') regimen_grado_tipo_id: number,
-        @Param('gestion_tipo_id') gestion_tipo_id: number,)
-    {
-        return this.ofertaCurricularService.getParalelosOfertaCurricular(instituto_plan_estudio_carrera_id, regimen_grado_tipo_id,gestion_tipo_id)
+        @Param('gestion_tipo_id') gestion_tipo_id: number,
+        @Param('periodo_tipo_id') periodo_tipo_id: number,
+        )
+    {   
+        console.log('instituto_plan_estudio_carrera_id', instituto_plan_estudio_carrera_id)
+        console.log('regimen_grado_tipo_id', regimen_grado_tipo_id)
+        console.log('gestion_tipo_id', gestion_tipo_id)
+        console.log('periodo_tipo_id', periodo_tipo_id)
+        return await this.ofertaCurricularService.getParalelosOfertaCurricular(instituto_plan_estudio_carrera_id, regimen_grado_tipo_id,gestion_tipo_id, periodo_tipo_id)
     }
     
 

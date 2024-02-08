@@ -337,7 +337,7 @@ export class OfertaCurricularService {
         })
       return {instituto_plan_estudio_carrera: instituto_plan_estudio_carrera, regimen_grado_tipos: regimen_grado_tipos, gestion_tipos: gestion_tipos}
     }
-    async getParalelosOfertaCurricular(instituto_plan_estudio_carrera_id: number,regimen_grado_tipo_id: number, gestion_tipo_id: number )
+    async getParalelosOfertaCurricular(instituto_plan_estudio_carrera_id: number,regimen_grado_tipo_id: number, gestion_tipo_id: number ,periodo_tipo_id: number)
     {
 
       const total_estudiantes = await this._institutoPlanEstudioCarreraRepository.query(`
@@ -383,7 +383,7 @@ export class OfertaCurricularService {
                       inner join aula a on a.oferta_curricular_id = oc.id
                       inner join paralelo_tipo pt on pt.id = a.paralelo_tipo_id 
                       inner join turno_tipo tt on tt.id = a.turno_tipo_id
-                      where oc.instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen_grado_tipo_id} and oc.gestion_tipo_id = ${gestion_tipo_id}
+                      where oc.instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen_grado_tipo_id} and oc.gestion_tipo_id = ${gestion_tipo_id} and oc.periodo_tipo_id = ${periodo_tipo_id}
                       group by a.paralelo_tipo_id, a.turno_tipo_id,pt.paralelo, tt.turno;`)
 
       await Promise.all(paralelos.map(async (paralelo)=>{
@@ -396,7 +396,7 @@ export class OfertaCurricularService {
           inner join instituto_estudiante_inscripcion iei on iei.aula_id  = a.id 
           inner join matricula_estudiante me on me.id = iei.matricula_estudiante_id 
           inner join institucion_educativa_estudiante iee on iee.id = me.institucion_educativa_estudiante_id 
-          where oc.instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen_grado_tipo_id}  and oc.gestion_tipo_id = ${gestion_tipo_id} and paralelo_tipo_id = ${paralelo.paralelo_tipo_id} and turno_tipo_id = ${paralelo.turno_tipo_id};`)
+          where oc.instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen_grado_tipo_id}  and oc.gestion_tipo_id = ${gestion_tipo_id} and oc.periodo_tipo_id = ${periodo_tipo_id} and paralelo_tipo_id = ${paralelo.paralelo_tipo_id} and turno_tipo_id = ${paralelo.turno_tipo_id};`)
         
           paralelo.total_estudiantes = result[0].total_estudiantes
 
@@ -413,7 +413,7 @@ export class OfertaCurricularService {
           left join aula_docente ad on ad.aula_id  = a.id
           left join maestro_inscripcion mi on mi.id = ad.maestro_inscripcion_id 
           left join persona p on p.id = mi.persona_id 
-          where oc.instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen_grado_tipo_id}  and oc.gestion_tipo_id = ${gestion_tipo_id} and a.paralelo_tipo_id = ${paralelo.paralelo_tipo_id} and a.turno_tipo_id = ${paralelo.turno_tipo_id};
+          where oc.instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen_grado_tipo_id}  and oc.gestion_tipo_id = ${gestion_tipo_id} and oc.periodo_tipo_id = ${periodo_tipo_id} and a.paralelo_tipo_id = ${paralelo.paralelo_tipo_id} and a.turno_tipo_id = ${paralelo.turno_tipo_id};
           `)
           paralelo.list = result
         
