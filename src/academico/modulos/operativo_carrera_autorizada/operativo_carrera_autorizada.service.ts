@@ -326,10 +326,10 @@ export class OperativoCarreraAutorizadaService {
 
                         if(!operativo){
                             if(!operativo_activo){
-                               new_operativo.activo = true
+                            //    new_operativo.activo = true //por defecto todo aparecera innahibilitado
                                operativo_activo = true
                             }
-                            await this._operativeCareerRepository.save(new_operativo)
+                            await this._operativeCareerRepository.save(new_operativo) 
                             
                         }
                         // new_operativo.user_id = user.id
