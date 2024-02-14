@@ -5,6 +5,7 @@ import { Auth } from "src/auth/decorator/auth.decorator";
 import { Users } from 'src/users/decorator/user.decorator';
 import { User as UserEntity } from 'src/users/entity/users.entity';
 import { ApiTags } from '@nestjs/swagger';
+import { MasiveCreateTeacherCalification } from './dto/masiveCreateTeacherCalification.dto';
 
 ApiTags('Inscripciones')
 @Controller('instituto-estudiante-inscripcion-docente-calificacion')
@@ -65,18 +66,26 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionController {
         // }
     }
 
-    @Get('aula-fixes/:aula_id/:modalidad_evaluacion_tipo_id')
-    async auulaFixes(@Param('aula_id') aula_id: number,@Param('modalidad_evaluacion_tipo_id') modalidad_evaluacion_tipo_id: number)
-    {
-        console.log('ingresando a aula fixes')
-        return await this.inscripcionDocenteCalificacionService.aulaFixes(aula_id, modalidad_evaluacion_tipo_id);
-    }
+    // @Get('aula-fixes/:aula_id/:modalidad_evaluacion_tipo_id')
+    // async auulaFixes(@Param('aula_id') aula_id: number,@Param('modalidad_evaluacion_tipo_id') modalidad_evaluacion_tipo_id: number)
+    // {
+    //     console.log('ingresando a aula fixes')
+    //     return await this.inscripcionDocenteCalificacionService.aulaFixes(aula_id, modalidad_evaluacion_tipo_id);
+    // }
     
-    @Get('aula-fixes')
-    async auulaFixesAll(@Param('aula_id') aula_id: number,@Param('modalidad_evaluacion_tipo_id') modalidad_evaluacion_tipo_id: number)
+    // @Get('aula-fixes')
+    // async auulaFixesAll(@Param('aula_id') aula_id: number,@Param('modalidad_evaluacion_tipo_id') modalidad_evaluacion_tipo_id: number)
+    // {
+    //     console.log('ingresando a aula fixes')
+    //     return await this.inscripcionDocenteCalificacionService.aulaFixesAll();
+    // }
+
+    @Auth()
+    @Post('save-notes')
+    async saveNotes(@Body() students: MasiveCreateTeacherCalification[], @Users() user: UserEntity)
     {
-        console.log('ingresando a aula fixes')
-        return await this.inscripcionDocenteCalificacionService.aulaFixesAll();
+        console.log('save notes --------------------------------------------> ')
+        return await this.inscripcionDocenteCalificacionService.saveNotes(students, user)
     }
 
     
