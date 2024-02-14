@@ -18,6 +18,7 @@ import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.ent
 import { Persona } from 'src/users/entity/persona.entity';
 import { MasiveCreateTeacherCalification } from './dto/masiveCreateTeacherCalification.dto';
 import { CreateTeacherCalification } from './dto/CreateTeacherCalification.dto';
+import { log } from 'console';
 @Injectable()
 export class InstitutoEstudianteInscripcionDocenteCalificacionService {
     constructor(
@@ -1021,8 +1022,19 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
         // new_student.valoracionTipoId = 1
 
         // const student = await this.teacherCalificationRepository.save(new_student);
+
         await Promise.all( students.map(async (student)=>{
 
+            const aula = await this.aulaRepository.findOne({
+                relations:{
+                    ofertaCurricular:{ 
+                        institutoPlanEstudioCarrera:{
+                            planEstudioCarrera: true
+                        }
+                    }
+                },
+                where: { id: student.aula_id }
+            })
             
             console.log('studente',student)
             let teoric_note: InstitutoEstudianteInscripcionDocenteCalificacion = null
@@ -1119,10 +1131,588 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
 
             }
 
+            if(practice_note.modalidadEvaluacionTipoId === 9) //si es recuperatorio
+            {
+                const sum_note = await this.teacherCalificationRepository.findOne({
+                    where: { 
+                        aulaDocenteId: student.aula_docente_id,
+                        institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                        modalidadEvaluacionTipoId: student.modalidad_evaluacion_tipo_id,
+                        periodoTipoId: student.periodo_tipo_id,
+                        notaTipoId: 7 //final 
+
+                    }
+                })
+                if(sum_note)
+                {
+                    sum_note.cuantitativa = practice_note.cuantitativa
+                    record_sum =  await this.teacherCalificationRepository.save(sum_note)
+                }   
+
+                if(!sum_note)
+                {
+                    const new_sum_note = new CreateTeacherCalification();
+
+                    new_sum_note.aulaDocenteId = student.aula_docente_id
+                    new_sum_note.institutoEstudianteInscripcionId = student.instituto_estudiante_inscripcion_id
+                    new_sum_note.modalidadEvaluacionTipoId = student.modalidad_evaluacion_tipo_id
+                    new_sum_note.periodoTipoId = student.periodo_tipo_id
+                    new_sum_note.cuantitativa =  practice_note.cuantitativa
+                    new_sum_note.notaTipoId = 7
+                    new_sum_note.usuarioId = user.id
+                    new_sum_note.valoracionTipoId = 1
+
+                    record_sum =  await this.teacherCalificationRepository.save(new_sum_note)
+                }
+            }
+
 
             console.log('teoric', teoric_note)
             console.log('practice', practice_note)
             console.log('sum note', record_sum)
+            let average = 0
+            if(aula) //actualiza el promedio de  notas 
+            {
+                if(aula.ofertaCurricular.institutoPlanEstudioCarrera.planEstudioCarrera.intervaloGestionTipoId === 1 && student.modalidad_evaluacion_tipo_id !== 9) // semestre
+                {   
+                    //tiene 2 notas tericas
+                    const teoric_notes = await this.teacherCalificationRepository.find({
+                        where: { 
+                            aulaDocenteId: student.aula_docente_id,
+                            institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                            periodoTipoId: student.periodo_tipo_id,
+                            notaTipoId: 5, // teorica
+                            modalidadEvaluacionTipoId: In([1,2])
+                         }
+                    })
+                    
+                    let teoric_sum = 0 
+
+                    await Promise.all(teoric_notes.map((teoric)=>{
+                        teoric_sum += parseFloat(teoric.cuantitativa+"") 
+                    }))
+
+                    console.log('teoric ', teoric_sum)
+
+                    const teoric_final = await this.teacherCalificationRepository.findOne({
+                        where: { 
+                            aulaDocenteId: student.aula_docente_id,
+                            institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                            periodoTipoId: student.periodo_tipo_id,
+                            notaTipoId: 5, // teorica
+                            modalidadEvaluacionTipoId: 7
+                        }
+                    })
+
+                    average = 0
+                    if(teoric_sum > 0)
+                    {
+                        average = parseFloat((teoric_sum /2).toFixed(2) ) 
+                    }
+                    
+                    if(teoric_final)
+                    {
+                        teoric_final.cuantitativa = average;
+                        await this.teacherCalificationRepository.save(teoric_final)
+
+                    }else{
+
+                        const new_teoric_final_note = new CreateTeacherCalification();
+
+                        new_teoric_final_note.aulaDocenteId = student.aula_docente_id
+                        new_teoric_final_note.institutoEstudianteInscripcionId = student.instituto_estudiante_inscripcion_id
+                        new_teoric_final_note.modalidadEvaluacionTipoId = 7
+                        new_teoric_final_note.periodoTipoId = student.periodo_tipo_id
+                        new_teoric_final_note.cuantitativa =  average
+                        new_teoric_final_note.notaTipoId = 5
+                        new_teoric_final_note.usuarioId = user.id
+                        new_teoric_final_note.valoracionTipoId = 1
+    
+                        await this.teacherCalificationRepository.save(new_teoric_final_note)
+                    }
+
+
+
+                    //tiene 2 notas  practicas
+                    const practice_notes = await this.teacherCalificationRepository.find({
+                        where: { 
+                            aulaDocenteId: student.aula_docente_id,
+                            institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                            periodoTipoId: student.periodo_tipo_id,
+                            notaTipoId: 6, // teorica
+                            modalidadEvaluacionTipoId: In([1,2])
+                         }
+                    })
+
+                    let practice_sum = 0 
+
+                    await Promise.all(practice_notes.map((practice)=>{
+                        practice_sum += parseFloat(practice.cuantitativa+"") 
+                    }))
+
+                    console.log('practice', practice_sum)
+                    const practice_final = await this.teacherCalificationRepository.findOne({
+                        where: { 
+                            aulaDocenteId: student.aula_docente_id,
+                            institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                            periodoTipoId: student.periodo_tipo_id,
+                            notaTipoId: 6, // teorica
+                            modalidadEvaluacionTipoId: 7
+                        }
+                    })
+                    average = 0
+                    if(practice_sum > 0)
+                    {
+                        average = parseFloat((practice_sum /2).toFixed(2) ) 
+                    }
+
+                    
+
+                    if(practice_final)
+                    {
+                        practice_final.cuantitativa = average;
+                        await this.teacherCalificationRepository.save(practice_final)
+
+                    }else{
+
+                        const new_practice_final_note = new CreateTeacherCalification();
+
+                        new_practice_final_note.aulaDocenteId = student.aula_docente_id
+                        new_practice_final_note.institutoEstudianteInscripcionId = student.instituto_estudiante_inscripcion_id
+                        new_practice_final_note.modalidadEvaluacionTipoId = 7
+                        new_practice_final_note.periodoTipoId = student.periodo_tipo_id
+                        new_practice_final_note.cuantitativa =  average
+                        new_practice_final_note.notaTipoId = 6
+                        new_practice_final_note.usuarioId = user.id
+                        new_practice_final_note.valoracionTipoId = 1
+    
+                        await this.teacherCalificationRepository.save(new_practice_final_note)
+                    }
+
+                    //tiene 2 notas finales
+                    const sum_notes = await this.teacherCalificationRepository.find({
+                        where: { 
+                            aulaDocenteId: student.aula_docente_id,
+                            institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                            periodoTipoId: student.periodo_tipo_id,
+                            notaTipoId: 7, // teorica
+                            modalidadEvaluacionTipoId: In([1,2])
+                         }
+                    })
+
+                    let sum_sum = 0 
+
+                    await Promise.all(sum_notes.map((sum)=>{
+                        sum_sum += parseFloat(sum.cuantitativa+"") 
+                    }))
+
+                    const sum_final = await this.teacherCalificationRepository.findOne({
+                        where: { 
+                            aulaDocenteId: student.aula_docente_id,
+                            institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                            periodoTipoId: student.periodo_tipo_id,
+                            notaTipoId: 7, // teorica
+                            modalidadEvaluacionTipoId: 7
+                        }
+                    })
+                    average = 0
+                    if(sum_sum > 0)
+                    {
+                        average = parseFloat((sum_sum /2).toFixed(2) ) 
+                    }
+
+                    console.log('suma final',sum_sum)
+                    //aqui calcular estado del estudiante
+                    // en el estado va 0 como no asistido 
+
+                    let final_note: InstitutoEstudianteInscripcionDocenteCalificacion = null 
+
+                    if(sum_final)
+                    {
+                        sum_final.cuantitativa = average;
+                       final_note = await this.teacherCalificationRepository.save(sum_final)
+
+                    }else{
+
+                        const new_sum_final_note = new CreateTeacherCalification();
+
+                        new_sum_final_note.aulaDocenteId = student.aula_docente_id
+                        new_sum_final_note.institutoEstudianteInscripcionId = student.instituto_estudiante_inscripcion_id
+                        new_sum_final_note.modalidadEvaluacionTipoId = 7
+                        new_sum_final_note.periodoTipoId = student.periodo_tipo_id
+                        new_sum_final_note.cuantitativa =  average
+                        new_sum_final_note.notaTipoId = 7
+                        new_sum_final_note.usuarioId = user.id
+                        new_sum_final_note.valoracionTipoId = 1
+    
+                       final_note = await this.teacherCalificationRepository.save(new_sum_final_note)
+                    }
+
+                    //revisar si existe nota recuperatoria
+
+
+
+
+                    if(final_note)
+                    {
+                        let estado_matricula_id = 1
+                        if(final_note.cuantitativa === 0)
+                        {
+                            estado_matricula_id = 49 //no se presento
+                        }else{
+                            if(final_note.cuantitativa >= 61)
+                            {
+                                estado_matricula_id = 30 //aprobado
+                            }else{
+                                estado_matricula_id = 43 //reprobado
+                            }
+                        }
+
+                        const inscription = await  this.institutoEstudianteInscripcionRepository.findOne({ where: { id: student.instituto_estudiante_inscripcion_id }})
+
+                        inscription.estadoMatriculaTipoId = estado_matricula_id
+
+                        await this.institutoEstudianteInscripcionRepository.save(inscription)
+                        
+                    }
+                    
+
+
+                }
+
+                if(aula.ofertaCurricular.institutoPlanEstudioCarrera.planEstudioCarrera.intervaloGestionTipoId === 1 && student.modalidad_evaluacion_tipo_id === 9) // semestre recuperatorio
+                {
+
+                    const final_recovery = await this.teacherCalificationRepository.findOne({
+                        where: { 
+                            aulaDocenteId: student.aula_docente_id,
+                            institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                            periodoTipoId: student.periodo_tipo_id,
+                            notaTipoId: 7, // teorica
+                            modalidadEvaluacionTipoId: 9
+                        }
+                    })
+
+                    const sum_final = await this.teacherCalificationRepository.findOne({
+                        where: { 
+                            aulaDocenteId: student.aula_docente_id,
+                            institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                            periodoTipoId: student.periodo_tipo_id,
+                            notaTipoId: 7, // teorica
+                            modalidadEvaluacionTipoId: 7
+                        }
+                    })
+                   
+                    console.log('suma final recuperatorio',final_recovery)
+                    
+                    let final_note: InstitutoEstudianteInscripcionDocenteCalificacion = null 
+
+                    if(sum_final && final_recovery.cuantitativa >= 61 )
+                    {
+                        sum_final.cuantitativa = 61 ;
+                       final_note = await this.teacherCalificationRepository.save(sum_final)
+
+                    }
+
+                    //revisar si existe nota recuperatoria
+
+
+
+
+                    if(final_note)
+                    {
+                        let estado_matricula_id = 1
+                        if(final_note.cuantitativa === 0)
+                        {
+                            estado_matricula_id = 49 //no se presento
+                        }else{
+                            if(final_note.cuantitativa >= 61)
+                            {
+                                estado_matricula_id = 30 //aprobado
+                            }else{
+                                estado_matricula_id = 43 //reprobado
+                            }
+                        }
+
+                        const inscription = await  this.institutoEstudianteInscripcionRepository.findOne({ where: { id: student.instituto_estudiante_inscripcion_id }})
+
+                        inscription.estadoMatriculaTipoId = estado_matricula_id
+
+                        await this.institutoEstudianteInscripcionRepository.save(inscription)
+                        
+                    }
+                }
+
+
+
+                if(aula.ofertaCurricular.institutoPlanEstudioCarrera.planEstudioCarrera.intervaloGestionTipoId === 4 && student.modalidad_evaluacion_tipo_id !== 9) // anual
+                {
+                    //tiene 4 notas 
+
+                     //tiene 4 notas  tericas
+                    const teoric_notes = await this.teacherCalificationRepository.find({
+                        where: { 
+                            aulaDocenteId: student.aula_docente_id,
+                            institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                            periodoTipoId: student.periodo_tipo_id,
+                            notaTipoId: 5, // teorica
+                            modalidadEvaluacionTipoId: In([3,4,5,6])
+                         }
+                    })
+                    
+                    let teoric_sum = 0 
+
+                    await Promise.all(teoric_notes.map((teoric)=>{
+                        teoric_sum += parseFloat(teoric.cuantitativa+"") 
+                    }))
+
+                    console.log('teoric ', teoric_sum)
+
+                    const teoric_final = await this.teacherCalificationRepository.findOne({
+                        where: { 
+                            aulaDocenteId: student.aula_docente_id,
+                            institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                            periodoTipoId: student.periodo_tipo_id,
+                            notaTipoId: 5, // teorica
+                            modalidadEvaluacionTipoId: 7
+                        }
+                    })
+
+                    average = 0
+                    if(teoric_sum > 0)
+                    {
+                        average = parseFloat((teoric_sum /4).toFixed(2) ) 
+                    }
+                    
+                    if(teoric_final)
+                    {
+                        teoric_final.cuantitativa = average;
+                        await this.teacherCalificationRepository.save(teoric_final)
+
+                    }else{
+
+                        const new_teoric_final_note = new CreateTeacherCalification();
+
+                        new_teoric_final_note.aulaDocenteId = student.aula_docente_id
+                        new_teoric_final_note.institutoEstudianteInscripcionId = student.instituto_estudiante_inscripcion_id
+                        new_teoric_final_note.modalidadEvaluacionTipoId = 7
+                        new_teoric_final_note.periodoTipoId = student.periodo_tipo_id
+                        new_teoric_final_note.cuantitativa =  average
+                        new_teoric_final_note.notaTipoId = 5
+                        new_teoric_final_note.usuarioId = user.id
+                        new_teoric_final_note.valoracionTipoId = 1
+    
+                        await this.teacherCalificationRepository.save(new_teoric_final_note)
+                    }
+
+
+
+                    //tiene 4 notas  practicas
+                    const practice_notes = await this.teacherCalificationRepository.find({
+                        where: { 
+                            aulaDocenteId: student.aula_docente_id,
+                            institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                            periodoTipoId: student.periodo_tipo_id,
+                            notaTipoId: 6, // teorica
+                            modalidadEvaluacionTipoId: In([3,4,5,6])
+                         }
+                    })
+
+                    let practice_sum = 0 
+
+                    await Promise.all(practice_notes.map((practice)=>{
+                        practice_sum += parseFloat(practice.cuantitativa+"") 
+                    }))
+
+                    console.log('practice', practice_sum)
+                    const practice_final = await this.teacherCalificationRepository.findOne({
+                        where: { 
+                            aulaDocenteId: student.aula_docente_id,
+                            institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                            periodoTipoId: student.periodo_tipo_id,
+                            notaTipoId: 6, // teorica
+                            modalidadEvaluacionTipoId: 7
+                        }
+                    })
+                    average = 0
+                    if(practice_sum > 0)
+                    {
+                        average = parseFloat((practice_sum /4).toFixed(2) ) 
+                    }
+
+                    
+
+                    if(practice_final)
+                    {
+                        practice_final.cuantitativa = average;
+                        await this.teacherCalificationRepository.save(practice_final)
+
+                    }else{
+
+                        const new_practice_final_note = new CreateTeacherCalification();
+
+                        new_practice_final_note.aulaDocenteId = student.aula_docente_id
+                        new_practice_final_note.institutoEstudianteInscripcionId = student.instituto_estudiante_inscripcion_id
+                        new_practice_final_note.modalidadEvaluacionTipoId = 7
+                        new_practice_final_note.periodoTipoId = student.periodo_tipo_id
+                        new_practice_final_note.cuantitativa =  average
+                        new_practice_final_note.notaTipoId = 6
+                        new_practice_final_note.usuarioId = user.id
+                        new_practice_final_note.valoracionTipoId = 1
+    
+                        await this.teacherCalificationRepository.save(new_practice_final_note)
+                    }
+
+                    //tiene 2 notas finales
+                    const sum_notes = await this.teacherCalificationRepository.find({
+                        where: { 
+                            aulaDocenteId: student.aula_docente_id,
+                            institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                            periodoTipoId: student.periodo_tipo_id,
+                            notaTipoId: 7, // teorica
+                            modalidadEvaluacionTipoId: In([3,4,5,6])
+                         }
+                    })
+
+                    let sum_sum = 0 
+
+                    await Promise.all(sum_notes.map((sum)=>{
+                        sum_sum += parseFloat(sum.cuantitativa+"") 
+                    }))
+
+                    const sum_final = await this.teacherCalificationRepository.findOne({
+                        where: { 
+                            aulaDocenteId: student.aula_docente_id,
+                            institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                            periodoTipoId: student.periodo_tipo_id,
+                            notaTipoId: 7, // teorica
+                            modalidadEvaluacionTipoId: 7
+                        }
+                    })
+                    average = 0
+                    if(sum_sum > 0)
+                    {
+                        average = parseFloat((sum_sum /4).toFixed(2) ) 
+                    }
+
+                    console.log('suma final',sum_sum)
+                    //aqui calcular estado del estudiante
+                    // en el estado va 0 como no asistido 
+
+                    let final_note: InstitutoEstudianteInscripcionDocenteCalificacion = null 
+
+                    if(sum_final)
+                    {
+                        sum_final.cuantitativa = average;
+                       final_note = await this.teacherCalificationRepository.save(sum_final)
+
+                    }else{
+
+                        const new_sum_final_note = new CreateTeacherCalification();
+
+                        new_sum_final_note.aulaDocenteId = student.aula_docente_id
+                        new_sum_final_note.institutoEstudianteInscripcionId = student.instituto_estudiante_inscripcion_id
+                        new_sum_final_note.modalidadEvaluacionTipoId = 7
+                        new_sum_final_note.periodoTipoId = student.periodo_tipo_id
+                        new_sum_final_note.cuantitativa =  average
+                        new_sum_final_note.notaTipoId = 7
+                        new_sum_final_note.usuarioId = user.id
+                        new_sum_final_note.valoracionTipoId = 1
+    
+                       final_note = await this.teacherCalificationRepository.save(new_sum_final_note)
+                    }
+
+                    //revisar si existe nota recuperatoria
+
+
+
+
+                    if(final_note)
+                    {
+                        let estado_matricula_id = 1
+                        if(final_note.cuantitativa === 0)
+                        {
+                            estado_matricula_id = 49 //no se presento
+                        }else{
+                            if(final_note.cuantitativa >= 61)
+                            {
+                                estado_matricula_id = 30 //aprobado
+                            }else{
+                                estado_matricula_id = 43 //reprobado
+                            }
+                        }
+
+                        const inscription = await  this.institutoEstudianteInscripcionRepository.findOne({ where: { id: student.instituto_estudiante_inscripcion_id }})
+
+                        inscription.estadoMatriculaTipoId = estado_matricula_id
+
+                        await this.institutoEstudianteInscripcionRepository.save(inscription)
+                        
+                    }
+
+                }
+
+                if(aula.ofertaCurricular.institutoPlanEstudioCarrera.planEstudioCarrera.intervaloGestionTipoId === 4 && student.modalidad_evaluacion_tipo_id === 9) // anual recuperatorio
+                {
+
+                    const final_recovery = await this.teacherCalificationRepository.findOne({
+                        where: { 
+                            aulaDocenteId: student.aula_docente_id,
+                            institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                            periodoTipoId: student.periodo_tipo_id,
+                            notaTipoId: 7, // teorica
+                            modalidadEvaluacionTipoId: 9
+                        }
+                    })
+
+                    const sum_final = await this.teacherCalificationRepository.findOne({
+                        where: { 
+                            aulaDocenteId: student.aula_docente_id,
+                            institutoEstudianteInscripcionId: student.instituto_estudiante_inscripcion_id,
+                            periodoTipoId: student.periodo_tipo_id,
+                            notaTipoId: 7, // teorica
+                            modalidadEvaluacionTipoId: 7
+                        }
+                    })
+                   
+                    console.log('suma final recuperatorio',final_recovery)
+                    
+                    let final_note: InstitutoEstudianteInscripcionDocenteCalificacion = null 
+
+                    if(sum_final && final_recovery.cuantitativa >= 61 )
+                    {
+                        sum_final.cuantitativa = 61 ;
+                       final_note = await this.teacherCalificationRepository.save(sum_final)
+
+                    }
+
+                    //revisar si existe nota recuperatoria
+
+                    if(final_note)
+                    {
+                        let estado_matricula_id = 1
+                        if(final_note.cuantitativa === 0)
+                        {
+                            estado_matricula_id = 49 //no se presento
+                        }else{
+                            if(final_note.cuantitativa >= 61)
+                            {
+                                estado_matricula_id = 30 //aprobado
+                            }else{
+                                estado_matricula_id = 43 //reprobado
+                            }
+                        }
+
+                        const inscription = await  this.institutoEstudianteInscripcionRepository.findOne({ where: { id: student.instituto_estudiante_inscripcion_id }})
+
+                        inscription.estadoMatriculaTipoId = estado_matricula_id
+
+                        await this.institutoEstudianteInscripcionRepository.save(inscription)
+                        
+                    }
+                }
+                
+            }
             
         }) )
 
