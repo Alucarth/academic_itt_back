@@ -366,7 +366,8 @@ export class InstitucionEducativaController {
     @Post('create')
     async createInstitute(@Body() dto: any, @Users() user: UserEntity){
         console.log('payload',dto)
-        return dto;
+        return await this.institucionEducativaService.createInstitute(dto,user)
+        // return dto;
     }
 
     @Put()
