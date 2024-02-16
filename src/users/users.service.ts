@@ -844,6 +844,34 @@ async getAllPersonas() {
     return this._serviceResp.respuestaHttp200(result, "", "");
   }
 
+  async getAll2001DeptoTipo(idPais: number) {
+    //unidad_territorial_tipo_id = 6 censo_2014
+    
+    const result = await this.userRepository.query(`
+    SELECT
+      unidad_territorial.ID,
+      comentario AS sigla,
+      lugar 
+    FROM
+      unidad_territorial 
+    WHERE
+      unidad_territorial_tipo_id = 1
+      AND unidad_territorial_id = ${idPais}
+    ORDER BY
+      2 ASC
+    `);
+
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
+
+    if (result.length === 0) {
+      throw new NotFoundException("No se encontraron registros");
+    }
+
+    //return result;
+    return this._serviceResp.respuestaHttp200(result, "", "");
+  }
+
   async getAllPaisTipo() {
     //unidad_territorial_tipo_id = 6 censo_2014
 
@@ -918,6 +946,28 @@ async getAllPersonas() {
         unidad_territorial 
       WHERE
         unidad_territorial_tipo_id = 9
+        AND unidad_territorial_id  = ${codigoDepto} order by 2
+    `);
+
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
+
+    if (result.length === 0) {
+      throw new NotFoundException("No se encontraron registros");
+    }
+
+    //return result;
+    return this._serviceResp.respuestaHttp200(result, "", "");
+  }
+  async getAllProvincia2001ByDeptoCodigo(codigoDepto: number) {
+      console.log('codigoDepto',codigoDepto)
+      const result = await this.userRepository.query(`
+      SELECT
+        id, lugar, codigo
+      FROM
+        unidad_territorial 
+      WHERE
+        unidad_territorial_tipo_id = 2
         AND unidad_territorial_id  = ${codigoDepto} order by 2
     `);
 
@@ -1251,6 +1301,50 @@ async getAllPersonas() {
     return this._serviceResp.respuestaHttp200(result, "", "");
   }
 
+  async getAllMunicipio2001ByProvinciaId(provId: number) {
+    const result = await this.userRepository.query(`
+      SELECT
+        id, lugar
+      FROM
+        unidad_territorial 
+      WHERE
+        unidad_territorial_tipo_id = 3 and unidad_territorial_id = ${provId} 
+		order by 2
+    `);
+
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
+
+    if (result.length === 0) {
+      throw new NotFoundException("No se encontraron registros");
+    }
+
+    //return result;
+    return this._serviceResp.respuestaHttp200(result, "", "");
+  }
+
+  async getAllCanton2001ByMunicipioId(munId: number) {
+    const result = await this.userRepository.query(`
+      SELECT
+        id, lugar
+      FROM
+        unidad_territorial 
+      WHERE
+        unidad_territorial_tipo_id = 4 and unidad_territorial_id = ${munId} 
+		order by 2
+    `);
+
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
+
+    if (result.length === 0) {
+      throw new NotFoundException("No se encontraron registros");
+    }
+
+    //return result;
+    return this._serviceResp.respuestaHttp200(result, "", "");
+  }
+
   async getAllComunidadByMunicipioId(provId: number) {
     const result = await this.userRepository.query(`
       SELECT
@@ -1259,6 +1353,50 @@ async getAllPersonas() {
         unidad_territorial 
       WHERE
         unidad_territorial_tipo_id = 11 and unidad_territorial_id = ${provId} 
+		order by 2
+    `);
+
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
+
+    if (result.length === 0) {
+      throw new NotFoundException("No se encontraron registros");
+    }
+
+    //return result;
+    return this._serviceResp.respuestaHttp200(result, "", "");
+  }
+
+  async getAllComunidadByLocalidadId(provId: number) {
+    const result = await this.userRepository.query(`
+      SELECT
+        id, lugar
+      FROM
+        unidad_territorial 
+      WHERE
+        unidad_territorial_tipo_id = 12 and unidad_territorial_id = ${provId} 
+		order by 2
+    `);
+
+    console.log("result: ", result);
+    console.log("result size: ", result.length);
+
+    if (result.length === 0) {
+      throw new NotFoundException("No se encontraron registros");
+    }
+
+    //return result;
+    return this._serviceResp.respuestaHttp200(result, "", "");
+  }
+
+  async getAllLocalBycantonIdadId(cantonId: number) {
+    const result = await this.userRepository.query(`
+      SELECT
+        id, lugar
+      FROM
+        unidad_territorial 
+      WHERE
+        unidad_territorial_tipo_id = 5 and unidad_territorial_id = ${cantonId} 
 		order by 2
     `);
 

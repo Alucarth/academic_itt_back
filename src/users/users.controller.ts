@@ -103,7 +103,7 @@ export class UsersController {
   getAllExpedidoTipo() {
     return this.usersService.getAllExpedidoTipo();
   }
-
+  //2012
   @Get("/getAllProvByDeptoId/:deptoID")
   getAllProvinciaByDeptoCodigo(@Param("deptoID") deptoID: string) {
     return this.usersService.getAllProvinciaByDeptoCodigo(parseInt(deptoID));
@@ -118,6 +118,41 @@ export class UsersController {
   getAllComByMunId(@Param("munId") munId: string) {
     return this.usersService.getAllComunidadByMunicipioId(parseInt(munId));
   }
+
+  @Get("/getAllComByLocalidadId/:localId")
+  getAllComByLocalId(@Param("localId") localId: string) {
+    return this.usersService.getAllComunidadByLocalidadId(parseInt(localId));
+  }
+//censo 2001
+
+  @Get("/getAllDepto2001Tipo/:idPais")
+  getAll2001DeptoTipo(@Param("idPais") idPais: string) {
+    return this.usersService.getAll2001DeptoTipo(parseInt(idPais));
+  }
+
+  @Get("/getAllProv2001ByDeptoId/:deptoID")
+  getAllProvincia2001ByDeptoCodigo(@Param("deptoID") deptoID: string) {
+    return this.usersService.getAllProvincia2001ByDeptoCodigo(parseInt(deptoID));
+  }
+
+  
+  @Get("/getAllMuni2001ByProvId/:provId")
+  getAllMuni2001ByProvId(@Param("provId") provId: string) {
+    return this.usersService.getAllMunicipio2001ByProvinciaId(parseInt(provId));
+  }
+
+  @Get("/getAllCanton2001ByProvId/:munId")
+  getAllCanton2001ByMunId(@Param("munId") munId: string) {
+    return this.usersService.getAllCanton2001ByMunicipioId(parseInt(munId));
+  }
+
+  @Get("/getAllLocal2001ByCantonId/:cantonId")
+  getAllLocalByCantonId(@Param("cantonId") cantonId: string) {
+    return this.usersService.getAllLocalBycantonIdadId(parseInt(cantonId));
+  }
+
+
+
 
   @Get("/getAllRoles")
   getAllRoles() {

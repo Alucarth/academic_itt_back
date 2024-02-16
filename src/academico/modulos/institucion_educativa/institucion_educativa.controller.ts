@@ -362,7 +362,13 @@ export class InstitucionEducativaController {
         console.log('file', file.filename);
         return  await this.institucionEducativaService.createInstitucionEducativa(dto, file.filename, user);        
     }
-   
+    
+    @Post('create')
+    async createInstitute(@Body() dto: any, @Users() user: UserEntity){
+        console.log('payload',dto)
+        return dto;
+    }
+
     @Put()
     @UseInterceptors(
         FileInterceptor('file', {
