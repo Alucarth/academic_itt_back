@@ -1131,7 +1131,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
 
             }
 
-            if(practice_note.modalidadEvaluacionTipoId === 9) //si es recuperatorio
+            if(practice_note.modalidadEvaluacionTipoId === 9 || practice_note.modalidadEvaluacionTipoId === 10) //si es recuperatorio
             {
                 const sum_note = await this.teacherCalificationRepository.findOne({
                     where: { 
@@ -1173,7 +1173,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             let average = 0
             if(aula) //actualiza el promedio de  notas 
             {
-                if(aula.ofertaCurricular.institutoPlanEstudioCarrera.planEstudioCarrera.intervaloGestionTipoId === 1 && student.modalidad_evaluacion_tipo_id !== 9) // semestre
+                if(aula.ofertaCurricular.institutoPlanEstudioCarrera.planEstudioCarrera.intervaloGestionTipoId === 1 && student.modalidad_evaluacion_tipo_id !== 9 && student.modalidad_evaluacion_tipo_id !== 10) // semestre
                 {   
                     //tiene 2 notas tericas
                     const teoric_notes = await this.teacherCalificationRepository.find({
@@ -1380,7 +1380,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
 
                 }
 
-                if(aula.ofertaCurricular.institutoPlanEstudioCarrera.planEstudioCarrera.intervaloGestionTipoId === 1 && student.modalidad_evaluacion_tipo_id === 9) // semestre recuperatorio
+                if(aula.ofertaCurricular.institutoPlanEstudioCarrera.planEstudioCarrera.intervaloGestionTipoId === 1 && (student.modalidad_evaluacion_tipo_id === 9 || student.modalidad_evaluacion_tipo_id === 10 )) // semestre recuperatorio
                 {
 
                     const final_recovery = await this.teacherCalificationRepository.findOne({
@@ -1445,7 +1445,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
 
 
 
-                if(aula.ofertaCurricular.institutoPlanEstudioCarrera.planEstudioCarrera.intervaloGestionTipoId === 4 && student.modalidad_evaluacion_tipo_id !== 9) // anual
+                if(aula.ofertaCurricular.institutoPlanEstudioCarrera.planEstudioCarrera.intervaloGestionTipoId === 4 && student.modalidad_evaluacion_tipo_id !== 9  && student.modalidad_evaluacion_tipo_id !== 10) // anual
                 {
                     //tiene 4 notas 
 
@@ -1652,7 +1652,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
 
                 }
 
-                if(aula.ofertaCurricular.institutoPlanEstudioCarrera.planEstudioCarrera.intervaloGestionTipoId === 4 && student.modalidad_evaluacion_tipo_id === 9) // anual recuperatorio
+                if(aula.ofertaCurricular.institutoPlanEstudioCarrera.planEstudioCarrera.intervaloGestionTipoId === 4 && (student.modalidad_evaluacion_tipo_id === 9 || student.modalidad_evaluacion_tipo_id === 10 ) ) // anual recuperatorio
                 {
 
                     const final_recovery = await this.teacherCalificationRepository.findOne({

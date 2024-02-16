@@ -426,4 +426,34 @@ export class OperativoCarreraAutorizadaService {
         return operativos
     }
 
+    async generateExcepconalRecovery(periodo_tipo_id, gestion_tipo_id, carrera_autorizada_id, user)
+    {   
+        
+        let operativo = await this._operativeCareerRepository.findOne({
+            where:  { 
+                        carreraAutorizadaId: carrera_autorizada_id,
+                        eventoTipoId: 2, //calificaciones
+                        gestionTipoId: gestion_tipo_id,
+                        periodoTipoId: periodo_tipo_id,
+                        modalidadEvaluacionTipoId : 10 
+                    }
+        })
+
+        if(!operativo){
+            const new_operativo = new OperativoCarreraAutorizadaDTO()
+            new_operativo.carreraAutorizadaId = carrera_autorizada_id
+            new_operativo.eventoTipoId = 2
+            new_operativo.gestionTipoId = gestion_tipo_id
+            new_operativo.periodoTipoId = periodo_tipo_id
+            new_operativo.activo = false
+            new_operativo.modalidadEvaluacionTipoId = 10
+           operativo =  await this._operativeCareerRepository.save(new_operativo)
+        }
+       
+        // adicionando modalidad final
+
+        return operativo
+
+    }
+
 }

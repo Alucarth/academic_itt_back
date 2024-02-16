@@ -49,6 +49,16 @@ export class OperativoCarreraAutorizadaController {
         return await this.operativoCarreraAutorizadaService.generateOperativesCareer(payload.carrera_autorizada_id, payload.gestion_tipo_id, user)
     }
 
+    @Auth()
+    @Post('generar_recuperatorio_excepcional')
+    async generateExceptionalOperativeCareer(@Body() payload: any, @Users() user: UserEntity)
+    {
+        console.log('generando recupatorio excepcional')
+        return await this.operativoCarreraAutorizadaService.generateExcepconalRecovery( payload.periodo_tipo_id, payload.gestion_tipo_id, payload.carrera_autorizada_id , user)
+    }
+
+
+
    // @Autenticacion()
     @Get('estado/:id')
     async editEstadoOperativoCarrera(@Param('id') id: number){
