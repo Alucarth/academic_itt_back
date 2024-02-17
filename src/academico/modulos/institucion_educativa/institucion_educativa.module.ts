@@ -18,6 +18,8 @@ import { InstitucionEducativaSucursal } from 'src/academico/entidades/institucio
 import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
 import { MaestroInscripcion } from 'src/academico/entidades/maestroInscripcion.entity';
 import { TblAuxiliarSie } from 'src/academico/entidades/tblAuxiliarSie';
+import { JurisdiccionGeografica } from 'src/academico/entidades/jurisdiccionGeografica.entity';
+import { InstitucionEducativaAcreditacion } from 'src/academico/entidades/institucionEducativaAcreditacion.entity';
 
 
 
@@ -25,7 +27,7 @@ import { TblAuxiliarSie } from 'src/academico/entidades/tblAuxiliarSie';
 @Module({
   imports: [
     DatabaseModule, 
-    TypeOrmModule.forFeature([InstitucionEducativa,InstitucionEducativaSucursal, CarreraAutorizada, MaestroInscripcion]),
+    TypeOrmModule.forFeature([InstitucionEducativa,InstitucionEducativaSucursal, CarreraAutorizada, MaestroInscripcion,JurisdiccionGeografica,InstitucionEducativaAcreditacion]),
     TypeOrmModule.forFeature([TblAuxiliarSie], "siedb"),
   ],
   controllers: [InstitucionEducativaController],

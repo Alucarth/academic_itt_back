@@ -6,6 +6,10 @@ export class CreateJurisdiccionGeograficaDto {
   @IsNumber()
   distritoUnidadTerritorialId: number;
 
+  @IsOptional({ message: "Debe ingresar de edificio educativo  " })
+  @IsNumber()
+  codigoEdificioEducativo: number;
+
   @IsOptional({ message: "Debe ingresar la localidad segun censo 2001" })
   @IsNumber()
   localidadUnidadTerritorial2001Id: number;
@@ -44,5 +48,9 @@ export class CreateJurisdiccionGeograficaDto {
 
   @IsOptional()
   codigo: number;
+
+  @IsOptional({ message: "Debe ingresar de usuario  " })
+  @IsNumber()
+  usuarioId: number;
 
 }

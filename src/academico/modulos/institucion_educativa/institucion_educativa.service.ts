@@ -19,6 +19,12 @@ import { InstitucionEducativaSucursal } from 'src/academico/entidades/institucio
 import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
 import { MaestroInscripcion } from 'src/academico/entidades/maestroInscripcion.entity';
 import { TblAuxiliarSie } from 'src/academico/entidades/tblAuxiliarSie';
+import { JurisdiccionGeografica } from 'src/academico/entidades/jurisdiccionGeografica.entity';
+import { CreateJurisdiccionGeograficaDto } from '../jurisdiccion_geografica/dto/createJurisdiccionGeografica.dto';
+import { NewInstitution } from './dto/NewInstitution.dto';
+import { NewSucursalDto } from '../institucion_educativa_sucursal/dto/newSucursal.dto';
+import { NewAcreditacionDto } from '../institucion_educativa_acreditacion/dto/newAcreditacion.dto';
+import { InstitucionEducativaAcreditacion } from 'src/academico/entidades/institucionEducativaAcreditacion.entity';
 @Injectable()
 export class InstitucionEducativaService {
     constructor(
@@ -26,6 +32,8 @@ export class InstitucionEducativaService {
         @InjectRepository(InstitucionEducativaSucursal) private institucionEducativaSucursalRepository: Repository<InstitucionEducativaSucursal>,
         @InjectRepository(MaestroInscripcion) private maestroInscripcionRepository: Repository<MaestroInscripcion>,
         @InjectRepository(CarreraAutorizada) private carreraAutorizadaRepository: Repository<CarreraAutorizada>,
+        @InjectRepository(JurisdiccionGeografica) private juridiccionGeograficaRepository: Repository<JurisdiccionGeografica>,
+        @InjectRepository(InstitucionEducativaAcreditacion) private acreditacionRepository: Repository<InstitucionEducativaAcreditacion>,
         @Inject(InstitucionEducativaRepository) private institucionEducativaRepositorio: InstitucionEducativaRepository,
         @Inject(InstitucionEducativaAcreditacionRepository) private institucionEducativaAcreditacionRepositorio: InstitucionEducativaAcreditacionRepository,
         @Inject(InstitucionEducativaSucursalRepository) private institucionEducativaSucursalRepositorio: InstitucionEducativaSucursalRepository,
@@ -3020,6 +3028,76 @@ export class InstitucionEducativaService {
     async createInstitute(dto, user)
     {
       // use this.sieRepository.query(``)
-      return dto
+      const payload = JSON.stringify(dto)
+      const sie_response = await this.sieRepository.query(`
+      select * from sp_tramites_rue_itt_apertura('${payload}');
+      `)
+
+      const result = sie_response[0]
+      const jurisdiccion_geografica = result.v_datos.jurisdiccion_geografica
+      const institucion_educativa  = result.v_datos.institucioneducativa 
+      console.log(jurisdiccion_geografica)
+      console.log(institucion_educativa)
+      
+      const new_juridiccion_geografica = new CreateJurisdiccionGeograficaDto()
+      new_juridiccion_geografica.codigoEdificioEducativo = jurisdiccion_geografica.id
+      new_juridiccion_geografica.localidadUnidadTerritorial2001Id = jurisdiccion_geografica.lugar_tipo_id_localidad
+      new_juridiccion_geografica.distritoUnidadTerritorialId = jurisdiccion_geografica.lugar_tipo_id_distrito
+      new_juridiccion_geografica.observacion = jurisdiccion_geografica.obs
+      new_juridiccion_geografica.cordx = jurisdiccion_geografica.cordx
+      new_juridiccion_geografica.cordy = jurisdiccion_geografica.cordy
+      new_juridiccion_geografica.acreditacionTipoId = jurisdiccion_geografica.juridiccion_acreditacion_tipo_id
+      new_juridiccion_geografica.jurisdiccionValidacionTipoId = jurisdiccion_geografica.validacion_geografica_tipo_id
+      new_juridiccion_geografica.direccion = jurisdiccion_geografica.direccion
+      new_juridiccion_geografica.zona = jurisdiccion_geografica.zona
+      new_juridiccion_geografica.localidadUnidadTerritorial2012Id = jurisdiccion_geografica.lugar_tipo_id_localidad2012
+      new_juridiccion_geografica.usuarioId = user.id
+      const juridiccion = await this.juridiccionGeograficaRepository.save(new_juridiccion_geografica)
+      console.log('juridiccion',juridiccion)
+      if(juridiccion)
+      {
+          const new_institution = new NewInstitution()
+          new_institution.id = institucion_educativa.id
+          new_institution.jurisdiccionGeograficaId = juridiccion.id
+          new_institution.institucionEducativa = institucion_educativa.institucioneducativa
+          new_institution.educacionTipoId = institucion_educativa.institucioneducativa_tipo_id
+          new_institution.fechaFundacion = institucion_educativa.fecha_fundacion
+          new_institution.observacion = dto.observacion
+          new_institution.estadoInstitucionEducativaTipoId = institucion_educativa.estadoinstitucion_tipo_id
+          const institution = await this.institucionEducativaRepository.save(new_institution)
+          if(institution) //if institution create sucursal
+          { 
+            console.log('institucion',institution)
+            // institucionEducativaSucursalRepository
+            let date = new Date()
+
+            const new_sucursal = new NewSucursalDto()
+            new_sucursal.institucionEducativaId = institution.id
+            new_sucursal.estadoInstitucionEducativaTipoId = 10 //abierta por defecto 
+            new_sucursal.gestionTipoId = date.getFullYear()
+            new_sucursal.sucursalCodigo = dto.sucursal_codigo
+            new_sucursal.sucursalNombre = dto.sucursal_nombre
+            new_sucursal.usuarioId = user.i
+            new_sucursal.jurisdiccionGeograficaId = juridiccion.id
+            const sucursal = await this.institucionEducativaSucursalRepository.save(new_sucursal)
+
+            const new_acreditacion = new NewAcreditacionDto()
+            new_acreditacion.institucionEducativaId = institution.id
+            new_acreditacion.convenioTipoId = 0
+            new_acreditacion.dependenciaTipoId = institucion_educativa.dependencia_tipo_id
+            new_acreditacion.acreditacionTipoId = 2 // por defecto legal..
+            new_acreditacion.fechaResolucion = institucion_educativa.fecha_resolucion
+            new_acreditacion.numeroResolucion = institucion_educativa.nro_resolucion
+            new_acreditacion.usuarioId = user.id
+
+            const acreditacion = await this.acreditacionRepository.save(new_acreditacion)
+            
+            console.log('juridiccion',juridiccion)
+            console.log('institucion',institution)
+            console.log('sucursal', sucursal)
+            console.log('acreditacion', acreditacion)
+          }
+      }
+      return result
     }
 }

@@ -363,6 +363,7 @@ export class InstitucionEducativaController {
         return  await this.institucionEducativaService.createInstitucionEducativa(dto, file.filename, user);        
     }
     
+    @Auth()
     @Post('create')
     async createInstitute(@Body() dto: any, @Users() user: UserEntity){
         console.log('payload',dto)
