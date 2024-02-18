@@ -3028,7 +3028,9 @@ export class InstitucionEducativaService {
     async createInstitute(dto, user)
     {
       // use this.sieRepository.query(``)
-      const payload = JSON.stringify(dto)
+      try {
+
+        const payload = JSON.stringify(dto)
       const sie_response = await this.sieRepository.query(`
       select * from sp_tramites_rue_itt_apertura('${payload}');
       `)
@@ -3098,6 +3100,20 @@ export class InstitucionEducativaService {
             console.log('acreditacion', acreditacion)
           }
       }
-      return result
+      return this._serviceResp.respuestaHttp201(
+        result,
+        "registro de insitutos correcto!!",
+        ""
+      );
+        
+      } catch (error) {
+        return this._serviceResp.respuestaHttp500(
+          500,
+          "Error contactese con el encargado del sistema !!",
+          ""
+        );
+      }
+      
+      
     }
 }
