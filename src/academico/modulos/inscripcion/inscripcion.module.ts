@@ -23,6 +23,9 @@ import { InstitutoPlanEstudioCarrera } from "../../entidades/institutoPlanEstudi
 import { OperativoCarreraAutorizadaModule } from "../operativo_carrera_autorizada/operativo_carrera_autorizada.module"
 import { TblAuxiliarSie } from 'src/academico/entidades/tblAuxiliarSie';
 import { InstitutoEstudianteInscripcionDocenteCalificacion } from 'src/academico/entidades/institutoEstudianteInscripcionDocenteCalificacion.entity';
+import { UsuarioRol } from 'src/users/entity/usuarioRol.entity';
+import { UsuarioRolInstitucionEducativa } from 'src/academico/entidades/usuarioRolInsituticionEducativa.entity';
+import { User } from 'src/users/entity/users.entity';
 @Module({
   imports: [
     OperativoCarreraAutorizadaModule,
@@ -39,7 +42,7 @@ import { InstitutoEstudianteInscripcionDocenteCalificacion } from 'src/academico
     TypeOrmModule.forFeature([EstadoMatriculaTipo]),
     TypeOrmModule.forFeature([Aula]),
     TypeOrmModule.forFeature([OfertaCurricular]),
-    TypeOrmModule.forFeature([InstitutoPlanEstudioCarrera,InstitutoEstudianteInscripcionDocenteCalificacion]),
+    TypeOrmModule.forFeature([InstitutoPlanEstudioCarrera,InstitutoEstudianteInscripcionDocenteCalificacion,UsuarioRol,UsuarioRolInstitucionEducativa,User]),
     TypeOrmModule.forFeature([TblAuxiliarSie], "siedb"),
   ],
   controllers: [InscripcionController],

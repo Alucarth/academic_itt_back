@@ -1204,9 +1204,12 @@ export class MaestroInscripcionService {
       if( dto.cargoTipoId === 1 ){
         const newusuario = await this.usersService.createUserAndRol(persona, 6);
 
+
         const usuarioRol = await this.usersService.getIdByUserRol(newusuario, 6);
-        if(usuarioRol){ //registramos en usuario_rol          
+        if(usuarioRol){ 
+          //TODO: mejorar esa asignacion en caso de existir           
           const newusuario = await this.usersService.createUserAndRolAndInstitution(usuarioRol,sucursal.id,  user_id);
+          //registrar rol usuario instituto
 
         }
       }

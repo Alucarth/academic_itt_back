@@ -32,6 +32,8 @@ import { writeFile } from "fs/promises";
 import { TblAuxiliarSie } from "src/academico/entidades/tblAuxiliarSie";
 import { User as UserEntity } from 'src/users/entity/users.entity';
 import { InstitutoEstudianteInscripcionDocenteCalificacion } from "src/academico/entidades/institutoEstudianteInscripcionDocenteCalificacion.entity";
+import { UsuarioRol } from "src/users/entity/usuarioRol.entity";
+import { UsuarioRolInstitucionEducativa } from "src/academico/entidades/usuarioRolInsituticionEducativa.entity";
 
 @Injectable()
 export class InscripcionService {
@@ -62,6 +64,17 @@ export class InscripcionService {
     private ofertaCurricularRepository: Repository<OfertaCurricular>,
     @InjectRepository(InstitutoPlanEstudioCarrera)
     private ipecRepository: Repository<InstitutoPlanEstudioCarrera>,
+
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
+
+    @InjectRepository(UsuarioRol)
+    private userRolRepository: Repository<UsuarioRol>,
+
+    @InjectRepository(UsuarioRolInstitucionEducativa)
+    private userRolInstitutcionRepository: Repository<UsuarioRolInstitucionEducativa>,
+    
+    
     @InjectRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
     private _estudianteCalificacionDocente: Repository<InstitutoEstudianteInscripcionDocenteCalificacion>,
   
@@ -184,6 +197,12 @@ export class InscripcionService {
           .execute();
 
         //console.log("newusuario", newusuario);
+
+        //creando usuario para ingreso a estudiantes
+
+        
+
+
         return this._serviceResp.respuestaHttp201(
           resMat,
           "Registro MAT + USER Creado !!",
