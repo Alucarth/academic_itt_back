@@ -2453,7 +2453,7 @@ export class MaestroInscripcionService {
 
   }
 
-  async getTeacherDetail(carnet_identidad, codigo_rit)
+  async getTeacherDetail(carnet_identidad, codigo_rit, gestion_id)
   { 
       const institucionEducativaSucursal = await this.iesRepository.findOne({ where:{ institucionEducativaId: codigo_rit}})
       const persona = await this.personaRepository.findOne({ where:{ carnetIdentidad: carnet_identidad}})
@@ -2485,14 +2485,28 @@ export class MaestroInscripcionService {
                 } 
                },
         },
-        where: { maestroInscripcionId: maestro_inscripcion.id }
+        where: { maestroInscripcionId: maestro_inscripcion.id, aula:{ ofertaCurricular: { gestionTipoId: gestion_id}} }
       })
+      let new_aula_docente = []
+      await Promise.all(aulas_docente.map(async (aula_docente)=>{
+          let result = await this.maestroRepository.query(`select sum((adet.hora_fin - adet.hora_inicio)*4) as horas  from aula_docente ad
+          inner join maestro_inscripcion mi on mi.id  = ad.maestro_inscripcion_id  
+          inner join aula a on a.id  = ad.aula_id 
+          inner join aula_detalle adet on adet.aula_id  = a.id
+          where mi.id = ${maestro_inscripcion.id} and a.id = ${aula_docente.aulaId} `)
+          let horas_asignatura = result[0].horas ?`${result[0].horas.hours??'0'}h ${result[0].horas.minutes??'0'}m`: '0h 0m'
+          let new_aula = Object.assign(aula_docente) 
+          new_aula.horas_asignatura = horas_asignatura
+          new_aula_docente.push(new_aula)
+      }))
+      console.log('aulas docente',new_aula_docente)
 
       let result = await this.maestroRepository.query(`select sum((adet.hora_fin - adet.hora_inicio)*4) as horas  from aula_docente ad
       inner join maestro_inscripcion mi on mi.id  = ad.maestro_inscripcion_id  
       inner join aula a on a.id  = ad.aula_id 
+      inner join  oferta_curricular oc on oc.id = a.oferta_curricular_id
       inner join aula_detalle adet on adet.aula_id  = a.id
-      where mi.id = ${maestro_inscripcion.id}`)
+      where mi.id = ${maestro_inscripcion.id} and oc.gestion_tipo_id = ${gestion_id} `)
       // let profesor:any = Object.assign({}, teacher)
       // console.log('profesor',profesor)
       const carga_horaria = result[0].horas ?`${result[0].horas.hours??'0'}h ${result[0].horas.minutes??'0'}m`: '0h 0m'
@@ -2501,7 +2515,7 @@ export class MaestroInscripcionService {
       {
         return { 
             maestro_inscripcion : maestro_inscripcion,
-            aulas_docente: aulas_docente,
+            aulas_docente: new_aula_docente,
             carga_horaria: carga_horaria
         }
 
