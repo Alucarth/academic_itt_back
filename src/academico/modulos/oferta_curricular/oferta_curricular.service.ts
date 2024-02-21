@@ -385,6 +385,7 @@ export class OfertaCurricularService {
                       inner join turno_tipo tt on tt.id = a.turno_tipo_id
                       where oc.instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen_grado_tipo_id} and oc.gestion_tipo_id = ${gestion_tipo_id} and oc.periodo_tipo_id = ${periodo_tipo_id}
                       group by a.paralelo_tipo_id, a.turno_tipo_id,pt.paralelo, tt.turno;`)
+      console.log('paralelos',paralelos)
 
       await Promise.all(paralelos.map(async (paralelo)=>{
         let result = await this._institutoPlanEstudioCarreraRepository.query(`
@@ -413,7 +414,7 @@ export class OfertaCurricularService {
           left join aula_docente ad on ad.aula_id  = a.id
           left join maestro_inscripcion mi on mi.id = ad.maestro_inscripcion_id 
           left join persona p on p.id = mi.persona_id 
-          where oc.instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen_grado_tipo_id}  and oc.gestion_tipo_id = ${gestion_tipo_id} and oc.periodo_tipo_id = ${periodo_tipo_id} and a.paralelo_tipo_id = ${paralelo.paralelo_tipo_id} and a.turno_tipo_id = ${paralelo.turno_tipo_id};
+          where ad.baja_tipo_id = 0 and oc.instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen_grado_tipo_id}  and oc.gestion_tipo_id = ${gestion_tipo_id} and oc.periodo_tipo_id = ${periodo_tipo_id} and a.paralelo_tipo_id = ${paralelo.paralelo_tipo_id} and a.turno_tipo_id = ${paralelo.turno_tipo_id};
           `)
           paralelo.list = result
         
