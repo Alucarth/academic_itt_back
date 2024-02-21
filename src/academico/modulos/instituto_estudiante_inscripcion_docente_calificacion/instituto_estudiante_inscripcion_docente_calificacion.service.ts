@@ -853,10 +853,8 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
             select p.paterno, p.materno, p.nombre, p.carnet_identidad, p.complemento  from aula_docente ad 
             inner join maestro_inscripcion mi on mi.id = ad.maestro_inscripcion_id 
             inner join persona p on p.id = mi.persona_id 
-            where ad.aula_id = ${aula.id};
+            where ad.aula_id = ${aula.id} and ad.baja_tipo_id = 0;
     `);
-
-    
 
     return {
         operativos: operativos,
