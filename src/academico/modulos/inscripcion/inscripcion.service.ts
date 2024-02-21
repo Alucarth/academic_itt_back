@@ -34,6 +34,10 @@ import { User as UserEntity } from 'src/users/entity/users.entity';
 import { InstitutoEstudianteInscripcionDocenteCalificacion } from "src/academico/entidades/institutoEstudianteInscripcionDocenteCalificacion.entity";
 import { UsuarioRol } from "src/users/entity/usuarioRol.entity";
 import { UsuarioRolInstitucionEducativa } from "src/academico/entidades/usuarioRolInsituticionEducativa.entity";
+import { Persona } from "src/users/entity/persona.entity";
+import { NewUserDto } from "src/users/dto/newUser.dto";
+import * as bcrypt from 'bcrypt';
+
 
 @Injectable()
 export class InscripcionService {
@@ -73,6 +77,9 @@ export class InscripcionService {
 
     @InjectRepository(UsuarioRolInstitucionEducativa)
     private userRolInstitutcionRepository: Repository<UsuarioRolInstitucionEducativa>,
+
+    @InjectRepository(Persona)
+    private personaRepository: Repository<Persona>,
     
     
     @InjectRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
@@ -86,7 +93,10 @@ export class InscripcionService {
   ) { }
 
   async createMatricula(dto: CreateMatriculaDto, user:UserEntity) {
+
+    // TODO: reconstruir en caso bugs para que el codigo sea mantenible
     const persona = await this._servicePersona.findPersona(dto.personaId);
+    
     if (persona.length == 0) {
       //no existe la,persona
       return this._serviceResp.respuestaHttp404(
@@ -151,6 +161,53 @@ export class InscripcionService {
     }
 
     try {
+
+      //creando usuario para ingreso a estudiantes
+      // const person = await this.personaRepository.findOneBy({id: dto.personaId})
+      // if(person)
+      // {
+      //   let username = `${person.carnetIdentidad}${person.complemento}`
+      //   let user = await this.userRepository.findOne({
+      //     where:{ username: username }
+      //   })
+        
+      //   if(!user)
+      //   {
+      //     const new_user = new NewUserDto()
+          
+      //     new_user.username = username
+      //     new_user.password = await bcrypt.hash(username, 10);
+      //     new_user.activo = true
+      //     new_user.personaId = person.id
+
+      //     user = await this.userRepository.save(new_user)
+
+      //   }
+
+      //   let role = await this.userRepository.query(`
+      //     select ur.* from usuario_rol ur 
+      //     inner join usuario_rol_institucion_educativa urie on urie.usuario_rol_id  = ur.id
+      //     where usuario_id =  ${user.id}  and urie.institucion_educativa_sucursal_id =  ${dto.institucionEducativaSucursalId} and rol_tipo_id = 7;
+      //   `);
+
+      //   if(role.lenght === 0)
+      //   {
+
+      //   }
+      //   // let role = await this.userRolRepository.findOne(
+      //   //   {
+            
+      //   //     where: { 
+      //   //             usuario_id: user.id,
+      //   //             rol_tipo_id: 7,
+                    
+      //   //            }
+      //   //   }
+      //   // )
+
+
+      // }
+
       const existe = await this.inscripcionRepository.query(`
         select count(*) as existe 
         from 
@@ -161,6 +218,8 @@ export class InscripcionService {
       
         `);
 
+            
+  
 
       if (parseInt(existe[0].existe) == 0) {
         //si no existe, es nuevo nuevo, se crean ambos
@@ -198,7 +257,7 @@ export class InscripcionService {
 
         //console.log("newusuario", newusuario);
 
-        //creando usuario para ingreso a estudiantes
+       
 
         
 
@@ -282,6 +341,9 @@ export class InscripcionService {
           );
         }
       }
+
+
+
     } catch (error) {
       console.log("Error insertar inscripcion: ", error);
       throw new HttpException(
