@@ -3110,7 +3110,7 @@ export class InstitucionEducativaService {
         return this._serviceResp.respuestaHttp500(
           500,
           "Error contactese con el encargado del sistema !!",
-          ""
+          error+""
         );
       }
       
