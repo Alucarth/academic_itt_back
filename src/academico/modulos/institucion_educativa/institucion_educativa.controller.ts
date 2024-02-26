@@ -394,6 +394,12 @@ export class InstitucionEducativaController {
       res.download('./uploads/'+data.nombreArchivo)      
  
    }
-   
+
+   @Auth()
+   @Post('check_auth')
+   async checkAuth(@Users() user: UserEntity)
+   {
+        return `your session is active ${user.username} `
+   }
     
 }
