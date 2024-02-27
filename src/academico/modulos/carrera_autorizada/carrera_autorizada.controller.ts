@@ -1,4 +1,4 @@
-import { Controller, Get, Header, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Delete, Get, Header, Param, ParseIntPipe } from '@nestjs/common';
 import { CarreraAutorizadaService } from './carrera_autorizada.service';
 
 import { Response } from "express";
@@ -116,5 +116,13 @@ export class CarreraAutorizadaController {
       ) {
       return await this.carreraAutorizadaService.getCarrerasByIeIdGestionPeriodo(id, gestion, periodo);
     }
+
+    
+    @Delete(':id')
+    async softDeleteById( @Param('id', ParseIntPipe ) id: number)
+    {
+      return await this.carreraAutorizadaService.softDelete(id)
+    }
+
 
 }

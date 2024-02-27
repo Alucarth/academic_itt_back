@@ -2,6 +2,7 @@ import { Exclude } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -93,4 +94,7 @@ export class CarreraAutorizadaResolucion {
   @ManyToOne(() => ResolucionTipo, (resolucionTipo) => resolucionTipo.resoluciones, { nullable: false, cascade: true })
   @JoinColumn({ name: 'resolucion_tipo_id', referencedColumnName: 'id'})
   resolucionTipo: ResolucionTipo;
+
+  @DeleteDateColumn()  //soft delete
+  deleted_at: Date; // Deletion date 
 }

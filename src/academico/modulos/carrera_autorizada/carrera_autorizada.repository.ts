@@ -156,6 +156,8 @@ export class CarreraAutorizadaRepository {
         ])
           .where("ca.id = :id", { id })
           .andWhere("ca.activo = true")
+          .andWhere('ca.deleted_at is null')
+          .andWhere('r.deleted_at is null')
           .orderBy("r.fechaResolucion", "DESC")
           .andWhere("r.ultimo = true")
           .getRawOne();

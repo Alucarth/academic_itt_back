@@ -79,9 +79,9 @@ export class PlanEstudioCarreraService {
     }
 
     async getResolucionesByCarreraId(id:number){
-        
+        console.log('id',id)
         const carreraAutorizada = await this.carreraAutorizadaRepository.getCarreraAutorizadaById(id);
-
+        console.log('carrera autorizada',carreraAutorizada)
         if(carreraAutorizada){
             const resoluciones = await this.planEstudioCarreraRepository.findResolucionesByData(
                 carreraAutorizada.carrera_id,

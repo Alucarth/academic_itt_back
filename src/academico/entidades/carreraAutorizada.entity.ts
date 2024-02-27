@@ -2,6 +2,7 @@ import { Exclude } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -74,6 +75,7 @@ export class CarreraAutorizada {
   @OneToMany(() => OperativoCarreraAutorizada, (operativoCarreraAutorizada) => operativoCarreraAutorizada.carreraAutorizada)
   operativosCarreras: OperativoCarreraAutorizada[];
 
-  
+  @DeleteDateColumn()  //soft delete
+  deleted_at: Date; // Deletion date 
 
 }

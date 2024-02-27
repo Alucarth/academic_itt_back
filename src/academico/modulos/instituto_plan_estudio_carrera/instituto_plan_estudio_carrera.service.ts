@@ -129,10 +129,20 @@ export class InstitutoPlanEstudioCarreraService {
             }
   
             const crearResult = await this.institutoPlanEstudioCarreraRepository.runTransaction(op)
-  
+            const plan_estudio_carrera =  await this._institutoPlanEstudioCarreraRepository.findOne(
+              {
+                relations:{
+                  planEstudioCarrera: {
+                    planEstudioResolucion :true
+                  }
+                },
+                where: { id: crearResult.id}
+              }
+            )
+
             if(crearResult){
               return this._serviceResp.respuestaHttp201(
-                  crearResult,
+                  plan_estudio_carrera,
                   'Registro de instituo_plan Creado !!',
                   '',
               );

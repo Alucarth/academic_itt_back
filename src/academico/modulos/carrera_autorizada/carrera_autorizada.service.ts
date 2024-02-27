@@ -1,5 +1,5 @@
 import { PlanEstudio } from './../../entidades/planEstudio.entity';
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { CarreraAutorizadaRepository } from './carrera_autorizada.repository';
 
@@ -100,7 +100,7 @@ export class CarreraAutorizadaService {
             relations: {
               carreraTipo: true
             },
-            where: { institucionEducativaSucursalId: sucursal.id },
+            where: { institucionEducativaSucursalId: sucursal.id, deleted_at: null },
             order: { carreraTipo: { carrera: 'ASC' } }
           })
           console.log('carreras encontradas::::::::::::::::::', carreras)
@@ -625,6 +625,32 @@ export class CarreraAutorizadaService {
             'No se encontraron resultados.. !!',
             '',
         );
+      }
+
+      async softDelete(carreraAutorizadaId: number)
+      {
+          const carrera = await this._carreraAutorizadaRepository.findOne({
+            where: { id: carreraAutorizadaId }
+          })
+
+          if (!carrera) {
+            throw new NotFoundException('Carrera Autorizada not found');
+          }
+          
+          if(carrera)
+          {
+             // inhabilitar resoluciones de planes de estudio
+             const resoluciones = await this._carreraAutorizadaResolucionRepository.find({
+              where: { carreraAutorizadaId: carrera.id }
+             })
+
+             await Promise.all( resoluciones.map(async (resolucion)=>{
+                await this._carreraAutorizadaResolucionRepository.update( resolucion.id,{ deleted_at: new Date()} )
+             } ) )
+          }
+          // carrera.deleted_at = new Date()
+
+          return await this._carreraAutorizadaRepository.update( carrera.id, {deleted_at: new Date()})
       }
 
 
