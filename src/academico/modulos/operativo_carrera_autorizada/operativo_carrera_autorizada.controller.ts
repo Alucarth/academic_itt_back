@@ -26,6 +26,14 @@ export class OperativoCarreraAutorizadaController {
     async getAllOperativosCarrera(@Param('id') id: number){
         return await this.operativoCarreraAutorizadaService.findAllOperativosCarrera(id);
     }
+
+    @Get('carrera-gestion/:id/:gestion_id')
+    async getAllOperativosCarreraGestion(@Param('id') id: number, @Param('gestion_id') gestion_id: number){
+        console.log('gestions',gestion_id)
+        console.log('carrera_autorizada_id',id)
+        return await this.operativoCarreraAutorizadaService.findAllOperativosCarreraGestion(id,gestion_id);
+    }
+
     @Get(':id')
     async getDatoOperativo(@Param('id') id: number){
         return await this.operativoCarreraAutorizadaService.findOperativoCarrera(id);

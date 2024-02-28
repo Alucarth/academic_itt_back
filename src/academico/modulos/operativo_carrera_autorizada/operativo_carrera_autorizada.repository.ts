@@ -92,6 +92,38 @@ export class OperativoCarreraAutorizadaRepository {
         return operativos;
         
     }
+    async getAllOperativosCarreraGestion(id:number, gestion_id: number ){
+        
+        const operativos = await this.dataSource.getRepository(OperativoCarreraAutorizada)
+        .createQueryBuilder("a")
+        .innerJoinAndSelect("a.gestionTipo", "g")
+        .innerJoinAndSelect("a.periodoTipo", "p")
+        .innerJoinAndSelect("a.eventoTipo", "e")
+        .leftJoinAndSelect("a.modalidadEvaluacionTipo", "m")
+        .select([
+            'g.gestion as gestion',
+            'g.id as gestion_tipo_id',
+            'p.periodo as periodo',
+            'p.id as periodo_tipo_id',
+            'a.fechaInicio as fecha_inicio',
+            'a.fechaFin as fecha_fin',
+            'a.observacion as observacion',
+            'a.activo as activo',
+            'a.id as id',
+            'e.evento as evento',
+            'm.id as modalidad_id',
+            'm.modalidadEvaluacion as modalidad',
+            'm.abreviacion as abreviacion',
+        ])
+        .where('a.carreraAutorizadaId = :id ', { id })
+        .where('a.gestionTipoId = :gestion_id', {gestion_id})
+        .orderBy('a.id', 'ASC')
+        .getRawMany();
+        console.log("ofertas desde backen");
+        console.log(operativos);
+        return operativos;
+        
+    }
     async getOperativoVigenteCarrera(id:number ){
         console.log(id);
         const operativos = await this.dataSource.getRepository(OperativoCarreraAutorizada)

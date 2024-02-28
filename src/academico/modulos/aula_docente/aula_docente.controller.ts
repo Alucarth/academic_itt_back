@@ -34,4 +34,26 @@ export class AulaDocenteController {
     async createOfertaCurricular(@Body() dto: CreateAulaDocenteDto[], @Users() user: UserEntity){
         return  await this.aulaDocenteService.crearAulaDocente(dto, user);        
     }
+
+    @Get('gestions_by_teacher/:persona_id/:institucion_educativa_sucursal_id')
+    async getGestionsByteachers(@Param("persona_id", ParseIntPipe) persona_id: number, @Param("institucion_educativa_sucursal_id", ParseIntPipe) institucion_educativa_sucursal_id: number)
+    {
+        return await this.aulaDocenteService.getGestionsByTeacher(persona_id,institucion_educativa_sucursal_id )
+    }
+
+    @Post('resolutions_by_teacher')
+    async getResolutionsByTeacher(@Body() payload: any)
+    {
+        console.log('payload', payload)
+        return await this.aulaDocenteService.getResolutionsByTeacher(payload)
+    }
+
+    @Post('subjects_by_teacher')
+    async getSubjectsByTeacher(@Body() payload: any)
+    {
+        console.log('payload', payload)
+        return await this.aulaDocenteService.getSubjectsByTeacher(payload)
+    }
+
+    
 }

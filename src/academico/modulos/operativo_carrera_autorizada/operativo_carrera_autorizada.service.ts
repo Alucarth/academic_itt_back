@@ -63,6 +63,35 @@ export class OperativoCarreraAutorizadaService {
             '',
         );
     }
+
+    async findAllOperativosCarreraGestion(id:number, gestion_id :number){
+
+
+        // const operativos = await this.operativoCarreraAutorizadaRepositorio.getAllOperativosCarreraGestion(id,gestion_id);
+        const operativos = await this._operativeCareerRepository.find({
+            relations:{
+                gestionTipo: true,
+                periodoTipo: true,
+                eventoTipo: true,
+                modalidadEvaluacionTipo: true,
+            },
+            where: { carreraAutorizadaId: id, gestionTipoId: gestion_id },
+            order: { periodoTipo: { periodo: 'ASC'}, modalidadEvaluacionTipo: { abreviacion: 'ASC'} }
+        })
+        if(operativos.length > 0){
+            return this._serviceResp.respuestaHttp201(
+                operativos,
+                'Existen resultados encontrados !!',
+                '',
+            );
+        }
+        return this._serviceResp.respuestaHttp404(
+            "",
+            'No se encontraron resultados!!',
+            '',
+        );
+    }
+
     async findOperativoActivoCarrera(id:number){
         const operativo = await this.operativoCarreraAutorizadaRepositorio.getOperativoVigenteCarrera(id);
         if(operativo){

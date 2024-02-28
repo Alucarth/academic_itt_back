@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AulaDocente } from 'src/academico/entidades/aulaDocente.entity';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
@@ -6,13 +6,18 @@ import { EntityManager, Repository } from 'typeorm';
 import { AulaDocenteRepository } from './aula_docente.repository';
 import { CreateAulaDocenteDto } from './dto/createAulaDocente.dto';
 import { User as UserEntity } from 'src/users/entity/users.entity';
+import { Aula } from 'src/academico/entidades/aula.entity';
+import { MaestroInscripcion } from 'src/academico/entidades/maestroInscripcion.entity';
 
 @Injectable()
 export class AulaDocenteService {
     constructor(
         @Inject(AulaDocenteRepository)
         private aulaDocenteRepositorio: AulaDocenteRepository,
-        
+        @InjectRepository(Aula)
+        private _aulaRepository: Repository<Aula>,
+        @InjectRepository(MaestroInscripcion)
+        private _maestroInscripcionRepository: Repository<MaestroInscripcion>,
         private _serviceResp: RespuestaSigedService
       ) {}
       async getAll() {
@@ -176,6 +181,7 @@ export class AulaDocenteService {
               '',
           );
       }
+
       async crearDocenteAulaArray (dto: CreateAulaDocenteDto[]) {
         console.log("lista array inicio");
         console.log(dto);
@@ -205,5 +211,91 @@ export class AulaDocenteService {
             'No se pudo guardar la información !!',
             '',
         );
+    }
+
+    async getGestionsByTeacher( persona_id: number, institucion_educativa_sucursal_id: number )
+    {
+      const maestro_inscripcion = await this._maestroInscripcionRepository.findOne({
+        where: { personaId: persona_id, institucionEducativaSucursalId: institucion_educativa_sucursal_id}
+      })
+      if(!maestro_inscripcion)
+      {
+        throw new NotFoundException('Maestro Inscripcion not found');
+      }
+      //TODO: traducir a orm
+      const gestions = await this._aulaRepository.query(` 
+        select oc.gestion_tipo_id  from aula_docente ad 
+        inner join maestro_inscripcion mi on mi.id = ad.maestro_inscripcion_id 
+        inner join aula a on a.id = ad.aula_id 
+        inner join paralelo_tipo pt on pt.id = a.paralelo_tipo_id
+        inner join oferta_curricular oc on oc.id = a.oferta_curricular_id 
+        inner join instituto_plan_estudio_carrera ipec on ipec.id = oc.instituto_plan_estudio_carrera_id 
+        inner join plan_estudio_carrera pec on pec.id = ipec.plan_estudio_carrera_id 
+        inner join plan_estudio_resolucion per on per.id = pec.plan_estudio_resolucion_id 
+        where ad.maestro_inscripcion_id  = ${maestro_inscripcion.id} and mi.vigente= true and mi.institucion_educativa_sucursal_id = ${maestro_inscripcion.institucionEducativaSucursalId}
+        group by oc.gestion_tipo_id 
+        order by oc.gestion_tipo_id asc ;
+      `);
+
+      return gestions;
+    }
+
+    async getResolutionsByTeacher( payload: any)
+    {
+      const maestro_inscripcion = await this._maestroInscripcionRepository.findOne({
+        where: { personaId: payload.persona_id, institucionEducativaSucursalId: payload.institucion_educativa_sucursal_id}
+      })
+      if(!maestro_inscripcion)
+      {
+        throw new NotFoundException('Maestro Inscripcion not found');
+      }
+      //TODO: translate to typeorm
+      const resolutions = await this._aulaRepository.query(` 
+        select oc.instituto_plan_estudio_carrera_id, ct.carrera, ca.id as carrera_autorizada_id,  per.numero_resolucion, igt.intervalo_gestion, pec.intervalo_gestion_tipo_id   from aula_docente ad 
+        inner join maestro_inscripcion mi on mi.id = ad.maestro_inscripcion_id 
+        inner join aula a on a.id = ad.aula_id 
+        inner join paralelo_tipo pt on pt.id = a.paralelo_tipo_id
+        inner join oferta_curricular oc on oc.id = a.oferta_curricular_id 
+        inner join instituto_plan_estudio_carrera ipec on ipec.id = oc.instituto_plan_estudio_carrera_id 
+        inner join plan_estudio_carrera pec on pec.id = ipec.plan_estudio_carrera_id 
+        inner join plan_estudio_resolucion per on per.id = pec.plan_estudio_resolucion_id
+        inner join carrera_autorizada ca on ca.id = ipec.carrera_autorizada_id 
+        inner join carrera_tipo ct  on ct.id = ca.carrera_tipo_id 
+        inner join intervalo_gestion_tipo igt on igt.id = pec.intervalo_gestion_tipo_id 
+        where ad.maestro_inscripcion_id  = ${maestro_inscripcion.id} and oc.gestion_tipo_id = ${payload.gestion_tipo_id} and mi.vigente= true and mi.institucion_educativa_sucursal_id = ${maestro_inscripcion.institucionEducativaSucursalId}
+        group by oc.instituto_plan_estudio_carrera_id, ct.carrera, per.numero_resolucion, igt.intervalo_gestion, ca.id, pec.intervalo_gestion_tipo_id ;
+      `);
+
+      return resolutions;
+    }
+
+    async getSubjectsByTeacher( payload: any)
+    {
+      const maestro_inscripcion = await this._maestroInscripcionRepository.findOne({
+        where: { personaId: payload.persona_id, institucionEducativaSucursalId: payload.institucion_educativa_sucursal_id}
+      })
+      if(!maestro_inscripcion)
+      {
+        throw new NotFoundException('Maestro Inscripcion not found');
+      }
+
+      const subjects = await this._aulaRepository.query(`
+        select pt.paralelo,tt.turno , at2.asignatura , at2.abreviacion  , a.id as aula_id, pt2.periodo, ca.id as carrera_autorizada_id, oc.gestion_tipo_id  , oc.instituto_plan_estudio_carrera_id, ct.carrera,  per.numero_resolucion  from aula_docente ad 
+        inner join maestro_inscripcion mi on mi.id = ad.maestro_inscripcion_id 
+        inner join aula a on a.id = ad.aula_id 
+        inner join paralelo_tipo pt on pt.id = a.paralelo_tipo_id
+        inner join oferta_curricular oc on oc.id = a.oferta_curricular_id 
+        inner join instituto_plan_estudio_carrera ipec on ipec.id = oc.instituto_plan_estudio_carrera_id 
+        inner join plan_estudio_carrera pec on pec.id = ipec.plan_estudio_carrera_id 
+        inner join plan_estudio_resolucion per on per.id = pec.plan_estudio_resolucion_id
+        inner join carrera_autorizada ca on ca.id = ipec.carrera_autorizada_id 
+        inner join carrera_tipo ct  on ct.id = ca.carrera_tipo_id 
+        inner join periodo_tipo pt2 on pt2.id = oc.periodo_tipo_id 
+        inner join plan_estudio_asignatura pea  on pea.id = oc.plan_estudio_asignatura_id 
+        inner join asignatura_tipo at2 on at2.id  = pea.asignatura_tipo_id 
+        inner join turno_tipo tt on tt.id  = a.turno_tipo_id 
+        where ad.maestro_inscripcion_id  = ${maestro_inscripcion.id} and oc.gestion_tipo_id = ${payload.gestion_tipo_id} and mi.vigente= true and oc.instituto_plan_estudio_carrera_id = ${payload.instituto_plan_estudio_carrera_id} and mi.institucion_educativa_sucursal_id = ${maestro_inscripcion.institucionEducativaSucursalId};
+      `);
+      return subjects
     }
 }
