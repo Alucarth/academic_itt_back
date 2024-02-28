@@ -280,7 +280,7 @@ export class AulaDocenteService {
       }
 
       const subjects = await this._aulaRepository.query(`
-        select pt.paralelo,tt.turno , at2.asignatura , at2.abreviacion  , a.id as aula_id, pt2.periodo, ca.id as carrera_autorizada_id, oc.gestion_tipo_id  , oc.instituto_plan_estudio_carrera_id, ct.carrera,  per.numero_resolucion  from aula_docente ad 
+        select pt.paralelo,tt.turno , at2.asignatura , at2.abreviacion  , a.id as aula_id, pt2.periodo, oc.periodo_tipo_id, ca.id as carrera_autorizada_id, oc.gestion_tipo_id  , oc.instituto_plan_estudio_carrera_id, ct.carrera,  per.numero_resolucion  from aula_docente ad 
         inner join maestro_inscripcion mi on mi.id = ad.maestro_inscripcion_id 
         inner join aula a on a.id = ad.aula_id 
         inner join paralelo_tipo pt on pt.id = a.paralelo_tipo_id
