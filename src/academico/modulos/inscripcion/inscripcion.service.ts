@@ -2263,7 +2263,7 @@ export class InscripcionService {
         plan_estudio_carrera.plan_estudio_resolucion_id = plan_estudio_resolucion.id and
         plan_estudio_resolucion.activo = true
     WHERE
-      institucion_educativa_sucursal.id = ${ieSucursalId} 
+      institucion_educativa_sucursal.id = ${ieSucursalId} and carrera_autorizada.deleted_at is null
     order by 4
 
   `);
