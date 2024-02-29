@@ -232,7 +232,7 @@ export class AulaDocenteService {
         inner join instituto_plan_estudio_carrera ipec on ipec.id = oc.instituto_plan_estudio_carrera_id 
         inner join plan_estudio_carrera pec on pec.id = ipec.plan_estudio_carrera_id 
         inner join plan_estudio_resolucion per on per.id = pec.plan_estudio_resolucion_id 
-        where ad.maestro_inscripcion_id  = ${maestro_inscripcion.id} and mi.vigente= true and mi.institucion_educativa_sucursal_id = ${maestro_inscripcion.institucionEducativaSucursalId}
+        where ad.maestro_inscripcion_id  = ${maestro_inscripcion.id} and mi.vigente= true and mi.institucion_educativa_sucursal_id = ${maestro_inscripcion.institucionEducativaSucursalId} and ad.baja_tipo_id = 0
         group by oc.gestion_tipo_id 
         order by oc.gestion_tipo_id asc ;
       `);
@@ -262,7 +262,7 @@ export class AulaDocenteService {
         inner join carrera_autorizada ca on ca.id = ipec.carrera_autorizada_id 
         inner join carrera_tipo ct  on ct.id = ca.carrera_tipo_id 
         inner join intervalo_gestion_tipo igt on igt.id = pec.intervalo_gestion_tipo_id 
-        where ad.maestro_inscripcion_id  = ${maestro_inscripcion.id} and oc.gestion_tipo_id = ${payload.gestion_tipo_id} and mi.vigente= true and mi.institucion_educativa_sucursal_id = ${maestro_inscripcion.institucionEducativaSucursalId}
+        where ad.maestro_inscripcion_id  = ${maestro_inscripcion.id} and oc.gestion_tipo_id = ${payload.gestion_tipo_id} and mi.vigente= true and ad.baja_tipo_id = 0  and mi.institucion_educativa_sucursal_id = ${maestro_inscripcion.institucionEducativaSucursalId}
         group by oc.instituto_plan_estudio_carrera_id, ct.carrera, per.numero_resolucion, igt.intervalo_gestion, ca.id, pec.intervalo_gestion_tipo_id ;
       `);
 
@@ -294,7 +294,7 @@ export class AulaDocenteService {
         inner join plan_estudio_asignatura pea  on pea.id = oc.plan_estudio_asignatura_id 
         inner join asignatura_tipo at2 on at2.id  = pea.asignatura_tipo_id 
         inner join turno_tipo tt on tt.id  = a.turno_tipo_id 
-        where ad.maestro_inscripcion_id  = ${maestro_inscripcion.id} and oc.gestion_tipo_id = ${payload.gestion_tipo_id} and mi.vigente= true and oc.instituto_plan_estudio_carrera_id = ${payload.instituto_plan_estudio_carrera_id} and mi.institucion_educativa_sucursal_id = ${maestro_inscripcion.institucionEducativaSucursalId};
+        where ad.maestro_inscripcion_id  = ${maestro_inscripcion.id} and oc.gestion_tipo_id = ${payload.gestion_tipo_id} and mi.vigente= true and oc.instituto_plan_estudio_carrera_id = ${payload.instituto_plan_estudio_carrera_id} and mi.institucion_educativa_sucursal_id = ${maestro_inscripcion.institucionEducativaSucursalId} and ad.baja_tipo_id = 0;
       `);
       return subjects
     }
