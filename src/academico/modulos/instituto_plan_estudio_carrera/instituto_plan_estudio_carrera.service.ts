@@ -153,6 +153,22 @@ export class InstitutoPlanEstudioCarreraService {
               'No se pudo guardar la información !!',
               '',
           );
-      }
+    }
+
+    async getResolutionsStudent( payload : any)
+    {
+      const resolutions = await this._institutoPlanEstudioCarreraRepository.query(`
+          select  me.instituto_plan_estudio_carrera_id , per.numero_resolucion, ipec.plan_estudio_carrera_id,  igt.intervalo_gestion , ct.carrera from institucion_educativa_estudiante iee
+          inner join matricula_estudiante me on me.institucion_educativa_estudiante_id = iee.id
+          inner join instituto_plan_estudio_carrera ipec on ipec.id = me.instituto_plan_estudio_carrera_id
+          inner join plan_estudio_carrera pec on pec.id = ipec.plan_estudio_carrera_id
+          inner join plan_estudio_resolucion per on per.id = pec.plan_estudio_resolucion_id
+          inner join carrera_autorizada ca on ca.id = ipec.carrera_autorizada_id
+          inner join carrera_tipo ct on ct.id= ca.carrera_tipo_id
+          inner join intervalo_gestion_tipo igt on igt.id = pec.intervalo_gestion_tipo_id
+          where iee.institucion_educativa_sucursal_id  = ${payload.institucion_educativa_sucursal_id} and iee.persona_id = ${payload.persona_id} and me.gestion_tipo_id !=  ${payload.gestion_tipo_id} and ca.carrera_tipo_id =  ${payload.carrera_tipo_id};
+      `)
+      return resolutions
+    }
      
 }

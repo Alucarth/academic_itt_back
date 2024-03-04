@@ -88,5 +88,20 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionController {
         return await this.inscripcionDocenteCalificacionService.saveNotes(students, user)
     }
 
+    @Post('student-notes')
+    async studentNotes(@Body() payload: any)
+    {
+        return await this.inscripcionDocenteCalificacionService.studentNotes(payload)
+    }
+
+    
+    @Auth()
+    @Post('save-notes-homologation')
+    async saveNotesHomologation(@Body() payload: any[], @Users() user: UserEntity)
+    {
+        console.log('save notes homologation ---> ')
+        return await this.inscripcionDocenteCalificacionService.saveNotesHomologation(payload, user)
+    }
+
     
 }

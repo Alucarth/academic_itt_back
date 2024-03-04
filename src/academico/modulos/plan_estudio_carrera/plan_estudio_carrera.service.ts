@@ -216,4 +216,29 @@ export class PlanEstudioCarreraService {
             '',
         );
     }
+
+    async getPlanEstudioCarrera(plan_estudio_carrera_id)
+    {
+        const regimenes_grado = await this._planEstudioCarreraRepository.query(`
+            select rgt.id, rgt.regimen_grado from plan_estudio_asignatura pea
+            inner join regimen_grado_tipo rgt on rgt.id = pea.regimen_grado_tipo_id 
+            where pea.plan_estudio_carrera_id = ${plan_estudio_carrera_id} group by rgt.id, rgt.regimen_grado;
+        `)
+
+        await Promise.all( regimenes_grado.map(async (regimen: any)=>{
+            let subjects = await this._planEstudioCarreraRepository.query(`
+                select pea.id,  at2.abreviacion  ,at2.asignatura, pea.horas, pea."index" ,
+                    (select at3.abreviacion as pre_requisito  from plan_estudio_asignatura_regla pear 
+                        inner join plan_estudio_asignatura pea2 on pea2.id = pear.anterior_plan_estudio_asignatura_id  
+                        inner join asignatura_tipo at3 on at3.id = pea2.asignatura_tipo_id 
+                            where pear.plan_estudio_asignatura_id = pea.id )
+                from plan_estudio_asignatura pea 
+                inner join asignatura_tipo at2 on at2.id = pea.asignatura_tipo_id 
+                where pea.plan_estudio_carrera_id = ${plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen.id} order by pea."index" ;
+            `)
+            regimen.subjects = subjects
+        }))
+
+        return regimenes_grado
+    }
 }

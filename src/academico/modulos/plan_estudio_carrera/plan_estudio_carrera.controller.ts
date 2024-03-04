@@ -22,6 +22,12 @@ export class PlanEstudioCarreraController {
        return await this.planEstudioCarreraService.getCarrerasResolucionId(id);
     }
 
+    @Get(':id')
+    async getPlanEstudioCarrera(@Param('id') id: number)
+    {
+      return await this.planEstudioCarreraService.getPlanEstudioCarrera(id)
+    }
+
     @Get('carrera/:id')
     async getPlanesCarreraAutorizadaId(@Param('id') id: number){
        return await this.planEstudioCarreraService.getPlanesCarreraById(id);
@@ -74,5 +80,6 @@ export class PlanEstudioCarreraController {
       console.log("-*************-");
       return await this.planEstudioCarreraService.crearPlanEstudioCarrera(dto, user);
     }
+
 
 }

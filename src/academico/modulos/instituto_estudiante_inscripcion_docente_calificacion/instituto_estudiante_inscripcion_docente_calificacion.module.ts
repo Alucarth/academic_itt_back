@@ -14,6 +14,7 @@ import { Aula } from 'src/academico/entidades/aula.entity';
 import { OperativoCarreraAutorizada } from 'src/academico/entidades/operativoCarreraAutorizada.entity';
 import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
 import { Persona } from 'src/users/entity/persona.entity';
+import { OfertaCurricular } from 'src/academico/entidades/ofertaCurricular.entity';
 
 @Module({
   imports:[
@@ -25,6 +26,7 @@ import { Persona } from 'src/users/entity/persona.entity';
      InstitutoEstudianteInscripcionDocenteCalificacion,
      CarreraAutorizada,
      Persona,
+     OfertaCurricular
         ]),
     ],
   controllers: [InstitutoEstudianteInscripcionDocenteCalificacionController],

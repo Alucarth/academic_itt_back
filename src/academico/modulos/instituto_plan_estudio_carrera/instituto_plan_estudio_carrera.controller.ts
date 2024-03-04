@@ -52,4 +52,9 @@ export class InstitutoPlanEstudioCarreraController {
         console.log('controller insert',dto);
         return  await this.institutoPlanEstudioCarreraService.createInstitutoPlan(dto, user);        
     }
+
+    @Post('resolutions-student')
+    async getResolutionsStudent(@Body() payload: any){
+        return await this.institutoPlanEstudioCarreraService.getResolutionsStudent(payload)
+    }
 }
