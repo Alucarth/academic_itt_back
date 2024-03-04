@@ -15,6 +15,8 @@ import { OperativoCarreraAutorizada } from 'src/academico/entidades/operativoCar
 import { CarreraAutorizada } from 'src/academico/entidades/carreraAutorizada.entity';
 import { Persona } from 'src/users/entity/persona.entity';
 import { OfertaCurricular } from 'src/academico/entidades/ofertaCurricular.entity';
+import { MaestroInscripcion } from 'src/academico/entidades/maestroInscripcion.entity';
+import { AulaDocente } from 'src/academico/entidades/aulaDocente.entity';
 
 @Module({
   imports:[
@@ -26,7 +28,9 @@ import { OfertaCurricular } from 'src/academico/entidades/ofertaCurricular.entit
      InstitutoEstudianteInscripcionDocenteCalificacion,
      CarreraAutorizada,
      Persona,
-     OfertaCurricular
+     OfertaCurricular,
+     MaestroInscripcion,
+     AulaDocente
         ]),
     ],
   controllers: [InstitutoEstudianteInscripcionDocenteCalificacionController],

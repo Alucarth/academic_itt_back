@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common';
 import { IntervaloGestionTipo } from './../../entidades/intervaloGestionTipo.entity';
 import { PlanEstudioCarrera } from './../../entidades/planEstudioCarrera.entity';
 import { EstadoMatriculaTipo } from './../../entidades/estadoMatriculaTipo.entity';
@@ -8,7 +9,7 @@ import { InstitutoEstudianteInscripcion } from 'src/academico/entidades/Institut
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { EntityManager, In, Repository } from 'typeorm';
 import { AulaRepository } from '../aula/aula.repository';
-import { CreateInstitutoInscripcionDocenteCalificacionDto } from './dto/createInstitutoInscripcionDocenteCalificacion.dto';
+import { CreateInstitutoInscripcionDocenteCalificacionDto, NewInstitutoInscripcionDocenteCalificacionDto } from './dto/createInstitutoInscripcionDocenteCalificacion.dto';
 import { InstitutoEstudianteInscripcionDocenteCalificacionRepository } from './instituto_estudiante_inscripcion_docente_calificacion.repository';
 import { User, User as UserEntity } from 'src/users/entity/users.entity';
 import { Aula } from 'src/academico/entidades/aula.entity';
@@ -21,6 +22,11 @@ import { CreateTeacherCalification } from './dto/CreateTeacherCalification.dto';
 import { log } from 'console';
 import { OfertaCurricular } from 'src/academico/entidades/ofertaCurricular.entity';
 import { NewOfertaCurricularDTO } from '../oferta_curricular/dto/newOfertaCurricular.dto';
+import { NewAulaDTO } from '../aula/dto/newAula.dto';
+import { CreateInstitutoEstudianteInscripcion } from './dto/createInstitutoEstudianteInscripcion .dto';
+import { MaestroInscripcion } from 'src/academico/entidades/maestroInscripcion.entity';
+import { AulaDocente } from 'src/academico/entidades/aulaDocente.entity';
+import { CreateAulaDocenteDto, NewAulaDocenteDto } from '../aula_docente/dto/createAulaDocente.dto';
 @Injectable()
 export class InstitutoEstudianteInscripcionDocenteCalificacionService {
     constructor(
@@ -42,8 +48,15 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
         @InjectRepository(CarreraAutorizada)
         private carreraAutorizadaRepository: Repository<CarreraAutorizada>,
 
+        @InjectRepository(MaestroInscripcion)
+        private maestroInscripcionRepository: Repository<MaestroInscripcion>,
+
+        @InjectRepository(AulaDocente)
+        private aulaDocenteRepository: Repository<AulaDocente>,
+
         @InjectRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
         private teacherCalificationRepository: Repository<InstitutoEstudianteInscripcionDocenteCalificacion>,
+
         @InjectRepository(Persona)
         private personaRepository: Repository<Persona>,
 
@@ -1769,6 +1782,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
 
     async saveNotesHomologation(payload: any[], user: UserEntity)
     {
+        let note= null
         await Promise.all( payload.map(async (subject)=>{
 
             let oferta_curricular = await this.ofertaCurricularRepository.findOne({
@@ -1788,14 +1802,143 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                 new_oferta_curricular.gestionTipoId = subject.gestion_tipo_id
                 new_oferta_curricular.periodoTipoId = subject.periodo_tipo_id
                 new_oferta_curricular.usuarioId = user.id
+                new_oferta_curricular.observacion = 'homologacion/reincorporacion'
 
                 oferta_curricular = await this.ofertaCurricularRepository.save(new_oferta_curricular)
             }
             let paralelo_tipo_id = 26; //z
-            let turno_tipo_id = 1;
+            let turno_tipo_id = 1; //mañana
+            
+
+            if(oferta_curricular)
+            {
+                let aula = await this.aulaRepository.findOne({
+                    where: { ofertaCurricularId: oferta_curricular.id, paraleloTipoId: paralelo_tipo_id, turnoTipoId: turno_tipo_id }
+                })
+
+                if(!aula)
+                {
+                    let new_aula = new NewAulaDTO()
+                    new_aula.ofertaCurricularId = oferta_curricular.id
+                    new_aula.cupo = 1
+                    new_aula.usuarioId = user.id
+                    new_aula.paraleloTipoId = paralelo_tipo_id
+                    new_aula.turnoTipoId = turno_tipo_id
+
+                    aula = await this.aulaRepository.save(new_aula)
+                }
+
+                if(aula)
+                {
+
+                    //aula docente Solo el director puede realizar esta accion si no lo  es no se deberia continuar con el registro
+                    let maestro_inscripcion = await this.maestroInscripcionRepository.findOne({
+                        where: { institucionEducativaSucursalId: subject.institucion_educativa_sucursal_id, personaId: user.personaId , cargoTipoId: 2 } 
+                    })
+
+                    if(!maestro_inscripcion)
+                    {
+                        throw new NotFoundException('Director not found!'); // solo el director puede adicionar notas
+                    }
+
+
+
+                    let instituto_estudiante_inscripcion = await this.institutoEstudianteInscripcionRepository.findOne(
+                        {
+                            where:  { 
+                                        matriculaEstudianteId: subject.matricula_estudiante_id,
+                                        aulaId: aula.id,
+                                        ofertaCurricularId: oferta_curricular.id,
+                                        inscripcionTipoId: subject.inscripcion_tipo_id
+
+                                    }
+                        }
+                    )
+
+                    if(!instituto_estudiante_inscripcion)
+                    {
+                        let new_instituto_estudiante_inscripcion = new CreateInstitutoEstudianteInscripcion()
+                        new_instituto_estudiante_inscripcion.aulaId = aula.id
+                        new_instituto_estudiante_inscripcion.inscripcionTipoId = subject.inscripcion_tipo_id
+                        new_instituto_estudiante_inscripcion.ofertaCurricularId = oferta_curricular.id
+                        new_instituto_estudiante_inscripcion.matriculaEstudianteId = subject.matricula_estudiante_id
+                        new_instituto_estudiante_inscripcion.estadoMatriculaInicioTipoId = 0
+                        new_instituto_estudiante_inscripcion.estadoMatriculaTipoId = 24 //APROBADO HOMOLOGACION
+                        new_instituto_estudiante_inscripcion.usuarioId = user.id
+                        
+                        instituto_estudiante_inscripcion = await this.institutoEstudianteInscripcionRepository.save(new_instituto_estudiante_inscripcion)
+
+                    }
+
+                                       
+                    //aula docente calificacion 
+
+                    let aula_docente = await this.aulaDocenteRepository.findOne({
+                        where: { maestroInscripcionId: maestro_inscripcion.id, aulaId: aula.id}
+                    })
+
+                    if(!aula_docente)
+                    {
+                        let new_aula_docente = new NewAulaDocenteDto()
+                        new_aula_docente.aulaId = aula.id
+                        new_aula_docente.maestroInscripcionId = maestro_inscripcion.id
+                        new_aula_docente.asignacionFechaInicio = new Date().toDateString()
+                        new_aula_docente.asignacionFechaFin = new Date().toDateString()
+                        new_aula_docente.usuarioId = user.id
+                        new_aula_docente.bajaTipoId = 0 //normal
+
+                        aula_docente = await this.aulaDocenteRepository.save(new_aula_docente)
+                    }
+                    
+
+                    //docente calificaicon
+
+                    let teacher_calification = await this.teacherCalificationRepository.findOne({
+                        where:  { 
+                                    institutoEstudianteInscripcionId: instituto_estudiante_inscripcion.id,
+                                    periodoTipoId: subject.periodo_tipo_id,
+                                    aulaDocenteId: aula_docente.id,
+                                    notaTipoId: 7,
+                                    modalidadEvaluacionTipoId: 7
+                                }
+                    })
+
+                    if(teacher_calification)
+                    {
+                        teacher_calification.cuantitativa = subject.nota_final
+                        //update note
+                       note =  await this.teacherCalificationRepository.save(teacher_calification)
+
+
+                    }
+
+
+                    if(!teacher_calification)
+                    {
+                        let new_teacher_calification =new NewInstitutoInscripcionDocenteCalificacionDto()
+                        new_teacher_calification.institutoEstudianteInscripcionId = instituto_estudiante_inscripcion.id
+                        new_teacher_calification.aulaDocenteId = aula_docente.id
+                        new_teacher_calification.periodoTipoId = subject.periodo_tipo_id
+                        new_teacher_calification.cuantitativa = subject.nota_final
+                        new_teacher_calification.notaTipoId = 7
+                        new_teacher_calification.modalidadEvaluacionTipoId = 7
+                        new_teacher_calification.valoracionTipoId = 1
+
+                        note = await this.teacherCalificationRepository.save(new_teacher_calification)
+
+                    }
+
+
+
+                }
+            }
+
 
         }))
-        return payload
+
+
+        return note
+        
     }
 
 }

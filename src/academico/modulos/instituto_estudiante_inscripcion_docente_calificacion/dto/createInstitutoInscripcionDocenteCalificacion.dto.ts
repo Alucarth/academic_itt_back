@@ -72,3 +72,42 @@ export class CreateInstitutoInscripcionDocenteCalificacionDto {
     @Type(() => InstitutoInscripcionDocenteCalificacion)
     items: InstitutoInscripcionDocenteCalificacion[];
 }
+
+export class NewInstitutoInscripcionDocenteCalificacionDto {
+    @IsNotEmpty({ message: "Debe ingresar al aula y docente" })
+    @IsNumber()
+    aulaDocenteId: number;
+  
+    @IsNotEmpty({ message: "Debe ingresar el estudiane inscrito" })
+    @IsNumber()
+    institutoEstudianteInscripcionId: number;
+  
+    @IsNotEmpty({ message: "Debe ingresar el aula" })
+    @IsNumber()
+    periodoTipoId: number;
+
+    @IsNotEmpty({ message: "Debe ingresar el aula" })
+    @IsNumber()
+    valoracionTipoId: number;
+  
+  
+    @IsNotEmpty({ message: "Debe ingresar la nota cuantitativa" })
+    @IsNumber()
+    cuantitativa: number;
+  
+    @IsOptional({ message: "Debe ingresar la nota cualitativa" })
+    @IsString()
+    cualitativa: string;
+  
+    @IsNotEmpty({ message: "Debe ingresar el tipo_nota" })
+    @IsNumber()
+    notaTipoId: number;
+  
+    @IsNotEmpty({ message: "Debe ingresar el Modalidad Tipo" })
+    @IsNumber()
+    modalidadEvaluacionTipoId: number;
+
+    @IsNotEmpty({ message: "Debe ingresar el userId" })
+    @IsNumber()
+    usuarioId: number;
+}

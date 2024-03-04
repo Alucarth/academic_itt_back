@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class NewOfertaCurricularDTO {
     
@@ -22,6 +22,9 @@ export class NewOfertaCurricularDTO {
     @IsNumber()
     planEstudioAsignaturaId: number;
 
+    @IsOptional()
+    @IsString()
+    observacion: string;
     
 
     

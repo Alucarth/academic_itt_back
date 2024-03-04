@@ -48,6 +48,9 @@ export class EstudianteInscripcionService {
     async checkInscription(aula_id, matricula_estudiante_id)
     {
         return await this._institutoEstudianteInscripcionRepository.findOne({
+            relations:{
+                estadoMatriculaTipo:true
+            },
             where: { aulaId: aula_id, matriculaEstudianteId: matricula_estudiante_id}
         })
     }
