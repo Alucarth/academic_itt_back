@@ -1376,7 +1376,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                         {
                             estado_matricula_id = 49 //no se presento
                         }else{
-                            if(final_note.cuantitativa >= 61)
+                            if( Math.round(final_note.cuantitativa) >= 61)
                             {
                                 estado_matricula_id = 30 //aprobado
                             }else{
@@ -1442,7 +1442,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                         {
                             estado_matricula_id = 49 //no se presento
                         }else{
-                            if(final_note.cuantitativa >= 61)
+                            if(Math.round(final_note.cuantitativa) >= 61)
                             {
                                 estado_matricula_id = 30 //aprobado
                             }else{
@@ -1650,7 +1650,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                         {
                             estado_matricula_id = 49 //no se presento
                         }else{
-                            if(final_note.cuantitativa >= 61)
+                            if(Math.round(final_note.cuantitativa) >= 61)
                             {
                                 estado_matricula_id = 30 //aprobado
                             }else{
@@ -1711,7 +1711,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                         {
                             estado_matricula_id = 49 //no se presento
                         }else{
-                            if(final_note.cuantitativa >= 61)
+                            if(Math.round(final_note.cuantitativa) >= 61)
                             {
                                 estado_matricula_id = 30 //aprobado
                             }else{
