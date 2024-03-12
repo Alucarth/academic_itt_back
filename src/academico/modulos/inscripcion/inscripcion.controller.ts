@@ -82,7 +82,7 @@ export class InscripcionController {
     );
   }*/
 
-  //se aumenta el instituto_plan_estudio_carrera_id
+  //se aumenta el instituto_plan_estudio_carrera_id  //convertir parametros de entrada
   @Get("/matriculados/:gestionId/:periodoId/:carreraId/:ieId/:ipecId")
   async getAllMatriculadosByGestion(
     @Param("gestionId") gestionId: string,
@@ -97,6 +97,23 @@ export class InscripcionController {
       parseInt(carreraId),
       parseInt(ieId),
       parseInt(ipecId),
+    );
+  }
+
+  @Get("/matriculados_homologation/:gestionId/:periodoId/:carreraId/:ieId/:ipecId")
+  async getAllMatriculadosByGestionHomologation(
+    @Param("gestionId", ParseIntPipe) gestionId: number,
+    @Param("periodoId", ParseIntPipe) periodoId: number,
+    @Param("carreraId", ParseIntPipe) carreraId: number,
+    @Param("ieId", ParseIntPipe) ieId: number,
+    @Param("ipecId", ParseIntPipe) ipecId: number,
+  ) {
+    return await this.inscripcionService.getAllMatriculadosByGestionHomologation(
+      gestionId,
+      periodoId,
+      carreraId,
+      ieId,
+      ipecId,
     );
   }
 

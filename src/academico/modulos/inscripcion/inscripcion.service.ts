@@ -2800,5 +2800,39 @@ async deleteMatriculado(id: number) {
     
   }
 
+  async getAllMatriculadosByGestionHomologation(
+    gestionId: number,
+    periodoId: number,
+    carreraAutorizadaId: number,
+    sieId: number,
+    ipecId: number
+  ) {
+
+    const students = await this.matriculaRepository.query(`
+    select * from (
+      select iee.institucion_educativa_sucursal_id, me.id as matricula_estudiante_id,iee.persona_id, p.carnet_identidad, p.complemento, p.nombre, p.paterno, p.materno , me.instituto_plan_estudio_carrera_id,
+      (	select count(instituto_plan_estudio_carrera_id) as planes from institucion_educativa_estudiante iee1 
+        inner join matricula_estudiante me1 on me1.institucion_educativa_estudiante_id = iee1.id 
+          inner join instituto_plan_estudio_carrera ipec1 on ipec1.id = me1.instituto_plan_estudio_carrera_id 
+            inner join plan_estudio_carrera pec1 on pec1.id = ipec1.plan_estudio_carrera_id 
+              inner join carrera_autorizada ca1 on ca1.id = ipec1.carrera_autorizada_id 
+                where iee1.institucion_educativa_sucursal_id  = ${sieId} and iee1.persona_id = iee.persona_id and me1.gestion_tipo_id < ${gestionId} and ca1.carrera_tipo_id = ca.carrera_tipo_id
+      )
+      from matricula_estudiante me 
+      inner join instituto_plan_estudio_carrera ipec on ipec.id = me.instituto_plan_estudio_carrera_id 
+      inner join institucion_educativa_estudiante iee on iee.id = me.institucion_educativa_estudiante_id 
+      inner join persona p on p.id  = iee.persona_id 
+      inner join carrera_autorizada ca on ca.id = ipec.carrera_autorizada_id 
+      where me.instituto_plan_estudio_carrera_id  = ${ipecId} and gestion_tipo_id = ${gestionId} and periodo_tipo_id = ${periodoId} and iee.institucion_educativa_sucursal_id = ${sieId} and ipec.carrera_autorizada_id = ${carreraAutorizadaId} 
+      ) as subquery where planes > 0;
+    `)
+
+    return this._serviceResp.respuestaHttp200(
+      students,
+      "Registro Encontrado !!",
+      ""
+    );
+    
+  }
 
 }
