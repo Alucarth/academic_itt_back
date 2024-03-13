@@ -166,11 +166,12 @@ export class InstitutoPlanEstudioCarreraService {
           inner join carrera_autorizada ca on ca.id = ipec.carrera_autorizada_id
           inner join carrera_tipo ct on ct.id= ca.carrera_tipo_id
           inner join intervalo_gestion_tipo igt on igt.id = pec.intervalo_gestion_tipo_id
-          where iee.institucion_educativa_sucursal_id  = ${payload.institucion_educativa_sucursal_id} and iee.persona_id = ${payload.persona_id} and me.gestion_tipo_id !=  ${payload.gestion_tipo_id} and ca.carrera_tipo_id =  ${payload.carrera_tipo_id};
+          where iee.institucion_educativa_sucursal_id  = ${payload.institucion_educativa_sucursal_id} and iee.persona_id = ${payload.persona_id} and me.gestion_tipo_id <  ${payload.gestion_tipo_id} and ca.carrera_tipo_id =  ${payload.carrera_tipo_id};
       `)
+      
 
-      await Promise.all(resolutions.map(async (resolution)=> {
-
+      await Promise.all(resolutions.map(async (resolution: any)=> {
+        // aqui se obtiene los semestre o años aprobados
         const regimenes_grado = await this._institutoPlanEstudioCarreraRepository.query(`
             select rgt.id, rgt.regimen_grado, oc.gestion_tipo_id 
             from institucion_educativa_estudiante iee 
@@ -185,9 +186,11 @@ export class InstitutoPlanEstudioCarreraService {
             where iee.institucion_educativa_sucursal_id  =  ${payload.institucion_educativa_sucursal_id} and iee.persona_id = ${payload.persona_id} and me.instituto_plan_estudio_carrera_id = ${resolution.instituto_plan_estudio_carrera_id} and iei.estadomatricula_tipo_id = 30 
             group by rgt.regimen_grado, rgt.id, oc.gestion_tipo_id ;
         `)
-
+          let subject_student = []
+          let is_complete = true
         await Promise.all( regimenes_grado.map(async (regimen_grado: any)=>{
 
+            //aqui se obtiene las materias de un semestre o año  aprobados
             let notes  = await this._institutoPlanEstudioCarreraRepository.query(`
                 select rgt.regimen_grado, oc.gestion_tipo_id  ,at2.asignatura, at2.abreviacion, emt.estado_matricula,
                         (select iedc.cuantitativa as nota_final from instituto_estudiante_inscripcion_docente_calificacion iedc where iedc.instituto_estudiante_inscripcion_id = iei.id and iedc.modalidad_evaluacion_tipo_id = 7 and iedc.nota_tipo_id = 7 )
@@ -202,8 +205,37 @@ export class InstitutoPlanEstudioCarreraService {
                 inner join estado_matricula_tipo emt on emt.id = iei.estadomatricula_tipo_id 
                 where iee.institucion_educativa_sucursal_id  = ${payload.institucion_educativa_sucursal_id} and iee.persona_id = ${payload.persona_id} and me.instituto_plan_estudio_carrera_id = ${resolution.instituto_plan_estudio_carrera_id} and iei.estadomatricula_tipo_id = 30 and pea.regimen_grado_tipo_id = ${regimen_grado.id};
             `)
+            let subjects = await this._institutoPlanEstudioCarreraRepository.query(`
+                select rgt.regimen_grado, at3.asignatura, at3.abreviacion  from plan_estudio_carrera pec 
+                inner join plan_estudio_asignatura pea on pea.plan_estudio_carrera_id = pec.id
+                inner join asignatura_tipo at3 on at3.id = pea.asignatura_tipo_id
+                inner join regimen_grado_tipo rgt on rgt.id = pea.regimen_grado_tipo_id
+                inner join instituto_plan_estudio_carrera ipec on ipec.plan_estudio_carrera_id = pec.id 
+                where ipec.id = ${resolution.instituto_plan_estudio_carrera_id} and pea.regimen_grado_tipo_id = ${regimen_grado.id} order by at3.asignatura asc ;
+            
+            `)
+            subject_student = []  
+            is_complete = true
+            await Promise.all(subjects.map( (subject: any) =>{
+                const result = notes.filter((note: any) => note.asignatura === subject.asignatura )
+                if(result.length > 0)
+                {
+                  subject_student.push(result[0])
+                }else{
+                  subject_student.push( {
+                    regimen_grado: subject.regimen_grado,
+                    gestion_tipo_id: null,
+                    asignatura: subject.asignatura,
+                    abreviacion: subject.abreviacion,
+                    estado_matricula: 'SIN APROBAR',
+                    nota_final: null
+                  })
+                  is_complete = false
+                }
+            } ))
+            regimen_grado.is_complete = is_complete
 
-            regimen_grado.notes = notes
+            regimen_grado.notes = subject_student
 
         }))
 

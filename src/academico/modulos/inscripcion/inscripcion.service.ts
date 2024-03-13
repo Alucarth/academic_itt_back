@@ -2810,7 +2810,7 @@ async deleteMatriculado(id: number) {
 
     const students = await this.matriculaRepository.query(`
     select * from (
-      select iee.institucion_educativa_sucursal_id, me.id as matricula_estudiante_id,iee.persona_id, p.carnet_identidad, p.complemento, p.nombre, p.paterno, p.materno , me.instituto_plan_estudio_carrera_id,
+      select iee.institucion_educativa_sucursal_id, me.periodo_tipo_id, me.gestion_tipo_id, me.id as matricula_estudiante_id, ca.carrera_tipo_id, iee.persona_id, p.carnet_identidad, p.complemento, p.nombre, p.paterno, p.materno , me.instituto_plan_estudio_carrera_id,
       (	select count(instituto_plan_estudio_carrera_id) as planes from institucion_educativa_estudiante iee1 
         inner join matricula_estudiante me1 on me1.institucion_educativa_estudiante_id = iee1.id 
           inner join instituto_plan_estudio_carrera ipec1 on ipec1.id = me1.instituto_plan_estudio_carrera_id 
