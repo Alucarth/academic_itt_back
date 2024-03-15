@@ -17,6 +17,7 @@ import { Persona } from 'src/users/entity/persona.entity';
 import { OfertaCurricular } from 'src/academico/entidades/ofertaCurricular.entity';
 import { MaestroInscripcion } from 'src/academico/entidades/maestroInscripcion.entity';
 import { AulaDocente } from 'src/academico/entidades/aulaDocente.entity';
+import { HomologadosGestionEstudiante } from 'src/academico/entidades/homologadosGestionEstudiante.entity';
 
 @Module({
   imports:[
@@ -30,7 +31,8 @@ import { AulaDocente } from 'src/academico/entidades/aulaDocente.entity';
      Persona,
      OfertaCurricular,
      MaestroInscripcion,
-     AulaDocente
+     AulaDocente,
+     HomologadosGestionEstudiante
         ]),
     ],
   controllers: [InstitutoEstudianteInscripcionDocenteCalificacionController],

@@ -27,6 +27,9 @@ import { CreateInstitutoEstudianteInscripcion } from './dto/createInstitutoEstud
 import { MaestroInscripcion } from 'src/academico/entidades/maestroInscripcion.entity';
 import { AulaDocente } from 'src/academico/entidades/aulaDocente.entity';
 import { CreateAulaDocenteDto, NewAulaDocenteDto } from '../aula_docente/dto/createAulaDocente.dto';
+import { HomologadosGestionEstudiante } from 'src/academico/entidades/homologadosGestionEstudiante.entity';
+import { fromPascal } from 'postgres';
+import { CreateHomologationGestionEstudiante } from './dto/createHomologationGestionEstudiante.dto';
 @Injectable()
 export class InstitutoEstudianteInscripcionDocenteCalificacionService {
     constructor(
@@ -56,6 +59,9 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
 
         @InjectRepository(InstitutoEstudianteInscripcionDocenteCalificacion)
         private teacherCalificationRepository: Repository<InstitutoEstudianteInscripcionDocenteCalificacion>,
+
+        @InjectRepository(HomologadosGestionEstudiante)
+        private homologadosGestionEstudianteRepository: Repository<HomologadosGestionEstudiante>,
 
         @InjectRepository(Persona)
         private personaRepository: Repository<Persona>,
@@ -1939,6 +1945,46 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
 
         return note
         
+    }
+
+    async saveNotesHomologationGestion(payload: any[], user: UserEntity)
+    {
+        console.log('payload gestion homologation',payload)
+        let saved = true
+        await Promise.all(payload.map( async(item)=>{
+            let homologation = await this.homologadosGestionEstudianteRepository.findOne({
+                where: { 
+                    fromInstitutoPlanEstudioCarreraId: item.from_instituto_plan_estudio_carrera_id,
+                    toInstitutoPlanEstudioCarreraId: item.to_instituto_plan_estudio_carrera_id,
+                    institutoEstudianteInscripcionId: item.instituto_estudiante_inscripcion_id,
+                    institutoEstudianteInscripcionDocenteCalificacionId: item.instituto_estudiante_inscripcion_docente_calificacion_id,
+                    regimenGradoTipoId: item.regimen_grado_tipo_id
+
+                 }
+            })
+
+            if(!homologation)
+            {
+              const new_homologation = new CreateHomologationGestionEstudiante()
+              new_homologation.fromInstitutoPlanEstudioCarreraId = item.from_instituto_plan_estudio_carrera_id
+              new_homologation.toInstitutoPlanEstudioCarreraId = item.to_instituto_plan_estudio_carrera_id
+              new_homologation.institutoEstudianteInscripcionId = item.instituto_estudiante_inscripcion_id
+              new_homologation.institutoEstudianteInscripcionDocenteCalificacionId = item.instituto_estudiante_inscripcion_docente_calificacion_id
+              new_homologation.regimenGradoTipoId = item.regimen_grado_tipo_id
+              new_homologation.userId = user.id
+
+                homologation =  await this.homologadosGestionEstudianteRepository.save(new_homologation)
+                if(!homologation)
+                {
+                    if(saved)
+                    {
+                        saved = false
+                    }
+                }
+            }
+        } ))
+
+        return saved?'Se registro la gestion':'hubo un problema al registrar la homologacion';
     }
 
 }

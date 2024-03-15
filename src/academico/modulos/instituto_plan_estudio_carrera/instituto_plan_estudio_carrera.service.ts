@@ -168,7 +168,7 @@ export class InstitutoPlanEstudioCarreraService {
           inner join intervalo_gestion_tipo igt on igt.id = pec.intervalo_gestion_tipo_id
           where iee.institucion_educativa_sucursal_id  = ${payload.institucion_educativa_sucursal_id} and iee.persona_id = ${payload.persona_id} and me.gestion_tipo_id <  ${payload.gestion_tipo_id} and ca.carrera_tipo_id =  ${payload.carrera_tipo_id};
       `)
-      
+      console.log('resolutions', resolutions)
 
       await Promise.all(resolutions.map(async (resolution: any)=> {
         // aqui se obtiene los semestre o años aprobados
@@ -186,14 +186,16 @@ export class InstitutoPlanEstudioCarreraService {
             where iee.institucion_educativa_sucursal_id  =  ${payload.institucion_educativa_sucursal_id} and iee.persona_id = ${payload.persona_id} and me.instituto_plan_estudio_carrera_id = ${resolution.instituto_plan_estudio_carrera_id} and iei.estadomatricula_tipo_id = 30 
             group by rgt.regimen_grado, rgt.id, oc.gestion_tipo_id ;
         `)
+          console.log('regimenes grado', regimenes_grado)
           let subject_student = []
           let is_complete = true
         await Promise.all( regimenes_grado.map(async (regimen_grado: any)=>{
 
             //aqui se obtiene las materias de un semestre o año  aprobados
             let notes  = await this._institutoPlanEstudioCarreraRepository.query(`
-                select rgt.regimen_grado, oc.gestion_tipo_id  ,at2.asignatura, at2.abreviacion, emt.estado_matricula,
-                        (select iedc.cuantitativa as nota_final from instituto_estudiante_inscripcion_docente_calificacion iedc where iedc.instituto_estudiante_inscripcion_id = iei.id and iedc.modalidad_evaluacion_tipo_id = 7 and iedc.nota_tipo_id = 7 )
+                select rgt.regimen_grado, oc.gestion_tipo_id  ,at2.asignatura, at2.abreviacion, emt.estado_matricula, me.instituto_plan_estudio_carrera_id as from_instituto_plan_estudio_carrera_id, iei.id as instituto_estudiante_inscripcion_id ,
+                        (select iedc.cuantitativa as nota_final from instituto_estudiante_inscripcion_docente_calificacion iedc where iedc.instituto_estudiante_inscripcion_id = iei.id and iedc.modalidad_evaluacion_tipo_id = 7 and iedc.nota_tipo_id = 7 ),
+                        (select iedc.id as instituto_estudiante_inscripcion_docente_calificacion_id from instituto_estudiante_inscripcion_docente_calificacion iedc where iedc.instituto_estudiante_inscripcion_id = iei.id and iedc.modalidad_evaluacion_tipo_id = 7 and iedc.nota_tipo_id = 7 )
                 from institucion_educativa_estudiante iee 
                 inner join matricula_estudiante me on me.institucion_educativa_estudiante_id = iee.id
                 inner join instituto_estudiante_inscripcion iei on iei.matricula_estudiante_id  = me.id
@@ -205,6 +207,9 @@ export class InstitutoPlanEstudioCarreraService {
                 inner join estado_matricula_tipo emt on emt.id = iei.estadomatricula_tipo_id 
                 where iee.institucion_educativa_sucursal_id  = ${payload.institucion_educativa_sucursal_id} and iee.persona_id = ${payload.persona_id} and me.instituto_plan_estudio_carrera_id = ${resolution.instituto_plan_estudio_carrera_id} and iei.estadomatricula_tipo_id = 30 and pea.regimen_grado_tipo_id = ${regimen_grado.id};
             `)
+            console.log('notes', notes)
+
+            //plan de estudio
             let subjects = await this._institutoPlanEstudioCarreraRepository.query(`
                 select rgt.regimen_grado, at3.asignatura, at3.abreviacion  from plan_estudio_carrera pec 
                 inner join plan_estudio_asignatura pea on pea.plan_estudio_carrera_id = pec.id
