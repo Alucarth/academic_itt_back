@@ -52,6 +52,15 @@ export class OfertaCurricularController {
     }
 
 
+    @Get('homologationEstudiante/:instituto_plan_estudio_carrera_id/:persona_id/:regimen_grado_tipo_id')
+    async getHomologationSubject( 
+        @Param('instituto_plan_estudio_carrera_id') instituto_plan_estudio_carrera_id: number,
+        @Param('persona_id') persona_id: number,
+        @Param('regimen_grado_tipo_id') regimen_grado_tipo_id: number,
+        )
+    {
+        return await this.ofertaCurricularService.getHomologationSubject(instituto_plan_estudio_carrera_id, persona_id,regimen_grado_tipo_id)
+    }
 
     @Auth()
     @Post()

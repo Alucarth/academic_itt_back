@@ -1951,7 +1951,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
     {
         console.log('payload gestion homologation',payload)
         let saved = true
-        await Promise.all(payload.map( async(item)=>{
+        await Promise.all(payload.map( async(item,index)=>{
             let homologation = await this.homologadosGestionEstudianteRepository.findOne({
                 where: { 
                     fromInstitutoPlanEstudioCarreraId: item.from_instituto_plan_estudio_carrera_id,
@@ -1971,6 +1971,8 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
               new_homologation.institutoEstudianteInscripcionId = item.instituto_estudiante_inscripcion_id
               new_homologation.institutoEstudianteInscripcionDocenteCalificacionId = item.instituto_estudiante_inscripcion_docente_calificacion_id
               new_homologation.regimenGradoTipoId = item.regimen_grado_tipo_id
+              new_homologation.toEstadoMatriculaTipoId = 24 //APROBADO HOMOLOGACION  revisar en base de datos hay 2 borrar uno
+              new_homologation.indexSort = index
               new_homologation.userId = user.id
 
                 homologation =  await this.homologadosGestionEstudianteRepository.save(new_homologation)

@@ -23,5 +23,13 @@ export class CreateHomologationGestionEstudiante{
 
     @IsNotEmpty()
     @IsNumber()
+    toEstadoMatriculaTipoId: number;
+
+    @IsNotEmpty()
+    @IsNumber()
     userId: number;
+
+    @IsNotEmpty()
+    @IsNumber()
+    indexSort: number;
 }

@@ -424,4 +424,40 @@ export class OfertaCurricularService {
       
       return { paralelos: paralelos, total_estudiantes: total_estudiantes[0].total_estudiantes, total_turnos: total_turnos, total_asignaturas: total_asignaturas[0].total_asignaturas }
     }
+
+    async getHomologationSubject(instituto_plan_estudio_carrera_id: number, persona_id: number,regimen_grado_tipo_id:number)
+    {
+      // const regimen_list = await this._institutoPlanEstudioCarreraRepository.query(`
+      //   select hge.regimen_grado_tipo_id, rgt.regimen_grado  from homologados_gestion_estudiante hge 
+      //   inner join instituto_estudiante_inscripcion iei ON iei.id = hge.instituto_estudiante_inscripcion_id 
+      //   inner join matricula_estudiante me on me.id = iei.matricula_estudiante_id 
+      //   inner join institucion_educativa_estudiante iee on iee.id = me.institucion_educativa_estudiante_id 
+      //   inner join persona p on p.id = iee.persona_id 
+      //   inner join regimen_grado_tipo rgt on rgt.id = hge.regimen_grado_tipo_id 
+      //   where hge.to_instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and p.id = ${persona_id} group by hge.regimen_grado_tipo_id, rgt.regimen_grado;
+      // `);
+       
+      // await Promise.all( regimen_list.map(async ( regimen: any) => {
+
+         const subjects = await this._institutoPlanEstudioCarreraRepository.query(`
+         select at2.abreviacion, at2.asignatura, emt.estado_matricula, p2.carnet_identidad, p2.complemento, p2.nombre, p2.paterno, p2.materno  from homologados_gestion_estudiante hge 
+         inner join instituto_estudiante_inscripcion iei ON iei.id = hge.instituto_estudiante_inscripcion_id 
+         inner join matricula_estudiante me on me.id = iei.matricula_estudiante_id 
+         inner join institucion_educativa_estudiante iee on iee.id = me.institucion_educativa_estudiante_id 
+         inner join persona p on p.id = iee.persona_id 
+         inner join aula a on a.id = iei.aula_id 
+         inner join oferta_curricular oc on oc.id = a.oferta_curricular_id 
+         inner join plan_estudio_asignatura pea on pea.id = oc.plan_estudio_asignatura_id 
+         inner join asignatura_tipo at2 on at2.id = pea.asignatura_tipo_id 
+         inner join estado_matricula_tipo emt  on emt.id = hge.to_estado_matricula_tipo_id 
+         inner join usuario u on u.id = hge.usuario_id 
+         inner join persona p2 on p2.id = u.persona_id 
+         where hge.to_instituto_plan_estudio_carrera_id = ${instituto_plan_estudio_carrera_id} and p.id = ${persona_id} and hge.regimen_grado_tipo_id = ${regimen_grado_tipo_id} order by hge.index_sort  asc;
+         `)
+      //   regimen.subjects = subjects
+
+      // } ))
+      
+      return subjects
+    }
 }
