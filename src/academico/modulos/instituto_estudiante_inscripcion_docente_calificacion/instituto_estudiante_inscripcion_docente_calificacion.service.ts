@@ -1812,7 +1812,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
 
                 oferta_curricular = await this.ofertaCurricularRepository.save(new_oferta_curricular)
             }
-            let paralelo_tipo_id = 26; //z
+            let paralelo_tipo_id = 49; //homologation
             let turno_tipo_id = 1; //mañana
             
 
@@ -1860,6 +1860,16 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                                     }
                         }
                     )
+                    
+                    let estado_matricula_tipo = null
+
+                    switch (subject.inscripcion_tipo_id) {
+                        case 3:  //APROBADO HOMOLOGACION
+                            estado_matricula_tipo = 24
+                            break;
+                        case 4: //REINCORPORACION HOMOLOGACION
+                            estado_matricula_tipo = 45
+                    }
 
                     if(!instituto_estudiante_inscripcion)
                     {
@@ -1869,7 +1879,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                         new_instituto_estudiante_inscripcion.ofertaCurricularId = oferta_curricular.id
                         new_instituto_estudiante_inscripcion.matriculaEstudianteId = subject.matricula_estudiante_id
                         new_instituto_estudiante_inscripcion.estadoMatriculaInicioTipoId = 0
-                        new_instituto_estudiante_inscripcion.estadoMatriculaTipoId = 24 //APROBADO HOMOLOGACION
+                        new_instituto_estudiante_inscripcion.estadoMatriculaTipoId = estado_matricula_tipo
                         new_instituto_estudiante_inscripcion.usuarioId = user.id
                         
                         instituto_estudiante_inscripcion = await this.institutoEstudianteInscripcionRepository.save(new_instituto_estudiante_inscripcion)
@@ -1911,6 +1921,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
 
                     if(teacher_calification)
                     {
+                        //se asume que la nota es mayor a 61 sin embargo colocar validador front
                         teacher_calification.cuantitativa = subject.nota_final
                         //update note
                        note =  await this.teacherCalificationRepository.save(teacher_calification)
@@ -1963,6 +1974,17 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
                  }
             })
 
+            let estado_matricula_tipo = null
+
+            switch (item.inscripcion_tipo_id) {
+                case 3:  //APROBADO HOMOLOGACION
+                    estado_matricula_tipo = 24
+                    break;
+                case 4: //REINCORPORACION HOMOLOGACION
+                    estado_matricula_tipo = 45
+            }
+
+
             if(!homologation)
             {
               const new_homologation = new CreateHomologationGestionEstudiante()
@@ -1971,7 +1993,7 @@ export class InstitutoEstudianteInscripcionDocenteCalificacionService {
               new_homologation.institutoEstudianteInscripcionId = item.instituto_estudiante_inscripcion_id
               new_homologation.institutoEstudianteInscripcionDocenteCalificacionId = item.instituto_estudiante_inscripcion_docente_calificacion_id
               new_homologation.regimenGradoTipoId = item.regimen_grado_tipo_id
-              new_homologation.toEstadoMatriculaTipoId = 24 //APROBADO HOMOLOGACION  revisar en base de datos hay 2 borrar uno
+              new_homologation.toEstadoMatriculaTipoId = estado_matricula_tipo //APROBADO HOMOLOGACION  revisar en base de datos hay 2 borrar uno
               new_homologation.indexSort = index
               new_homologation.userId = user.id
 
