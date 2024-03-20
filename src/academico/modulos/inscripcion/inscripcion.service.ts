@@ -2807,7 +2807,12 @@ async deleteMatriculado(id: number) {
     sieId: number,
     ipecId: number
   ) {
-
+    console.log('gestionId:',gestionId)
+    console.log('periodoId:',periodoId)
+    console.log('carreraAutorizadaId:',carreraAutorizadaId)
+    console.log('sieId:',sieId)
+    console.log('ipecId:',ipecId)
+    
     const students = await this.matriculaRepository.query(`
     select * from (
       select iee.institucion_educativa_sucursal_id, me.periodo_tipo_id, me.gestion_tipo_id, me.id as matricula_estudiante_id, ca.carrera_tipo_id, iee.persona_id, p.carnet_identidad, p.complemento, p.nombre, p.paterno, p.materno , me.instituto_plan_estudio_carrera_id,
@@ -2817,6 +2822,17 @@ async deleteMatriculado(id: number) {
             inner join plan_estudio_carrera pec1 on pec1.id = ipec1.plan_estudio_carrera_id 
               inner join carrera_autorizada ca1 on ca1.id = ipec1.carrera_autorizada_id 
                 where iee1.institucion_educativa_sucursal_id  = ${sieId} and iee1.persona_id = iee.persona_id and me1.gestion_tipo_id < ${gestionId} and ca1.carrera_tipo_id = ca.carrera_tipo_id
+      ),
+      ( select count(hge.id) as homologation_gestion from homologados_gestion_estudiante hge 
+	      inner join instituto_estudiante_inscripcion iei2 on iei2.id = hge.instituto_estudiante_inscripcion_id
+    	  	inner join matricula_estudiante me2 on me2.id = iei2.matricula_estudiante_id 
+      			inner join institucion_educativa_estudiante iee2 on iee2.id = me2.institucion_educativa_estudiante_id 
+      				inner join instituto_plan_estudio_carrera ipec2 on ipec2.id = me2.instituto_plan_estudio_carrera_id
+      					inner join plan_estudio_carrera pec2 on pec2.id = ipec2.plan_estudio_carrera_id
+					      where iee2.persona_id = iee.persona_id and pec2.carrera_tipo_id = ca.carrera_tipo_id
+      ),
+      (  select count(iei3.*) as homologation_subject from instituto_estudiante_inscripcion iei3
+		     where iei3.matricula_estudiante_id  = me.id and (iei3.inscripcion_tipo_id = 3 or iei3.inscripcion_tipo_id  = 4 )
       )
       from matricula_estudiante me 
       inner join instituto_plan_estudio_carrera ipec on ipec.id = me.instituto_plan_estudio_carrera_id 
