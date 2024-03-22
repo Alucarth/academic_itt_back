@@ -212,6 +212,7 @@ export class InstitucionEducativaSucursalRepository {
             'per.id as id_plan_estudio_carrera_resolucion',
             'per.numeroResolucion as numero_resolucion',
             'pec.denominacion as denominacion',
+            'pec.descripcion as mencion',
             'per.fechaResolucion as fecha_resolucion',
             'ei.estado as estado',
             'pec.fechaModificacion as fecha_estado',
