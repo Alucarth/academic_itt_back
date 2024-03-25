@@ -93,6 +93,7 @@ import { UsuarioRolModule } from "./academico/modulos/usuario_rol/usuario_rol.mo
 import { PlanEstudioCarreraSeguimientoModule } from "./academico/modulos/plan_estudio_carrera_seguimiento/plan_estudio_carrera_seguimiento.module";
 import { EstadoInstitutoModule } from "./academico/catalogos/estado_instituto/estado_instituto.module";
 import { InscripcionTipoModule } from "./academico/modulos/inscripcion_tipo/inscripcion_tipo.module";
+import { InsitutoEstudianteInscripcionModule } from "./academico/modulos/instituto_estudiante_inscripcion/instituto_estudiante_inscripcion.module";
 
 //multiple bases
 const defaultOptions = {
@@ -253,7 +254,8 @@ const defaultOptionsSie = {
 
     PlanEstudioCarreraSeguimientoModule,
     EstadoInstitutoModule,
-    InscripcionTipoModule
+    InscripcionTipoModule,
+    InsitutoEstudianteInscripcionModule
     // UsuarioRolModule
   ],
 })

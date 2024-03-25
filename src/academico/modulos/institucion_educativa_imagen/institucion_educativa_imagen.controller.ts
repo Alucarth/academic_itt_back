@@ -39,6 +39,20 @@ export class InstitucionEducativaImagenController {
         return  await this.institucionEducativaImagenService.createInstitucionEducativaImagen(dto, file.filename);        
     }
 
+
+    @Post('upload')
+    @UseInterceptors(FileInterceptor('file',{
+        storage: diskStorage({
+            destination: './uploads',
+            filename:fileName
+          }),
+          fileFilter:fileFilter
+    }))
+    uploadFile(@UploadedFile() file: Express.Multer.File) {
+      console.log('file =====>: ', file);
+      return file;
+    }
+
     @Get('download-logo/:id')
     async downloadFile(@Res() res, @Param('id', ParseIntPipe) id: number) {
      const data = await this.institucionEducativaImagenService.getById(id);

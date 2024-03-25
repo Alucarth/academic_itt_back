@@ -17,6 +17,7 @@ import { InstitutoEstudianteInscripcionDocenteCalificacion } from "./institutoEs
 import { MatriculaEstudiante } from "./matriculaEstudiante.entity";
 import { OfertaCurricular } from "./ofertaCurricular.entity";
 import { InscripcionTipo } from "./inscripcionTipo.entity";
+import { EstadoInstituto } from "./estadoInstituto.entity";
 
 
 @Index("instituto_estudiante_inscripcion_pk", ["id"], { unique: true })
@@ -110,6 +111,13 @@ export class InstitutoEstudianteInscripcion {
   @ManyToOne(() => InscripcionTipo, (inscripcionTipo) => inscripcionTipo.id)
   @JoinColumn([{ name: "inscripcion_tipo_id", referencedColumnName: "id" }])
   inscripcionTipo: InscripcionTipo;
+
+  @Column({type: 'integer', nullable:true , name: "estado_instituto_id" })
+  estadoInstitutoId: number;
+
+  @ManyToOne(() => EstadoInstituto, (estadoInstitutoId) => estadoInstitutoId.id)
+  @JoinColumn([{ name: "estado_instituto_id", referencedColumnName: "id" }])
+  estadoInstituto: EstadoInstituto;
 
 
 }
