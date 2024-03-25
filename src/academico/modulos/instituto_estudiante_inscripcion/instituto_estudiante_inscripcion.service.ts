@@ -34,7 +34,15 @@ export class InstitutoEstudianteInscripcionService{
     {
         const instituto_estudiante_inscripcion = await this.institutoEstudianteInscripcion.find({
             relations:{
-                inscripcionTipo:true,
+                matriculaEstudiante: {
+                    institucionEducativaEstudiante: {
+                        persona:true,
+                        institucionEducativaSucursal: {
+                            institucionEducativa:true,
+                        }
+                    },
+                    
+                }
 
             },
             where: { id: instituto_estudiante_inscripcion_id}

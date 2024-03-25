@@ -12,7 +12,7 @@ export class InstitutoEstudianteInscripcionController{
     async getInscription(
         @Param('instituto_estudiante_inscripcion_id') instituto_estudiante_inscripcion_id: number
     ){
-        // return await this.institutoEstudianteInscripcionArchivoService
+        return await this.institutoEstudianteInscripcionArchivoService.getInscriptionById(instituto_estudiante_inscripcion_id)
     }
     
     @Get('list/:inscripcion_tipo_id/:estado_instituto_id')
@@ -25,5 +25,7 @@ export class InstitutoEstudianteInscripcionController{
         
         return await this.institutoEstudianteInscripcionArchivoService.getInscriptions(inscripcion_tipo_id,estado_instituto_id)
     }
+
+
 
 }
