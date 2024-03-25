@@ -1,3 +1,4 @@
+import { CreateInstitutoInscripcionEstudianteArchivo } from './dto/create_instituto_inscripcion_estudiante_archivo.dto';
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { InstitutoEstudianteInscripcion } from "src/academico/entidades/InstitutoEstudianteInscripcion.entity";
@@ -82,11 +83,22 @@ export class InstitutoEstudianteInscripcionService{
 
     }
 
-    async saveInscriptionFile(instituto_estudiante_inscripcion_id: number)
+    async saveInscriptionFile(instituto_estudiante_inscripcion_id: number, payload: CreateInstitutoInscripcionEstudianteArchivo[])
     {
         const inscription = await this.institutoEstudianteInscripcion.findOne({
             where: {id: instituto_estudiante_inscripcion_id}
         })
-        return inscription
+
+        let files= []
+        if(inscription)
+        {
+            Promise.all(payload.map( async (item)=>{
+               
+                const file = await this.institutoEstudianteInscripcionArchivo.save(item)
+                files.push(file)
+            }))
+        }
+
+        return {inscription, files}
     }   
 }
