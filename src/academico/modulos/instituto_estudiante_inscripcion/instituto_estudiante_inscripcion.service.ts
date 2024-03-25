@@ -32,7 +32,7 @@ export class InstitutoEstudianteInscripcionService{
 
     async getInscriptionById(instituto_estudiante_inscripcion_id: number)
     {
-        const instituto_estudiante_inscripcion = await this.institutoEstudianteInscripcion.find({
+        const instituto_estudiante_inscripcion = await this.institutoEstudianteInscripcion.findOne({
             relations:{
                 matriculaEstudiante: {
                     institucionEducativaEstudiante: {
@@ -81,4 +81,12 @@ export class InstitutoEstudianteInscripcionService{
         return instituto_estudiante_inscripcions
 
     }
+
+    async saveInscriptionFile(instituto_estudiante_inscripcion_id: number)
+    {
+        const inscription = await this.institutoEstudianteInscripcion.findOne({
+            where: {id: instituto_estudiante_inscripcion_id}
+        })
+        return inscription
+    }   
 }
