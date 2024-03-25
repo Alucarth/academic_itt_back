@@ -15,7 +15,7 @@ export class InstitutoEstudianteInscripcionController{
         // return await this.institutoEstudianteInscripcionArchivoService
     }
     
-    @Get('list/:inscripcion_tipo_id')
+    @Get('list/:inscripcion_tipo_id/:estado_instituto_id')
     async getListByInscriptionType(
         @Param('inscripcion_tipo_id') inscripcion_tipo_id: number,
         @Param('estado_instituto_id') estado_instituto_id: number
