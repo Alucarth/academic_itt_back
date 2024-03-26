@@ -22,7 +22,7 @@ export class InstitucionEducativaController {
     constructor (
         private readonly institucionEducativaService: InstitucionEducativaService,
         private readonly institucionEducativaImagenService: InstitucionEducativaImagenService,
-        private readonly matriculaEstudianteService: MatriculaEstudianteService,
+        
         private readonly institucionEducactivaEstudianteService: InstitucionEducativaEstudianteService,
      
         ){}

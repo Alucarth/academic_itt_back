@@ -16,6 +16,7 @@ import { InstitutoEstudianteInscripcion } from "./InstitutoEstudianteInscripcion
 import { InstitutoPlanEstudioCarrera } from "./institutoPlanEstudioCarrera.entity";
 import { PeriodoTipo } from "./periodoTipo.entity";
 import { PlanEstudioCarrera } from "./planEstudioCarrera.entity";
+import { EstadoInstituto } from "./estadoInstituto.entity";
 
 
 @Index("matricula_estudiante_pk", ["id"], { unique: true })
@@ -100,5 +101,12 @@ export class MatriculaEstudiante {
   @ManyToOne(() => InstitutoPlanEstudioCarrera, (institutoPlanEstudioCarrera) => institutoPlanEstudioCarrera.matriculasEstudiantes, { nullable: false, cascade: true })
   @JoinColumn({ name: "instituto_plan_estudio_carrera_id", referencedColumnName: "id" })
   institutoPlanEstudioCarrera: InstitutoPlanEstudioCarrera;
+
+  @Column({type: 'integer', nullable:true , name: "estado_instituto_id" })
+  estadoInstitutoId: number;
+
+  @ManyToOne(() => EstadoInstituto, (estadoInstitutoId) => estadoInstitutoId.id)
+  @JoinColumn([{ name: "estado_instituto_id", referencedColumnName: "id" }])
+  estadoInstituto: EstadoInstituto;
   
 }

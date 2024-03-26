@@ -8,7 +8,6 @@ import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { InstitucionEducativaRepository } from './institucion_educativa.repository';
 import { InstitucionEducativaAcreditacionRepository } from '../institucion_educativa_acreditacion/institucion_educativa_acreditacion.repository';
 import { InstitucionEducativaSucursalRepository } from '../institucion_educativa_sucursal/institucion_educativa_sucursal.repository';
-import { matriculaProviders } from '../mantricula_estudiante/matricula_estudiante.providers';
 import { MatriculaEstudianteService } from '../mantricula_estudiante/matricula_estudiante.service';
 import { institucionEducativaEstudianteProviders } from '../Institucion_educativa_estudiante/institucion_educativa_estudiante.providers';
 import { InstitucionEducativaEstudianteService } from '../Institucion_educativa_estudiante/institucion_educativa_estudiante.services';
@@ -20,6 +19,7 @@ import { MaestroInscripcion } from 'src/academico/entidades/maestroInscripcion.e
 import { TblAuxiliarSie } from 'src/academico/entidades/tblAuxiliarSie';
 import { JurisdiccionGeografica } from 'src/academico/entidades/jurisdiccionGeografica.entity';
 import { InstitucionEducativaAcreditacion } from 'src/academico/entidades/institucionEducativaAcreditacion.entity';
+import { MatriculaEstudiante } from 'src/academico/entidades/matriculaEstudiante.entity';
 
 
 
@@ -27,7 +27,7 @@ import { InstitucionEducativaAcreditacion } from 'src/academico/entidades/instit
 @Module({
   imports: [
     DatabaseModule, 
-    TypeOrmModule.forFeature([InstitucionEducativa,InstitucionEducativaSucursal, CarreraAutorizada, MaestroInscripcion,JurisdiccionGeografica,InstitucionEducativaAcreditacion]),
+    TypeOrmModule.forFeature([InstitucionEducativa, MatriculaEstudiante ,InstitucionEducativaSucursal, CarreraAutorizada, MaestroInscripcion,JurisdiccionGeografica,InstitucionEducativaAcreditacion]),
     TypeOrmModule.forFeature([TblAuxiliarSie], "siedb"),
   ],
   controllers: [InstitucionEducativaController],
@@ -38,12 +38,9 @@ import { InstitucionEducativaAcreditacion } from 'src/academico/entidades/instit
     InstitucionEducativaAcreditacionRepository,
     InstitucionEducativaSucursalRepository,
     InstitucionEducativaImagenRepository,
-    ...matriculaProviders,
-    MatriculaEstudianteService,
     InstitucionEducativaImagenService,
     ...institucionEducativaEstudianteProviders,
     InstitucionEducativaEstudianteService,
-    
     
   ]
 })
