@@ -1,3 +1,4 @@
+import { ArchivoTipoModule } from './academico/catalogos/archivo_tipo/archivo_tipo.module';
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { typeOrmConfig } from "./config/typeorm.config";
@@ -257,6 +258,8 @@ const defaultOptionsSie = {
     EstadoInstitutoModule,
     InscripcionTipoModule,
     MaestroEstudianteModule,
+    MaestroEstudianteModule,
+    ArchivoTipoModule
     // InsitutoEstudianteInscripcionModule
     // UsuarioRolModule
   ],

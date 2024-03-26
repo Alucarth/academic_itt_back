@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGenerat
 import { MatriculaEstudiante } from "./matriculaEstudiante.entity";
 import { ArchivoTipo } from "./archivoTipo.entity";
 import { Exclude } from "class-transformer";
+import { GestionTipo } from "./gestionTipo.entity";
 
 @Entity({ name: 'matricula_estudiante_archivo', schema: 'public' })
 export class MatriculaEstudianteArchivo {
@@ -16,8 +17,15 @@ export class MatriculaEstudianteArchivo {
     matriculaEstudianteId: number;
 
     @ManyToOne(() => MatriculaEstudiante, (matricula_estuduante) => matricula_estuduante.id, { nullable: false, cascade: true })
-    @JoinColumn({ name: 'instituto_estudiante_inscripcion_id', referencedColumnName: 'id'})
+    @JoinColumn({ name: 'matricula_estudiante_id', referencedColumnName: 'id'})
     matriculaEstudiante: MatriculaEstudiante;
+
+    @Column({ type: 'integer', name: 'gestion_tipo_id' })
+    gestionTipoId: number;
+
+    @ManyToOne(() => GestionTipo, (gestion_tipo) => gestion_tipo.id, { nullable: false, cascade: true })
+    @JoinColumn({ name: 'gestion_tipo_id', referencedColumnName: 'id'})
+    gestionTipo: GestionTipo;
 
     @Column({ type: 'integer', name: 'archivo_tipo_id' })
     archivoTipoId: number;

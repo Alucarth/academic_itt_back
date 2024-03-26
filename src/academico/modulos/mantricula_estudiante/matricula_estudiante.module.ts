@@ -5,9 +5,10 @@ import { MatriculaEstudianteArchivo } from "src/academico/entidades/matriculaEst
 import { DatabaseModule } from "src/database/database.module";
 import { MatriculaEstudianteController } from "./matricula_estudiante.controller";
 import { MatriculaEstudianteService } from "./matricula_estudiante.service";
+import { MatriculaEstudianteHistorial } from "src/academico/entidades/matriculaEstudianteHistorial.entity";
 
 @Module({
-    imports: [DatabaseModule, TypeOrmModule.forFeature([MatriculaEstudiante, MatriculaEstudianteArchivo])],
+    imports: [DatabaseModule, TypeOrmModule.forFeature([MatriculaEstudiante, MatriculaEstudianteArchivo, MatriculaEstudianteHistorial])],
     controllers: [MatriculaEstudianteController],
     providers: [ MatriculaEstudianteService ],
     exports: [MatriculaEstudianteService]
