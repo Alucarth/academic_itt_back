@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
-import { MatriculaEstudianteService } from './matricula_estudiante.service';
 import { Auth } from "src/auth/decorator/auth.decorator";
 import { User } from "src/users/entity/users.entity";
 import { Users } from "src/users/decorator/user.decorator";
+import { MatriculaEstudianteService } from "./matricula_estudiante.service";
 
 
 @ApiTags('Matricula Estudiante')

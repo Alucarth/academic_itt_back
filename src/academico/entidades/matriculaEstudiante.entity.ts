@@ -58,13 +58,13 @@ export class MatriculaEstudiante {
   )
   institutoEstudianteInscripcions: InstitutoEstudianteInscripcion[];
 
-  @ManyToOne(
-    () => GestionTipo,
-    (gestionTipo) => gestionTipo.matriculaEstudiantes
-  )
-  @JoinColumn({ name: "gestion_tipo_id", referencedColumnName: "id" })
-  gestionTipo: GestionTipo;
+  @Column({ type: 'integer', name: 'gestion_tipo_id' })
+  gestionTipoId: number;
 
+  @ManyToOne(() => GestionTipo, (gestion_tipo) => gestion_tipo.id, { nullable: false, cascade: true })
+  @JoinColumn({ name: 'gestion_tipo_id', referencedColumnName: 'id'})
+  gestionTipo: GestionTipo;
+  
   @Column({name: 'institucion_educativa_estudiante_id'})
   institucionEducativaEstudianteId:number
 
