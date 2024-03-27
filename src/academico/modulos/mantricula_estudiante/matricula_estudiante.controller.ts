@@ -1,9 +1,12 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, StreamableFile } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Auth } from "src/auth/decorator/auth.decorator";
 import { User } from "src/users/entity/users.entity";
 import { Users } from "src/users/decorator/user.decorator";
 import { MatriculaEstudianteService } from "./matricula_estudiante.service";
+import { createReadStream } from "fs";
+import { fileName } from "src/common/helpers/file.utils";
+import { join } from "path";
 
 
 @ApiTags('Matricula Estudiante')
@@ -33,6 +36,12 @@ export class MatriculaEstudianteController {
         console.log('payload -------->',payload)
         return await this.matriculaEstudianteService.sendDDE(payload.matricula_estudiante_id, payload.files, user)
     }
-    //TODO: aqui colocar registro de historial y archivos de la matricula 
-    //TODO: Falta  
+    
+    @Get('file/:file_name')
+    getFile( @Param("file_name") file_name: string): StreamableFile{
+        console.log('file_name',file_name)
+        const file = createReadStream(join(process.cwd(), 'uploads/'+file_name));
+        return new StreamableFile(file)
+    }
+    
 }

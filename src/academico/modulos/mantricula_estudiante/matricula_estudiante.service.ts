@@ -60,6 +60,9 @@ export class MatriculaEstudianteService{
         })
 
         const files = await this.matriculaEstudianteArchivoRepository.find({
+            relations:{
+                archivoTipo: true
+            },
             where: { matriculaEstudianteId: matricula_estudiante_id}
         }) 
 
