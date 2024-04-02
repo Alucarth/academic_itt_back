@@ -216,8 +216,9 @@ export class AulaDocenteService {
     async getGestionsByTeacher( persona_id: number, institucion_educativa_sucursal_id: number )
     {
       const maestro_inscripcion = await this._maestroInscripcionRepository.findOne({
-        where: { personaId: persona_id, institucionEducativaSucursalId: institucion_educativa_sucursal_id}
+        where: { personaId: persona_id, institucionEducativaSucursalId: institucion_educativa_sucursal_id, cargoTipoId: 1}
       })
+      console.log('maestro_inscripcion', maestro_inscripcion.id)
       if(!maestro_inscripcion)
       {
         throw new NotFoundException('Maestro Inscripcion not found');
@@ -243,7 +244,7 @@ export class AulaDocenteService {
     async getResolutionsByTeacher( payload: any)
     {
       const maestro_inscripcion = await this._maestroInscripcionRepository.findOne({
-        where: { personaId: payload.persona_id, institucionEducativaSucursalId: payload.institucion_educativa_sucursal_id}
+        where: { personaId: payload.persona_id, institucionEducativaSucursalId: payload.institucion_educativa_sucursal_id, cargoTipoId: 1}
       })
       if(!maestro_inscripcion)
       {
@@ -272,7 +273,7 @@ export class AulaDocenteService {
     async getSubjectsByTeacher( payload: any)
     {
       const maestro_inscripcion = await this._maestroInscripcionRepository.findOne({
-        where: { personaId: payload.persona_id, institucionEducativaSucursalId: payload.institucion_educativa_sucursal_id}
+        where: { personaId: payload.persona_id, institucionEducativaSucursalId: payload.institucion_educativa_sucursal_id, cargoTipoId: 1}
       })
       if(!maestro_inscripcion)
       {
