@@ -130,6 +130,7 @@ export class InstitucionEducativaRepository {
             'e.numeroResolucion as numero_resolucion',
             'e.fechaResolucion as fecha_resolucion',
             'g.dependencia as caracter_juridico',
+            'g.id as dependencia_id',
             'b.educacion as tipo_institucion',
             'c.estadoInstitucionEducativa as estado',
             'i.acreditacion as acreditacion',

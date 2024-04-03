@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DependenciaTipo } from 'src/academico/entidades/dependenciaTipo.entity';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 
 @Injectable()
 export class DependenciaTipoService {
@@ -12,6 +12,13 @@ export class DependenciaTipoService {
     ){}
 
     async getAll(){
-        return await this.dependenciaTipoRepositorio.find()
+        return await this.dependenciaTipoRepositorio.find({
+            where: { id: MoreThan(0)}
+        })
+    }
+
+    async getDependenciaTipo(id: number)
+    {
+        return await this.dependenciaTipoRepositorio.findOneBy({ id: id })
     }
 }
