@@ -1,3 +1,4 @@
+import { CreateMatriculaEstudianteArchivo } from './dto/CreateMatriculaEstudianteArchivo.dto';
 import {
   Body,
   Controller,
@@ -67,4 +68,10 @@ export class MatriculaEstudianteController {
     return await this.matriculaEstudianteService.updateState(payload.matricula_estudiante_id, payload.estado_instituto_id, payload.observacion, user.id);
   }
 //   matricula_estudiante_id:number, estado_instituto_id: number, observacion: string, user_id: number
+  @Auth()
+  @Post("save-archivo-tipo")
+  async saveArchivoTipo(@Body() payload: CreateMatriculaEstudianteArchivo, @Users() user: User)
+  {
+    return await this.matriculaEstudianteService.saveArchivoTipo(payload, user)
+  }
 }

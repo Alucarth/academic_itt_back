@@ -93,7 +93,10 @@ export class MatriculaEstudianteService{
         return matriculados
     }
 
-
+    async saveArchivoTipo (payload: CreateMatriculaEstudianteArchivo, user: User)
+    {
+        return await this.matriculaEstudianteArchivoRepository.save(payload)
+    }
 
     async sendDDE(matricula_estudiante_id: number, payload: CreateMatriculaEstudianteArchivo[],user: User)
     {
