@@ -12,4 +12,9 @@ export class ResolucionTipoController {
     async getAll(){
         return await this.resolucionTipoService.getAll();
     }
+
+    @Get('list')
+    async getList(){
+        return await this.resolucionTipoService.getList();
+    }
 }

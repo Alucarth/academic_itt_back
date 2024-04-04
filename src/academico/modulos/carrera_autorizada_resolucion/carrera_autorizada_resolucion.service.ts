@@ -116,9 +116,31 @@ export class CarreraAutorizadaResolucionService {
 
       async createResolutionCareer(payload: UpdateCarreraAutorizadaResolucionDTO, user: UserEntity)
       {
-        return await this._carreraAutorizadaResolucionRepository.save(payload)
+        console.log('payload', payload)
+        payload.usuarioId = user.id
+        // payload.ultimo = false
+        let resolution = await this._carreraAutorizadaResolucionRepository.save(payload)
+        // console.log(resolution)
+        // if(resolution.ultimo !== payload.ultimo)
+        // {
+        //   let new_resolution = await this.changeState(resolution.id, payload.ultimo)
+        //   return new_resolution
+        // } 
+        return resolution
       }
       
+      async changeState (carrera_autorizada_resolucion_id: number, ultimo: boolean)
+      {
+        console.log('cambiando de estado',ultimo )
+        const resolution = await this._carreraAutorizadaResolucionRepository.findOne({
+          where:{id: carrera_autorizada_resolucion_id}
+        })
+        
+        resolution.ultimo = ultimo
+        console.log('resolution', resolution)
+        return await this._carreraAutorizadaResolucionRepository.save(resolution)
+      }
+
       async deleteResolutionCareer(carrera_autorizada_resolucion_id)
       {
         return await this._carreraAutorizadaResolucionRepository.delete(carrera_autorizada_resolucion_id)

@@ -9,7 +9,12 @@ export class ResolucionTipoService {
         @InjectRepository(ResolucionTipo)
         private resolucionTipoRepository: Repository<ResolucionTipo>,
     ){}
-        async getAll(){            
-            return  await this.resolucionTipoRepository.find({where: { id: In([1,5,4]) }});
-        }
+
+    async getAll(){            
+        return  await this.resolucionTipoRepository.find({where: { id: In([1,5,4]) }});
+    }
+
+    async getList(){            
+        return  await this.resolucionTipoRepository.find();
+    }
 }

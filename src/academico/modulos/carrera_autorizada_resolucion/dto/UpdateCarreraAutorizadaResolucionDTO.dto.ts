@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 export class UpdateCarreraAutorizadaResolucionDTO {
  
     
@@ -14,7 +14,6 @@ export class UpdateCarreraAutorizadaResolucionDTO {
     @IsNotEmpty()
     @IsNumber()
     resolucionTipoId: number;
-
 
     @IsNotEmpty()
     @IsNumber()
@@ -36,5 +35,13 @@ export class UpdateCarreraAutorizadaResolucionDTO {
     @IsOptional()
     @IsNumber()
     carreraAutorizadaId: number;
+
+    @IsOptional()
+    @IsNumber()
+    usuarioId: number;
+
+    @IsOptional()
+    @IsBoolean()    
+    ultimo: boolean;
     
 }
