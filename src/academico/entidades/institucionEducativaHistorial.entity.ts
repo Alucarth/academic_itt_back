@@ -18,7 +18,7 @@ export class InstitucionEducativaHistorial {
     @JoinColumn({ name: 'institucion_educativa_id', referencedColumnName: 'id'})
     institucionEducativa: InstitucionEducativa;
 
-    @Column({ type: 'integer', name: 'institucion_educativa__sucursal_id' })
+    @Column({ type: 'integer', name: 'institucion_educativa_sucursal_id' })
     institucionEducativaSucursalId: number;
 
     @ManyToOne(() => InstitucionEducativaSucursal, (institucionEducativaSucursal) => institucionEducativaSucursal.id)
