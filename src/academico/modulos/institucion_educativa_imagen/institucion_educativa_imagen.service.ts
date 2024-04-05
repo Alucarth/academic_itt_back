@@ -1,9 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
 import { EntityManager } from 'typeorm';
 import { CreateInstitucionEducativaImagenDto } from './dto/createInstitucionEducativaImagen.dto';
 import { InstitucionEducativaImagenRepository } from './institucion_educativa_imagen.repository';
-
+import axios from 'axios';
 @Injectable()
 export class InstitucionEducativaImagenService {
     constructor(
@@ -51,5 +51,31 @@ export class InstitucionEducativaImagenService {
             'No se pudo guardar la información !!',
             '',
         );
+    }
+
+    async getCertificado()
+    {
+        const response = await axios({
+            method: 'GET',
+            url: 'http://100.0.101.46:8080/birt-viewer/frameset?__report=siged/rie_cert_certificadottec_v3_afv.rptdesign&documento_id=3287165&__format=pdf',
+            responseType: 'arraybuffer'
+          }).catch(() => {
+            throw new ForbiddenException('API not available');
+          });
+          console.log(response.data)
+
+          const pdfDoc = await PDFDocument.load(response.data);
+
+          // Crear un Blob a partir del PDFDocument
+          const pdfBytes = await pdfDoc.save();
+          const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+      
+          // Crear una URL para el Blob
+          file.temporal_Path = URL.createObjectURL(pdfBlob);
+          return {
+            data: {
+              fact: response.data?.fact,
+            },
+          };
     }
 }

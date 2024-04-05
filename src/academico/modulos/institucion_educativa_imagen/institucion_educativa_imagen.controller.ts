@@ -64,7 +64,11 @@ export class InstitucionEducativaImagenController {
    @Get('nombre-logo/:id')
    async getLogo(@Param('id', ParseIntPipe) id: number){
         const data = await this.institucionEducativaImagenService.getById(id);
-        return data.nombreArchivo;
+        return data.nombreArchivo;  
    }
 
+   @Get('certificado')
+   async getCertificado(){
+      return await this.institucionEducativaImagenService.getCertificado()
+   }
 }
