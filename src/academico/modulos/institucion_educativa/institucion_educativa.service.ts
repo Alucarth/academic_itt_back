@@ -2043,6 +2043,180 @@ export class InstitucionEducativaService {
       return File;
     }
 
+    async getInstitutionsReport()
+    {
+      let lista = await this.institucionEducativaRepository.query(`
+      select ie.institucion_educativa as denominacion,  iea.numero_resolucion, iea.observacion as resolucion, iea.fecha_resolucion, iea.vigente, ies.sucursal_nombre as sede_subsede, et.educacion as tipo, dt.dependencia as caracter_juridico,
+          ut5.lugar as departamento, ut4.lugar as provincia, ut3.lugar as municipio, ut2.lugar as canton, ut.lugar as localidad, jg.direccion, jg.cordx as latitud, jg.cordy as longitud,  jg.zona, eiet.estado_institucion_educativa as estado, 
+          jg.codigo_edificio_educativo as cod_le, ie.id as cod_ritt, 
+          (select nat.nivel_academico as nivel_academico1  from carrera_autorizada ca
+            inner join carrera_autorizada_resolucion car  on car.carrera_autorizada_id = ca.id
+            inner join nivel_academico_tipo nat on nat.id = car.nivel_academico_tipo_id 
+            where ca.institucion_educativa_sucursal_id  = ies.id and car.nivel_academico_tipo_id = 1 group by nat.nivel_academico),
+          (select nat.nivel_academico as nivel_academico2 from carrera_autorizada ca
+            inner join carrera_autorizada_resolucion car  on car.carrera_autorizada_id = ca.id
+            inner join nivel_academico_tipo nat on nat.id = car.nivel_academico_tipo_id 
+            where ca.institucion_educativa_sucursal_id  = ies.id and car.nivel_academico_tipo_id = 2 group by nat.nivel_academico),
+          (select nat.nivel_academico as nivel_academico3 from carrera_autorizada ca
+            inner join carrera_autorizada_resolucion car  on car.carrera_autorizada_id = ca.id
+            inner join nivel_academico_tipo nat on nat.id = car.nivel_academico_tipo_id 
+            where ca.institucion_educativa_sucursal_id  = ies.id and car.nivel_academico_tipo_id = 3 group by nat.nivel_academico)
+      from institucion_educativa ie  
+      inner join jurisdiccion_geografica jg on ie.jurisdiccion_geografica_id = jg .id 
+      inner join unidad_territorial ut on jg.localidad_unidad_territorial_2001_id  = ut.id 
+      inner join unidad_territorial ut2 on ut.unidad_territorial_id  = ut2.id
+      inner join unidad_territorial ut3 on ut2.unidad_territorial_id  = ut3.id
+      inner join unidad_territorial ut4 on ut3.unidad_territorial_id  = ut4.id
+      inner join unidad_territorial ut5 on ut4.unidad_territorial_id = ut5.id
+      inner join institucion_educativa_sucursal ies on ies.institucion_educativa_id  = ie.id
+      inner join institucion_educativa_acreditacion iea on iea.institucion_educativa_id = ie.id
+      inner join educacion_tipo et on et.id = ie.educacion_tipo_id 
+      inner join dependencia_tipo dt  on dt.id = iea.dependencia_tipo_id 
+      inner join estado_institucion_educativa_tipo eiet on eiet.id  = ie.estado_institucion_educativa_tipo_id;
+      `
+      );
+
+
+      let book = new Workbook();
+      const sheet = book.addWorksheet('hoja1', {views: [{showGridLines: false}]});
+      
+      sheet.addRow([]);
+      sheet.addRow([]);
+      sheet.addRow([]);
+      sheet.addRow([]);
+
+      sheet.addRow([`Reporte de Institutos `]);
+      sheet.addRow([""+new Date().toLocaleDateString(undefined, {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })]);
+
+      sheet.getRow(5).font = { name:'Nimbus Sans', size: 16, bold: true ,color: {'argb': '485ab7'} };
+      sheet.getRow(6).font = { name:'Nimbus Sans', size: 10, bold: true ,color: {'argb': '7280c8'}};
+
+      sheet.addRow([]);
+       //add the header
+      sheet.addRow(['NRO','DENOMICACIÓN', 'R.M. ', 'RESOLUCION','FECHA RESOLUCION','VIGENCIA','SEDE/SUBSEDE','TIPO INSTITUTO','CARACTER JURIDICO','NIVEL DE FORMACION','DEPARTAMENTO', 'PROVINCIA', 'MUNICIPIO', 'CANTON','LOCALIDAD','ZONA', 'DIRECCION','ESTADO', 'COD RITT','COD LE' ]);
+      lista.forEach((item: any ,index:number) => {
+          sheet.addRow([index+1, item.denominacion, item.numero_resolucion, item.resolucion, item.fecha_resolucion, item.vigente ? 'vigente':'no vigente', item.sede_subsede, item.tipo,  item.caracter_juridico, `${item.nivel_academico1 ?? ''}, ${item.nivel_academico2 ?? ''}, ${item.nivel_academico3 ?? ''}` ,item.departamento, item.provincia, item.municipio, item.canton, item.localidad, item.zona, item.direccion, item.estado, item.cod_ritt, item.cod_le ])
+      });
+
+      sheet.getRow(5).height = 30.5;
+        [
+          'A',
+          'B',
+          'C',
+          'D',
+          'E',
+          'F',
+          'G',
+          'H',
+          'I',
+          'J',
+          'K',
+          'L',
+          'M',
+          'N',
+          'O',
+          'P',
+          'Q',
+          'R',
+          'S',
+          'T',
+        ].map((key) => {
+          let col = sheet.getColumn(key)
+            if(key==='A')
+            { 
+              col.width = 30
+            }else{
+              col.width = 30
+            }
+            if(key !== 'A')
+            {
+              col.alignment = { vertical: 'middle', horizontal: 'right' };
+            }
+
+        });
+
+      
+          const imageId2 = book.addImage({
+            base64: this.getImageLogo(),
+            extension: 'png',
+          });
+
+          
+          sheet.addImage(imageId2, 'A1:B4');
+
+
+          [
+            'A8',
+            'B8',
+            'C8',
+            'D8',
+            'E8',
+            'F8',
+            'G8',
+            'H8',
+            'I8',
+            'J8',
+            'K8',
+            'L8',
+            'M8',
+            'N8',
+            'O8',
+            'P8',
+            'Q8',
+            'R8',
+            'T8',
+            'S8',
+
+            
+          ].map((key) => {
+            sheet.getCell(key).fill = {
+              type: "pattern",
+              pattern: "solid",
+              fgColor: { argb: "E5E5E5" },
+            };
+            sheet.getCell(key).font = {
+              bold: true,
+              name:'Nimbus Sans',
+            };
+            sheet.getCell(key).border = {
+              top: { style: 'thin', color: {'argb': 'E5E5E5'} },
+              left: { style: 'thin', color: {'argb': 'E5E5E5'} },
+              bottom: { style: 'thin', color: {'argb': 'E5E5E5'} },
+              right: { style: 'thin', color: {'argb': 'E5E5E5'} }
+            };
+          });
+        
+      let File = await new Promise((resolve, reject) => {
+          tmp.file(
+            {
+              discardDescriptor: true,
+              prefix: `REPORTE_INSTITUTOS `,
+              postfix: ".xlsx",
+              mode: parseInt("0600", 8),
+            },
+            async (err, file) => {
+              if (err) throw new BadRequestException(err);
+  
+              book.xlsx
+                .writeFile(file)
+                .then((_) => {
+                  resolve(file);
+                })
+                .catch((err) => {
+                  throw new BadRequestException(err);
+                });
+            }
+          );
+        });
+
+      return File;
+    }
+
     async getTotalGeneral(){
         const lista = await this.institucionEducativaRepositorio.findTotalGeneral();
         return lista;

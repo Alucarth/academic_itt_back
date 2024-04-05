@@ -302,6 +302,17 @@ export class InstitucionEducativaController {
         res.download(`${result}`);
     }
 
+    //getInstitutionsReport
+    @Get('reporte/institutos')
+    @Header("Content-Type", "text/xlsx")
+    async getInstitutionsReport(@Res() res: Response)
+    {
+
+        let result = await this.institucionEducativaService.getInstitutionsReport()
+        res.download(`${result}`);
+    }
+
+
     // getNumeroEstudiantesMatriculasdosAreaGeograficaDependencia
 
     // HASTA AQUI LOS REPORTES XD DE LA NOTA INTERNA 0690/2023
