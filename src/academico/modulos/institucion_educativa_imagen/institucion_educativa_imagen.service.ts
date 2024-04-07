@@ -1,13 +1,18 @@
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { RespuestaSigedService } from 'src/shared/respuesta.service';
-import { EntityManager } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CreateInstitucionEducativaImagenDto } from './dto/createInstitucionEducativaImagen.dto';
 import { InstitucionEducativaImagenRepository } from './institucion_educativa_imagen.repository';
 import axios from 'axios';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TblAuxiliarSie } from 'src/academico/entidades/tblAuxiliarSie';
+import e from 'express';
 @Injectable()
 export class InstitucionEducativaImagenService {
     constructor(
         @Inject(InstitucionEducativaImagenRepository) private institucionEducativaImagenRepositorio: InstitucionEducativaImagenRepository,
+        @InjectRepository(TblAuxiliarSie, "siedb")
+        private sieRepository: Repository<TblAuxiliarSie>,
         private _serviceResp: RespuestaSigedService, 
     ){}
 
@@ -53,29 +58,33 @@ export class InstitucionEducativaImagenService {
         );
     }
 
-    async getCertificado()
+    async getCertificado(institucion_educativa_id: number): Promise<Buffer>
     {
-        const response = await axios({
-            method: 'GET',
-            url: 'http://100.0.101.46:8080/birt-viewer/frameset?__report=siged/rie_cert_certificadottec_v3_afv.rptdesign&documento_id=3287165&__format=pdf',
-            responseType: 'arraybuffer'
-          }).catch(() => {
-            throw new ForbiddenException('API not available');
-          });
-          console.log(response.data)
 
-          const pdfDoc = await PDFDocument.load(response.data);
+        const sie_response = await this.sieRepository.query(`
+        select d.* from documento d 
+        inner join tramite t on t.id = d.tramite_id
+        inner join institucioneducativa i on i.id = t.institucioneducativa_id 
+        where i.id = ${institucion_educativa_id};
+        `)
+        console.log('document',sie_response)
+        if(sie_response.length>0)
+        {
+            const document = sie_response[0];
+            const response = await axios({
+                method: 'GET',
+                url: `http://100.0.101.46:8080/birt-viewer/frameset?__report=siged/rie_cert_certificadottec_v3_afv.rptdesign&documento_id=${document.id}&__format=pdf`,
+                responseType: 'arraybuffer'
+              }).catch(() => {
+                throw new ForbiddenException('API not available');
+              });
+              console.log('array buffer',response.data) 
+            
+              return response.data
 
-          // Crear un Blob a partir del PDFDocument
-          const pdfBytes = await pdfDoc.save();
-          const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
-      
-          // Crear una URL para el Blob
-          file.temporal_Path = URL.createObjectURL(pdfBlob);
-          return {
-            data: {
-              fact: response.data?.fact,
-            },
-          };
+        }else{
+            throw new NotFoundException('document not found')
+        }
+          
     }
 }

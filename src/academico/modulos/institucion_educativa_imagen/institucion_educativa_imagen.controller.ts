@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Res, StreamableFile, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { InstitucionEducativaImagen } from 'src/academico/entidades/institucionEducativaImagen.entity';
 import { fileName, fileFilter } from 'src/common/helpers/file.utils';
 import { CreateInstitucionEducativaImagenDto } from './dto/createInstitucionEducativaImagen.dto';
 import { InstitucionEducativaImagenService } from './institucion_educativa_imagen.service';
+import { createReadStream } from 'fs';
+import { join } from 'path';
 
 @Controller('institucion-educativa-imagen')
 export class InstitucionEducativaImagenController {
@@ -67,8 +69,16 @@ export class InstitucionEducativaImagenController {
         return data.nombreArchivo;  
    }
 
-   @Get('certificado')
-   async getCertificado(){
-      return await this.institucionEducativaImagenService.getCertificado()
+   @Get('certificado/:institucion_educativa_id')
+   async getCertificado( @Res() res, @Param('institucion_educativa_id', ParseIntPipe) institucion_educativa_id: number  ) : Promise<void>{
+      const buffer = await this.institucionEducativaImagenService.getCertificado(institucion_educativa_id)
+      res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': 'attachment; filename=certificado.pdf',
+        'Content-Length': buffer.length,
+      })
+  
+      res.end(buffer)
    }
+
 }
