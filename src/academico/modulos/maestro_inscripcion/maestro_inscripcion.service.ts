@@ -2524,4 +2524,49 @@ export class MaestroInscripcionService {
       }
   }
 
+  async getTeacherInstitute(institucion_educiativa_id: number)
+  {
+    const plantel_administrativo = await this.maestroRepository.query(`
+    
+      select ct.cargo, ft.formacion , concat(p.carnet_identidad,p.complemento) as carnet_identidad  , concat(p.nombre,' ',p.paterno,' ', p.materno) as full_name  , mi.fecha_registro  from maestro_inscripcion mi 
+      inner join institucion_educativa_sucursal ies ON ies.id  = mi.institucion_educativa_sucursal_id 
+      inner join institucion_educativa ie on ie.id = ies.institucion_educativa_id 
+      inner join cargo_tipo ct on ct.id = mi.cargo_tipo_id 
+      inner join persona p on p.id = mi.persona_id 
+      inner join formacion_tipo ft  on ft.id  = mi.formacion_tipo_id 
+      where ie.id = ${institucion_educiativa_id} order by ct.cargo_titular_id desc ;
+    `) 
+    return plantel_administrativo
+  }
+
+  async getTeacherGender(institucion_educiativa_id: number)
+  {
+    const teacher_gender = await this.maestroRepository.query(`
+    
+    select ct.cargo, ct.id, 
+      ( select count(p1.genero_tipo_id) as masculino  from maestro_inscripcion mi1
+      inner join institucion_educativa_sucursal ies1 ON ies1.id  = mi1.institucion_educativa_sucursal_id 
+      inner join institucion_educativa ie1 on ie1.id = ies1.institucion_educativa_id 
+      inner join cargo_tipo ct1 on ct1.id = mi1.cargo_tipo_id 
+      inner join persona p1 on p1.id = mi1.persona_id 
+      where ie1.id = ${institucion_educiativa_id} and ct1.id = ct.id and p1.genero_tipo_id =1  group by p1.genero_tipo_id 
+      ),
+      ( select count(p1.genero_tipo_id) as femenino  from maestro_inscripcion mi1
+      inner join institucion_educativa_sucursal ies1 ON ies1.id  = mi1.institucion_educativa_sucursal_id 
+      inner join institucion_educativa ie1 on ie1.id = ies1.institucion_educativa_id 
+      inner join cargo_tipo ct1 on ct1.id = mi1.cargo_tipo_id 
+      inner join persona p1 on p1.id = mi1.persona_id 
+      where ie1.id = ${institucion_educiativa_id} and ct1.id = ct.id and p1.genero_tipo_id =2  group by p1.genero_tipo_id 
+      )
+    from maestro_inscripcion mi 
+    inner join institucion_educativa_sucursal ies ON ies.id  = mi.institucion_educativa_sucursal_id 
+    inner join institucion_educativa ie on ie.id = ies.institucion_educativa_id 
+    inner join cargo_tipo ct on ct.id = mi.cargo_tipo_id 
+    inner join persona p on p.id = mi.persona_id 
+    inner join formacion_tipo ft  on ft.id  = mi.formacion_tipo_id 
+    where ie.id = ${institucion_educiativa_id} group by ct.cargo,ct.id ;
+    `) 
+    return teacher_gender
+  }
+
 }

@@ -223,4 +223,17 @@ export class MaestroInscripcionController {
     return await this.usersService.getTeacherDetail(carnet_identidad, codigo_rit, gestion_id)
   }
 
+  @Get('/teacher-instituto/:institucion_educativa_id')
+  async getTeacherInstitute(@Param("institucion_educativa_id") institucion_educativa_id: number,  )
+  {
+    return await this.usersService.getTeacherInstitute(institucion_educativa_id)
+  }
+
+  @Get('/teacher-gender/:institucion_educativa_id')
+  async getTeacherGender(@Param("institucion_educativa_id") institucion_educativa_id: number,  )
+  {
+    return await this.usersService.getTeacherGender(institucion_educativa_id)
+  }
+
+  // getTeacherGender
 }
